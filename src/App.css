@@ -19,7 +19,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   font-size: calc(10px + 2vmin);
   color: white;
 }
@@ -35,4 +35,33 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+
+.instructions-container {
+  text-align: left;
+  max-width: 800px;
+  margin: 20px auto 0;
+}
+
+.instructions-container h3 {
+  color: #333;
+}
+
+.instructions-container ol {
+  list-style: decimal;
+  padding-left: 20px;
+}
+
+.instructions-container li {
+  margin-bottom: 10px;
+}
+
+.instructions-container a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.instructions-container code {
+  color: yellow;
 }

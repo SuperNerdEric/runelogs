@@ -2,9 +2,10 @@ import React, {useState} from 'react';
 import './App.css';
 import Dropzone from "./Dropzone";
 import {Fight, parseFileContent} from "./FileParser";
-import HitDistributionChart from "./HitDistributionChart";
+import HitDistributionChart from "./charts/HitDistributionChart";
 import EventsTable from "./EventsTable";
 import {calculateDPS} from "./CalculateDPS";
+import Instructions from "./Instructions";
 
 function App() {
 
@@ -12,25 +13,33 @@ function App() {
     const [selectedLogs, setSelectedLogs] = useState<Fight | null>(null);
     const [dps, setDPS] = useState<number>(0);
 
+    function setAllLogs(result: Fight[]) {
+        let allLogs: Fight = {
+            data: [],
+            name: "All"
+        };
+
+        result.forEach((fight) => {
+            allLogs.data.push(...fight.data);
+        });
+
+        setSelectedLogs(allLogs);
+        setDPS(calculateDPS(allLogs));
+    }
+
     const handleParse = (fileContent: string) => {
         const result = parseFileContent(fileContent);
         console.log(result);
         setParsedResult(result);
+
+        if (result && result.length > 0) {
+            setAllLogs(result);
+        }
     };
 
     const handleDropdownChange = (index: number) => {
         if (index === -1) {
-            setSelectedLogs(null); // Reset selection
-        } else if (index === -2) {
-            let allLogs: Fight = {
-                data: [],
-                name: "All"
-            }
-            parsedResult?.forEach(fight => {
-                allLogs.data.push(...fight.data);
-            })
-            setSelectedLogs(allLogs);
-            setDPS(calculateDPS(allLogs));
+            setAllLogs(parsedResult!);
         } else {
             const selectedLog = parsedResult?.[index]!;
             setSelectedLogs(selectedLog);
@@ -38,16 +47,23 @@ function App() {
         }
     };
 
+    if (!parsedResult) {
+        return (
+            <div className="App">
+                <header className="App-header">
+                    <Instructions/>
+                    <Dropzone onParse={handleParse}/>
+                </header>
+            </div>
+        );
+    }
+
     return (
         <div className="App">
             <header className="App-header">
-                <Dropzone onParse={handleParse} />
-
-                {/* Dropdown to choose logs array */}
                 <label>Select Logs:</label>
                 <select onChange={(e) => handleDropdownChange(parseInt(e.target.value))}>
-                    <option value="-1">Choose Logs</option>
-                    <option value="-2">All</option>
+                    <option value="-1">All</option>
                     {parsedResult &&
                         parsedResult.map((logs, index) => (
                             <option key={index} value={index}>
@@ -58,13 +74,13 @@ function App() {
 
                 {selectedLogs && (
                     <div className="logs-container">
-                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400' }}>
-                            <HitDistributionChart fight={selectedLogs} />
+                        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400'}}>
+                            <HitDistributionChart fight={selectedLogs}/>
                         </div>
 
                         <p>DPS: {dps.toFixed(3)}</p>
-                        <h2>Selected Logs:</h2>
-                        <EventsTable logs={selectedLogs.data} />
+                        <h2>Events:</h2>
+                        <EventsTable logs={selectedLogs.data}/>
                     </div>
                 )}
             </header>

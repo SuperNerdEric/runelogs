@@ -1,5 +1,7 @@
-import React, {useCallback} from 'react'
-import {useDropzone} from 'react-dropzone'
+import React, { useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
+import {Button} from "@mui/material";
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 interface DropzoneProps {
     onParse: (fileContent: string) => void;
@@ -22,19 +24,24 @@ const Dropzone: React.FC<DropzoneProps> = ({ onParse }) => {
                 console.log(`${file.name} is not a text file. Skipping.`);
             }
         });
-    },[onParse])
-    const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
+    }, [onParse]);
+
+    const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
     return (
-        <div {...getRootProps()}>
+        <div {...getRootProps()} style={{ marginTop: '20px', textAlign: 'center' }}>
             <input {...getInputProps()} />
-            {
-                isDragActive ?
-                    <p>Drop the files here ...</p> :
-                    <p>Drag 'n' drop some files here, or click to select files</p>
-            }
+            <Button
+                variant="contained"
+                color="primary"
+                component="span"
+                startIcon={<CloudUploadIcon style={{ color: 'grey', fontSize: '6em' }} />}
+                style={{ background: 'white', color: 'black', borderRadius: '25px' }}
+            >
+                Upload file
+            </Button>
         </div>
-    )
-}
+    );
+};
 
 export default Dropzone;
