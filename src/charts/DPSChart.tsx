@@ -100,6 +100,7 @@ const DPSChart: React.FC<DPSChartProps> = ({ fight }) => {
                         offset: -30,
                         style: { textAnchor: 'middle' },
                     }}
+                    tickFormatter={(tick) => (tick !== 0 ? tick : '')}
                 />
                 <Tooltip content={(props) => <CustomTooltip {...props} />} cursor={{ fill: '#3c3226' }} />
 
