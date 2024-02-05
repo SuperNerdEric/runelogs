@@ -1,6 +1,6 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { Fight } from '../FileParser';
+import { Fight } from '../../FileParser';
 interface HitDistributionChartProps {
     fight: Fight;
 }

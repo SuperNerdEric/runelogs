@@ -1,17 +1,42 @@
 import React, { useState } from 'react';
-import './App.css';
+import '../App.css';
 import Dropzone from './Dropzone';
-import { Fight, parseFileContent } from './FileParser';
-import Instructions from './Instructions';
+import {Fight, LogLine, parseFileContent} from '../FileParser';
 import DamageDone from './sections/DamageDone';
 import { Tabs, Tab } from '@mui/material';
-import {DamageMaxMeHitsplats, DamageMeHitsplats} from "./HitsplatNames";
+import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
 import EventsTable from './EventsTable';
+import Instructions from "./Instructions";
+import {convertTimeToMillis} from "./charts/DPSChart";
+
+export const PLAYER_NAME = "Million Pies";
 
 function App() {
     const [parsedResult, setParsedResult] = useState<Fight[] | null>(null);
     const [selectedLogs, setSelectedLogs] = useState<Fight | null>(null);
     const [selectedTab, setSelectedTab] = useState<string>('DamageDone');
+    const [fightDuration, setFightDuration] = useState<string>("");
+
+    const calculateFightDuration = (logs: LogLine[]) => {
+        if (logs.length === 0) {
+            return 0;
+        }
+
+        const startTime = convertTimeToMillis(logs[0].time);
+        const endTime = convertTimeToMillis(logs[logs.length - 1].time);
+
+        return endTime - startTime;
+    };
+    function getFightDuration(selectedLog: Fight) {
+        const fightDurationMilliseconds = calculateFightDuration(selectedLog!.data);
+        const duration = new Date(Date.UTC(0, 0, 0, 0, 0, 0, fightDurationMilliseconds));
+        const minutes = duration.getUTCMinutes();
+        const seconds = duration.getUTCSeconds();
+        const milliseconds = duration.getUTCMilliseconds();
+
+        const formattedDuration = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${milliseconds}`;
+        return formattedDuration;
+    }
 
     function setAllLogs(result: Fight[]) {
         let allLogs: Fight = {
@@ -24,6 +49,8 @@ function App() {
         });
 
         setSelectedLogs(allLogs);
+        const formattedDuration = getFightDuration(allLogs);
+        setFightDuration(formattedDuration);
     }
 
     const handleParse = (fileContent: string) => {
@@ -42,6 +69,8 @@ function App() {
         } else {
             const selectedLog = parsedResult?.[index]!;
             setSelectedLogs(selectedLog);
+            const formattedDuration = getFightDuration(selectedLog);
+            setFightDuration(formattedDuration);
         }
     };
 
@@ -106,6 +135,9 @@ function App() {
                     />
                 </Tabs>
 
+                <div>
+                    <p>Fight Duration: {fightDuration}</p>
+                </div>
                 {selectedTab === 'DamageDone' && (
                     <DamageDone
                         selectedLogs={{
@@ -115,7 +147,7 @@ function App() {
                                     (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
                                         Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!) ||
                                         log.hitsplatName === 'BLOCK_ME') &&
-                                    log.target === selectedLogs.name
+                                    log.target !== PLAYER_NAME
                             )!,
                         }}
                         handleDropdownChange={handleDropdownChange}
@@ -130,7 +162,7 @@ function App() {
                                     (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
                                         Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!) ||
                                         log.hitsplatName === 'BLOCK_ME') &&
-                                    log.target === "Million Pies"
+                                    log.target === PLAYER_NAME
                             )!,
                         }}
                         handleDropdownChange={handleDropdownChange}

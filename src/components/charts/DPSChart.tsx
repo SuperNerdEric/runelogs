@@ -1,6 +1,6 @@
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { Fight, LogLine } from '../FileParser';
+import { Fight, LogLine } from '../../FileParser';
 
 interface DPSChartProps {
     fight: Fight;
@@ -35,7 +35,7 @@ const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
     return null;
 };
 
-const convertTimeToMillis = (time: string): number => {
+export const convertTimeToMillis = (time: string): number => {
     const [hours, minutes, seconds] = time.split(':').map(Number);
     const milliseconds = hours * 3600000 + minutes * 60000 + seconds * 1000;
     return milliseconds;

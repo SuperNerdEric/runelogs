@@ -1,3 +1,5 @@
+import {logSplitter} from "./LogSplitter";
+
 export interface Fight {
     name: string;
     data: LogLine[];
@@ -82,24 +84,16 @@ export function parseFileContent(fileContent: string): Fight[] | null {
     try {
         const lines = fileContent.split('\n');
         let fightData: LogLine[] = [];
-        const fights: Fight[] = [];
 
         for (const line of lines) {
             const logLine = parseLogLine(line.trim());
 
             if (logLine) {
                 fightData.push(logLine);
-
-                // Check for "DEATH" hitsplatName and split data accordingly
-                if (logLine.hitsplatName === 'DEATH') {
-                    fights.push({
-                        name: logLine.target,
-                        data: fightData
-                    })
-                    fightData = [];
-                }
             }
         }
+
+        let fights: Fight[] = logSplitter(fightData);
 
         console.log(fights);
         return fights;

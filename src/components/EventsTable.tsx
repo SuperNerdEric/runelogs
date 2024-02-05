@@ -1,5 +1,5 @@
 import React from 'react';
-import { Fight } from './FileParser';
+import { Fight } from '../FileParser';
 
 interface EventsTableProps {
     logs: Fight['data'];

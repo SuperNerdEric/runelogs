@@ -1,5 +1,5 @@
 import {LogLine} from "../FileParser";
-import {calculateDPSByInterval} from "../charts/DPSChart";
+import {calculateDPSByInterval} from "../components/charts/DPSChart";
 
 describe('calculateDPSByInterval', () => {
     test('calculate dps by 6 second intervals', () => {
