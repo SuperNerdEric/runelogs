@@ -6,6 +6,7 @@ import Instructions from './Instructions';
 import DamageDone from './sections/DamageDone';
 import { Tabs, Tab } from '@mui/material';
 import {DamageMaxMeHitsplats, DamageMeHitsplats} from "./HitsplatNames";
+import EventsTable from './EventsTable';
 
 function App() {
     const [parsedResult, setParsedResult] = useState<Fight[] | null>(null);
@@ -96,6 +97,13 @@ function App() {
                             color: selectedTab === 'DamageTaken' ? 'lightblue' : 'white',
                         }}
                     />
+                    <Tab
+                        label="Events"
+                        value="Events"
+                        style={{
+                            color: selectedTab === 'Events' ? 'lightblue' : 'white',
+                        }}
+                    />
                 </Tabs>
 
                 {selectedTab === 'DamageDone' && (
@@ -127,6 +135,9 @@ function App() {
                         }}
                         handleDropdownChange={handleDropdownChange}
                     />
+                )}
+                {selectedTab === 'Events' && (
+                    <EventsTable logs={selectedLogs?.data || []} height={"80vh"} showSource={true}/>
                 )}
             </header>
         </div>
