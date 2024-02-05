@@ -61,9 +61,9 @@ export const calculateDPSByInterval = (data: LogLine[], interval: number) => {
             }
 
             const intervalDuration = timestamp - currentIntervalStart;
-            const dps = (currentIntervalTotalDamage / intervalDuration) * 1000; // DPS per second
-            if(dps) {
-                dpsData.push({ timestamp, dps }); // Fix: Push data after accumulation
+            const dps = (currentIntervalTotalDamage / intervalDuration) * 1000;
+            if (!isNaN(dps) && isFinite(dps)) {
+                dpsData.push({ timestamp, dps });
             }
 
             // Move to the start of the next interval

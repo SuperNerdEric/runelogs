@@ -1,19 +1,21 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import './App.css';
-import Dropzone from "./Dropzone";
-import {Fight, parseFileContent} from "./FileParser";
-import Instructions from "./Instructions";
-import DamageDone from "./sections/DamageDone";
+import Dropzone from './Dropzone';
+import { Fight, parseFileContent } from './FileParser';
+import Instructions from './Instructions';
+import DamageDone from './sections/DamageDone';
+import { Tabs, Tab } from '@mui/material';
+import {DamageMaxMeHitsplats, DamageMeHitsplats} from "./HitsplatNames";
 
 function App() {
-
     const [parsedResult, setParsedResult] = useState<Fight[] | null>(null);
     const [selectedLogs, setSelectedLogs] = useState<Fight | null>(null);
+    const [selectedTab, setSelectedTab] = useState<string>('DamageDone');
 
     function setAllLogs(result: Fight[]) {
         let allLogs: Fight = {
             data: [],
-            name: "All"
+            name: 'All',
         };
 
         result.forEach((fight) => {
@@ -42,12 +44,16 @@ function App() {
         }
     };
 
+    const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
+        setSelectedTab(newValue);
+    };
+
     if (!parsedResult) {
         return (
             <div className="App">
                 <header className="App-header">
-                    <Instructions/>
-                    <Dropzone onParse={handleParse}/>
+                    <Instructions />
+                    <Dropzone onParse={handleParse} />
                 </header>
             </div>
         );
@@ -69,7 +75,59 @@ function App() {
                             </option>
                         ))}
                 </select>
-                <DamageDone selectedLogs={selectedLogs!} handleDropdownChange={handleDropdownChange}/>
+
+                <Tabs
+                    value={selectedTab}
+                    onChange={handleTabChange}
+                    indicatorColor="primary"
+                    textColor="primary"
+                >
+                    <Tab
+                        label="Damage Done"
+                        value="DamageDone"
+                        style={{
+                            color: selectedTab === 'DamageDone' ? 'lightblue' : 'white',
+                        }}
+                    />
+                    <Tab
+                        label="Damage Taken"
+                        value="DamageTaken"
+                        style={{
+                            color: selectedTab === 'DamageTaken' ? 'lightblue' : 'white',
+                        }}
+                    />
+                </Tabs>
+
+                {selectedTab === 'DamageDone' && (
+                    <DamageDone
+                        selectedLogs={{
+                            ...selectedLogs!,
+                            data: selectedLogs?.data.filter(
+                                (log) =>
+                                    (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
+                                        Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!) ||
+                                        log.hitsplatName === 'BLOCK_ME') &&
+                                    log.target === selectedLogs.name
+                            )!,
+                        }}
+                        handleDropdownChange={handleDropdownChange}
+                    />
+                )}
+                {selectedTab === 'DamageTaken' && (
+                    <DamageDone
+                        selectedLogs={{
+                            ...selectedLogs!,
+                            data: selectedLogs?.data.filter(
+                                (log) =>
+                                    (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
+                                        Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!) ||
+                                        log.hitsplatName === 'BLOCK_ME') &&
+                                    log.target === "Million Pies"
+                            )!,
+                        }}
+                        handleDropdownChange={handleDropdownChange}
+                    />
+                )}
             </header>
         </div>
     );

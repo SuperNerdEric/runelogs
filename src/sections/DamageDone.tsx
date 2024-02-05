@@ -14,15 +14,6 @@ interface LogsSelectionProps {
 const DamageDone: React.FC<LogsSelectionProps> = ({ selectedLogs, handleDropdownChange }) => {
     const [dps, setDPS] = useState<number>(0);
 
-    const filteredData = selectedLogs.data.filter(
-        (log) =>
-            (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
-                Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!) ||
-                log.hitsplatName === 'BLOCK_ME') &&
-            log.target === selectedLogs.name
-    );
-    selectedLogs.data = filteredData;
-
     useEffect(() => {
         setDPS(calculateDPS(selectedLogs));
     }, [selectedLogs]);
@@ -30,7 +21,7 @@ const DamageDone: React.FC<LogsSelectionProps> = ({ selectedLogs, handleDropdown
 
     return (
         <div>
-            {filteredData && (
+            {selectedLogs && (
                 <div className="logs-container">
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400' }}>
                         <HitDistributionChart fight={selectedLogs} />
