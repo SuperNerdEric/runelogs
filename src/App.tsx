@@ -2,16 +2,13 @@ import React, {useState} from 'react';
 import './App.css';
 import Dropzone from "./Dropzone";
 import {Fight, parseFileContent} from "./FileParser";
-import HitDistributionChart from "./charts/HitDistributionChart";
-import EventsTable from "./EventsTable";
-import {calculateDPS} from "./CalculateDPS";
 import Instructions from "./Instructions";
+import DamageDone from "./sections/DamageDone";
 
 function App() {
 
     const [parsedResult, setParsedResult] = useState<Fight[] | null>(null);
     const [selectedLogs, setSelectedLogs] = useState<Fight | null>(null);
-    const [dps, setDPS] = useState<number>(0);
 
     function setAllLogs(result: Fight[]) {
         let allLogs: Fight = {
@@ -24,7 +21,6 @@ function App() {
         });
 
         setSelectedLogs(allLogs);
-        setDPS(calculateDPS(allLogs));
     }
 
     const handleParse = (fileContent: string) => {
@@ -43,7 +39,6 @@ function App() {
         } else {
             const selectedLog = parsedResult?.[index]!;
             setSelectedLogs(selectedLog);
-            setDPS(calculateDPS(selectedLog));
         }
     };
 
@@ -71,18 +66,7 @@ function App() {
                             </option>
                         ))}
                 </select>
-
-                {selectedLogs && (
-                    <div className="logs-container">
-                        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400'}}>
-                            <HitDistributionChart fight={selectedLogs}/>
-                        </div>
-
-                        <p>DPS: {dps.toFixed(3)}</p>
-                        <h2>Events:</h2>
-                        <EventsTable logs={selectedLogs.data}/>
-                    </div>
-                )}
+                <DamageDone selectedLogs={selectedLogs!} handleDropdownChange={handleDropdownChange}/>
             </header>
         </div>
     );

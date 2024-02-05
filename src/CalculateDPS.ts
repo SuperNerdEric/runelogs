@@ -15,14 +15,7 @@ export function calculateDPS(fight: Fight): number {
     // Calculate the time difference in seconds
     const timeDiffInSeconds = (endDate.getTime() - startDate.getTime()) / 1000;
 
-    const damageLogs = fight.data.filter(
-        (log) =>
-            (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
-                Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!)) &&
-            log.target === fight.name
-    );
-
-    const totalDamage = damageLogs.reduce(
+    const totalDamage = fight.data.reduce(
         (sum, log) => sum + (log.damageAmount || 0),
         0
     );

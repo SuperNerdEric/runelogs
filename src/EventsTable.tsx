@@ -13,11 +13,9 @@ const EventsTable: React.FC<EventsTableProps> = ({ logs }) => {
                 <tr>
                     <th style={cellStyle}>Date</th>
                     <th style={cellStyle}>Time</th>
-                    <th style={cellStyle}>Timezone</th>
                     <th style={cellStyle}>Target</th>
                     <th style={cellStyle}>HitsplatName</th>
                     <th style={cellStyle}>DamageAmount</th>
-                    <th style={cellStyle}>Source</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -25,11 +23,9 @@ const EventsTable: React.FC<EventsTableProps> = ({ logs }) => {
                     <tr key={index}>
                         <td style={cellStyle}>{log.date}</td>
                         <td style={cellStyle}>{log.time}</td>
-                        <td style={cellStyle}>{log.timezone}</td>
                         <td style={cellStyle}>{log.target}</td>
                         <td style={cellStyle}>{log.hitsplatName}</td>
                         <td style={cellStyle}>{log.damageAmount}</td>
-                        <td style={cellStyle}>{log.source}</td>
                     </tr>
                 ))}
                 </tbody>

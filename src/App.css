@@ -65,3 +65,8 @@
 .instructions-container code {
   color: yellow;
 }
+
+.events-table-container {
+  width: 110%;
+  max-width: 1300px;
+}

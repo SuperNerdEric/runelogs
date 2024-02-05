@@ -1,8 +1,6 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Fight } from '../FileParser';
-import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
-
 interface HitDistributionChartProps {
     fight: Fight;
 }
@@ -35,14 +33,7 @@ const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
 };
 
 const HitDistributionChart: React.FC<HitDistributionChartProps> = ({ fight }) => {
-    const filteredData = fight.data.filter(
-        (log) =>
-            (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
-                Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!)) &&
-            log.target === fight.name
-    );
-
-    const hitsplatAmounts = filteredData.map((log) => log.damageAmount || 0);
+    const hitsplatAmounts = fight.data.map((log) => log.damageAmount || 0);
 
     const data = hitsplatAmounts.reduce((acc, amount) => {
         acc[amount] = (acc[amount] || 0) + 1;
@@ -67,7 +58,7 @@ const HitDistributionChart: React.FC<HitDistributionChartProps> = ({ fight }) =>
                 <YAxis
                     dataKey="frequency"
                     label={{
-                        value: 'frequency', position: 'insideLeft', angle: -90, offset: -30, style: { textAnchor: 'middle' },
+                        value: 'Frequency', position: 'insideLeft', angle: -90, offset: -30, style: { textAnchor: 'middle' },
                     }}
                 />
                 <Tooltip
