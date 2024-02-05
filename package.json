@@ -1,7 +1,7 @@
 {
   "name": "runelogs",
   "version": "0.1.0",
-  "homepage": "https://runelogs.com",
+  "homepage": "https://supernerderic.github.io/runelogs/",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
