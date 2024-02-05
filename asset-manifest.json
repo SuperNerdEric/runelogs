@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/runelogs/static/css/main.f855e6bc.css",
-    "main.js": "/runelogs/static/js/main.d2e3ed40.js",
-    "static/js/592.cb0fcaba.chunk.js": "/runelogs/static/js/592.cb0fcaba.chunk.js",
-    "index.html": "/runelogs/index.html",
-    "main.f855e6bc.css.map": "/runelogs/static/css/main.f855e6bc.css.map",
-    "main.d2e3ed40.js.map": "/runelogs/static/js/main.d2e3ed40.js.map",
-    "592.cb0fcaba.chunk.js.map": "/runelogs/static/js/592.cb0fcaba.chunk.js.map"
+    "main.css": "/static/css/main.f855e6bc.css",
+    "main.js": "/static/js/main.05473e14.js",
+    "static/js/592.cb0fcaba.chunk.js": "/static/js/592.cb0fcaba.chunk.js",
+    "index.html": "/index.html",
+    "main.f855e6bc.css.map": "/static/css/main.f855e6bc.css.map",
+    "main.05473e14.js.map": "/static/js/main.05473e14.js.map",
+    "592.cb0fcaba.chunk.js.map": "/static/js/592.cb0fcaba.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.f855e6bc.css",
-    "static/js/main.d2e3ed40.js"
+    "static/js/main.05473e14.js"
   ]
 }
