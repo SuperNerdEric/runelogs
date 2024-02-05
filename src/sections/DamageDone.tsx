@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Fight} from "../FileParser";
 import HitDistributionChart from "../charts/HitDistributionChart";
 import EventsTable from "../EventsTable";
-import {DamageMaxMeHitsplats, DamageMeHitsplats, HitsplatNames} from "../HitsplatNames";
+import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
 import {calculateDPS} from "../CalculateDPS";
 import DPSChart from "../charts/DPSChart";
 
@@ -40,7 +40,6 @@ const DamageDone: React.FC<LogsSelectionProps> = ({ selectedLogs, handleDropdown
                     </div>
 
                     <p>DPS: {dps.toFixed(3)}</p>
-                    <h2></h2>
                     <div className="events-table-container">
                         <EventsTable logs={selectedLogs.data} />
                     </div>
