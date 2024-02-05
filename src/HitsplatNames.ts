@@ -1,0 +1,39 @@
+export enum HitsplatNames {
+    POISON = 2,
+    DISEASE = 4,
+    VENOM = 5,
+    HEAL = 6,
+    BLOCK_ME = 12,
+    BLOCK_OTHER = 13,
+    DAMAGE_ME = 16,
+    DAMAGE_OTHER = 17,
+    DAMAGE_ME_CYAN = 18,
+    DAMAGE_OTHER_CYAN = 19,
+    DAMAGE_ME_ORANGE = 20,
+    DAMAGE_OTHER_ORANGE = 21,
+    DAMAGE_ME_YELLOW = 22,
+    DAMAGE_OTHER_YELLOW = 23,
+    DAMAGE_ME_WHITE = 24,
+    DAMAGE_OTHER_WHITE = 25,
+    DAMAGE_MAX_ME = 43,
+    DAMAGE_MAX_ME_CYAN = 44,
+    DAMAGE_MAX_ME_ORANGE = 45,
+    DAMAGE_MAX_ME_YELLOW = 46,
+    DAMAGE_MAX_ME_WHITE = 47,
+}
+
+export enum DamageMeHitsplats {
+    DAMAGE_ME = HitsplatNames.DAMAGE_ME,
+    DAMAGE_ME_CYAN = HitsplatNames.DAMAGE_ME_CYAN,
+    DAMAGE_ME_ORANGE = HitsplatNames.DAMAGE_ME_ORANGE,
+    DAMAGE_ME_YELLOW = HitsplatNames.DAMAGE_ME_YELLOW,
+    DAMAGE_ME_WHITE = HitsplatNames.DAMAGE_ME_WHITE,
+}
+
+export enum DamageMaxMeHitsplats {
+    DAMAGE_MAX_ME = HitsplatNames.DAMAGE_MAX_ME,
+    DAMAGE_MAX_ME_CYAN = HitsplatNames.DAMAGE_MAX_ME_CYAN,
+    DAMAGE_MAX_ME_ORANGE = HitsplatNames.DAMAGE_MAX_ME_ORANGE,
+    DAMAGE_MAX_ME_YELLOW = HitsplatNames.DAMAGE_MAX_ME_YELLOW,
+    DAMAGE_MAX_ME_WHITE = HitsplatNames.DAMAGE_MAX_ME_WHITE,
+}

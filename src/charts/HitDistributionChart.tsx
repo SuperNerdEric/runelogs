@@ -1,6 +1,7 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Fight } from '../FileParser';
+import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
 
 interface HitDistributionChartProps {
     fight: Fight;
@@ -35,7 +36,10 @@ const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
 
 const HitDistributionChart: React.FC<HitDistributionChartProps> = ({ fight }) => {
     const filteredData = fight.data.filter(
-        (log) => log.hitsplatName === 'DAMAGE_ME' || log.hitsplatName === 'DAMAGE_MAX_ME'
+        (log) =>
+            (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
+                Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!)) &&
+            log.target === fight.name
     );
 
     const hitsplatAmounts = filteredData.map((log) => log.damageAmount || 0);
