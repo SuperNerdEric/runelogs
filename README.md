@@ -1,6 +1,8 @@
-# Getting Started with Create React App
+# Runelogs
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Combat analysis for Oldschool RuneScape
+
+Hosted on https://supernerderic.github.io/runelogs/
 
 ## Available Scripts
 
