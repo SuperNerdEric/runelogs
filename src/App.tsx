@@ -57,7 +57,10 @@ function App() {
         <div className="App">
             <header className="App-header">
                 <label>Select Logs:</label>
-                <select onChange={(e) => handleDropdownChange(parseInt(e.target.value))}>
+                <select
+                    style={{ width: '200px', padding: '5px', fontSize: '15px' }}
+                    onChange={(e) => handleDropdownChange(parseInt(e.target.value))}
+                >
                     <option value="-1">All</option>
                     {parsedResult &&
                         parsedResult.map((logs, index) => (
