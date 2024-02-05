@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {Fight} from "../FileParser";
 import HitDistributionChart from "../charts/HitDistributionChart";
 import EventsTable from "../EventsTable";
-import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
 import {calculateDPS} from "../CalculateDPS";
 import DPSChart from "../charts/DPSChart";
 
