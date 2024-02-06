@@ -1,4 +1,4 @@
-import { Fight, LogLine } from "./FileParser";
+import {Fight, LogLine} from "./FileParser";
 import {DamageMaxMeHitsplats, DamageMeHitsplats} from "./HitsplatNames";
 import {PLAYER_NAME} from "./components/App";
 import {convertTimeToMillis} from "./components/charts/DPSChart";
@@ -30,12 +30,17 @@ export function logSplitter(fightData: LogLine[]): Fight[] {
         if (!currentFight && doesAttemptDamage(logLine) && logLine.target !== PLAYER_NAME) {
             currentFight = {
                 name: logLine.target,
+                enemies: [logLine.target],
                 data: [logLine],
             };
-        } else if(currentFight) {
+        } else if (currentFight) {
             // Rename the fight if we encounter a boss in the middle of it
-            if(BOSS_NAMES.includes(logLine.target) && currentFight.name !== logLine.target){
+            if (BOSS_NAMES.includes(logLine.target) && currentFight.name !== logLine.target) {
                 currentFight.name = logLine.target;
+            }
+            // Add target to list of enemies
+            if (doesAttemptDamage(logLine) && logLine.target !== PLAYER_NAME && !currentFight.enemies.includes(logLine.target)) {
+                currentFight.enemies.push(logLine.target);
             }
             currentFight.data.push(logLine);
         }
@@ -49,7 +54,7 @@ export function logSplitter(fightData: LogLine[]): Fight[] {
         }
     }
 
-    if(currentFight){
+    if (currentFight) {
         fights.push(currentFight);
     }
 

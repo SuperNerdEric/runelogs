@@ -44,6 +44,7 @@ function App() {
         let allLogs: Fight = {
             data: [],
             name: 'All',
+            enemies: [] // todo this is problematic
         };
 
         result.forEach((fight) => {
@@ -186,7 +187,7 @@ function App() {
                                         (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
                                             Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!) ||
                                             Object.values(DamageOtherHitsplats).includes(log.hitsplatName!)) &&
-                                        log.target === selectedLogs?.name // todo include all of the names of monsters that I fight, not the fight name (also be careful not to include damage other players take because they don't match my name)
+                                        selectedLogs.enemies.includes(log.target)
                                 )!,
                             }}
                             handleDropdownChange={handleDropdownChange}

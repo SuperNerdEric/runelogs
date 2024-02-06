@@ -3,6 +3,7 @@ import {logSplitter} from "./LogSplitter";
 export interface Fight {
     name: string;
     data: LogLine[];
+    enemies: string[];
 }
 
 export interface LogLine {
