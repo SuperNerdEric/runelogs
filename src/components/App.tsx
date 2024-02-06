@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import '../App.css';
 import Dropzone from './Dropzone';
 import {Fight, LogLine, parseFileContent} from '../FileParser';
 import DamageDone from './sections/DamageDone';
-import { Tabs, Tab } from '@mui/material';
-import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
+import {Tab, Tabs} from '@mui/material';
+import {DamageMaxMeHitsplats, DamageMeHitsplats, DamageOtherHitsplats} from "../HitsplatNames";
 import EventsTable from './EventsTable';
 import Instructions from "./Instructions";
 import {convertTimeToMillis} from "./charts/DPSChart";
+import GroupDamagePieChart from "./charts/GroupDamagePieChart";
 
 export const PLAYER_NAME = "Million Pies";
 
@@ -27,6 +28,7 @@ function App() {
 
         return endTime - startTime;
     };
+
     function getFightDuration(selectedLog: Fight) {
         const fightDurationMilliseconds = calculateFightDuration(selectedLog!.data);
         const duration = new Date(Date.UTC(0, 0, 0, 0, 0, 0, fightDurationMilliseconds));
@@ -82,8 +84,8 @@ function App() {
         return (
             <div className="App">
                 <header className="App-header">
-                    <Instructions />
-                    <Dropzone onParse={handleParse} />
+                    <Instructions/>
+                    <Dropzone onParse={handleParse}/>
                 </header>
             </div>
         );
@@ -94,7 +96,7 @@ function App() {
             <header className="App-header">
                 <label>Select Logs:</label>
                 <select
-                    style={{ width: '200px', padding: '5px', fontSize: '15px' }}
+                    style={{width: '200px', padding: '5px', fontSize: '15px'}}
                     onChange={(e) => handleDropdownChange(parseInt(e.target.value))}
                 >
                     <option value="-1">All</option>
@@ -113,7 +115,7 @@ function App() {
                     textColor="primary"
                 >
                     <Tab
-                        label="Damage Done"
+                        label="My Damage"
                         value="DamageDone"
                         style={{
                             color: selectedTab === 'DamageDone' ? 'lightblue' : 'white',
@@ -122,6 +124,13 @@ function App() {
                     <Tab
                         label="Damage Taken"
                         value="DamageTaken"
+                        style={{
+                            color: selectedTab === 'DamageTaken' ? 'lightblue' : 'white',
+                        }}
+                    />
+                    <Tab
+                        label="Group Damage"
+                        value="GroupDamage"
                         style={{
                             color: selectedTab === 'DamageTaken' ? 'lightblue' : 'white',
                         }}
@@ -145,8 +154,7 @@ function App() {
                             data: selectedLogs?.data.filter(
                                 (log) =>
                                     (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
-                                        Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!) ||
-                                        log.hitsplatName === 'BLOCK_ME') &&
+                                        Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!)) &&
                                     log.target !== PLAYER_NAME
                             )!,
                         }}
@@ -160,13 +168,30 @@ function App() {
                             data: selectedLogs?.data.filter(
                                 (log) =>
                                     (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
-                                        Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!) ||
-                                        log.hitsplatName === 'BLOCK_ME') &&
+                                        Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!)) &&
                                     log.target === PLAYER_NAME
                             )!,
                         }}
                         handleDropdownChange={handleDropdownChange}
                     />
+                )}
+                {selectedTab === 'GroupDamage' && (
+                    <div>
+                        <GroupDamagePieChart selectedLogs={selectedLogs!}/>
+                        <DamageDone
+                            selectedLogs={{
+                                ...selectedLogs!,
+                                data: selectedLogs?.data.filter(
+                                    (log) =>
+                                        (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
+                                            Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!) ||
+                                            Object.values(DamageOtherHitsplats).includes(log.hitsplatName!)) &&
+                                        log.target === selectedLogs?.name // todo include all of the names of monsters that I fight, not the fight name (also be careful not to include damage other players take because they don't match my name)
+                                )!,
+                            }}
+                            handleDropdownChange={handleDropdownChange}
+                        />
+                    </div>
                 )}
                 {selectedTab === 'Events' && (
                     <EventsTable logs={selectedLogs?.data || []} height={"80vh"} showSource={true}/>

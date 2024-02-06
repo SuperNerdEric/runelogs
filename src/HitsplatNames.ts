@@ -23,6 +23,7 @@ export enum HitsplatNames {
 }
 
 export enum DamageMeHitsplats {
+    BLOCK_ME = HitsplatNames.BLOCK_ME,
     DAMAGE_ME = HitsplatNames.DAMAGE_ME,
     DAMAGE_ME_CYAN = HitsplatNames.DAMAGE_ME_CYAN,
     DAMAGE_ME_ORANGE = HitsplatNames.DAMAGE_ME_ORANGE,
@@ -36,4 +37,13 @@ export enum DamageMaxMeHitsplats {
     DAMAGE_MAX_ME_ORANGE = HitsplatNames.DAMAGE_MAX_ME_ORANGE,
     DAMAGE_MAX_ME_YELLOW = HitsplatNames.DAMAGE_MAX_ME_YELLOW,
     DAMAGE_MAX_ME_WHITE = HitsplatNames.DAMAGE_MAX_ME_WHITE,
+}
+
+export enum DamageOtherHitsplats {
+    BLOCK_OTHER = HitsplatNames.BLOCK_OTHER,
+    DAMAGE_OTHER = HitsplatNames.DAMAGE_OTHER,
+    DAMAGE_OTHER_CYAN = HitsplatNames.DAMAGE_OTHER_CYAN,
+    DAMAGE_OTHER_ORANGE = HitsplatNames.DAMAGE_OTHER_ORANGE,
+    DAMAGE_OTHER_YELLOW = HitsplatNames.DAMAGE_OTHER_YELLOW,
+    DAMAGE_OTHER_WHITE = HitsplatNames.DAMAGE_OTHER_WHITE,
 }

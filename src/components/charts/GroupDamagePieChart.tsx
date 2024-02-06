@@ -1,0 +1,88 @@
+import React from 'react';
+import {PieChart, Pie, Tooltip, Cell, ResponsiveContainer} from 'recharts';
+import {Fight} from '../../FileParser';
+import {DamageMaxMeHitsplats, DamageMeHitsplats, DamageOtherHitsplats} from "../../HitsplatNames";
+import {PLAYER_NAME} from "../App";
+
+interface GroupDamagePieChartProps {
+    selectedLogs: Fight;
+}
+
+const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+        return (
+            <div
+                style={{
+                    background: 'white',
+                    color: 'black',
+                    padding: '1px',
+                    border: '1px solid #ccc',
+                    borderRadius: '1px',
+                }}
+            >
+                <p style={{ margin: '0' }}>
+                    <strong>{label}</strong>
+                </p>
+                {payload.map((entry: any, index: any) => (
+                    <p key={`tooltip-entry-${index}`} style={{ margin: '0' }}>
+                        {entry.name}: {entry.value}
+                    </p>
+                ))}
+            </div>
+        );
+    }
+
+    return null;
+};
+
+const GroupDamagePieChart: React.FC<GroupDamagePieChartProps> = ({ selectedLogs }) => {
+    const calculateDamageByMeAndOthers = () => {
+        let damageByMe = 0;
+        let damageByOthers = 0;
+
+        selectedLogs.data.forEach((log) => {
+            if ((Object.values(DamageMeHitsplats).includes(log.hitsplatName!) || Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!))) {
+                damageByMe += log.damageAmount || 0;
+            } else if(Object.values(DamageOtherHitsplats).includes(log.hitsplatName!)) {
+                damageByOthers += log.damageAmount || 0;
+            }
+        });
+
+        return { damageByMe, damageByOthers };
+    };
+
+    const { damageByMe, damageByOthers } = calculateDamageByMeAndOthers();
+
+    const data = [
+        { name: PLAYER_NAME, value: damageByMe },
+        { name: 'Others', value: damageByOthers },
+    ];
+
+    const COLORS = ['tan', 'grey'];
+
+    return (
+        <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+                <Pie
+                    data={data}
+                    dataKey="value"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    fill="#8884d8"
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                >
+                    {data.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                </Pie>
+                <Tooltip
+                    content={(props) => <CustomTooltip {...props} />}
+                    cursor={{ fill: '#3c3226' }}
+                />
+            </PieChart>
+        </ResponsiveContainer>
+    );
+};
+
+export default GroupDamagePieChart;
