@@ -3,14 +3,19 @@ import {logSplitter} from "../LogSplitter";
 
 
 describe("logSplitter", () => {
-    const generateDamage = (target: string, damageAmount: number): LogLine => ({
-        date: "02-04-2024",
-        time: new Date().toLocaleTimeString(),
-        timezone: "",
-        target,
-        damageAmount,
-        hitsplatName: "DAMAGE_ME",
-    });
+    const generateDamage = (target: string, damageAmount: number, time?: Date): LogLine => {
+        const currentTime = time || new Date();
+        const formattedTime = `${currentTime.getUTCHours()}:${currentTime.getUTCMinutes()}:${currentTime.getUTCSeconds()}.${currentTime.getUTCMilliseconds()}`;
+
+        return {
+            date: "02-04-2024",  // You might want to update this as well
+            time: formattedTime,
+            timezone: "",
+            target,
+            damageAmount,
+            hitsplatName: "DAMAGE_ME",
+        };
+    };
 
     const generatedeath = (target: string): LogLine => ({
         date: "02-04-2024",
@@ -81,5 +86,18 @@ describe("logSplitter", () => {
 
         expect(result.length).toBe(1);
         expect(result[0].name).toBe("Scurrius");
+    });
+
+    it("should split fights if there is a gap of over 60 seconds", () => {
+        const fightData: LogLine[] = [
+            generateDamage("Scurrius", 1),
+            generateDamage("Scurrius", 2, new Date( new Date().getTime() + 90 * 1000)),
+            generatedeath("Scurrius"),
+        ];
+
+        const result: Fight[] = logSplitter(fightData);
+
+        expect(result.length).toBe(2);
+        expect(result[0].name).toBe("Scurrius - Incomplete");
     });
 });
