@@ -48,6 +48,20 @@ describe('parseLogLine', () => {
         expect(parsedData).toEqual(expectedParsedData);
     });
 
+    test('should parse a player logged in log line', () => {
+        const logLine = '02-06-2024 15:55:30.219 CST\tLogged in player is Million Pies';
+        const expectedParsedData: LogLine = {
+            date: '02-06-2024',
+            time: '15:55:30.219',
+            timezone: 'CST',
+            loggedInPlayer: "Million Pies",
+        };
+
+        const parsedData = parseLogLine(logLine);
+
+        expect(parsedData).toEqual(expectedParsedData);
+    });
+
     test('should return null for an invalid log line', () => {
         const invalidLogLine = 'Invalid log line';
         const parsedData = parseLogLine(invalidLogLine);

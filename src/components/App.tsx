@@ -10,8 +10,6 @@ import Instructions from "./Instructions";
 import {convertTimeToMillis} from "./charts/DPSChart";
 import GroupDamagePieChart from "./charts/GroupDamagePieChart";
 
-export const PLAYER_NAME = "Million Pies";
-
 function App() {
     const [parsedResult, setParsedResult] = useState<Fight[] | null>(null);
     const [selectedLogs, setSelectedLogs] = useState<Fight | null>(null);
@@ -44,7 +42,8 @@ function App() {
         let allLogs: Fight = {
             data: [],
             name: 'All',
-            enemies: [] // todo this is problematic
+            enemies: [], // todo this is problematic
+            loggedInPlayer: "", // todo this is problematic
         };
 
         result.forEach((fight) => {
@@ -156,7 +155,7 @@ function App() {
                                 (log) =>
                                     (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
                                         Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!)) &&
-                                    log.target !== PLAYER_NAME
+                                    log.target !== selectedLogs?.loggedInPlayer
                             )!,
                         }}
                         handleDropdownChange={handleDropdownChange}
@@ -170,7 +169,7 @@ function App() {
                                 (log) =>
                                     (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
                                         Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!)) &&
-                                    log.target === PLAYER_NAME
+                                    log.target === selectedLogs?.loggedInPlayer
                             )!,
                         }}
                         handleDropdownChange={handleDropdownChange}
@@ -187,7 +186,7 @@ function App() {
                                         (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
                                             Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!) ||
                                             Object.values(DamageOtherHitsplats).includes(log.hitsplatName!)) &&
-                                        selectedLogs.enemies.includes(log.target)
+                                        selectedLogs.enemies.includes(log.target!)
                                 )!,
                             }}
                             handleDropdownChange={handleDropdownChange}

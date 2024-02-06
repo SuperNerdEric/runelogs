@@ -4,13 +4,16 @@ export interface Fight {
     name: string;
     data: LogLine[];
     enemies: string[];
+    loggedInPlayer: string;
 }
 
 export interface LogLine {
     date: string;
     time: string;
     timezone: string;
-    target: string;
+    target?: string;
+    loggedInPlayer?: string;
+    logVersion?: string;
     hitsplatName?: string;
     damageAmount?: number;
     source?: string;
@@ -32,6 +35,31 @@ export const parseLogLine = (logLine: string): LogLine | null => {
         return null;
     }
     const [, date, time, timezone, action] = match;
+
+
+    const logVersionPattern = new RegExp(`Log Version (${ANYTHING_PATTERN})`)
+    match = action.match(logVersionPattern);
+    if(match) {
+        const [, logVersion] = match;
+        console.log(`Log Version ${logVersion}`);
+        return {
+            date,
+            time,
+            timezone,
+            logVersion
+        };
+    }
+    const loggedInPlayerPattern = new RegExp(`Logged in player is (${ANYTHING_PATTERN})`)
+    match = action.match(loggedInPlayerPattern);
+    if(match) {
+        const [, loggedInPlayer] = match;
+        return {
+            date,
+            time,
+            timezone,
+            loggedInPlayer
+        };
+    }
 
     const diesPattern = new RegExp(`^(${ANYTHING_PATTERN}) dies`)
     match = action.match(diesPattern);
@@ -69,7 +97,6 @@ export const parseLogLine = (logLine: string): LogLine | null => {
         return null;
     }
     const [, target, hitsplatName, damageAmount] = match;
-
 
     return {
         date,

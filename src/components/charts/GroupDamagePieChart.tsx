@@ -2,7 +2,6 @@ import React from 'react';
 import {PieChart, Pie, Tooltip, Cell, ResponsiveContainer} from 'recharts';
 import {Fight} from '../../FileParser';
 import {DamageMaxMeHitsplats, DamageMeHitsplats, DamageOtherHitsplats} from "../../HitsplatNames";
-import {PLAYER_NAME} from "../App";
 
 interface GroupDamagePieChartProps {
     selectedLogs: Fight;
@@ -54,7 +53,7 @@ const GroupDamagePieChart: React.FC<GroupDamagePieChartProps> = ({ selectedLogs 
     const { damageByMe, damageByOthers } = calculateDamageByMeAndOthers();
 
     const data = [
-        { name: PLAYER_NAME, value: damageByMe },
+        { name: selectedLogs.loggedInPlayer, value: damageByMe },
         { name: 'Others', value: damageByOthers },
     ];
 
