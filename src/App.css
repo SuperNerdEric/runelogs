@@ -13,7 +13,7 @@
   }
 }
 
-.App-header {
+.App-body {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
@@ -22,6 +22,7 @@
   justify-content: flex-start;
   font-size: calc(10px + 2vmin);
   color: white;
+  width: 100%;
 }
 
 .App-link {
@@ -37,11 +38,16 @@
   }
 }
 
-
 .instructions-container {
   text-align: left;
   max-width: 800px;
   margin: 20px auto 0;
+}
+
+@media (max-width: 800px) {
+  .instructions-container {
+    max-width: 90%;
+  }
 }
 
 .instructions-container h3 {
@@ -66,7 +72,42 @@
   color: yellow;
 }
 
-.events-table-container {
-  width: 110%;
-  max-width: 1300px;
+.damage-done-container {
+  text-align: center;
+  width: 1000px;
+  margin: 20px auto 0;
+}
+
+@media (max-width: 1050px) {
+  .damage-done-container {
+    text-align: center;
+    width: 80vw;
+    margin: 20px auto 0;
+  }
+}
+
+.logs-box {
+  color: white;
+  width: 1300px;
+}
+
+@media (max-width: 1350px) {
+  .logs-box {
+    max-width: 95vw;
+  }
+}
+
+.logs-box table {
+  border-collapse: collapse;
+}
+
+.logs-box th,
+.logs-box td {
+  border: 1px solid white;
+  padding: calc(1px + 0.8vmin);
+  color: white;
+  font-size: calc(2px + 2vmin);
+  text-align: center;
+  whiteSpace: 'normal';
+  wordWrap: 'break-word';
 }

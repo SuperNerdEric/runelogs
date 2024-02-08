@@ -83,7 +83,7 @@ function App() {
     if (!parsedResult) {
         return (
             <div className="App">
-                <header className="App-header">
+                <header className="App-body">
                     <Instructions/>
                     <Dropzone onParse={handleParse}/>
                 </header>
@@ -93,7 +93,7 @@ function App() {
 
     return (
         <div className="App">
-            <header className="App-header">
+            <header className="App-body">
                 <label>Select Logs:</label>
                 <select
                     style={{width: '200px', padding: '5px', fontSize: '15px'}}
@@ -113,6 +113,7 @@ function App() {
                     onChange={handleTabChange}
                     indicatorColor="primary"
                     textColor="primary"
+                    variant="fullWidth" // Maybe should be scrollable for mobile as we add more?
                 >
                     <Tab
                         label="My Damage"
@@ -132,7 +133,7 @@ function App() {
                         label="Group Damage"
                         value="GroupDamage"
                         style={{
-                            color: selectedTab === 'DamageTaken' ? 'lightblue' : 'white',
+                            color: selectedTab === 'GroupDamage' ? 'lightblue' : 'white',
                         }}
                     />
                     <Tab
@@ -177,7 +178,9 @@ function App() {
                 )}
                 {selectedTab === 'GroupDamage' && (
                     <div>
-                        <GroupDamagePieChart selectedLogs={selectedLogs!}/>
+                        <div className="damage-done-container">
+                            <GroupDamagePieChart selectedLogs={selectedLogs!}/>
+                        </div>
                         <DamageDone
                             selectedLogs={{
                                 ...selectedLogs!,

@@ -46,7 +46,7 @@ const HitDistributionChart: React.FC<HitDistributionChartProps> = ({ fight }) =>
     }));
 
     return (
-        <ResponsiveContainer width={1000} height={300}>
+        <ResponsiveContainer width="100%" height={300}>
             <BarChart
                 data={chartData}
                 margin={{ top: 11, left: 50, bottom: 50 }}

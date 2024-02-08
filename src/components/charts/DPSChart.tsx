@@ -82,7 +82,7 @@ const DPSChart: React.FC<DPSChartProps> = ({ fight }) => {
     const tickInterval = Math.ceil(dpsData.length / 5);
 
     return (
-        <ResponsiveContainer width={1000} height={300}>
+        <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={dpsData} margin={{ top: 11, left: 50, bottom: 50 }}>
                 <XAxis
                     dataKey="timestamp"
