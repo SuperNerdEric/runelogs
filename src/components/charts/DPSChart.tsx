@@ -83,7 +83,7 @@ const DPSChart: React.FC<DPSChartProps> = ({ fight }) => {
 
     return (
         <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={dpsData} margin={{ top: 11, left: 50, bottom: 50 }}>
+            <AreaChart data={dpsData} margin={{ top: 11, left: 60, bottom: 50 }}>
                 <XAxis
                     dataKey="timestamp"
                     tickFormatter={(tick, index) =>
@@ -97,9 +97,10 @@ const DPSChart: React.FC<DPSChartProps> = ({ fight }) => {
                         value: 'DPS',
                         position: 'insideLeft',
                         angle: -90,
-                        offset: -30,
+                        offset: -40,
                         style: { textAnchor: 'middle' },
                     }}
+                    width={35}
                     tickFormatter={(tick) => (tick !== 0 ? tick : '')}
                 />
                 <Tooltip content={(props) => <CustomTooltip {...props} />} cursor={{ fill: '#3c3226' }} />

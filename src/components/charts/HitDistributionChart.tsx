@@ -47,10 +47,7 @@ const HitDistributionChart: React.FC<HitDistributionChartProps> = ({ fight }) =>
 
     return (
         <ResponsiveContainer width="100%" height={300}>
-            <BarChart
-                data={chartData}
-                margin={{ top: 11, left: 50, bottom: 50 }}
-            >
+            <BarChart data={chartData} margin={{ top: 11, left: 60, bottom: 50 }}>
                 <XAxis
                     dataKey="hitsplatAmount"
                     label={{ value: 'Hitsplat', position: 'insideBottom', offset: -35 }}
@@ -58,8 +55,13 @@ const HitDistributionChart: React.FC<HitDistributionChartProps> = ({ fight }) =>
                 <YAxis
                     dataKey="frequency"
                     label={{
-                        value: 'Frequency', position: 'insideLeft', angle: -90, offset: -30, style: { textAnchor: 'middle' },
+                        value: 'Frequency',
+                        position: 'insideLeft',
+                        angle: -90,
+                        offset: -40,
+                        style: { textAnchor: 'middle' },
                     }}
+                    width={35}
                 />
                 <Tooltip
                     content={(props) => <CustomTooltip {...props} />}

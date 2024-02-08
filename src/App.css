@@ -81,7 +81,7 @@
 @media (max-width: 1050px) {
   .damage-done-container {
     text-align: center;
-    width: 80vw;
+    width: 95vw;
     margin: 20px auto 0;
   }
 }
@@ -110,4 +110,12 @@
   text-align: center;
   whiteSpace: 'normal';
   wordWrap: 'break-word';
+}
+
+.recharts-cartesian-axis .recharts-text {
+  font-size: calc(17px + 0.5vmin);
+}
+
+.recharts-cartesian-axis-ticks, #recharts_measurement_span {
+  @apply text-sm;
 }
