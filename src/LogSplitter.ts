@@ -16,16 +16,30 @@ export function logSplitter(fightData: LogLine[]): Fight[] {
     const fights: Fight[] = [];
     let currentFight: Fight | null = null;
     let player: string = ""; //todo support multiple players
+    let lastDamage: { time: string, index: number } | null = null;
 
     for (const logLine of fightData) {
-        if(logLine.loggedInPlayer) {
+        if (logLine.loggedInPlayer) {
             player = logLine.loggedInPlayer;
         }
+
         // If there's a gap of over 60 seconds end the fight
-        if (currentFight && convertTimeToMillis(logLine.time) - convertTimeToMillis(currentFight.data[currentFight.data.length - 1].time) > 60000) {
+        if (currentFight && lastDamage && convertTimeToMillis(logLine.time) - convertTimeToMillis(lastDamage.time) > 60000) {
+            currentFight.data = currentFight.data.filter((log, index) => index <= lastDamage!.index);
             currentFight.name += " - Incomplete";
             fights.push(currentFight);
             currentFight = null;
+            lastDamage = null;
+
+            // todo Right now I'm not supporting noncombat events at all
+            // But when I do I need to remember that any noncombat events after incomplete fight need to be carried forward to the next fight
+        }
+
+        if (currentFight && doesAttemptDamage(logLine)) {
+            lastDamage = {
+                time: logLine.time,
+                index: currentFight.data.length - 1
+            };
         }
 
         // If the current fight is null, start a new fight
@@ -50,7 +64,7 @@ export function logSplitter(fightData: LogLine[]): Fight[] {
 
         if (logLine.target && logLine.hitsplatName === "DEATH") {
             // If the fight name dies, end the current fight
-            if (currentFight && logLine.target === currentFight.name) {
+            if (currentFight && (logLine.target === currentFight.name || logLine.target === currentFight.loggedInPlayer)) {
                 fights.push(currentFight);
                 currentFight = null;
             }

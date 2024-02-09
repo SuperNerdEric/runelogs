@@ -16,6 +16,8 @@ export interface LogLine {
     logVersion?: string;
     hitsplatName?: string;
     damageAmount?: number;
+    boostedLevels?: string;
+    playerEquipment?: string;
     source?: string;
 }
 
@@ -58,6 +60,30 @@ export const parseLogLine = (logLine: string): LogLine | null => {
             time,
             timezone,
             loggedInPlayer
+        };
+    }
+
+    const boostedLevelsPattern = new RegExp(`Boosted levels are (${ANYTHING_PATTERN})`)
+    match = action.match(boostedLevelsPattern);
+    if(match) {
+        const [, boostedLevels] = match;
+        return {
+            date,
+            time,
+            timezone,
+            boostedLevels
+        };
+    }
+
+    const playerEquipmentPattern = new RegExp(`Player equipment is (${ANYTHING_PATTERN})`)
+    match = action.match(playerEquipmentPattern);
+    if(match) {
+        const [, playerEquipment] = match;
+        return {
+            date,
+            time,
+            timezone,
+            playerEquipment
         };
     }
 
