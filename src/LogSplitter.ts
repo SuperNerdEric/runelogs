@@ -25,6 +25,7 @@ export function logSplitter(fightData: LogLine[]): Fight[] {
 
         // If there's a gap of over 60 seconds end the fight
         if (currentFight && lastDamage && convertTimeToMillis(logLine.time) - convertTimeToMillis(lastDamage.time) > 60000) {
+            // eslint-disable-next-line no-loop-func
             currentFight.data = currentFight.data.filter((log, index) => index <= lastDamage!.index);
             currentFight.name += " - Incomplete";
             fights.push(currentFight);
