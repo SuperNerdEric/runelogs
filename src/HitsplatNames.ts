@@ -20,6 +20,7 @@ export enum HitsplatNames {
     DAMAGE_MAX_ME_ORANGE = 45,
     DAMAGE_MAX_ME_YELLOW = 46,
     DAMAGE_MAX_ME_WHITE = 47,
+    SPLASH_ME = 69,
 }
 
 export enum DamageMeHitsplats {
@@ -29,6 +30,7 @@ export enum DamageMeHitsplats {
     DAMAGE_ME_ORANGE = HitsplatNames.DAMAGE_ME_ORANGE,
     DAMAGE_ME_YELLOW = HitsplatNames.DAMAGE_ME_YELLOW,
     DAMAGE_ME_WHITE = HitsplatNames.DAMAGE_ME_WHITE,
+    SPLASH_ME = HitsplatNames.SPLASH_ME,
 }
 
 export enum DamageMaxMeHitsplats {
