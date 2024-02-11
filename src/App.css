@@ -119,3 +119,32 @@
 .recharts-cartesian-axis-ticks, #recharts_measurement_span {
   @apply text-sm;
 }
+
+.loading-indicator-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.combobox-hover {
+  background: lightgray;
+}
+
+.combobox-input {
+  width: 240px;
+  height: 30px;
+  text-align: left;
+  font-size: 18px;
+  padding-left: 8px;
+}
+
+.combobox {
+  background: white;
+  color: black;
+  font-size: 18px;
+  z-index: 999;
+  position: absolute;
+  text-align: left;
+  padding-left: 8px;
+}

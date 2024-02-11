@@ -7,10 +7,9 @@ import DPSChart from "../charts/DPSChart";
 
 interface LogsSelectionProps {
     selectedLogs: Fight;
-    handleDropdownChange: (index: number) => void;
 }
 
-const DamageDone: React.FC<LogsSelectionProps> = ({selectedLogs, handleDropdownChange}) => {
+const DamageDone: React.FC<LogsSelectionProps> = ({selectedLogs}) => {
     const [dps, setDPS] = useState<number>(0);
 
     useEffect(() => {

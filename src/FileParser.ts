@@ -41,7 +41,7 @@ export const parseLogLine = (logLine: string): LogLine | null => {
 
     const logVersionPattern = new RegExp(`Log Version (${ANYTHING_PATTERN})`)
     match = action.match(logVersionPattern);
-    if(match) {
+    if (match) {
         const [, logVersion] = match;
         console.log(`Log Version ${logVersion}`);
         return {
@@ -53,7 +53,7 @@ export const parseLogLine = (logLine: string): LogLine | null => {
     }
     const loggedInPlayerPattern = new RegExp(`Logged in player is (${ANYTHING_PATTERN})`)
     match = action.match(loggedInPlayerPattern);
-    if(match) {
+    if (match) {
         const [, loggedInPlayer] = match;
         return {
             date,
@@ -65,7 +65,7 @@ export const parseLogLine = (logLine: string): LogLine | null => {
 
     const boostedLevelsPattern = new RegExp(`Boosted levels are (${ANYTHING_PATTERN})`)
     match = action.match(boostedLevelsPattern);
-    if(match) {
+    if (match) {
         const [, boostedLevels] = match;
         return {
             date,
@@ -77,7 +77,7 @@ export const parseLogLine = (logLine: string): LogLine | null => {
 
     const playerEquipmentPattern = new RegExp(`Player equipment is (${ANYTHING_PATTERN})`)
     match = action.match(playerEquipmentPattern);
-    if(match) {
+    if (match) {
         const [, playerEquipment] = match;
         return {
             date,
@@ -89,7 +89,7 @@ export const parseLogLine = (logLine: string): LogLine | null => {
 
     const diesPattern = new RegExp(`^(${ANYTHING_PATTERN}) dies`)
     match = action.match(diesPattern);
-    if(match) {
+    if (match) {
         const [, target] = match;
         return {
             date,
@@ -102,7 +102,7 @@ export const parseLogLine = (logLine: string): LogLine | null => {
 
     const changedTargetPattern = new RegExp(`^(${ANYTHING_PATTERN}) changes target to (${ANYTHING_PATTERN})`)
     match = action.match(changedTargetPattern);
-    if(match) {
+    if (match) {
         const [, source, target] = match;
         return {
             date,
@@ -134,9 +134,10 @@ export const parseLogLine = (logLine: string): LogLine | null => {
     };
 };
 
-export function parseFileContent(fileContent: string): Fight[] | null {
+export function parseFileContent(fileContent: string, progressCallback: (progress: number) => void): Fight[] | null {
     try {
         const lines = fileContent.split('\n');
+        let parsedLines = 0;
         let fightData: LogLine[] = [];
 
         for (const line of lines) {
@@ -145,9 +146,15 @@ export function parseFileContent(fileContent: string): Fight[] | null {
             if (logLine) {
                 fightData.push(logLine);
             }
+
+            parsedLines++;
+            if (progressCallback && parsedLines % 200 === 0) {
+                const progress = (parsedLines / lines.length) * 50;
+                progressCallback(progress);
+            }
         }
 
-        let fights: Fight[] = logSplitter(fightData);
+        let fights: Fight[] = logSplitter(fightData, progressCallback);
 
         console.log(fights);
         return fights;
@@ -156,3 +163,4 @@ export function parseFileContent(fileContent: string): Fight[] | null {
         return null;
     }
 }
+

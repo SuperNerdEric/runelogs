@@ -3,7 +3,16 @@ import {DamageMaxMeHitsplats, DamageMeHitsplats} from "./HitsplatNames";
 import {convertTimeToMillis} from "./components/charts/DPSChart";
 
 const BOSS_NAMES = [
-    "Scurrius"
+    "Scurrius",
+    "Kree'arra",
+    "Commander Zilyana",
+    "General Graardor",
+    "K'ril Tsutsaroth",
+    "Nex",
+    "Kalphite Queen",
+    "Sarachnis",
+    "Scorpia",
+    "Abyssal Sire"
 ];
 
 function doesAttemptDamage(log: LogLine) {
@@ -12,7 +21,10 @@ function doesAttemptDamage(log: LogLine) {
         log.hitsplatName === 'BLOCK_ME';
 }
 
-export function logSplitter(fightData: LogLine[]): Fight[] {
+export function logSplitter(fightData: LogLine[], progressCallback?: (progress: number) => void): Fight[] {
+    const totalLines = fightData.length;
+    let parsedLines = 0;
+
     const fights: Fight[] = [];
     let currentFight: Fight | null = null;
     let player: string = ""; //todo support multiple players
@@ -69,6 +81,12 @@ export function logSplitter(fightData: LogLine[]): Fight[] {
                 fights.push(currentFight);
                 currentFight = null;
             }
+        }
+
+        parsedLines++;
+        if (progressCallback && parsedLines % 200 === 0) {
+            const progress = 50 + (parsedLines / totalLines) * 50;
+            progressCallback(progress);
         }
     }
 

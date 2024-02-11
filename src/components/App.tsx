@@ -1,20 +1,45 @@
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import '../App.css';
 import Dropzone from './Dropzone';
-import {Fight, LogLine, parseFileContent} from '../FileParser';
+import {Fight, LogLine} from '../FileParser';
 import DamageDone from './sections/DamageDone';
-import {Tab, Tabs} from '@mui/material';
+import {CircularProgress, Tab, Tabs} from '@mui/material';
 import {DamageMaxMeHitsplats, DamageMeHitsplats, DamageOtherHitsplats} from "../HitsplatNames";
 import EventsTable from './EventsTable';
 import Instructions from "./Instructions";
 import {convertTimeToMillis} from "./charts/DPSChart";
 import GroupDamagePieChart from "./charts/GroupDamagePieChart";
+import Combobox from './Combobox';
 
 function App() {
-    const [parsedResult, setParsedResult] = useState<Fight[] | null>(null);
+    const [worker] = useState<Worker>(() => {
+        const worker = new Worker(new URL("FileParserWorker.ts", import.meta.url));
+
+        worker.onmessage = (event) => {
+            const {type, progress, parseResultMessage, item} = event.data;
+            if (type === 'progress') {
+                setParsingProgress(progress);
+            } else if (type === 'parseResult') {
+                setFightNames(parseResultMessage.fightNames);
+                setSelectedLogs(parseResultMessage.firstResult);
+                setParseInProgress(false);
+                setFightDuration(getFightDuration(parseResultMessage.firstResult));
+            } else if (type === 'item') {
+                setSelectedLogs(item);
+                setFightDuration(getFightDuration(item));
+            }
+        };
+
+        return worker;
+    });
+
+    const [fightNames, setFightNames] = useState<string[] | null>(null);
     const [selectedLogs, setSelectedLogs] = useState<Fight | null>(null);
     const [selectedTab, setSelectedTab] = useState<string>('DamageDone');
     const [fightDuration, setFightDuration] = useState<string>("");
+
+    const [parseInProgress, setParseInProgress] = useState<boolean>(false);
+    const [parsingProgress, setParsingProgress] = useState<number>(0);
 
     const calculateFightDuration = (logs: LogLine[]) => {
         if (logs.length === 0) {
@@ -38,49 +63,54 @@ function App() {
         return formattedDuration;
     }
 
-    function setAllLogs(result: Fight[]) {
-        let allLogs: Fight = {
-            data: [],
-            name: 'All',
-            enemies: [], // todo this is problematic
-            loggedInPlayer: "", // todo this is problematic
-        };
-
-        result.forEach((fight) => {
-            allLogs.data.push(...fight.data);
-        });
-
-        setSelectedLogs(allLogs);
-        const formattedDuration = getFightDuration(allLogs);
-        setFightDuration(formattedDuration);
-    }
-
-    const handleParse = (fileContent: string) => {
-        const result = parseFileContent(fileContent);
-        console.log(result);
-        setParsedResult(result);
-
-        if (result && result.length > 0) {
-            setAllLogs(result);
-        }
+    const handleParse = async (fileContent: string) => {
+        setParseInProgress(true);
+        worker.postMessage({type: 'parse', fileContent});
     };
 
+
     const handleDropdownChange = (index: number) => {
-        if (index === -1) {
-            setAllLogs(parsedResult!);
-        } else {
-            const selectedLog = parsedResult?.[index]!;
-            setSelectedLogs(selectedLog);
-            const formattedDuration = getFightDuration(selectedLog);
-            setFightDuration(formattedDuration);
-        }
+        worker.postMessage({type: 'getItem', index});
     };
 
     const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
         setSelectedTab(newValue);
     };
 
-    if (!parsedResult) {
+    interface Option {
+        label: string;
+        value: number;
+    }
+
+    const options: Option[] = useMemo(() => {
+        if (fightNames) {
+            return fightNames.map((fightName, index) => ({
+                label: fightName,
+                value: index,
+            }));
+        } else {
+            return [];
+        }
+    }, [fightNames]);
+
+
+    if (parseInProgress) {
+        return (
+            <div className="App">
+                <header className="App-body">
+                    <div className="loading-indicator-container">
+                        <div className="loading-content">
+                            <p>Parsing logs...</p>
+                            <CircularProgress/>
+                            <p>{Math.floor(parsingProgress)}%</p>
+                        </div>
+                    </div>
+                </header>
+            </div>
+        );
+    }
+
+    if (!selectedLogs) {
         return (
             <div className="App">
                 <header className="App-body">
@@ -94,19 +124,17 @@ function App() {
     return (
         <div className="App">
             <header className="App-body">
-                <label>Select Logs:</label>
-                <select
-                    style={{width: '200px', padding: '5px', fontSize: '15px'}}
-                    onChange={(e) => handleDropdownChange(parseInt(e.target.value))}
-                >
-                    <option value="-1">All</option>
-                    {parsedResult &&
-                        parsedResult.map((logs, index) => (
-                            <option key={index} value={index}>
-                                {logs.name}
-                            </option>
-                        ))}
-                </select>
+                <label>{selectedLogs.name}</label>
+                <Combobox<Option>
+                    id="monster-select"
+                    items={options}
+                    placeholder="Select a fight"
+                    onSelectedItemChange={(item) => {
+                        if (item) {
+                            handleDropdownChange(item!.value)
+                        }
+                    }}
+                />
 
                 <Tabs
                     value={selectedTab}
@@ -159,7 +187,6 @@ function App() {
                                     log.target !== selectedLogs?.loggedInPlayer
                             )!,
                         }}
-                        handleDropdownChange={handleDropdownChange}
                     />
                 )}
                 {selectedTab === 'DamageTaken' && (
@@ -173,7 +200,6 @@ function App() {
                                     log.target === selectedLogs?.loggedInPlayer
                             )!,
                         }}
-                        handleDropdownChange={handleDropdownChange}
                     />
                 )}
                 {selectedTab === 'GroupDamage' && (
@@ -192,7 +218,6 @@ function App() {
                                         selectedLogs.enemies.includes(log.target!)
                                 )!,
                             }}
-                            handleDropdownChange={handleDropdownChange}
                         />
                     </div>
                 )}
