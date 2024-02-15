@@ -125,7 +125,7 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
                                 <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '10px' }}>
                                     <span style={{ gridRow: 'span 2', alignSelf: 'end'}}>Averages</span>
                                     {Object.entries(averages)
-                                        .filter(([stat]) => stat === 'attack' || stat === 'strength' || stat === 'defence' || stat === 'ranged' || stat == 'magic')
+                                        .filter(([stat]) => stat === 'attack' || stat === 'strength' || stat === 'defence' || stat === 'ranged' || stat === 'magic')
                                         .map(([stat, average]) => (
                                             <div key={stat} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                                 <span style={{ color: getStatColor(stat as keyof BoostedLevels), marginBottom: '5px' }}>{stat}</span>
