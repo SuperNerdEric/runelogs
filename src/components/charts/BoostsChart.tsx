@@ -102,7 +102,7 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
 
     return (
         <div>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={boostedLevelsData} margin={{top: 11, left: 60, bottom: 50}}>
                     <XAxis
                         dataKey="timestamp"
@@ -119,7 +119,23 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
                         width={35}
                         tickFormatter={(tick) => (tick !== 0 ? tick : '')}
                     />
-                    <Legend/>
+                    <Legend
+                        content={() => (
+                            <div style={{ marginTop: '20px', fontSize: '20px', color: 'white', textAlign: 'center' }}>
+                                <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                                    <span style={{ gridRow: 'span 2', alignSelf: 'end'}}>Averages</span>
+                                    {Object.entries(averages)
+                                        .filter(([stat]) => stat === 'attack' || stat === 'strength' || stat === 'defence' || stat === 'ranged' || stat == 'magic')
+                                        .map(([stat, average]) => (
+                                            <div key={stat} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                                <span style={{ color: getStatColor(stat as keyof BoostedLevels), marginBottom: '5px' }}>{stat}</span>
+                                                <span>{average.toFixed(3)}</span>
+                                            </div>
+                                        ))}
+                                </div>
+                            </div>
+                        )}
+                    />
                     <Line type="stepAfter" dataKey="attack" stroke="#C69B6D" dot={false}/>
                     <Line type="stepAfter" dataKey="strength" stroke="#C41E3A" dot={false}/>
                     <Line type="stepAfter" dataKey="defence" stroke="#0070DD" dot={false}/>
@@ -128,7 +144,7 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
                     <Tooltip content={(props) => <CustomTooltip {...props} />} cursor={{fill: '#3c3226'}}/>
                 </LineChart>
             </ResponsiveContainer>
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={boostedLevelsData} margin={{top: 11, left: 60, bottom: 50}}>
                     <XAxis
                         dataKey="timestamp"
@@ -145,27 +161,28 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
                         width={35}
                         tickFormatter={(tick) => (tick !== 0 ? tick : '')}
                     />
-                    <Legend/>
+                    <Legend
+                        content={() => (
+                            <div style={{ marginTop: '20px', fontSize: '20px', color: 'white', textAlign: 'center' }}>
+                                <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                                    <span style={{ gridRow: 'span 2', alignSelf: 'end'}}>Averages</span>
+                                    {Object.entries(averages)
+                                        .filter(([stat]) => stat === 'hitpoints' || stat === 'prayer')
+                                        .map(([stat, average]) => (
+                                            <div key={stat} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                                <span style={{ color: getStatColor(stat as keyof BoostedLevels), marginBottom: '5px' }}>{stat}</span>
+                                                <span>{average.toFixed(3)}</span>
+                                            </div>
+                                        ))}
+                                </div>
+                            </div>
+                        )}
+                    />
                     <Line type="stepAfter" dataKey="hitpoints" stroke="red" dot={false}/>
                     <Line type="stepAfter" dataKey="prayer" stroke="yellow" dot={false}/>
                     <Tooltip content={(props) => <CustomTooltip {...props} />} cursor={{fill: '#3c3226'}}/>
                 </LineChart>
             </ResponsiveContainer>
-            <div style={{ marginTop: '20px', fontSize: '20px', color: 'white', textAlign: 'center' }}>
-                <h2 style={{ fontSize: '25px', marginBottom: '10px' }}>Average Stats</h2>
-                <div style={{ margin: '0 auto', width: '100px' }}>
-                    <table style={{ width: '100%', textAlign: 'center' }}>
-                        <tbody>
-                        {Object.entries(averages).map(([stat, average]) => (
-                            <tr key={stat}>
-                                <td style={{ color: getStatColor(stat as keyof BoostedLevels) }}>{stat}:</td>
-                                <td>{average.toFixed(3)}</td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
 
     );
