@@ -5,6 +5,20 @@ export interface Fight {
     data: LogLine[];
     enemies: string[];
     loggedInPlayer: string;
+
+    // Just for easy reference later
+    firstLine: LogLine | undefined;
+    lastLine: LogLine | undefined;
+}
+
+export interface BoostedLevels {
+    attack: number;
+    strength: number;
+    defence: number;
+    ranged: number;
+    magic: number;
+    hitpoints: number;
+    prayer: number;
 }
 
 export interface LogLine {
@@ -16,7 +30,7 @@ export interface LogLine {
     logVersion?: string;
     hitsplatName?: string;
     damageAmount?: number;
-    boostedLevels?: string;
+    boostedLevels?: BoostedLevels;
     playerEquipment?: string;
     source?: string;
 }
@@ -63,10 +77,21 @@ export const parseLogLine = (logLine: string): LogLine | null => {
         };
     }
 
-    const boostedLevelsPattern = new RegExp(`Boosted levels are (${ANYTHING_PATTERN})`)
+    const boostedLevelsPattern = new RegExp(`Boosted levels are \\[(\\d+), (\\d+), (\\d+), (\\d+), (\\d+), (\\d+), (\\d+)\\]`);
     match = action.match(boostedLevelsPattern);
     if (match) {
-        const [, boostedLevels] = match;
+        const [, attack, strength, defence, ranged, magic, hitpoints, prayer] = match.map(Number);
+
+        const boostedLevels: BoostedLevels = {
+            attack,
+            strength,
+            defence,
+            ranged,
+            magic,
+            hitpoints,
+            prayer
+        };
+
         return {
             date,
             time,

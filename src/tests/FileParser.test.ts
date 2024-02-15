@@ -62,6 +62,28 @@ describe('parseLogLine', () => {
         expect(parsedData).toEqual(expectedParsedData);
     });
 
+    test('should parse a boosted levels log line', () => {
+        const logLine = '02-14-2024 10:12:23.702 CST\tBoosted levels are [1, 2, 3, 40, 99, 89, 71]';
+        const expectedParsedData: LogLine = {
+            date: '02-14-2024',
+            time: '10:12:23.702',
+            timezone: 'CST',
+            boostedLevels: {
+                attack: 1,
+                strength: 2,
+                defence: 3,
+                ranged: 40,
+                magic: 99,
+                hitpoints: 89,
+                prayer: 71
+            }
+        };
+
+        const parsedData = parseLogLine(logLine);
+
+        expect(parsedData).toEqual(expectedParsedData);
+    });
+
     test('should return null for an invalid log line', () => {
         const invalidLogLine = 'Invalid log line';
         const parsedData = parseLogLine(invalidLogLine);

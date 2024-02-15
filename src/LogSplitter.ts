@@ -1,4 +1,4 @@
-import {Fight, LogLine} from "./FileParser";
+import {BoostedLevels, Fight, LogLine} from "./FileParser";
 import {DamageMaxMeHitsplats, DamageMeHitsplats} from "./HitsplatNames";
 import {convertTimeToMillis} from "./components/charts/DPSChart";
 
@@ -29,30 +29,26 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     let currentFight: Fight | null = null;
     let player: string = ""; //todo support multiple players
     let lastDamage: { time: string, index: number } | null = null;
+    let boostedLevels: BoostedLevels;
 
     for (const logLine of fightData) {
         if (logLine.loggedInPlayer) {
             player = logLine.loggedInPlayer;
         }
 
-        // If there's a gap of over 60 seconds end the fight
+        if (logLine.boostedLevels) {
+            boostedLevels = logLine.boostedLevels;
+        }
+
+        // If there's a gap of over 60 seconds end the current fight
         if (currentFight && lastDamage && convertTimeToMillis(logLine.time) - convertTimeToMillis(lastDamage.time) > 60000) {
             // eslint-disable-next-line no-loop-func
             currentFight.data = currentFight.data.filter((log, index) => index <= lastDamage!.index);
             currentFight.name += " - Incomplete";
+            currentFight.lastLine = currentFight.data[currentFight.data.length - 1];
             fights.push(currentFight);
             currentFight = null;
             lastDamage = null;
-
-            // todo Right now I'm not supporting noncombat events at all
-            // But when I do I need to remember that any noncombat events after incomplete fight need to be carried forward to the next fight
-        }
-
-        if (currentFight && doesAttemptDamage(logLine)) {
-            lastDamage = {
-                time: logLine.time,
-                index: currentFight.data.length - 1
-            };
         }
 
         // If the current fight is null, start a new fight
@@ -60,8 +56,19 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             currentFight = {
                 name: logLine.target!,
                 enemies: [logLine.target!],
-                data: [logLine],
+                data: [
+                    // Include current boosted levels at the beginning of the fight
+                    {
+                        date: logLine.date,
+                        time: logLine.time,
+                        timezone: logLine.timezone,
+                        boostedLevels: boostedLevels!
+                    },
+                    logLine
+                ],
                 loggedInPlayer: player,
+                firstLine: logLine,
+                lastLine: undefined
             };
         } else if (currentFight) {
             // Rename the fight if we encounter a boss in the middle of it
@@ -75,9 +82,17 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             currentFight.data.push(logLine);
         }
 
+        if (currentFight && doesAttemptDamage(logLine)) {
+            lastDamage = {
+                time: logLine.time,
+                index: currentFight.data.length - 1
+            };
+        }
+
         if (logLine.target && logLine.hitsplatName === "DEATH") {
             // If the fight name dies, end the current fight
             if (currentFight && (logLine.target === currentFight.name || logLine.target === currentFight.loggedInPlayer)) {
+                currentFight.lastLine = logLine;
                 fights.push(currentFight);
                 currentFight = null;
             }
@@ -90,7 +105,9 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         }
     }
 
+    // If we reach the end of the logs, end the current fight
     if (currentFight) {
+        currentFight.lastLine = currentFight.data[currentFight.data.length - 1];
         fights.push(currentFight);
     }
 

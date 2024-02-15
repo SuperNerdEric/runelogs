@@ -10,6 +10,7 @@ import Instructions from "./Instructions";
 import {convertTimeToMillis} from "./charts/DPSChart";
 import GroupDamagePieChart from "./charts/GroupDamagePieChart";
 import Combobox from './Combobox';
+import BoostsChart from './charts/BoostsChart';
 
 function App() {
     const [worker] = useState<Worker>(() => {
@@ -158,6 +159,13 @@ function App() {
                         }}
                     />
                     <Tab
+                        label="Boosts"
+                        value="Boosts"
+                        style={{
+                            color: selectedTab === 'Boosts' ? 'lightblue' : 'white',
+                        }}
+                    />
+                    <Tab
                         label="Group Damage"
                         value="GroupDamage"
                         style={{
@@ -201,6 +209,14 @@ function App() {
                             )!,
                         }}
                     />
+                )}
+                {selectedTab === 'Boosts' && (
+                    <div className="damage-done-container">
+                        <BoostsChart fight={{
+                            ...selectedLogs!,
+                            data: selectedLogs?.data.filter((log) => log.boostedLevels) || [],
+                        }} />
+                    </div>
                 )}
                 {selectedTab === 'GroupDamage' && (
                     <div>
