@@ -1,150 +1,150 @@
 .App {
-  text-align: center;
+    text-align: center;
 }
 
 .App-logo {
-  height: 40vmin;
-  pointer-events: none;
+    height: 40vmin;
+    pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+    .App-logo {
+        animation: App-logo-spin infinite 20s linear;
+    }
 }
 
 .App-body {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  font-size: calc(10px + 2vmin);
-  color: white;
-  width: 100%;
+    background-color: #282c34;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: calc(10px + 2vmin);
+    color: white;
+    width: 100%;
 }
 
 .App-link {
-  color: #61dafb;
+    color: #61dafb;
 }
 
 @keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .instructions-container {
-  text-align: left;
-  max-width: 800px;
-  margin: 20px auto 0;
+    text-align: left;
+    max-width: 800px;
+    margin: 20px auto 0;
 }
 
 @media (max-width: 800px) {
-  .instructions-container {
-    max-width: 90%;
-  }
+    .instructions-container {
+        max-width: 90%;
+    }
 }
 
 .instructions-container h3 {
-  color: #333;
+    color: #333;
 }
 
 .instructions-container ol {
-  list-style: decimal;
-  padding-left: 20px;
+    list-style: decimal;
+    padding-left: 20px;
 }
 
 .instructions-container li {
-  margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 .instructions-container a {
-  color: #007bff;
-  text-decoration: none;
+    color: #007bff;
+    text-decoration: none;
 }
 
 .instructions-container code {
-  color: yellow;
+    color: yellow;
 }
 
 .damage-done-container {
-  text-align: center;
-  width: 1000px;
-  margin: 20px auto 0;
+    text-align: center;
+    width: 1000px;
+    margin: 20px auto 0;
 }
 
 @media (max-width: 1050px) {
-  .damage-done-container {
-    text-align: center;
-    width: 95vw;
-    margin: 20px auto 0;
-  }
+    .damage-done-container {
+        text-align: center;
+        width: 95vw;
+        margin: 20px auto 0;
+    }
 }
 
 .logs-box {
-  color: white;
-  width: 1300px;
+    color: white;
+    width: 1300px;
 }
 
 @media (max-width: 1350px) {
-  .logs-box {
-    max-width: 95vw;
-  }
+    .logs-box {
+        max-width: 95vw;
+    }
 }
 
 .logs-box table {
-  border-collapse: collapse;
+    border-collapse: collapse;
 }
 
 .logs-box th,
 .logs-box td {
-  border: 1px solid white;
-  padding: calc(1px + 0.8vmin);
-  color: white;
-  font-size: calc(2px + 2vmin);
-  text-align: center;
-  whiteSpace: 'normal';
-  wordWrap: 'break-word';
+    border: 1px solid white;
+    padding: calc(1px + 0.8vmin);
+    color: white;
+    font-size: calc(2px + 2vmin);
+    text-align: center;
+    whiteSpace: 'normal';
+    wordWrap: 'break-word';
 }
 
 .recharts-cartesian-axis .recharts-text {
-  font-size: calc(17px + 0.5vmin);
+    font-size: calc(17px + 0.5vmin);
 }
 
 .recharts-cartesian-axis-ticks, #recharts_measurement_span {
-  @apply text-sm;
+    @apply text-sm;
 }
 
 .loading-indicator-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
 .combobox-hover {
-  background: lightgray;
+    background: lightgray;
 }
 
 .combobox-input {
-  width: 240px;
-  height: 30px;
-  text-align: left;
-  font-size: 18px;
-  padding-left: 8px;
+    width: 240px;
+    height: 30px;
+    text-align: left;
+    font-size: 18px;
+    padding-left: 8px;
 }
 
 .combobox {
-  background: white;
-  color: black;
-  font-size: 18px;
-  z-index: 999;
-  position: absolute;
-  text-align: left;
-  padding-left: 8px;
+    background: white;
+    color: black;
+    font-size: 18px;
+    z-index: 999;
+    position: absolute;
+    text-align: left;
+    padding-left: 8px;
 }

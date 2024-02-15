@@ -1,6 +1,9 @@
-import {BoostedLevels, Fight, LogLine} from "./FileParser";
-import {DamageMaxMeHitsplats, DamageMeHitsplats} from "./HitsplatNames";
-import {convertTimeToMillis} from "./components/charts/DPSChart";
+import {LogLine} from "../models/LogLine";
+import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
+import {Fight} from "../models/Fight";
+import {BoostedLevels} from "../models/BoostedLevels";
+import {convertTimeToMillis} from "./utils";
+
 
 const BOSS_NAMES = [
     "Scurrius",

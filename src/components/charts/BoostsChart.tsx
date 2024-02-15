@@ -1,7 +1,9 @@
 import React from 'react';
 import {Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
-import {BoostedLevels, Fight, LogLine} from '../../FileParser';
-import { pairs as d3Pairs } from 'd3-array';
+import {pairs as d3Pairs} from 'd3-array';
+import {Fight} from "../../models/Fight";
+import {BoostedLevels} from "../../models/BoostedLevels";
+import {LogLine} from "../../models/LogLine";
 
 interface DPSChartProps {
     fight: Fight;
@@ -44,7 +46,7 @@ export function calculateWeightedAverages(fight: Fight) {
     const pairs = d3Pairs(fight.data);
 
     // Create one more pair between the last and end of the fight
-    pairs.push([fight.data[fight.data.length -1], fight.lastLine!])
+    pairs.push([fight.data[fight.data.length - 1], fight.lastLine!])
 
     pairs.forEach(pair => {
         const startTime = pair[0].date + " " + pair[0].time;
@@ -59,9 +61,9 @@ export function calculateWeightedAverages(fight: Fight) {
 
             const existingStat = weightedValues.find(item => item.stat === key as keyof BoostedLevels);
             if (existingStat) {
-                existingStat.values.push({ weightedValue });
+                existingStat.values.push({weightedValue});
             } else {
-                weightedValues.push({ stat: key as keyof BoostedLevels, values: [{ weightedValue }] });
+                weightedValues.push({stat: key as keyof BoostedLevels, values: [{weightedValue}]});
             }
         }
     })
@@ -121,14 +123,21 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
                     />
                     <Legend
                         content={() => (
-                            <div style={{ marginTop: '20px', fontSize: '20px', color: 'white', textAlign: 'center' }}>
-                                <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '10px' }}>
-                                    <span style={{ gridRow: 'span 2', alignSelf: 'end'}}>Averages</span>
+                            <div style={{marginTop: '20px', fontSize: '20px', color: 'white', textAlign: 'center'}}>
+                                <div style={{display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '10px'}}>
+                                    <span style={{gridRow: 'span 2', alignSelf: 'end'}}>Averages</span>
                                     {Object.entries(averages)
                                         .filter(([stat]) => stat === 'attack' || stat === 'strength' || stat === 'defence' || stat === 'ranged' || stat === 'magic')
                                         .map(([stat, average]) => (
-                                            <div key={stat} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                                <span style={{ color: getStatColor(stat as keyof BoostedLevels), marginBottom: '5px' }}>{stat}</span>
+                                            <div key={stat} style={{
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center'
+                                            }}>
+                                                <span style={{
+                                                    color: getStatColor(stat as keyof BoostedLevels),
+                                                    marginBottom: '5px'
+                                                }}>{stat}</span>
                                                 <span>{average.toFixed(3)}</span>
                                             </div>
                                         ))}
@@ -163,14 +172,21 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
                     />
                     <Legend
                         content={() => (
-                            <div style={{ marginTop: '20px', fontSize: '20px', color: 'white', textAlign: 'center' }}>
-                                <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '10px' }}>
-                                    <span style={{ gridRow: 'span 2', alignSelf: 'end'}}>Averages</span>
+                            <div style={{marginTop: '20px', fontSize: '20px', color: 'white', textAlign: 'center'}}>
+                                <div style={{display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '10px'}}>
+                                    <span style={{gridRow: 'span 2', alignSelf: 'end'}}>Averages</span>
                                     {Object.entries(averages)
                                         .filter(([stat]) => stat === 'hitpoints' || stat === 'prayer')
                                         .map(([stat, average]) => (
-                                            <div key={stat} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                                <span style={{ color: getStatColor(stat as keyof BoostedLevels), marginBottom: '5px' }}>{stat}</span>
+                                            <div key={stat} style={{
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center'
+                                            }}>
+                                                <span style={{
+                                                    color: getStatColor(stat as keyof BoostedLevels),
+                                                    marginBottom: '5px'
+                                                }}>{stat}</span>
                                                 <span>{average.toFixed(3)}</span>
                                             </div>
                                         ))}

@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
+import React, {useCallback} from 'react';
+import {useDropzone} from 'react-dropzone';
 import {Button} from "@mui/material";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
@@ -7,7 +7,7 @@ interface DropzoneProps {
     onParse: (fileContent: string) => void;
 }
 
-const Dropzone: React.FC<DropzoneProps> = ({ onParse }) => {
+const Dropzone: React.FC<DropzoneProps> = ({onParse}) => {
     const onDrop = useCallback((acceptedFiles: any) => {
         acceptedFiles.forEach((file: File) => {
             const reader = new FileReader();
@@ -26,17 +26,17 @@ const Dropzone: React.FC<DropzoneProps> = ({ onParse }) => {
         });
     }, [onParse]);
 
-    const { getRootProps, getInputProps } = useDropzone({ onDrop });
+    const {getRootProps, getInputProps} = useDropzone({onDrop});
 
     return (
-        <div {...getRootProps()} style={{ marginTop: '20px', textAlign: 'center' }}>
+        <div {...getRootProps()} style={{marginTop: '20px', textAlign: 'center'}}>
             <input {...getInputProps()} />
             <Button
                 variant="contained"
                 color="primary"
                 component="span"
-                startIcon={<CloudUploadIcon style={{ color: 'grey', fontSize: '6em' }} />}
-                style={{ background: 'white', color: 'black', borderRadius: '25px' }}
+                startIcon={<CloudUploadIcon style={{color: 'grey', fontSize: '6em'}}/>}
+                style={{background: 'white', color: 'black', borderRadius: '25px'}}
             >
                 Upload file
             </Button>

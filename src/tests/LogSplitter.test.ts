@@ -1,5 +1,6 @@
-import {Fight, LogLine} from "../FileParser";
-import {logSplitter} from "../LogSplitter";
+import {LogLine} from "../models/LogLine";
+import {logSplitter} from "../utils/LogSplitter";
+import {Fight} from "../models/Fight";
 
 
 describe("logSplitter", () => {
@@ -24,7 +25,6 @@ describe("logSplitter", () => {
         target,
         hitsplatName: "DEATH",
     });
-
 
 
     it("should split logs when a target dies", () => {
@@ -91,7 +91,7 @@ describe("logSplitter", () => {
     it("should split fights if there is a gap of over 60 seconds", () => {
         const fightData: LogLine[] = [
             generateDamage("Scurrius", 1),
-            generateDamage("Scurrius", 2, new Date( new Date().getTime() + 90 * 1000)),
+            generateDamage("Scurrius", 2, new Date(new Date().getTime() + 90 * 1000)),
             generatedeath("Scurrius"),
         ];
 

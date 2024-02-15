@@ -1,9 +1,11 @@
-import {Fight, parseFileContent} from "../FileParser";
+import {Fight} from "../models/Fight";
+import {parseFileContent} from "../utils/FileParser";
+
 let parseResults: Fight[] | null = null;
 
 function parseFileWithProgress(fileContent: string) {
     parseResults = parseFileContent(fileContent, (progress) => {
-        postMessage({ type: 'progress', progress });
+        postMessage({type: 'progress', progress});
     });
 
     const fightNames = parseResults?.map(fight => fight.name) || [];
@@ -11,7 +13,7 @@ function parseFileWithProgress(fileContent: string) {
         fightNames,
         firstResult: parseResults![0],
     }
-    postMessage({ type: 'parseResult', parseResultMessage });
+    postMessage({type: 'parseResult', parseResultMessage});
 }
 
 function getSpecificItem(index: number) {
@@ -22,11 +24,11 @@ function getSpecificItem(index: number) {
 }
 
 onmessage = (event) => {
-    const { type, fileContent, index } = event.data;
+    const {type, fileContent, index} = event.data;
     if (type === 'parse') {
         parseFileWithProgress(fileContent);
     } else if (type === 'getItem') {
         const item = getSpecificItem(index);
-        postMessage({ type: 'item', item });
+        postMessage({type: 'item', item});
     }
 };

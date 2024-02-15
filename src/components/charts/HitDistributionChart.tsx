@@ -1,11 +1,12 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { Fight } from '../../FileParser';
+import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
+import {Fight} from "../../models/Fight";
+
 interface HitDistributionChartProps {
     fight: Fight;
 }
 
-const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
+const CustomTooltip: React.FC<any> = ({active, payload, label}) => {
     if (active && payload && payload.length) {
         return (
             <div
@@ -17,11 +18,11 @@ const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
                     borderRadius: '1px',
                 }}
             >
-                <p style={{ margin: '0' }}>
+                <p style={{margin: '0'}}>
                     <strong>{label}</strong>
                 </p>
                 {payload.map((entry: any, index: any) => (
-                    <p key={`tooltip-entry-${index}`} style={{ margin: '0' }}>
+                    <p key={`tooltip-entry-${index}`} style={{margin: '0'}}>
                         {entry.name}: {entry.value}
                     </p>
                 ))}
@@ -32,7 +33,7 @@ const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
     return null;
 };
 
-const HitDistributionChart: React.FC<HitDistributionChartProps> = ({ fight }) => {
+const HitDistributionChart: React.FC<HitDistributionChartProps> = ({fight}) => {
     const hitsplatAmounts = fight.data.map((log) => log.damageAmount || 0);
 
     const data = hitsplatAmounts.reduce((acc, amount) => {
@@ -47,10 +48,10 @@ const HitDistributionChart: React.FC<HitDistributionChartProps> = ({ fight }) =>
 
     return (
         <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={chartData} margin={{ top: 11, left: 60, bottom: 50 }}>
+            <BarChart data={chartData} margin={{top: 11, left: 60, bottom: 50}}>
                 <XAxis
                     dataKey="hitsplatAmount"
-                    label={{ value: 'Hitsplat', position: 'insideBottom', offset: -35 }}
+                    label={{value: 'Hitsplat', position: 'insideBottom', offset: -35}}
                 />
                 <YAxis
                     dataKey="frequency"
@@ -59,13 +60,13 @@ const HitDistributionChart: React.FC<HitDistributionChartProps> = ({ fight }) =>
                         position: 'insideLeft',
                         angle: -90,
                         offset: -40,
-                        style: { textAnchor: 'middle' },
+                        style: {textAnchor: 'middle'},
                     }}
                     width={35}
                 />
                 <Tooltip
                     content={(props) => <CustomTooltip {...props} />}
-                    cursor={{ fill: '#3c3226' }}
+                    cursor={{fill: '#3c3226'}}
                 />
 
                 <Bar dataKey="frequency" fill="tan" isAnimationActive={false}/>

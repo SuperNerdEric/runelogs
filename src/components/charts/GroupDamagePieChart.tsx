@@ -1,13 +1,13 @@
 import React from 'react';
-import {PieChart, Pie, Tooltip, Cell, ResponsiveContainer} from 'recharts';
-import {Fight} from '../../FileParser';
+import {Cell, Pie, PieChart, ResponsiveContainer, Tooltip} from 'recharts';
 import {DamageMaxMeHitsplats, DamageMeHitsplats, DamageOtherHitsplats} from "../../HitsplatNames";
+import {Fight} from "../../models/Fight";
 
 interface GroupDamagePieChartProps {
     selectedLogs: Fight;
 }
 
-const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
+const CustomTooltip: React.FC<any> = ({active, payload, label}) => {
     if (active && payload && payload.length) {
         return (
             <div
@@ -19,11 +19,11 @@ const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
                     borderRadius: '1px',
                 }}
             >
-                <p style={{ margin: '0' }}>
+                <p style={{margin: '0'}}>
                     <strong>{label}</strong>
                 </p>
                 {payload.map((entry: any, index: any) => (
-                    <p key={`tooltip-entry-${index}`} style={{ margin: '0' }}>
+                    <p key={`tooltip-entry-${index}`} style={{margin: '0'}}>
                         {entry.name}: {entry.value}
                     </p>
                 ))}
@@ -34,7 +34,7 @@ const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
     return null;
 };
 
-const GroupDamagePieChart: React.FC<GroupDamagePieChartProps> = ({ selectedLogs }) => {
+const GroupDamagePieChart: React.FC<GroupDamagePieChartProps> = ({selectedLogs}) => {
     const calculateDamageByMeAndOthers = () => {
         let damageByMe = 0;
         let damageByOthers = 0;
@@ -42,19 +42,19 @@ const GroupDamagePieChart: React.FC<GroupDamagePieChartProps> = ({ selectedLogs 
         selectedLogs.data.forEach((log) => {
             if ((Object.values(DamageMeHitsplats).includes(log.hitsplatName!) || Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!))) {
                 damageByMe += log.damageAmount || 0;
-            } else if(Object.values(DamageOtherHitsplats).includes(log.hitsplatName!)) {
+            } else if (Object.values(DamageOtherHitsplats).includes(log.hitsplatName!)) {
                 damageByOthers += log.damageAmount || 0;
             }
         });
 
-        return { damageByMe, damageByOthers };
+        return {damageByMe, damageByOthers};
     };
 
-    const { damageByMe, damageByOthers } = calculateDamageByMeAndOthers();
+    const {damageByMe, damageByOthers} = calculateDamageByMeAndOthers();
 
     const data = [
-        { name: selectedLogs.loggedInPlayer, value: damageByMe },
-        { name: 'Others', value: damageByOthers },
+        {name: selectedLogs.loggedInPlayer, value: damageByMe},
+        {name: 'Others', value: damageByOthers},
     ];
 
     const COLORS = ['tan', 'grey'];
@@ -69,15 +69,15 @@ const GroupDamagePieChart: React.FC<GroupDamagePieChartProps> = ({ selectedLogs 
                     cy="50%"
                     outerRadius={80}
                     fill="#8884d8"
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
                 >
                     {data.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]}/>
                     ))}
                 </Pie>
                 <Tooltip
                     content={(props) => <CustomTooltip {...props} />}
-                    cursor={{ fill: '#3c3226' }}
+                    cursor={{fill: '#3c3226'}}
                 />
             </PieChart>
         </ResponsiveContainer>

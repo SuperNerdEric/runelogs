@@ -1,16 +1,12 @@
 import React, {useMemo, useState} from 'react';
 import '../App.css';
 import Dropzone from './Dropzone';
-import {Fight, LogLine} from '../FileParser';
-import DamageDone from './sections/DamageDone';
 import {CircularProgress, Tab, Tabs} from '@mui/material';
-import {DamageMaxMeHitsplats, DamageMeHitsplats, DamageOtherHitsplats} from "../HitsplatNames";
-import EventsTable from './EventsTable';
 import Instructions from "./Instructions";
-import {convertTimeToMillis} from "./charts/DPSChart";
-import GroupDamagePieChart from "./charts/GroupDamagePieChart";
 import Combobox from './Combobox';
-import BoostsChart from './charts/BoostsChart';
+import {BoostsTab, DamageDoneTab, DamageTakenTab, EventsTab, GroupDamageTab, TabsEnum} from './Tabs';
+import {getFightDuration} from "../utils/utils";
+import {Fight} from "../models/Fight";
 
 function App() {
     const [worker] = useState<Worker>(() => {
@@ -36,33 +32,11 @@ function App() {
 
     const [fightNames, setFightNames] = useState<string[] | null>(null);
     const [selectedLogs, setSelectedLogs] = useState<Fight | null>(null);
-    const [selectedTab, setSelectedTab] = useState<string>('DamageDone');
+    const [selectedTab, setSelectedTab] = useState<TabsEnum>(TabsEnum.DAMAGE_DONE);
     const [fightDuration, setFightDuration] = useState<string>("");
 
     const [parseInProgress, setParseInProgress] = useState<boolean>(false);
     const [parsingProgress, setParsingProgress] = useState<number>(0);
-
-    const calculateFightDuration = (logs: LogLine[]) => {
-        if (logs.length === 0) {
-            return 0;
-        }
-
-        const startTime = convertTimeToMillis(logs[0].time);
-        const endTime = convertTimeToMillis(logs[logs.length - 1].time);
-
-        return endTime - startTime;
-    };
-
-    function getFightDuration(selectedLog: Fight) {
-        const fightDurationMilliseconds = calculateFightDuration(selectedLog!.data);
-        const duration = new Date(Date.UTC(0, 0, 0, 0, 0, 0, fightDurationMilliseconds));
-        const minutes = duration.getUTCMinutes();
-        const seconds = duration.getUTCSeconds();
-        const milliseconds = duration.getUTCMilliseconds();
-
-        const formattedDuration = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${milliseconds}`;
-        return formattedDuration;
-    }
 
     const handleParse = async (fileContent: string) => {
         setParseInProgress(true);
@@ -74,7 +48,7 @@ function App() {
         worker.postMessage({type: 'getItem', index});
     };
 
-    const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
+    const handleTabChange = (event: React.ChangeEvent<{}>, newValue: TabsEnum) => {
         setSelectedTab(newValue);
     };
 
@@ -144,102 +118,26 @@ function App() {
                     textColor="primary"
                     variant="fullWidth" // Maybe should be scrollable for mobile as we add more?
                 >
-                    <Tab
-                        label="My Damage"
-                        value="DamageDone"
-                        style={{
-                            color: selectedTab === 'DamageDone' ? 'lightblue' : 'white',
-                        }}
-                    />
-                    <Tab
-                        label="Damage Taken"
-                        value="DamageTaken"
-                        style={{
-                            color: selectedTab === 'DamageTaken' ? 'lightblue' : 'white',
-                        }}
-                    />
-                    <Tab
-                        label="Boosts"
-                        value="Boosts"
-                        style={{
-                            color: selectedTab === 'Boosts' ? 'lightblue' : 'white',
-                        }}
-                    />
-                    <Tab
-                        label="Group Damage"
-                        value="GroupDamage"
-                        style={{
-                            color: selectedTab === 'GroupDamage' ? 'lightblue' : 'white',
-                        }}
-                    />
-                    <Tab
-                        label="Events"
-                        value="Events"
-                        style={{
-                            color: selectedTab === 'Events' ? 'lightblue' : 'white',
-                        }}
-                    />
+                    {Object.values(TabsEnum).map((tab) => (
+                        <Tab
+                            key={tab}
+                            label={tab}
+                            value={tab}
+                            style={{
+                                color: selectedTab === tab ? 'lightblue' : 'white',
+                            }}
+                        />
+                    ))}
                 </Tabs>
 
                 <div>
                     <p>Fight Duration: {fightDuration}</p>
                 </div>
-                {selectedTab === 'DamageDone' && (
-                    <DamageDone
-                        selectedLogs={{
-                            ...selectedLogs!,
-                            data: selectedLogs?.data.filter(
-                                (log) =>
-                                    (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
-                                        Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!)) &&
-                                    log.target !== selectedLogs?.loggedInPlayer
-                            )!,
-                        }}
-                    />
-                )}
-                {selectedTab === 'DamageTaken' && (
-                    <DamageDone
-                        selectedLogs={{
-                            ...selectedLogs!,
-                            data: selectedLogs?.data.filter(
-                                (log) =>
-                                    (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
-                                        Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!)) &&
-                                    log.target === selectedLogs?.loggedInPlayer
-                            )!,
-                        }}
-                    />
-                )}
-                {selectedTab === 'Boosts' && (
-                    <div className="damage-done-container">
-                        <BoostsChart fight={{
-                            ...selectedLogs!,
-                            data: selectedLogs?.data.filter((log) => log.boostedLevels) || [],
-                        }} />
-                    </div>
-                )}
-                {selectedTab === 'GroupDamage' && (
-                    <div>
-                        <div className="damage-done-container">
-                            <GroupDamagePieChart selectedLogs={selectedLogs!}/>
-                        </div>
-                        <DamageDone
-                            selectedLogs={{
-                                ...selectedLogs!,
-                                data: selectedLogs?.data.filter(
-                                    (log) =>
-                                        (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
-                                            Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!) ||
-                                            Object.values(DamageOtherHitsplats).includes(log.hitsplatName!)) &&
-                                        selectedLogs.enemies.includes(log.target!)
-                                )!,
-                            }}
-                        />
-                    </div>
-                )}
-                {selectedTab === 'Events' && (
-                    <EventsTable logs={selectedLogs?.data || []} height={"80vh"} showSource={true}/>
-                )}
+                {selectedTab === TabsEnum.DAMAGE_DONE && <DamageDoneTab selectedLogs={selectedLogs}/>}
+                {selectedTab === TabsEnum.DAMAGE_TAKEN && <DamageTakenTab selectedLogs={selectedLogs}/>}
+                {selectedTab === TabsEnum.BOOSTS && <BoostsTab selectedLogs={selectedLogs}/>}
+                {selectedTab === TabsEnum.GROUP_DAMAGE && <GroupDamageTab selectedLogs={selectedLogs}/>}
+                {selectedTab === TabsEnum.EVENTS && <EventsTab selectedLogs={selectedLogs.data}/>}
             </header>
         </div>
     );

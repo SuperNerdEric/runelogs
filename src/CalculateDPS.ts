@@ -1,4 +1,4 @@
-import {Fight} from "./FileParser";
+import {Fight} from "./models/Fight";
 
 export function calculateDPS(fight: Fight): number {
     const startTime = fight.data[0]?.date + ' ' + fight.data[0]?.time;

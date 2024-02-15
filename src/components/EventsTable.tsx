@@ -1,6 +1,6 @@
 import React from 'react';
-import { TableContainer, Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
-import { Fight } from '../FileParser';
+import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
+import {Fight} from "../models/Fight";
 
 interface EventsTableProps {
     logs: Fight['data'];
@@ -8,11 +8,11 @@ interface EventsTableProps {
     showSource?: boolean;
 }
 
-const EventsTable: React.FC<EventsTableProps> = ({ logs, height = '500px', showSource = false }) => {
+const EventsTable: React.FC<EventsTableProps> = ({logs, height = '500px', showSource = false}) => {
     return (
-        <div className="logs-box" style={{ height, overflowY: 'auto' }}>
+        <div className="logs-box" style={{height, overflowY: 'auto'}}>
             <TableContainer>
-                <Table style={{ tableLayout: 'auto' }} >
+                <Table style={{tableLayout: 'auto'}}>
                     <TableHead>
                         <TableRow>
                             <TableCell>Date</TableCell>

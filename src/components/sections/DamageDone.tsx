@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {Fight} from "../../FileParser";
 import HitDistributionChart from "../charts/HitDistributionChart";
 import EventsTable from "../EventsTable";
 import {calculateDPS} from "../../CalculateDPS";
 import DPSChart from "../charts/DPSChart";
+import {Fight} from "../../models/Fight";
 
 interface LogsSelectionProps {
     selectedLogs: Fight;

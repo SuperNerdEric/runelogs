@@ -1,4 +1,5 @@
-import {LogLine, parseLogLine} from "../FileParser";
+import {LogLine} from "../models/LogLine";
+import {parseLogLine} from "../utils/FileParser";
 
 describe('parseLogLine', () => {
     test('should parse a death log line', () => {

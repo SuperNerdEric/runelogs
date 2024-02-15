@@ -1,39 +1,7 @@
 import {logSplitter} from "./LogSplitter";
-
-export interface Fight {
-    name: string;
-    data: LogLine[];
-    enemies: string[];
-    loggedInPlayer: string;
-
-    // Just for easy reference later
-    firstLine: LogLine | undefined;
-    lastLine: LogLine | undefined;
-}
-
-export interface BoostedLevels {
-    attack: number;
-    strength: number;
-    defence: number;
-    ranged: number;
-    magic: number;
-    hitpoints: number;
-    prayer: number;
-}
-
-export interface LogLine {
-    date: string;
-    time: string;
-    timezone: string;
-    target?: string;
-    loggedInPlayer?: string;
-    logVersion?: string;
-    hitsplatName?: string;
-    damageAmount?: number;
-    boostedLevels?: BoostedLevels;
-    playerEquipment?: string;
-    source?: string;
-}
+import {Fight} from "../models/Fight";
+import {LogLine} from "../models/LogLine";
+import {BoostedLevels} from "../models/BoostedLevels";
 
 export const parseLogLine = (logLine: string): LogLine | null => {
     const DATE_PATTERN = '\\d{2}-\\d{2}-\\d{4}';
@@ -181,7 +149,6 @@ export function parseFileContent(fileContent: string, progressCallback: (progres
 
         let fights: Fight[] = logSplitter(fightData, progressCallback);
 
-        console.log(fights);
         return fights;
     } catch (error) {
         console.error('Error parsing file content:', error);
