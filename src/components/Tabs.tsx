@@ -5,7 +5,7 @@ import BoostsChart from "./charts/BoostsChart";
 import GroupDamagePieChart from "./charts/GroupDamagePieChart";
 import EventsTable from "./EventsTable";
 import {Fight} from "../models/Fight";
-import {BoostedLevelsLog, filterByType, LogLine, LogTypes} from "../models/LogLine";
+import {BoostedLevelsLog, filterByType, LogTypes} from "../models/LogLine";
 
 export enum TabsEnum {
     DAMAGE_DONE = 'My Damage',
