@@ -1,17 +1,24 @@
 {
   "files": {
-    "main.css": "/static/css/main.3acefd7a.css",
-    "main.js": "/static/js/main.f9f5f8fd.js",
-    "static/js/56.f3698249.chunk.js": "/static/js/56.f3698249.chunk.js",
+    "main.css": "/static/css/main.c88d0040.css",
+    "main.js": "/static/js/main.f5c8d923.js",
+    "static/js/220.3d663f60.chunk.js": "/static/js/220.3d663f60.chunk.js",
     "static/js/592.cb0fcaba.chunk.js": "/static/js/592.cb0fcaba.chunk.js",
     "index.html": "/index.html",
-    "main.3acefd7a.css.map": "/static/css/main.3acefd7a.css.map",
-    "main.f9f5f8fd.js.map": "/static/js/main.f9f5f8fd.js.map",
-    "56.f3698249.chunk.js.map": "/static/js/56.f3698249.chunk.js.map",
+    "static/media/Ranged.webp": "/static/media/Ranged.ab155716eafdd466a7b8.webp",
+    "static/media/Magic.webp": "/static/media/Magic.2e9c576d3d43a745a917.webp",
+    "static/media/Strength.webp": "/static/media/Strength.ab398a022a216bbd1f5e.webp",
+    "static/media/Prayer.webp": "/static/media/Prayer.7cbd45bc24608db5c311.webp",
+    "static/media/Attack.webp": "/static/media/Attack.041834712af597fa9ea2.webp",
+    "static/media/Hitpoints.webp": "/static/media/Hitpoints.4ed77f5a33cc26a85e31.webp",
+    "static/media/Defence.webp": "/static/media/Defence.d0c59b568f7c3f0369f2.webp",
+    "main.c88d0040.css.map": "/static/css/main.c88d0040.css.map",
+    "main.f5c8d923.js.map": "/static/js/main.f5c8d923.js.map",
+    "220.3d663f60.chunk.js.map": "/static/js/220.3d663f60.chunk.js.map",
     "592.cb0fcaba.chunk.js.map": "/static/js/592.cb0fcaba.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.3acefd7a.css",
-    "static/js/main.f9f5f8fd.js"
+    "static/css/main.c88d0040.css",
+    "static/js/main.f5c8d923.js"
   ]
 }
