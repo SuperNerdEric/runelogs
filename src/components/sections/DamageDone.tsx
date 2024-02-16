@@ -34,7 +34,7 @@ const DamageDone: React.FC<LogsSelectionProps> = ({selectedLogs}) => {
                         </div>
                         <p>DPS: {isNaN(dps) || !isFinite(dps) ? 'N/A' : dps.toFixed(3)}</p>
                     </div>
-                    <EventsTable logs={selectedLogs.data}/>
+                    <EventsTable fight={selectedLogs}/>
                 </div>
             )}
         </div>

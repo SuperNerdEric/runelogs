@@ -1,7 +1,6 @@
 import {logSplitter} from "./LogSplitter";
 import {Fight} from "../models/Fight";
-import {LogLine} from "../models/LogLine";
-import {BoostedLevels} from "../models/BoostedLevels";
+import {LogLine, LogTypes} from "../models/LogLine";
 
 export const parseLogLine = (logLine: string): LogLine | null => {
     const DATE_PATTERN = '\\d{2}-\\d{2}-\\d{4}';
@@ -27,6 +26,7 @@ export const parseLogLine = (logLine: string): LogLine | null => {
         const [, logVersion] = match;
         console.log(`Log Version ${logVersion}`);
         return {
+            type: LogTypes.LOG_VERSION,
             date,
             time,
             timezone,
@@ -38,6 +38,7 @@ export const parseLogLine = (logLine: string): LogLine | null => {
     if (match) {
         const [, loggedInPlayer] = match;
         return {
+            type: LogTypes.LOGGED_IN_PLAYER,
             date,
             time,
             timezone,
@@ -50,29 +51,30 @@ export const parseLogLine = (logLine: string): LogLine | null => {
     if (match) {
         const [, attack, strength, defence, ranged, magic, hitpoints, prayer] = match.map(Number);
 
-        const boostedLevels: BoostedLevels = {
-            attack,
-            strength,
-            defence,
-            ranged,
-            magic,
-            hitpoints,
-            prayer
-        };
-
         return {
+            type: LogTypes.BOOSTED_LEVELS,
             date,
             time,
             timezone,
-            boostedLevels
+            boostedLevels: {
+                attack,
+                strength,
+                defence,
+                ranged,
+                magic,
+                hitpoints,
+                prayer
+            }
         };
     }
 
     const playerEquipmentPattern = new RegExp(`Player equipment is (${ANYTHING_PATTERN})`)
     match = action.match(playerEquipmentPattern);
     if (match) {
-        const [, playerEquipment] = match;
+        const [, equpimentString] = match;
+        const playerEquipment: string[] = JSON.parse(equpimentString).map((item: number) => item.toString());
         return {
+            type: LogTypes.PLAYER_EQUIPMENT,
             date,
             time,
             timezone,
@@ -85,11 +87,11 @@ export const parseLogLine = (logLine: string): LogLine | null => {
     if (match) {
         const [, target] = match;
         return {
+            type: LogTypes.DEATH,
             date,
             time,
             timezone,
             target,
-            hitsplatName: "DEATH",
         };
     }
 
@@ -98,12 +100,12 @@ export const parseLogLine = (logLine: string): LogLine | null => {
     if (match) {
         const [, source, target] = match;
         return {
+            type: LogTypes.TARGET_CHANGE,
             date,
             time,
             timezone,
             source,
-            target,
-            hitsplatName: "CHANGE_TARGET",
+            target
         };
     }
 
@@ -118,6 +120,7 @@ export const parseLogLine = (logLine: string): LogLine | null => {
     const [, target, hitsplatName, damageAmount] = match;
 
     return {
+        type: LogTypes.DAMAGE,
         date,
         time,
         timezone,

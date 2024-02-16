@@ -1,6 +1,7 @@
 import React from 'react';
 import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
 import {Fight} from "../../models/Fight";
+import {filterByType, LogTypes} from "../../models/LogLine";
 
 interface HitDistributionChartProps {
     fight: Fight;
@@ -34,7 +35,8 @@ const CustomTooltip: React.FC<any> = ({active, payload, label}) => {
 };
 
 const HitDistributionChart: React.FC<HitDistributionChartProps> = ({fight}) => {
-    const hitsplatAmounts = fight.data.map((log) => log.damageAmount || 0);
+    const filteredLogs = filterByType(fight.data, LogTypes.DAMAGE);
+    const hitsplatAmounts = filteredLogs.map((log) => log.damageAmount);
 
     const data = hitsplatAmounts.reduce((acc, amount) => {
         acc[amount] = (acc[amount] || 0) + 1;

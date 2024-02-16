@@ -1,4 +1,4 @@
-import {LogLine} from "../models/LogLine";
+import {LogLine, LogTypes} from "../models/LogLine";
 import {logSplitter} from "../utils/LogSplitter";
 import {Fight} from "../models/Fight";
 
@@ -9,6 +9,7 @@ describe("logSplitter", () => {
         const formattedTime = `${currentTime.getUTCHours()}:${currentTime.getUTCMinutes()}:${currentTime.getUTCSeconds()}.${currentTime.getUTCMilliseconds()}`;
 
         return {
+            type: LogTypes.DAMAGE,
             date: "02-04-2024",  // You might want to update this as well
             time: formattedTime,
             timezone: "",
@@ -19,11 +20,11 @@ describe("logSplitter", () => {
     };
 
     const generatedeath = (target: string): LogLine => ({
+        type: LogTypes.DEATH,
         date: "02-04-2024",
         time: new Date().toLocaleTimeString(),
         timezone: "",
         target,
-        hitsplatName: "DEATH",
     });
 
 

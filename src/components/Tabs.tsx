@@ -5,7 +5,7 @@ import BoostsChart from "./charts/BoostsChart";
 import GroupDamagePieChart from "./charts/GroupDamagePieChart";
 import EventsTable from "./EventsTable";
 import {Fight} from "../models/Fight";
-import {LogLine} from "../models/LogLine";
+import {BoostedLevelsLog, filterByType, LogLine, LogTypes} from "../models/LogLine";
 
 export enum TabsEnum {
     DAMAGE_DONE = 'My Damage',
@@ -16,13 +16,14 @@ export enum TabsEnum {
 }
 
 export const DamageDoneTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}) => {
+    const filteredLogs = filterByType(selectedLogs.data, LogTypes.DAMAGE);
     return <DamageDone
         selectedLogs={{
             ...selectedLogs!,
-            data: selectedLogs?.data.filter(
+            data: filteredLogs?.filter(
                 (log) =>
-                    (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
-                        Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!)) &&
+                    (Object.values(DamageMeHitsplats).includes(log.hitsplatName) ||
+                        Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName)) &&
                     log.target !== selectedLogs?.loggedInPlayer
             )!,
         }}
@@ -30,10 +31,11 @@ export const DamageDoneTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs})
 };
 
 export const DamageTakenTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}) => {
+    const filteredLogs = filterByType(selectedLogs.data, LogTypes.DAMAGE);
     return <DamageDone
         selectedLogs={{
             ...selectedLogs!,
-            data: selectedLogs?.data.filter(
+            data: filteredLogs.filter(
                 (log) =>
                     (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
                         Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!)) &&
@@ -44,17 +46,19 @@ export const DamageTakenTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}
 };
 
 export const BoostsTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}) => {
+    const filteredLogs = filterByType(selectedLogs.data, LogTypes.BOOSTED_LEVELS);
     return (
         <div className="damage-done-container">
             <BoostsChart fight={{
                 ...selectedLogs!,
-                data: selectedLogs?.data.filter((log) => log.boostedLevels) || [],
+                data: filteredLogs?.filter((log) => log.boostedLevels) as BoostedLevelsLog[],
             }}/>
         </div>
     );
 };
 
 export const GroupDamageTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}) => {
+    const filteredLogs = filterByType(selectedLogs.data, LogTypes.DAMAGE);
     return (
         <div>
             <div className="damage-done-container">
@@ -63,7 +67,7 @@ export const GroupDamageTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}
             <DamageDone
                 selectedLogs={{
                     ...selectedLogs!,
-                    data: selectedLogs?.data.filter(
+                    data: filteredLogs?.filter(
                         (log) =>
                             (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
                                 Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!) ||
@@ -76,6 +80,6 @@ export const GroupDamageTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}
     );
 };
 
-export const EventsTab: React.FC<{ selectedLogs: LogLine[] }> = ({selectedLogs}) => {
-    return <EventsTable logs={selectedLogs} height={'80vh'} showSource={true}/>;
+export const EventsTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}) => {
+    return <EventsTable fight={selectedLogs} height={'80vh'} showSource={true}/>;
 };

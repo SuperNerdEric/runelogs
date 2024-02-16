@@ -3,7 +3,7 @@ import {Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} fro
 import {pairs as d3Pairs} from 'd3-array';
 import {Fight} from "../../models/Fight";
 import {BoostedLevels} from "../../models/BoostedLevels";
-import {LogLine} from "../../models/LogLine";
+import {BoostedLevelsLog, filterByType, LogLine, LogTypes} from "../../models/LogLine";
 
 interface DPSChartProps {
     fight: Fight;
@@ -43,31 +43,33 @@ export function calculateWeightedAverages(fight: Fight) {
     const endDate = new Date(endTime);
     const totalTimeInSeconds = (endDate.getTime() - startDate.getTime()) / 1000;
 
-    const pairs = d3Pairs(fight.data);
+    const filteredLogs = filterByType(fight.data, LogTypes.BOOSTED_LEVELS);
+    const pairs: [LogLine, LogLine][] = d3Pairs(filteredLogs);
 
-    // Create one more pair between the last and end of the fight
-    pairs.push([fight.data[fight.data.length - 1], fight.lastLine!])
+    if (pairs && pairs.length > 0) {
+        // Create one more pair between the last and end of the fight
+        pairs.push([fight.data[fight.data.length - 1], fight.lastLine!])
 
-    pairs.forEach(pair => {
-        const startTime = pair[0].date + " " + pair[0].time;
-        const endTime = pair[1].date + " " + pair[1].time;
-        const startDate = new Date(startTime);
-        const endDate = new Date(endTime);
-        const timeDiffInSeconds = (endDate.getTime() - startDate.getTime()) / 1000;
+        pairs.forEach(pair => {
+            const startTime = pair[0].date + " " + pair[0].time;
+            const endTime = pair[1].date + " " + pair[1].time;
+            const startDate = new Date(startTime);
+            const endDate = new Date(endTime);
+            const timeDiffInSeconds = (endDate.getTime() - startDate.getTime()) / 1000;
 
-        for (const key in pair[0].boostedLevels) {
-            const value1 = pair[0].boostedLevels[key as keyof BoostedLevels];
-            const weightedValue = value1 * (timeDiffInSeconds / totalTimeInSeconds);
+            for (const key in (pair[0] as BoostedLevelsLog).boostedLevels) {
+                const value1 = (pair[0] as BoostedLevelsLog).boostedLevels[key as keyof BoostedLevels];
+                const weightedValue = value1 * (timeDiffInSeconds / totalTimeInSeconds);
 
-            const existingStat = weightedValues.find(item => item.stat === key as keyof BoostedLevels);
-            if (existingStat) {
-                existingStat.values.push({weightedValue});
-            } else {
-                weightedValues.push({stat: key as keyof BoostedLevels, values: [{weightedValue}]});
+                const existingStat = weightedValues.find(item => item.stat === key as keyof BoostedLevels);
+                if (existingStat) {
+                    existingStat.values.push({weightedValue});
+                } else {
+                    weightedValues.push({stat: key as keyof BoostedLevels, values: [{weightedValue}]});
+                }
             }
-        }
-    })
-
+        })
+    }
 
     const averages: Partial<BoostedLevels> = {};
 
@@ -84,8 +86,9 @@ export function calculateWeightedAverages(fight: Fight) {
 }
 
 const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
+    const filteredLogs = filterByType(fight.data, LogTypes.BOOSTED_LEVELS);
 
-    let boostedLevelsData = fight.data.map((log: LogLine) => ({
+    let boostedLevelsData = filteredLogs.map((log: BoostedLevelsLog) => ({
         timestamp: log.time,
         attack: log.boostedLevels?.attack || 0,
         strength: log.boostedLevels?.strength || 0,

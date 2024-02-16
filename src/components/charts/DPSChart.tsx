@@ -2,7 +2,7 @@ import React from 'react';
 import {Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
 import {convertTimeToMillis} from "../../utils/utils";
 import {Fight} from "../../models/Fight";
-import {LogLine} from "../../models/LogLine";
+import {DamageLog, filterByType, LogTypes} from "../../models/LogLine";
 
 interface DPSChartProps {
     fight: Fight;
@@ -37,7 +37,7 @@ const CustomTooltip: React.FC<any> = ({active, payload, label}) => {
     return null;
 };
 
-export const calculateDPSByInterval = (data: LogLine[], interval: number) => {
+export const calculateDPSByInterval = (data: DamageLog[], interval: number) => {
     const dpsData: { timestamp: number; dps: number }[] = [];
 
     if (data && data.length > 0) {
@@ -73,7 +73,8 @@ export const calculateDPSByInterval = (data: LogLine[], interval: number) => {
 
 
 const DPSChart: React.FC<DPSChartProps> = ({fight}) => {
-    const dpsData = calculateDPSByInterval(fight.data, 6000); // 6 second interval
+    const filteredLogs = filterByType(fight.data, LogTypes.DAMAGE);
+    const dpsData = calculateDPSByInterval(filteredLogs, 6000); // 6 second interval
 
     const tickInterval = Math.ceil(dpsData.length / 5);
 

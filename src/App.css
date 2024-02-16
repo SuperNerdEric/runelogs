@@ -87,11 +87,13 @@
 }
 
 .logs-box {
-    color: white;
-    width: 1300px;
+    color: #e1f2f5;
+    width: 1000px;
+    background: black;
+    margin-bottom: 80px;
 }
 
-@media (max-width: 1350px) {
+@media (max-width: 1050px) {
     .logs-box {
         max-width: 95vw;
     }
@@ -103,13 +105,53 @@
 
 .logs-box th,
 .logs-box td {
-    border: 1px solid white;
-    padding: calc(1px + 0.8vmin);
+    border: 1px solid grey;
     color: white;
-    font-size: calc(2px + 2vmin);
-    text-align: center;
+    font-size: calc(13px);
+    text-align: left;
+    line-height: 20px;
     whiteSpace: 'normal';
     wordWrap: 'break-word';
+    font-family: Avenir,Arial,sans-serif !important;
+}
+
+.MuiTableCell-root {
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+}
+
+.logs-text {
+    color: #e5cc80 !important;
+}
+
+.even-row {
+    background-color: #101010;
+}
+
+.odd-row {
+
+}
+
+.damage-amount {
+    color: rgb(92%, 27%, 38%);
+}
+
+.hitsplat-name {
+    color: #e5cc80;
+}
+
+.logged-in-player-text {
+    color: #abd473 !important;
+}
+
+.other-text {
+    color: #b4bdff !important;
+}
+
+.highlighted-row {
+    background-color: rgb(0, 32, 64);
 }
 
 .recharts-cartesian-axis .recharts-text {

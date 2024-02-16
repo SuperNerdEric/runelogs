@@ -1,4 +1,4 @@
-import {LogLine} from "../models/LogLine";
+import {DamageLog, LogLine, LogTypes} from "../models/LogLine";
 import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
 import {Fight} from "../models/Fight";
 import {BoostedLevels} from "../models/BoostedLevels";
@@ -18,7 +18,10 @@ const BOSS_NAMES = [
     "Abyssal Sire"
 ];
 
-function doesAttemptDamage(log: LogLine) {
+/**
+ * If it is the logged in player that dealt/attempted the damage
+ */
+function playerAttemptsDamage(log: DamageLog) {
     return Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
         Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!) ||
         log.hitsplatName === 'BLOCK_ME';
@@ -32,15 +35,20 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     let currentFight: Fight | null = null;
     let player: string = ""; //todo support multiple players
     let lastDamage: { time: string, index: number } | null = null;
-    let boostedLevels: BoostedLevels;
+    let boostedLevels: BoostedLevels | undefined;
+    let playerEquipment: string[] | undefined;
 
     for (const logLine of fightData) {
-        if (logLine.loggedInPlayer) {
+        if (logLine.type === LogTypes.LOGGED_IN_PLAYER) {
             player = logLine.loggedInPlayer;
         }
 
-        if (logLine.boostedLevels) {
+        if (logLine.type === LogTypes.BOOSTED_LEVELS) {
             boostedLevels = logLine.boostedLevels;
+        }
+
+        if (logLine.type === LogTypes.PLAYER_EQUIPMENT) {
+            playerEquipment = logLine.playerEquipment;
         }
 
         // If there's a gap of over 60 seconds end the current fight
@@ -55,18 +63,36 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         }
 
         // If the current fight is null, start a new fight
-        if (!currentFight && doesAttemptDamage(logLine) && logLine.target !== player) {
+        if (!currentFight && logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine) && logLine.target !== player) {
+            const initialData: LogLine[] = [];
+
+            // Include current boosted levels at the beginning of the fight
+            if (boostedLevels) {
+                initialData.push({
+                    type: LogTypes.BOOSTED_LEVELS,
+                    date: logLine.date,
+                    time: logLine.time,
+                    timezone: logLine.timezone,
+                    boostedLevels: boostedLevels
+                });
+            }
+
+            // Include current player equipment at the beginning of the fight
+            if (playerEquipment) {
+                initialData.push({
+                    type: LogTypes.PLAYER_EQUIPMENT,
+                    date: logLine.date,
+                    time: logLine.time,
+                    timezone: logLine.timezone,
+                    playerEquipment: playerEquipment
+                });
+            }
+
             currentFight = {
-                name: logLine.target!,
-                enemies: [logLine.target!],
+                name: logLine.target,
+                enemies: [logLine.target],
                 data: [
-                    // Include current boosted levels at the beginning of the fight
-                    {
-                        date: logLine.date,
-                        time: logLine.time,
-                        timezone: logLine.timezone,
-                        boostedLevels: boostedLevels!
-                    },
+                    ...initialData,
                     logLine
                 ],
                 loggedInPlayer: player,
@@ -75,24 +101,24 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             };
         } else if (currentFight) {
             // Rename the fight if we encounter a boss in the middle of it
-            if (BOSS_NAMES.includes(logLine.target!) && currentFight.name !== logLine.target) {
+            if ("target" in logLine && BOSS_NAMES.includes(logLine.target!) && currentFight.name !== logLine.target) {
                 currentFight.name = logLine.target!;
             }
             // Add target to list of enemies
-            if (doesAttemptDamage(logLine) && logLine.target !== player && !currentFight.enemies.includes(logLine.target!)) {
+            if (logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine) && logLine.target !== player && !currentFight.enemies.includes(logLine.target!)) {
                 currentFight.enemies.push(logLine.target!);
             }
             currentFight.data.push(logLine);
         }
 
-        if (currentFight && doesAttemptDamage(logLine)) {
+        if (currentFight && logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine)) {
             lastDamage = {
                 time: logLine.time,
                 index: currentFight.data.length - 1
             };
         }
 
-        if (logLine.target && logLine.hitsplatName === "DEATH") {
+        if (logLine.type === LogTypes.DEATH && logLine.target) {
             // If the fight name dies, end the current fight
             if (currentFight && (logLine.target === currentFight.name || logLine.target === currentFight.loggedInPlayer)) {
                 currentFight.lastLine = logLine;
@@ -114,8 +140,8 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         fights.push(currentFight);
     }
 
-    // Filter out fights with no damage
-    return fights.filter((fight) => fight.data.some((log) =>
-        doesAttemptDamage(log)
+    // Filter out fights with no damage from us
+    return fights.filter((fight) => fight.data.some((logLine) =>
+        logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine)
     ));
 }

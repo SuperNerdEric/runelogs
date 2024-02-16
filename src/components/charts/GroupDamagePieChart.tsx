@@ -2,6 +2,7 @@ import React from 'react';
 import {Cell, Pie, PieChart, ResponsiveContainer, Tooltip} from 'recharts';
 import {DamageMaxMeHitsplats, DamageMeHitsplats, DamageOtherHitsplats} from "../../HitsplatNames";
 import {Fight} from "../../models/Fight";
+import {filterByType, LogTypes} from "../../models/LogLine";
 
 interface GroupDamagePieChartProps {
     selectedLogs: Fight;
@@ -39,7 +40,8 @@ const GroupDamagePieChart: React.FC<GroupDamagePieChartProps> = ({selectedLogs})
         let damageByMe = 0;
         let damageByOthers = 0;
 
-        selectedLogs.data.forEach((log) => {
+        const filteredLogs = filterByType(selectedLogs.data, LogTypes.DAMAGE);
+        filteredLogs.forEach((log) => {
             if ((Object.values(DamageMeHitsplats).includes(log.hitsplatName!) || Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!))) {
                 damageByMe += log.damageAmount || 0;
             } else if (Object.values(DamageOtherHitsplats).includes(log.hitsplatName!)) {

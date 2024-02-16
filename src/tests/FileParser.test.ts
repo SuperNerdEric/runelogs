@@ -1,15 +1,15 @@
-import {LogLine} from "../models/LogLine";
+import {BoostedLevelsLog, DamageLog, DeathLog, LoggedInPlayerLog, LogTypes, TargetChangeLog} from "../models/LogLine";
 import {parseLogLine} from "../utils/FileParser";
 
 describe('parseLogLine', () => {
     test('should parse a death log line', () => {
         const logLine = '02-04-2024 01:19:01.807 CST\tScurrius dies';
-        const expectedParsedData: LogLine = {
+        const expectedParsedData: DeathLog = {
+            type: LogTypes.DEATH,
             date: '02-04-2024',
             time: '01:19:01.807',
             timezone: 'CST',
             target: 'Scurrius',
-            hitsplatName: 'DEATH',
         };
 
         const parsedData = parseLogLine(logLine);
@@ -19,13 +19,13 @@ describe('parseLogLine', () => {
 
     test('should parse a target change log line', () => {
         const logLine = '02-04-2024 01:19:22.804 CST\tScurrius changes target to Million Pies';
-        const expectedParsedData: LogLine = {
+        const expectedParsedData: TargetChangeLog = {
+            type: LogTypes.TARGET_CHANGE,
             date: '02-04-2024',
             time: '01:19:22.804',
             timezone: 'CST',
             source: 'Scurrius',
             target: 'Million Pies',
-            hitsplatName: 'CHANGE_TARGET',
         };
 
         const parsedData = parseLogLine(logLine);
@@ -35,7 +35,8 @@ describe('parseLogLine', () => {
 
     test('should parse a hitsplat log line', () => {
         const logLine = '02-04-2024 01:18:11.404 CST\tScurrius\tDAMAGE_ME\t15';
-        const expectedParsedData: LogLine = {
+        const expectedParsedData: DamageLog = {
+            type: LogTypes.DAMAGE,
             date: '02-04-2024',
             time: '01:18:11.404',
             timezone: 'CST',
@@ -51,7 +52,8 @@ describe('parseLogLine', () => {
 
     test('should parse a player logged in log line', () => {
         const logLine = '02-06-2024 15:55:30.219 CST\tLogged in player is Million Pies';
-        const expectedParsedData: LogLine = {
+        const expectedParsedData: LoggedInPlayerLog = {
+            type: LogTypes.LOGGED_IN_PLAYER,
             date: '02-06-2024',
             time: '15:55:30.219',
             timezone: 'CST',
@@ -65,7 +67,8 @@ describe('parseLogLine', () => {
 
     test('should parse a boosted levels log line', () => {
         const logLine = '02-14-2024 10:12:23.702 CST\tBoosted levels are [1, 2, 3, 40, 99, 89, 71]';
-        const expectedParsedData: LogLine = {
+        const expectedParsedData: BoostedLevelsLog = {
+            type: LogTypes.BOOSTED_LEVELS,
             date: '02-14-2024',
             time: '10:12:23.702',
             timezone: 'CST',

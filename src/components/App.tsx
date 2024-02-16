@@ -137,7 +137,7 @@ function App() {
                 {selectedTab === TabsEnum.DAMAGE_TAKEN && <DamageTakenTab selectedLogs={selectedLogs}/>}
                 {selectedTab === TabsEnum.BOOSTS && <BoostsTab selectedLogs={selectedLogs}/>}
                 {selectedTab === TabsEnum.GROUP_DAMAGE && <GroupDamageTab selectedLogs={selectedLogs}/>}
-                {selectedTab === TabsEnum.EVENTS && <EventsTab selectedLogs={selectedLogs.data}/>}
+                {selectedTab === TabsEnum.EVENTS && <EventsTab selectedLogs={selectedLogs}/>}
             </header>
         </div>
     );
