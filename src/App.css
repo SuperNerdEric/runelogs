@@ -162,6 +162,10 @@
     @apply text-sm;
 }
 
+.recharts-pie-label-text {
+    font-size: calc(12px + 0.5vmin);
+}
+
 .loading-indicator-container {
     display: flex;
     justify-content: center;
@@ -189,4 +193,14 @@
     position: absolute;
     text-align: left;
     padding-left: 8px;
+}
+
+.recharts-tooltip-wrapper {
+    background: #101010;
+    padding: 5px 8px;
+    border: 3px solid grey;
+    border-radius: 1px;
+    font-size: 18px;
+    text-align: left;
+    color: white;
 }

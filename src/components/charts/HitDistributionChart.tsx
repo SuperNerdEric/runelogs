@@ -10,15 +10,7 @@ interface HitDistributionChartProps {
 const CustomTooltip: React.FC<any> = ({active, payload, label}) => {
     if (active && payload && payload.length) {
         return (
-            <div
-                style={{
-                    background: 'white',
-                    color: 'black',
-                    padding: '1px',
-                    border: '1px solid #ccc',
-                    borderRadius: '1px',
-                }}
-            >
+            <div>
                 <p style={{margin: '0'}}>
                     <strong>{label}</strong>
                 </p>

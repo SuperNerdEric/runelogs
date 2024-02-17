@@ -13,14 +13,7 @@ const CustomTooltip: React.FC<any> = ({active, payload, label}) => {
     if (active && payload && payload.length) {
 
         return (
-            <div
-                style={{
-                    background: '#1c1c1c',
-                    padding: '5px',
-                    border: '1px solid #ccc',
-                    borderRadius: '1px',
-                }}
-            >
+            <div>
                 {payload.map((entry: any, index: any) => (
                     <div key={`tooltip-entry-${index}`}
                          style={{marginTop: '0', marginBottom: '0', color: entry.color, lineHeight: '1'}}>

@@ -13,15 +13,7 @@ const CustomTooltip: React.FC<any> = ({active, payload, label}) => {
         const isoTimeString = new Date(label).toISOString().substr(11, 12);
 
         return (
-            <div
-                style={{
-                    background: 'white',
-                    color: 'black',
-                    padding: '1px',
-                    border: '1px solid #ccc',
-                    borderRadius: '1px',
-                }}
-            >
+            <div>
                 <p style={{margin: '0'}}>
                     <strong>{isoTimeString}</strong>
                 </p>
