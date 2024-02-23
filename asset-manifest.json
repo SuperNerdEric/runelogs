@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.css": "/static/css/main.ca36e160.css",
-    "main.js": "/static/js/main.cea9dd57.js",
-    "static/js/220.3d663f60.chunk.js": "/static/js/220.3d663f60.chunk.js",
+    "main.css": "/static/css/main.22aec22f.css",
+    "main.js": "/static/js/main.27491c5b.js",
+    "static/js/220.86e9a12c.chunk.js": "/static/js/220.86e9a12c.chunk.js",
     "static/js/592.cb0fcaba.chunk.js": "/static/js/592.cb0fcaba.chunk.js",
     "index.html": "/index.html",
     "static/media/Ranged.webp": "/static/media/Ranged.ab155716eafdd466a7b8.webp",
@@ -12,13 +12,13 @@
     "static/media/Attack.webp": "/static/media/Attack.041834712af597fa9ea2.webp",
     "static/media/Hitpoints.webp": "/static/media/Hitpoints.4ed77f5a33cc26a85e31.webp",
     "static/media/Defence.webp": "/static/media/Defence.d0c59b568f7c3f0369f2.webp",
-    "main.ca36e160.css.map": "/static/css/main.ca36e160.css.map",
-    "main.cea9dd57.js.map": "/static/js/main.cea9dd57.js.map",
-    "220.3d663f60.chunk.js.map": "/static/js/220.3d663f60.chunk.js.map",
+    "main.22aec22f.css.map": "/static/css/main.22aec22f.css.map",
+    "main.27491c5b.js.map": "/static/js/main.27491c5b.js.map",
+    "220.86e9a12c.chunk.js.map": "/static/js/220.86e9a12c.chunk.js.map",
     "592.cb0fcaba.chunk.js.map": "/static/js/592.cb0fcaba.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.ca36e160.css",
-    "static/js/main.cea9dd57.js"
+    "static/css/main.22aec22f.css",
+    "static/js/main.27491c5b.js"
   ]
 }
