@@ -97,7 +97,7 @@ function App() {
                 console.error("Error getting fight data from localforage:", error);
                 setLoadingStorage(false);
             });
-    }, []);
+    }, [fightsStorage]);
 
     if (loadingStorage) {
         return (

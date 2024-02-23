@@ -1,5 +1,5 @@
 import React from 'react';
-import {AppBar, Button, Toolbar} from "@mui/material";
+import {AppBar, Toolbar} from "@mui/material";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import DeleteIcon from '@mui/icons-material/Delete';
 import logo from '../assets/Logo.png';
