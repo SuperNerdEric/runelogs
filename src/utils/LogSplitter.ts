@@ -38,7 +38,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     let lastDamage: { time: string, index: number } | null = null;
     let boostedLevels: BoostedLevels | undefined;
     let playerEquipment: string[] | undefined;
-    let fightStartTime: number = 0;
+    let fightStartTime: Date;
 
     for (const logLine of fightData) {
         if (logLine.type === LogTypes.LOGGED_IN_PLAYER) {
@@ -66,7 +66,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
         // If the current fight is null, start a new fight
         if (!currentFight && logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine) && logLine.target !== player) {
-            fightStartTime = convertTimeToMillis(logLine.time);
+            fightStartTime = new Date(logLine.date + " " + logLine.time);
             logLine.fightTime = convertMillisToTime(0);
 
             const initialData: LogLine[] = [];
@@ -117,8 +117,8 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             }
 
             // Subtract the start time from the log's timestamp to get the relative time within the fight
-            const logTimestamp = convertTimeToMillis(logLine.time);
-            logLine.fightTime = convertMillisToTime(logTimestamp - fightStartTime);
+            const logDate = new Date(logLine.date + " " + logLine.time);
+            logLine.fightTime = convertMillisToTime(logDate.getTime() - fightStartTime!.getTime());
 
             currentFight.data.push(logLine);
         }
@@ -152,8 +152,27 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         fights.push(currentFight);
     }
 
-    // Filter out fights with no damage from us
-    return fights.filter((fight) => fight.data.some((logLine) =>
-        logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine)
-    ));
+    const fightNameCounts: Map<string, number> = new Map(); // Map to store counts of each fight name
+
+    const filteredFights = fights.filter((fight) => {
+        // If the fight has no damage logs from the player, discard it
+        const hasPlayerDamage = fight.data.some((logLine) =>
+            logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine)
+        );
+        if (!hasPlayerDamage) {
+            return false;
+        }
+
+        // Make fight names unique
+        let count = 1;
+        if (fightNameCounts.has(fight.name)) {
+            count = fightNameCounts.get(fight.name)! + 1;
+        }
+        fightNameCounts.set(fight.name, count);
+        fight.name = `${fight.name} - ${count}`;
+
+        return true;
+    });
+
+    return filteredFights;
 }

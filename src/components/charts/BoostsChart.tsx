@@ -4,6 +4,7 @@ import {pairs as d3Pairs} from 'd3-array';
 import {Fight} from "../../models/Fight";
 import {BoostedLevels} from "../../models/BoostedLevels";
 import {BoostedLevelsLog, filterByType, LogLine, LogTypes} from "../../models/LogLine";
+import {convertTimeToMillis} from "../../utils/utils";
 
 interface DPSChartProps {
     fight: Fight;
@@ -30,11 +31,12 @@ const CustomTooltip: React.FC<any> = ({active, payload, label}) => {
 
 export function calculateWeightedAverages(fight: Fight) {
     const weightedValues: Array<{ stat: keyof BoostedLevels, values: Array<{ weightedValue: number }> }> = [];
-    const startTime = fight.firstLine?.date + " " + fight.firstLine?.fightTime;
-    const endTime = fight.lastLine?.date + " " + fight.lastLine?.fightTime;
-    const startDate = new Date(startTime);
-    const endDate = new Date(endTime);
-    const totalTimeInSeconds = (endDate.getTime() - startDate.getTime()) / 1000;
+    const startTime = convertTimeToMillis(fight.firstLine.fightTime!);
+    const endTime = convertTimeToMillis(fight.lastLine.fightTime!);
+
+    // Calculate the time difference in seconds
+    const totalTimeInSeconds = (endTime - startTime) / 1000;
+    console.log(totalTimeInSeconds);
 
     const filteredLogs = filterByType(fight.data, LogTypes.BOOSTED_LEVELS);
     const pairs: [LogLine, LogLine][] = d3Pairs(filteredLogs);
@@ -44,11 +46,9 @@ export function calculateWeightedAverages(fight: Fight) {
         pairs.push([fight.data[fight.data.length - 1], fight.lastLine!])
 
         pairs.forEach(pair => {
-            const startTime = pair[0].date + " " + pair[0].fightTime;
-            const endTime = pair[1].date + " " + pair[1].fightTime;
-            const startDate = new Date(startTime);
-            const endDate = new Date(endTime);
-            const timeDiffInSeconds = (endDate.getTime() - startDate.getTime()) / 1000;
+            const startTime = convertTimeToMillis(pair[0].fightTime!);
+            const endTime = convertTimeToMillis(pair[1].fightTime!);
+            const timeDiffInSeconds = (endTime - startTime) / 1000;
 
             for (const key in (pair[0] as BoostedLevelsLog).boostedLevels) {
                 const value1 = (pair[0] as BoostedLevelsLog).boostedLevels[key as keyof BoostedLevels];
