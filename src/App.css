@@ -68,6 +68,11 @@
     text-decoration: none;
 }
 
+.instructions-container a:hover,
+.instructions-container a:hover span {
+    text-decoration: underline;
+}
+
 .instructions-container code {
     color: yellow;
 }
@@ -120,7 +125,7 @@
     line-height: 20px;
     whiteSpace: 'normal';
     wordWrap: 'break-word';
-    font-family: Avenir,Arial,sans-serif !important;
+    font-family: Avenir, Arial, sans-serif !important;
 }
 
 
@@ -179,7 +184,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 80vh;
 }
 
 .combobox-hover {
@@ -223,5 +228,13 @@
     line-height: 30px;
     whiteSpace: 'normal';
     wordWrap: 'break-word';
-    font-family: Avenir,Arial,sans-serif !important;
+    font-family: Avenir, Arial, sans-serif !important;
 }
+
+
+.MuiAppBar-root .MuiToolbar-root {
+    min-height: auto !important;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+

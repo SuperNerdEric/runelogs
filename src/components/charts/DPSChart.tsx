@@ -10,7 +10,12 @@ interface DPSChartProps {
 
 const CustomTooltip: React.FC<any> = ({active, payload, label}) => {
     if (active && payload && payload.length) {
-        const isoTimeString = new Date(label).toISOString().substr(11, 12);
+        const labelDate = new Date(label);
+        if (isNaN(labelDate.getTime())) {
+            return null;
+        }
+
+        const isoTimeString = labelDate.toISOString().substr(11, 12);
 
         return (
             <div>

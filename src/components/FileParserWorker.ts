@@ -1,10 +1,13 @@
 import {Fight} from "../models/Fight";
 import {parseFileContent} from "../utils/FileParser";
+import localforage from 'localforage';
 
-let parseResults: Fight[] | null = null;
+const fightsStorage = localforage.createInstance({
+    name: 'myFightData'
+});
 
 function parseFileWithProgress(fileContent: string) {
-    parseResults = parseFileContent(fileContent, (progress) => {
+    const parseResults = parseFileContent(fileContent, (progress) => {
         postMessage({type: 'progress', progress});
     });
 
@@ -13,14 +16,22 @@ function parseFileWithProgress(fileContent: string) {
         fightNames,
         firstResult: parseResults![0],
     }
+
     postMessage({type: 'parseResult', parseResultMessage});
+    fightsStorage.setItem('fightData', parseResults);
 }
 
 function getSpecificItem(index: number) {
-    if (parseResults && index >= 0 && index < parseResults.length) {
-        return parseResults[index];
-    }
-    return null;
+    fightsStorage.getItem<Fight[]>('fightData').then((parseResults: Fight[] | null) => {
+        if (parseResults && index >= 0 && index < parseResults.length) {
+            return parseResults[index];
+        }
+        return null;
+    }).then((item) => {
+        postMessage({type: 'item', item});
+    }).catch((error) => {
+        console.error("Error getting specific item:", error);
+    });
 }
 
 onmessage = (event) => {
@@ -28,7 +39,6 @@ onmessage = (event) => {
     if (type === 'parse') {
         parseFileWithProgress(fileContent);
     } else if (type === 'getItem') {
-        const item = getSpecificItem(index);
-        postMessage({type: 'item', item});
+        getSpecificItem(index);
     }
 };

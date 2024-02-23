@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import '../App.css';
 import Dropzone from './Dropzone';
 import {CircularProgress, Tab, Tabs} from '@mui/material';
@@ -6,8 +6,14 @@ import Instructions from "./Instructions";
 import Combobox from './Combobox';
 import {BoostsTab, DamageDoneTab, DamageTakenTab, EventsTab, GroupDamageTab, TabsEnum} from './Tabs';
 import {Fight} from "../models/Fight";
+import localforage from "localforage";
+import TopBar from "./TopBar";
 
 function App() {
+    const fightsStorage = localforage.createInstance({
+        name: 'myFightData'
+    });
+
     const [worker] = useState<Worker>(() => {
         const worker = new Worker(new URL("FileParserWorker.ts", import.meta.url));
 
@@ -33,6 +39,7 @@ function App() {
 
     const [parseInProgress, setParseInProgress] = useState<boolean>(false);
     const [parsingProgress, setParsingProgress] = useState<number>(0);
+    const [loadingStorage, setLoadingStorage] = useState<boolean>(true);
 
     const handleParse = async (fileContent: string) => {
         setParseInProgress(true);
@@ -46,6 +53,17 @@ function App() {
 
     const handleTabChange = (event: React.ChangeEvent<{}>, newValue: TabsEnum) => {
         setSelectedTab(newValue);
+    };
+
+    const handleDelete = () => {
+        // Delete data from localforage and reset states
+        fightsStorage.removeItem('fightData').then(() => {
+            setSelectedLogs(null);
+            setFightNames(null);
+            setLoadingStorage(false); // Reset loading state to trigger re-render
+        }).catch(error => {
+            console.error("Error deleting fight data from localforage:", error);
+        });
     };
 
     interface Option {
@@ -64,11 +82,43 @@ function App() {
         }
     }, [fightNames]);
 
+    useEffect(() => {
+        // Check if fight data exists in localforage
+        fightsStorage.getItem<Fight[]>('fightData')
+            .then((data: Fight[] | null) => {
+                if (data) {
+                    // If data exists, set it as selectedLogs
+                    setSelectedLogs(data[0]);
+                    setFightNames(data.map(fight => fight.name));
+                }
+                setLoadingStorage(false);
+            })
+            .catch((error: any) => {
+                console.error("Error getting fight data from localforage:", error);
+                setLoadingStorage(false);
+            });
+    }, []);
+
+    if (loadingStorage) {
+        return (
+            <div className="App">
+                <div className="App-body">
+                    <TopBar/>
+                    <div className="loading-indicator-container">
+                        <div className="loading-content">
+                            <CircularProgress/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     if (parseInProgress) {
         return (
             <div className="App">
-                <header className="App-body">
+                <div className="App-body">
+                    <TopBar/>
                     <div className="loading-indicator-container">
                         <div className="loading-content">
                             <p>Parsing logs...</p>
@@ -76,7 +126,7 @@ function App() {
                             <p>{Math.floor(parsingProgress)}%</p>
                         </div>
                     </div>
-                </header>
+                </div>
             </div>
         );
     }
@@ -84,17 +134,19 @@ function App() {
     if (!selectedLogs) {
         return (
             <div className="App">
-                <header className="App-body">
+                <div className="App-body">
+                    <TopBar/>
                     <Instructions/>
                     <Dropzone onParse={handleParse}/>
-                </header>
+                </div>
             </div>
         );
     }
 
     return (
         <div className="App">
-            <header className="App-body">
+            <div className="App-body">
+                <TopBar onDeleteData={handleDelete}/>
                 <label>{selectedLogs.name}</label>
                 <Combobox<Option>
                     id="monster-select"
@@ -134,7 +186,7 @@ function App() {
                 {selectedTab === TabsEnum.BOOSTS && <BoostsTab selectedLogs={selectedLogs}/>}
                 {selectedTab === TabsEnum.GROUP_DAMAGE && <GroupDamageTab selectedLogs={selectedLogs}/>}
                 {selectedTab === TabsEnum.EVENTS && <EventsTab selectedLogs={selectedLogs}/>}
-            </header>
+            </div>
         </div>
     );
 }
