@@ -97,7 +97,8 @@ function App() {
                 console.error("Error getting fight data from localforage:", error);
                 setLoadingStorage(false);
             });
-    }, [fightsStorage]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     if (loadingStorage) {
         return (
