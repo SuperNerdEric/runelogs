@@ -17,7 +17,10 @@ const BOSS_NAMES = [
     "Sarachnis",
     "Scorpia",
     "Abyssal Sire",
-    "Kraken"
+    "Kraken",
+    "Dagannoth Rex",
+    "Dagannoth Supreme",
+    "Dagannoth Prime"
 ];
 
 /**
