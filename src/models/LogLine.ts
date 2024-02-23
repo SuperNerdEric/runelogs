@@ -14,6 +14,7 @@ export interface BaseLog {
     date: string;
     time: string;
     timezone: string;
+    fightTime?: string;
 }
 
 export interface LogVersionLog extends BaseLog {

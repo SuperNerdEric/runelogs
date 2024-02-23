@@ -62,7 +62,16 @@ export const GroupDamageTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}
     return (
         <div>
             <div className="damage-done-container">
-                <GroupDamagePieChart selectedLogs={selectedLogs!}/>
+                <GroupDamagePieChart selectedLogs={{
+                    ...selectedLogs!,
+                    data: filteredLogs?.filter(
+                        (log) =>
+                            (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
+                                Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!) ||
+                                Object.values(DamageOtherHitsplats).includes(log.hitsplatName!)) &&
+                            selectedLogs.enemies.includes(log.target!)
+                    )!,
+                }}/>
             </div>
             <DamageDone
                 selectedLogs={{

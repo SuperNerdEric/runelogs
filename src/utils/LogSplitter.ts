@@ -2,7 +2,7 @@ import {DamageLog, LogLine, LogTypes} from "../models/LogLine";
 import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
 import {Fight} from "../models/Fight";
 import {BoostedLevels} from "../models/BoostedLevels";
-import {convertTimeToMillis} from "./utils";
+import {convertMillisToTime, convertTimeToMillis} from "./utils";
 
 
 const BOSS_NAMES = [
@@ -37,6 +37,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     let lastDamage: { time: string, index: number } | null = null;
     let boostedLevels: BoostedLevels | undefined;
     let playerEquipment: string[] | undefined;
+    let fightStartTime: number = 0;
 
     for (const logLine of fightData) {
         if (logLine.type === LogTypes.LOGGED_IN_PLAYER) {
@@ -64,6 +65,9 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
         // If the current fight is null, start a new fight
         if (!currentFight && logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine) && logLine.target !== player) {
+            fightStartTime = convertTimeToMillis(logLine.time);
+            logLine.fightTime = convertMillisToTime(0);
+
             const initialData: LogLine[] = [];
 
             // Include current boosted levels at the beginning of the fight
@@ -73,7 +77,8 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                     date: logLine.date,
                     time: logLine.time,
                     timezone: logLine.timezone,
-                    boostedLevels: boostedLevels
+                    boostedLevels: boostedLevels,
+                    fightTime: convertMillisToTime(0)
                 });
             }
 
@@ -84,7 +89,8 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                     date: logLine.date,
                     time: logLine.time,
                     timezone: logLine.timezone,
-                    playerEquipment: playerEquipment
+                    playerEquipment: playerEquipment,
+                    fightTime: convertMillisToTime(0)
                 });
             }
 
@@ -97,7 +103,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                 ],
                 loggedInPlayer: player,
                 firstLine: logLine,
-                lastLine: undefined
+                lastLine: logLine
             };
         } else if (currentFight) {
             // Rename the fight if we encounter a boss in the middle of it
@@ -108,6 +114,11 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             if (logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine) && logLine.target !== player && !currentFight.enemies.includes(logLine.target!)) {
                 currentFight.enemies.push(logLine.target!);
             }
+
+            // Subtract the start time from the log's timestamp to get the relative time within the fight
+            const logTimestamp = convertTimeToMillis(logLine.time);
+            logLine.fightTime = convertMillisToTime(logTimestamp - fightStartTime);
+
             currentFight.data.push(logLine);
         }
 

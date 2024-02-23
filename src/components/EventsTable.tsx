@@ -39,9 +39,9 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
 
     const renderStatImages = (boostedLevels: BoostedLevels) => {
         return (
-            <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{display: 'flex', alignItems: 'center'}}>
                 {Object.entries(boostedLevels).map(([stat, value], index) => (
-                    <div key={index} style={{ display: 'inline-block', marginRight: '10px' }}>
+                    <div key={index} style={{display: 'inline-block', marginRight: '10px'}}>
                         <img
                             src={statImages[stat as keyof BoostedLevels]}
                             alt={stat}
@@ -51,7 +51,7 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
                                 verticalAlign: 'middle',
                             }}
                         />
-                        <span style={{ verticalAlign: 'middle' }}>{value}</span>
+                        <span style={{verticalAlign: 'middle'}}>{value}</span>
                     </div>
                 ))}
             </div>
@@ -62,29 +62,43 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
         <div className="logs-box" style={{maxHeight: height, overflowY: 'auto'}}>
             <TableContainer>
                 <Table style={{tableLayout: 'auto'}}>
-                    <TableHead>
+                    <TableHead style={{backgroundColor: '#494949'}}>
                         <TableRow>
-                            <TableCell style = {{width: '50px', textAlign: 'center'}}>Time</TableCell>
-                            <TableCell style = {{width: '120px', textAlign: 'right', paddingBottom: '2px'}}>Type</TableCell>
-                            <TableCell style = {{textAlign: 'center'}}>Event</TableCell>
-                            <TableCell style = {{width: '100px', textAlign: 'center'}}>Source</TableCell>
-                            <TableCell style = {{width: '100px', textAlign: 'center'}}>Target</TableCell>
+                            <TableCell style={{width: '50px', textAlign: 'center'}}>Time</TableCell>
+                            <TableCell
+                                style={{width: '120px', textAlign: 'right', paddingBottom: '2px'}}>Type</TableCell>
+                            <TableCell style={{textAlign: 'center'}}>Event</TableCell>
+                            <TableCell style={{width: '100px', textAlign: 'center'}}>Source</TableCell>
+                            <TableCell style={{width: '100px', textAlign: 'center'}}>Target</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {logs.map((log, index) => {
                             return (
-                                <TableRow key={index} className={index % 2 === 0 ? 'even-row' : 'odd-row'} style={{ cursor: 'pointer' }} onMouseEnter={(e) => e.currentTarget.classList.add('highlighted-row')} onMouseLeave={(e) => e.currentTarget.classList.remove('highlighted-row')}>                                    <TableCell>{log.time}</TableCell>
-                                    <TableCell style={{ width: '120px', textAlign: 'right' }}>{log.type}</TableCell>
+                                <TableRow key={index} className={index % 2 === 0 ? 'even-row' : 'odd-row'}
+                                          style={{cursor: 'pointer'}}
+                                          onMouseEnter={(e) => e.currentTarget.classList.add('highlighted-row')}
+                                          onMouseLeave={(e) => e.currentTarget.classList.remove('highlighted-row')}>
+                                    <TableCell>{log.fightTime}</TableCell>
+                                    <TableCell style={{width: '120px', textAlign: 'right'}}>{log.type}</TableCell>
                                     <TableCell>
                                         {log.type === LogTypes.LOG_VERSION ? `Log version ${log.logVersion}` : ""}
                                         {log.type === LogTypes.LOGGED_IN_PLAYER ? `Logged in player ${log.loggedInPlayer}` : ""}
                                         {log.type === LogTypes.BOOSTED_LEVELS ? renderStatImages(log.boostedLevels) : ""}
                                         {log.type === LogTypes.PLAYER_EQUIPMENT && Array.isArray(log.playerEquipment) ? (
-                                            <div style={{ display: 'flex' }}>
+                                            <div style={{display: 'flex'}}>
                                                 {log.playerEquipment.map((itemId: string, i: number) => (
-                                                    <div key={i} style={{ width: '22px', overflow: 'hidden', marginRight: '5px', backgroundColor: '#494945', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                                        <img src={getItemImage(parseInt(itemId))} alt={`Item ${itemId}`} style={{ height: '22px' }} />
+                                                    <div key={i} style={{
+                                                        width: '22px',
+                                                        overflow: 'hidden',
+                                                        marginRight: '5px',
+                                                        backgroundColor: '#494945',
+                                                        display: 'flex',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center'
+                                                    }}>
+                                                        <img src={getItemImage(parseInt(itemId))} alt={`Item ${itemId}`}
+                                                             style={{height: '22px'}}/>
                                                     </div>
                                                 ))}
                                             </div>
@@ -96,10 +110,12 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
                                             </>
                                         ) : ""}
                                     </TableCell>
-                                    <TableCell className={"source" in log && log.source === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>
+                                    <TableCell
+                                        className={"source" in log && log.source === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>
                                         {"source" in log ? log.source : ""}
                                     </TableCell>
-                                    <TableCell className={"target" in log && log.target === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>
+                                    <TableCell
+                                        className={"target" in log && log.target === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>
                                         {"target" in log ? log.target : ""}
                                     </TableCell>
                                 </TableRow>

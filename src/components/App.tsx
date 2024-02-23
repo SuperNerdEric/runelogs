@@ -5,7 +5,6 @@ import {CircularProgress, Tab, Tabs} from '@mui/material';
 import Instructions from "./Instructions";
 import Combobox from './Combobox';
 import {BoostsTab, DamageDoneTab, DamageTakenTab, EventsTab, GroupDamageTab, TabsEnum} from './Tabs';
-import {getFightDuration} from "../utils/utils";
 import {Fight} from "../models/Fight";
 
 function App() {
@@ -20,10 +19,8 @@ function App() {
                 setFightNames(parseResultMessage.fightNames);
                 setSelectedLogs(parseResultMessage.firstResult);
                 setParseInProgress(false);
-                setFightDuration(getFightDuration(parseResultMessage.firstResult));
             } else if (type === 'item') {
                 setSelectedLogs(item);
-                setFightDuration(getFightDuration(item));
             }
         };
 
@@ -33,7 +30,6 @@ function App() {
     const [fightNames, setFightNames] = useState<string[] | null>(null);
     const [selectedLogs, setSelectedLogs] = useState<Fight | null>(null);
     const [selectedTab, setSelectedTab] = useState<TabsEnum>(TabsEnum.DAMAGE_DONE);
-    const [fightDuration, setFightDuration] = useState<string>("");
 
     const [parseInProgress, setParseInProgress] = useState<boolean>(false);
     const [parsingProgress, setParsingProgress] = useState<number>(0);
@@ -117,6 +113,9 @@ function App() {
                     indicatorColor="primary"
                     textColor="primary"
                     variant="fullWidth" // Maybe should be scrollable for mobile as we add more?
+                    style={{
+                        marginBottom: '20px',
+                    }}
                 >
                     {Object.values(TabsEnum).map((tab) => (
                         <Tab
@@ -130,9 +129,6 @@ function App() {
                     ))}
                 </Tabs>
 
-                <div>
-                    <p>Fight Duration: {fightDuration}</p>
-                </div>
                 {selectedTab === TabsEnum.DAMAGE_DONE && <DamageDoneTab selectedLogs={selectedLogs}/>}
                 {selectedTab === TabsEnum.DAMAGE_TAKEN && <DamageTakenTab selectedLogs={selectedLogs}/>}
                 {selectedTab === TabsEnum.BOOSTS && <BoostsTab selectedLogs={selectedLogs}/>}

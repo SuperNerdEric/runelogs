@@ -30,8 +30,8 @@ const CustomTooltip: React.FC<any> = ({active, payload, label}) => {
 
 export function calculateWeightedAverages(fight: Fight) {
     const weightedValues: Array<{ stat: keyof BoostedLevels, values: Array<{ weightedValue: number }> }> = [];
-    const startTime = fight.firstLine?.date + " " + fight.firstLine?.time;
-    const endTime = fight.lastLine?.date + " " + fight.lastLine?.time;
+    const startTime = fight.firstLine?.date + " " + fight.firstLine?.fightTime;
+    const endTime = fight.lastLine?.date + " " + fight.lastLine?.fightTime;
     const startDate = new Date(startTime);
     const endDate = new Date(endTime);
     const totalTimeInSeconds = (endDate.getTime() - startDate.getTime()) / 1000;
@@ -44,8 +44,8 @@ export function calculateWeightedAverages(fight: Fight) {
         pairs.push([fight.data[fight.data.length - 1], fight.lastLine!])
 
         pairs.forEach(pair => {
-            const startTime = pair[0].date + " " + pair[0].time;
-            const endTime = pair[1].date + " " + pair[1].time;
+            const startTime = pair[0].date + " " + pair[0].fightTime;
+            const endTime = pair[1].date + " " + pair[1].fightTime;
             const startDate = new Date(startTime);
             const endDate = new Date(endTime);
             const timeDiffInSeconds = (endDate.getTime() - startDate.getTime()) / 1000;
@@ -82,7 +82,7 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
     const filteredLogs = filterByType(fight.data, LogTypes.BOOSTED_LEVELS);
 
     let boostedLevelsData = filteredLogs.map((log: BoostedLevelsLog) => ({
-        timestamp: log.time,
+        timestamp: log.fightTime,
         attack: log.boostedLevels?.attack || 0,
         strength: log.boostedLevels?.strength || 0,
         defence: log.boostedLevels?.defence || 0,
@@ -94,14 +94,14 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
 
     boostedLevelsData.push({
         ...boostedLevelsData[boostedLevelsData.length - 1],
-        timestamp: fight.lastLine!.time,
+        timestamp: fight.lastLine!.fightTime,
     });
     const averages = calculateWeightedAverages(fight);
 
     return (
         <div>
             <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={boostedLevelsData} margin={{top: 11, left: 60, bottom: 50}}>
+                <LineChart data={boostedLevelsData} margin={{top: 11, left: 60, bottom: 20}}>
                     <XAxis
                         dataKey="timestamp"
                     />
@@ -150,7 +150,7 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
                 </LineChart>
             </ResponsiveContainer>
             <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={boostedLevelsData} margin={{top: 11, left: 60, bottom: 50}}>
+                <LineChart data={boostedLevelsData} margin={{top: 11, left: 60, bottom: 20}}>
                     <XAxis
                         dataKey="timestamp"
                     />

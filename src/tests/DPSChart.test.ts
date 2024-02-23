@@ -56,6 +56,7 @@ function generateDamageLog(date: string, time: string, damageAmount: number): Da
         type: LogTypes.DAMAGE,
         date,
         time,
+        fightTime: time,
         timezone: "",
         target: "Scurrius",
         damageAmount,

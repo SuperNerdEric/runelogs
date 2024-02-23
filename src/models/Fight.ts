@@ -7,6 +7,6 @@ export interface Fight {
     loggedInPlayer: string;
 
     // Just for easy reference later
-    firstLine: LogLine | undefined;
-    lastLine: LogLine | undefined;
+    firstLine: LogLine;
+    lastLine: LogLine;
 }

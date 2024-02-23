@@ -14,7 +14,7 @@
 }
 
 .App-body {
-    background-color: #282c34;
+    background-color: #262a2e;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -75,20 +75,28 @@
 .damage-done-container {
     text-align: center;
     width: 1000px;
-    margin: 20px auto 0;
+    background: #141414;
+    border: 3px solid grey;
+    border-radius: 1px;
+    padding: 15px;
+    margin-bottom: 10px;
 }
 
 @media (max-width: 1050px) {
     .damage-done-container {
         text-align: center;
-        width: 95vw;
-        margin: 20px auto 0;
+        width: 90vw;
+        background: #141414;
+        border: 3px solid grey;
+        border-radius: 1px;
+        padding: 15px;
+        margin-bottom: 15px;
     }
 }
 
 .logs-box {
     color: #e1f2f5;
-    width: 1000px;
+    width: 1036px;
     background: black;
     margin-bottom: 80px;
 }
@@ -114,6 +122,7 @@
     wordWrap: 'break-word';
     font-family: Avenir,Arial,sans-serif !important;
 }
+
 
 .MuiTableCell-root {
     padding-left: 6px !important;
@@ -198,9 +207,21 @@
 .recharts-tooltip-wrapper {
     background: #101010;
     padding: 5px 8px;
-    border: 3px solid grey;
+    border: 4px solid grey;
     border-radius: 1px;
     font-size: 18px;
     text-align: left;
     color: white;
+}
+
+.results-container th,
+.results-container td {
+    border: 1px solid grey;
+    color: white;
+    font-size: calc(20px);
+    text-align: left;
+    line-height: 30px;
+    whiteSpace: 'normal';
+    wordWrap: 'break-word';
+    font-family: Avenir,Arial,sans-serif !important;
 }

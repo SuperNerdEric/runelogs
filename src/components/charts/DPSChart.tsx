@@ -33,14 +33,14 @@ export const calculateDPSByInterval = (data: DamageLog[], interval: number) => {
     const dpsData: { timestamp: number; dps: number }[] = [];
 
     if (data && data.length > 0) {
-        let currentIntervalStart = convertTimeToMillis(data[0].time);
+        let currentIntervalStart = convertTimeToMillis(data[0].fightTime!);
         let currentIntervalTotalDamage = 0;
-        let endTime = convertTimeToMillis(data[data.length - 1].time);
+        let endTime = convertTimeToMillis(data[data.length - 1].fightTime!);
 
         for (let timestamp = currentIntervalStart; timestamp <= endTime; timestamp += interval) {
             for (let i = 0; i < data.length; i++) {
                 const log = data[i];
-                const logTimestamp = convertTimeToMillis(log.time);
+                const logTimestamp = convertTimeToMillis(log.fightTime!);
                 const totalDamage = log.damageAmount !== undefined ? log.damageAmount : 0;
 
                 if (logTimestamp >= currentIntervalStart && logTimestamp < timestamp) {
@@ -71,14 +71,13 @@ const DPSChart: React.FC<DPSChartProps> = ({fight}) => {
     const tickInterval = Math.ceil(dpsData.length / 5);
 
     return (
-        <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={dpsData} margin={{top: 11, left: 60, bottom: 50}}>
+        <ResponsiveContainer width="100%" height={200}>
+            <AreaChart data={dpsData} margin={{top: 11, left: 40, bottom: 0}}>
                 <XAxis
                     dataKey="timestamp"
                     tickFormatter={(tick, index) =>
                         index % tickInterval === 0 ? new Date(tick).toISOString().substr(11, 8) : ''
                     }
-                    label={{value: 'Time', position: 'insideBottom', offset: -35}}
                 />
                 <YAxis
                     dataKey="dps"
@@ -86,7 +85,7 @@ const DPSChart: React.FC<DPSChartProps> = ({fight}) => {
                         value: 'DPS',
                         position: 'insideLeft',
                         angle: -90,
-                        offset: -40,
+                        offset: -20,
                         style: {textAnchor: 'middle'},
                     }}
                     width={35}

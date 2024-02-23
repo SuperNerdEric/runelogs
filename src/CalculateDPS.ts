@@ -2,8 +2,8 @@ import {Fight} from "./models/Fight";
 import {filterByType, LogTypes} from "./models/LogLine";
 
 export function calculateDPS(fight: Fight): number {
-    const startTime = fight.data[0]?.date + ' ' + fight.data[0]?.time;
-    const endTime = fight.data[fight.data.length - 1]?.date + ' ' + fight.data[fight.data.length - 1]?.time;
+    const startTime = fight.data[0]?.date + ' ' + fight.data[0]?.fightTime;
+    const endTime = fight.data[fight.data.length - 1]?.date + ' ' + fight.data[fight.data.length - 1]?.fightTime;
 
     if (!startTime || !endTime) {
         return 0;
