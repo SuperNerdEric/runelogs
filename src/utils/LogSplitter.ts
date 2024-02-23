@@ -3,6 +3,7 @@ import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
 import {Fight} from "../models/Fight";
 import {BoostedLevels} from "../models/BoostedLevels";
 import {convertMillisToTime, convertTimeToMillis} from "./utils";
+import moment from 'moment';
 
 
 const BOSS_NAMES = [
@@ -66,7 +67,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
         // If the current fight is null, start a new fight
         if (!currentFight && logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine) && logLine.target !== player) {
-            fightStartTime = new Date(logLine.date + " " + logLine.time);
+            fightStartTime = moment(`${logLine.date} ${logLine.time}`, 'MM-DD-YYYY HH:mm:ss.SSS').toDate();
             logLine.fightTime = convertMillisToTime(0);
 
             const initialData: LogLine[] = [];
@@ -117,7 +118,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             }
 
             // Subtract the start time from the log's timestamp to get the relative time within the fight
-            const logDate = new Date(logLine.date + " " + logLine.time);
+            const logDate = moment(`${logLine.date} ${logLine.time}`, 'MM-DD-YYYY HH:mm:ss.SSS').toDate();
             logLine.fightTime = convertMillisToTime(logDate.getTime() - fightStartTime!.getTime());
 
             currentFight.data.push(logLine);
