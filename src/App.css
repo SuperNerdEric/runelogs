@@ -238,3 +238,7 @@
     padding-bottom: 3px;
 }
 
+.dismiss-button {
+    color: white !important;
+    font-family: Avenir, Arial, sans-serif !important;
+}

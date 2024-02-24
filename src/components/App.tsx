@@ -1,18 +1,34 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import '../App.css';
 import Dropzone from './Dropzone';
-import {CircularProgress, Tab, Tabs} from '@mui/material';
+import {Button, CircularProgress, Tab, Tabs} from '@mui/material';
 import Instructions from "./Instructions";
 import Combobox from './Combobox';
 import {BoostsTab, DamageDoneTab, DamageTakenTab, EventsTab, GroupDamageTab, TabsEnum} from './Tabs';
 import {Fight} from "../models/Fight";
 import localforage from "localforage";
 import TopBar from "./TopBar";
+import {closeSnackbar, SnackbarKey, useSnackbar} from 'notistack';
 
 function App() {
     const fightsStorage = localforage.createInstance({
         name: 'myFightData'
     });
+
+    const {enqueueSnackbar} = useSnackbar();
+
+    const action = (snackbarId: SnackbarKey | undefined) => (
+        <>
+            <Button
+                onClick={() => {
+                    closeSnackbar(snackbarId);
+                }}
+                className="dismiss-button"
+            >
+                Dismiss
+            </Button>
+        </>
+    );
 
     const [worker] = useState<Worker>(() => {
         const worker = new Worker(new URL("FileParserWorker.ts", import.meta.url));
@@ -22,8 +38,13 @@ function App() {
             if (type === 'progress') {
                 setParsingProgress(progress);
             } else if (type === 'parseResult') {
-                setFightNames(parseResultMessage.fightNames);
-                setSelectedLogs(parseResultMessage.firstResult);
+                if (parseResultMessage.firstResult) {
+                    setFightNames(parseResultMessage.fightNames);
+                    setSelectedLogs(parseResultMessage.firstResult);
+                } else {
+                    enqueueSnackbar('No fights found in log file', {variant: 'error', action});
+                }
+
                 setParseInProgress(false);
             } else if (type === 'item') {
                 setSelectedLogs(item);
@@ -45,7 +66,6 @@ function App() {
         setParseInProgress(true);
         worker.postMessage({type: 'parse', fileContent});
     };
-
 
     const handleDropdownChange = (index: number) => {
         worker.postMessage({type: 'getItem', index});
@@ -100,26 +120,19 @@ function App() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    if (loadingStorage) {
-        return (
-            <div className="App">
-                <div className="App-body">
-                    <TopBar/>
+    return (
+        <div className="App">
+            <div className="App-body">
+                <TopBar onDeleteData={handleDelete}
+                        showDeleteButton={!loadingStorage && !parseInProgress && !!selectedLogs}/>
+                {loadingStorage && (
                     <div className="loading-indicator-container">
                         <div className="loading-content">
                             <CircularProgress/>
                         </div>
                     </div>
-                </div>
-            </div>
-        );
-    }
-
-    if (parseInProgress) {
-        return (
-            <div className="App">
-                <div className="App-body">
-                    <TopBar/>
+                )}
+                {parseInProgress && (
                     <div className="loading-indicator-container">
                         <div className="loading-content">
                             <p>Parsing logs...</p>
@@ -127,66 +140,54 @@ function App() {
                             <p>{Math.floor(parsingProgress)}%</p>
                         </div>
                     </div>
-                </div>
-            </div>
-        );
-    }
-
-    if (!selectedLogs) {
-        return (
-            <div className="App">
-                <div className="App-body">
-                    <TopBar/>
-                    <Instructions/>
-                    <Dropzone onParse={handleParse}/>
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="App">
-            <div className="App-body">
-                <TopBar onDeleteData={handleDelete}/>
-                <label>{selectedLogs.name}</label>
-                <Combobox<Option>
-                    id="monster-select"
-                    items={options}
-                    placeholder="Select a fight"
-                    onSelectedItemChange={(item) => {
-                        if (item) {
-                            handleDropdownChange(item!.value)
-                        }
-                    }}
-                />
-
-                <Tabs
-                    value={selectedTab}
-                    onChange={handleTabChange}
-                    indicatorColor="primary"
-                    textColor="primary"
-                    variant="fullWidth" // Maybe should be scrollable for mobile as we add more?
-                    style={{
-                        marginBottom: '20px',
-                    }}
-                >
-                    {Object.values(TabsEnum).map((tab) => (
-                        <Tab
-                            key={tab}
-                            label={tab}
-                            value={tab}
-                            style={{
-                                color: selectedTab === tab ? 'lightblue' : 'white',
+                )}
+                {!loadingStorage && !parseInProgress && !selectedLogs && (
+                    <div>
+                        <Instructions/>
+                        <Dropzone onParse={handleParse}/>
+                    </div>
+                )}
+                {!loadingStorage && !parseInProgress && selectedLogs && (
+                    <div>
+                        <label>{selectedLogs.name}</label>
+                        <Combobox<Option>
+                            id="monster-select"
+                            items={options}
+                            placeholder="Select a fight"
+                            onSelectedItemChange={(item) => {
+                                if (item) {
+                                    handleDropdownChange(item!.value)
+                                }
                             }}
                         />
-                    ))}
-                </Tabs>
-
-                {selectedTab === TabsEnum.DAMAGE_DONE && <DamageDoneTab selectedLogs={selectedLogs}/>}
-                {selectedTab === TabsEnum.DAMAGE_TAKEN && <DamageTakenTab selectedLogs={selectedLogs}/>}
-                {selectedTab === TabsEnum.BOOSTS && <BoostsTab selectedLogs={selectedLogs}/>}
-                {selectedTab === TabsEnum.GROUP_DAMAGE && <GroupDamageTab selectedLogs={selectedLogs}/>}
-                {selectedTab === TabsEnum.EVENTS && <EventsTab selectedLogs={selectedLogs}/>}
+                        <Tabs
+                            value={selectedTab}
+                            onChange={handleTabChange}
+                            indicatorColor="primary"
+                            textColor="primary"
+                            variant="fullWidth"
+                            style={{
+                                marginBottom: '20px',
+                            }}
+                        >
+                            {Object.values(TabsEnum).map((tab) => (
+                                <Tab
+                                    key={tab}
+                                    label={tab}
+                                    value={tab}
+                                    style={{
+                                        color: selectedTab === tab ? 'lightblue' : 'white',
+                                    }}
+                                />
+                            ))}
+                        </Tabs>
+                        {selectedTab === TabsEnum.DAMAGE_DONE && <DamageDoneTab selectedLogs={selectedLogs}/>}
+                        {selectedTab === TabsEnum.DAMAGE_TAKEN && <DamageTakenTab selectedLogs={selectedLogs}/>}
+                        {selectedTab === TabsEnum.BOOSTS && <BoostsTab selectedLogs={selectedLogs}/>}
+                        {selectedTab === TabsEnum.GROUP_DAMAGE && <GroupDamageTab selectedLogs={selectedLogs}/>}
+                        {selectedTab === TabsEnum.EVENTS && <EventsTab selectedLogs={selectedLogs}/>}
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -6,9 +6,10 @@ import logo from '../assets/Logo.png';
 
 interface TopBarProps {
     onDeleteData?: () => void;
+    showDeleteButton: boolean;
 }
 
-const TopBar: React.FC<TopBarProps> = ({onDeleteData}) => {
+const TopBar: React.FC<TopBarProps> = ({onDeleteData, showDeleteButton}) => {
     return (
         <AppBar position="static" style={{background: '#141414'}}>
             <Toolbar style={{
@@ -28,7 +29,7 @@ const TopBar: React.FC<TopBarProps> = ({onDeleteData}) => {
                     <p style={{margin: '0', color: 'white', fontSize: '25px'}}>Runelogs</p>
                 </div>
                 <div style={{display: 'flex', alignItems: 'center'}}>
-                    {onDeleteData && (
+                    {showDeleteButton && (
                         <DeleteIcon
                             onClick={onDeleteData}
                             style={{fontSize: 35, cursor: 'pointer', color: 'white', marginRight: '30px'}}
