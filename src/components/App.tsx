@@ -148,7 +148,7 @@ function App() {
                     </div>
                 )}
                 {!loadingStorage && !parseInProgress && selectedLogs && (
-                    <div className="App-body">
+                    <div className="App-main">
                         <label>{selectedLogs.name}</label>
                         <Combobox<Option>
                             id="monster-select"
