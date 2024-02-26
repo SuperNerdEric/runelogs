@@ -28,6 +28,8 @@ const statImages: Record<keyof BoostedLevels, string> = {
 };
 
 // Function to get the image URL for a given item ID
+// https://chisel.weirdgloop.org/moid/data_files/itemsmin.js
+// https://chisel.weirdgloop.org/moid/data_files/npcsmin.js
 const getItemImage = (itemId: number): string => {
     return `https://chisel.weirdgloop.org/static/img/osrs-sprite/${itemId}.png`;
 };
