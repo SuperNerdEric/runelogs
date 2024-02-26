@@ -116,6 +116,7 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
                         }}
                         width={35}
                         tickFormatter={(tick) => (tick !== 0 ? tick : '')}
+                        domain={[0, 125]}
                     />
                     <Legend
                         content={() => (
@@ -165,6 +166,7 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
                         }}
                         width={35}
                         tickFormatter={(tick) => (tick !== 0 ? tick : '')}
+                        domain={[0, 125]}
                     />
                     <Legend
                         content={() => (
