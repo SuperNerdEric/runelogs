@@ -30,6 +30,8 @@ const TopBar: React.FC<TopBarProps> = ({onDeleteData, showDeleteButton}) => {
                     <Icon
                         icon="clarity:beta-solid"
                         style={{
+                            width: '35px',
+                            height: '35px',
                             marginLeft: '10px'
                         }}
                     />
