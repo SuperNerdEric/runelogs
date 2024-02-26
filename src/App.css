@@ -244,8 +244,7 @@
 
 .MuiAppBar-root .MuiToolbar-root {
     min-height: auto !important;
-    padding-top: 3px;
-    padding-bottom: 3px;
+    height: 50px;
 }
 
 .dismiss-button {
