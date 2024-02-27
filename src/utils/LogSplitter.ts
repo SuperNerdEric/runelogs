@@ -2,7 +2,7 @@ import {DamageLog, LogLine, LogTypes} from "../models/LogLine";
 import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
 import {Fight} from "../models/Fight";
 import {BoostedLevels} from "../models/BoostedLevels";
-import {convertMillisToTime, convertTimeToMillis} from "./utils";
+import {convertMillisToTime, convertTimeToMillis, getFightDuration} from "./utils";
 import moment from 'moment';
 
 
@@ -44,6 +44,23 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     let playerEquipment: string[] | undefined;
     let fightStartTime: Date;
 
+    function endFight(lastLine: LogLine, success: boolean, nullFight: boolean = true) {
+        currentFight!.lastLine = lastLine;
+
+        currentFight!.metaData = {
+            date: currentFight!.firstLine.date,
+            fightLength: getFightDuration(currentFight!),
+            name: currentFight!.name,
+            success: success,
+            time: currentFight!.firstLine.time
+        }
+        fights.push(currentFight!);
+        if (nullFight) {
+            currentFight = null;
+        }
+        lastDamage = null;
+    }
+
     for (const logLine of fightData) {
         if (logLine.type === LogTypes.LOGGED_IN_PLAYER) {
             player = logLine.loggedInPlayer;
@@ -62,10 +79,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             // eslint-disable-next-line no-loop-func
             currentFight.data = currentFight.data.filter((log, index) => index <= lastDamage!.index);
             currentFight.name += " - Incomplete";
-            currentFight.lastLine = currentFight.data[currentFight.data.length - 1];
-            fights.push(currentFight);
-            currentFight = null;
-            lastDamage = null;
+            endFight(currentFight.data[currentFight.data.length - 1], false);
         }
 
         // If the current fight is null, start a new fight
@@ -99,6 +113,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                 });
             }
 
+            // @ts-ignore
             currentFight = {
                 name: logLine.target,
                 enemies: [logLine.target],
@@ -135,11 +150,13 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         }
 
         if (logLine.type === LogTypes.DEATH && logLine.target) {
-            // If the fight name dies, end the current fight
-            if (currentFight && (logLine.target === currentFight.name || logLine.target === currentFight.loggedInPlayer)) {
-                currentFight.lastLine = logLine;
-                fights.push(currentFight);
-                currentFight = null;
+            // If the player or the fight name dies, end the current fight
+            if (currentFight) {
+                if (logLine.target === currentFight.name) {
+                    endFight(logLine, true);
+                } else if (logLine.target === currentFight.loggedInPlayer) {
+                    endFight(logLine, false);
+                }
             }
         }
 
@@ -152,8 +169,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
     // If we reach the end of the logs, end the current fight
     if (currentFight) {
-        currentFight.lastLine = currentFight.data[currentFight.data.length - 1];
-        fights.push(currentFight);
+        endFight(currentFight.data[currentFight.data.length - 1], false, false);
     }
 
     const fightNameCounts: Map<string, number> = new Map(); // Map to store counts of each fight name

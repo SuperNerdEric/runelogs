@@ -12,6 +12,20 @@ export function getFightDuration(selectedLog: Fight) {
     return formattedDuration;
 }
 
+export const formatDurationToSeconds = (duration: string): string => {
+    // Split the duration string into minutes, seconds, and milliseconds
+    const [minutesStr, secondsStr] = duration.split(':');
+    const seconds = parseInt(minutesStr, 10) * 60 + parseFloat(secondsStr);
+
+    // Round up to the nearest second
+    const roundedSeconds = Math.round(seconds);
+
+    // Format the rounded seconds into mm:ss format
+    const formattedDuration = new Date(roundedSeconds * 1000).toISOString().substr(14, 5);
+
+    return formattedDuration;
+};
+
 const calculateFightDuration = (fight: Fight) => {
     if (fight.data.length === 0) {
         return 0;

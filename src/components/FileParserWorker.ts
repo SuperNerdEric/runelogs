@@ -11,9 +11,9 @@ function parseFileWithProgress(fileContent: string) {
         postMessage({type: 'progress', progress});
     });
 
-    const fightNames = parseResults?.map(fight => fight.name) || [];
+    const fightMetadata = parseResults?.map(fight => fight.metaData) || [];
     const parseResultMessage = {
-        fightNames,
+        fightMetadata,
         firstResult: parseResults![0],
     }
 

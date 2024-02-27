@@ -1,14 +1,15 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import '../App.css';
 import Dropzone from './Dropzone';
 import {Button, CircularProgress, Tab, Tabs} from '@mui/material';
 import Instructions from "./Instructions";
-import Combobox from './Combobox';
 import {BoostsTab, DamageDoneTab, DamageTakenTab, EventsTab, GroupDamageTab, TabsEnum} from './Tabs';
-import {Fight} from "../models/Fight";
+import {Fight, FightMetaData} from "../models/Fight";
 import localforage from "localforage";
 import TopBar from "./TopBar";
 import {closeSnackbar, SnackbarKey, useSnackbar} from 'notistack';
+import FightSelector from "./sections/FightSelector";
+import {Icon} from '@iconify/react';
 
 function App() {
     const fightsStorage = localforage.createInstance({
@@ -39,8 +40,8 @@ function App() {
                 setParsingProgress(progress);
             } else if (type === 'parseResult') {
                 if (parseResultMessage.firstResult) {
-                    setFightNames(parseResultMessage.fightNames);
-                    setSelectedLogs(parseResultMessage.firstResult);
+                    setLoadingStorage(true);
+                    setFightMetadata(parseResultMessage.fightNames);
                 } else {
                     enqueueSnackbar('No fights found in log file', {variant: 'error', action});
                 }
@@ -54,7 +55,7 @@ function App() {
         return worker;
     });
 
-    const [fightNames, setFightNames] = useState<string[] | null>(null);
+    const [fightMetadata, setFightMetadata] = useState<FightMetaData[] | null>(null);
     const [selectedLogs, setSelectedLogs] = useState<Fight | null>(null);
     const [selectedTab, setSelectedTab] = useState<TabsEnum>(TabsEnum.DAMAGE_DONE);
 
@@ -67,10 +68,6 @@ function App() {
         worker.postMessage({type: 'parse', fileContent});
     };
 
-    const handleDropdownChange = (index: number) => {
-        worker.postMessage({type: 'getItem', index});
-    };
-
     const handleTabChange = (event: React.ChangeEvent<{}>, newValue: TabsEnum) => {
         setSelectedTab(newValue);
     };
@@ -79,37 +76,23 @@ function App() {
         // Delete data from localforage and reset states
         fightsStorage.removeItem('fightData').then(() => {
             setSelectedLogs(null);
-            setFightNames(null);
-            setLoadingStorage(false); // Reset loading state to trigger re-render
+            setFightMetadata(null);
+            setLoadingStorage(false);
         }).catch(error => {
             console.error("Error deleting fight data from localforage:", error);
         });
     };
 
-    interface Option {
-        label: string;
-        value: number;
-    }
-
-    const options: Option[] = useMemo(() => {
-        if (fightNames) {
-            return fightNames.map((fightName, index) => ({
-                label: fightName,
-                value: index,
-            }));
-        } else {
-            return [];
-        }
-    }, [fightNames]);
+    const handleSelectFight = (index: number) => {
+        worker.postMessage({type: 'getItem', index});
+    };
 
     useEffect(() => {
         // Check if fight data exists in localforage
         fightsStorage.getItem<Fight[]>('fightData')
             .then((data: Fight[] | null) => {
                 if (data) {
-                    // If data exists, set it as selectedLogs
-                    setSelectedLogs(data[0]);
-                    setFightNames(data.map(fight => fight.name));
+                    setFightMetadata(data.map(fight => fight.metaData));
                 }
                 setLoadingStorage(false);
             })
@@ -118,13 +101,13 @@ function App() {
                 setLoadingStorage(false);
             });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [fightMetadata]);
 
     return (
         <div className="App">
             <div className="App-body">
                 <TopBar onDeleteData={handleDelete}
-                        showDeleteButton={!loadingStorage && !parseInProgress && !!selectedLogs}/>
+                        showDeleteButton={!loadingStorage && !parseInProgress && (!!selectedLogs || !!fightMetadata)}/>
                 {loadingStorage && (
                     <div className="loading-indicator-container">
                         <div className="loading-content">
@@ -141,25 +124,28 @@ function App() {
                         </div>
                     </div>
                 )}
-                {!loadingStorage && !parseInProgress && !selectedLogs && (
+                {!loadingStorage && !parseInProgress && !selectedLogs && !fightMetadata && (
                     <div>
                         <Instructions/>
                         <Dropzone onParse={handleParse}/>
                     </div>
                 )}
+                {!loadingStorage && !parseInProgress && !selectedLogs && fightMetadata && (
+                    <div>
+                        <FightSelector fights={fightMetadata!} onSelectFight={handleSelectFight}/>
+                    </div>
+                )}
                 {!loadingStorage && !parseInProgress && selectedLogs && (
                     <div className="App-main">
-                        <label>{selectedLogs.name}</label>
-                        <Combobox<Option>
-                            id="monster-select"
-                            items={options}
-                            placeholder="Select a fight"
-                            onSelectedItemChange={(item) => {
-                                if (item) {
-                                    handleDropdownChange(item!.value)
-                                }
-                            }}
-                        />
+                        <div style={{display: 'flex', alignItems: 'center'}}>
+                            <div
+                                className="back-icon-wrapper"
+                                onClick={() => setSelectedLogs(null)}
+                            >
+                                <Icon icon="ic:round-arrow-back"/>
+                            </div>
+                            <label>{selectedLogs.name}</label>
+                        </div>
                         <Tabs
                             value={selectedTab}
                             onChange={handleTabChange}

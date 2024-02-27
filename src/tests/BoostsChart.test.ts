@@ -31,6 +31,7 @@ describe('calculateWeightedAverages', () => {
             },
         ]
 
+        // @ts-ignore
         const fight: Fight = {
             name: "Test",
             data: logLines,
