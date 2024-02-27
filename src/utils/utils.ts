@@ -26,7 +26,7 @@ export const formatDurationToSeconds = (duration: string): string => {
     return formattedDuration;
 };
 
-const calculateFightDuration = (fight: Fight) => {
+export const calculateFightDuration = (fight: Fight) => {
     if (fight.data.length === 0) {
         return 0;
     }

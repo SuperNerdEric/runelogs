@@ -1,6 +1,6 @@
 import React from 'react';
 import {Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
-import {convertTimeToMillis} from "../../utils/utils";
+import {calculateFightDuration, convertTimeToMillis} from "../../utils/utils";
 import {Fight} from "../../models/Fight";
 import {DamageLog, filterByType, LogTypes} from "../../models/LogLine";
 
@@ -71,7 +71,11 @@ export const calculateDPSByInterval = (data: DamageLog[], interval: number) => {
 
 const DPSChart: React.FC<DPSChartProps> = ({fight}) => {
     const filteredLogs = filterByType(fight.data, LogTypes.DAMAGE);
-    const dpsData = calculateDPSByInterval(filteredLogs, 6000); // 6 second interval
+
+    const fightLength = calculateFightDuration(fight);
+    const interval = Math.min(Math.max(fightLength / 10, 600), 6000);
+
+    const dpsData = calculateDPSByInterval(filteredLogs, interval);
 
     const tickInterval = Math.ceil(dpsData.length / 5);
 
