@@ -78,7 +78,7 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
                         {logs.map((log, index) => {
                             return (
                                 <TableRow key={index} className={index % 2 === 0 ? 'even-row' : 'odd-row'}
-                                          style={{cursor: 'pointer'}}
+                                          style={{cursor: 'default'}}
                                           onMouseEnter={(e) => e.currentTarget.classList.add('highlighted-row')}
                                           onMouseLeave={(e) => e.currentTarget.classList.remove('highlighted-row')}>
                                     <TableCell>{log.fightTime}</TableCell>
