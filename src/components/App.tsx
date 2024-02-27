@@ -40,8 +40,7 @@ function App() {
                 setParsingProgress(progress);
             } else if (type === 'parseResult') {
                 if (parseResultMessage.firstResult) {
-                    setLoadingStorage(true);
-                    setFightMetadata(parseResultMessage.fightNames);
+                    setFightMetadata(parseResultMessage.fightMetadata);
                 } else {
                     enqueueSnackbar('No fights found in log file', {variant: 'error', action});
                 }
@@ -101,7 +100,7 @@ function App() {
                 setLoadingStorage(false);
             });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fightMetadata]);
+    }, []);
 
     return (
         <div className="App">
