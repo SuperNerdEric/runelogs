@@ -1,15 +1,16 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {FightMetaData} from "../../models/Fight";
-import {formatDurationToSeconds} from "../../utils/utils";
+import {formatHHmmss} from "../../utils/utils";
 
 interface FightProps {
     fight: FightMetaData;
     index: number;
     fightNumber: number;
     onSelectFight: (index: number) => void;
+    isShortest: boolean;
 }
 
-const Fight: React.FC<FightProps> = ({fight, index, fightNumber, onSelectFight}) => {
+const Fight: React.FC<FightProps> = ({fight, index, fightNumber, onSelectFight, isShortest}) => {
     const time = new Date(`2000-01-01T${fight.time}`);
 
     const formattedTime = time.toLocaleString('en-US', {
@@ -23,8 +24,7 @@ const Fight: React.FC<FightProps> = ({fight, index, fightNumber, onSelectFight})
     const handleClick = () => {
         onSelectFight(index);
     };
-
-    const formattedDuration = formatDurationToSeconds(fight.fightLength);
+    const formattedDuration = formatHHmmss(fight.fightLengthMs, false);
 
     return (
         <div className="fight-container" onClick={handleClick}>
@@ -32,6 +32,9 @@ const Fight: React.FC<FightProps> = ({fight, index, fightNumber, onSelectFight})
                 <div style={{color: nameColor}}>{`${fightNumber} (${formattedDuration})`}</div>
             </div>
             <div>{formattedTime}</div>
+            {isShortest && (
+                <div className="gold-star">&#9733;</div>
+            )}
         </div>
     );
 };
@@ -54,29 +57,57 @@ const Banner: React.FC<BannerProps> = ({name}) => {
 };
 
 const FightSelector: React.FC<FightSelectorProps> = ({fights, onSelectFight}) => {
+    // Group fights by name and record shortest fight time for each group
+    const [groupedFights, setGroupedFights] = useState<{
+        [name: string]: { fight: FightMetaData, index: number }[]
+    }>({});
 
-    // Group fights by name
-    const groupedFights: { [name: string]: { fight: FightMetaData, index: number }[] } = {};
-    fights.forEach((fight, index) => {
-        if (!groupedFights[fight.name]) {
-            groupedFights[fight.name] = [];
-        }
-        groupedFights[fight.name].push({fight, index});
-    });
+    useEffect(() => {
+        const tempGroupedFights: { [name: string]: { fight: FightMetaData, index: number }[] } = {};
+
+        fights.forEach((fight, index) => {
+            if (!tempGroupedFights[fight.name]) {
+                tempGroupedFights[fight.name] = [];
+            }
+            tempGroupedFights[fight.name].push({fight, index});
+        });
+
+        setGroupedFights(tempGroupedFights);
+    }, [fights]);
 
     return (
         <div style={{marginTop: '20px'}}>
-            {Object.keys(groupedFights).map(name => (
-                <div className="damage-done-container" key={name}>
-                    <Banner name={name}/>
-                    <div className="fight-list">
-                        {groupedFights[name].map((fight, index) => (
-                            <Fight key={index} fight={fight.fight} index={fight.index} fightNumber={index + 1}
-                                   onSelectFight={onSelectFight}/>
-                        ))}
+            {Object.keys(groupedFights).map(name => {
+                const fightsInGroup = groupedFights[name];
+
+                let shortestTime: number;
+
+                fightsInGroup.forEach(fight => {
+                    if (fight.fight.success) {
+                        if (!shortestTime || fight.fight.fightLengthMs < shortestTime) {
+                            shortestTime = fight.fight.fightLengthMs;
+                        }
+                    }
+                })
+
+                return (
+                    <div className="damage-done-container" key={name}>
+                        <Banner name={name}/>
+                        <div className="fight-list">
+                            {fightsInGroup.map((fight, index) => (
+                                <Fight
+                                    key={index}
+                                    fight={fight.fight}
+                                    index={fight.index}
+                                    fightNumber={index + 1}
+                                    onSelectFight={onSelectFight}
+                                    isShortest={fight.fight.fightLengthMs === shortestTime}
+                                />
+                            ))}
+                        </div>
                     </div>
-                </div>
-            ))}
+                );
+            })}
         </div>
     );
 };

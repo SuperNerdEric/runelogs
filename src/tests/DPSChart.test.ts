@@ -1,5 +1,6 @@
 import {calculateDPSByInterval} from "../components/charts/DPSChart";
 import {DamageLog, LogTypes} from "../models/LogLine";
+import {convertTimeToMillis} from "../utils/utils";
 
 describe('calculateDPSByInterval', () => {
     test('calculate dps by 6 second intervals', () => {
@@ -56,7 +57,7 @@ function generateDamageLog(date: string, time: string, damageAmount: number): Da
         type: LogTypes.DAMAGE,
         date,
         time,
-        fightTime: time,
+        fightTimeMs:  convertTimeToMillis(time),
         timezone: "",
         target: "Scurrius",
         damageAmount,

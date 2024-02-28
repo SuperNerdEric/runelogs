@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Fight} from "../models/Fight";
 import {calculateDPS} from "../CalculateDPS";
 import {Table, TableBody, TableCell, TableContainer, TableRow} from '@mui/material';
-import {calculateAccuracy, getFightDuration} from "../utils/utils";
+import {calculateAccuracy, getFightDurationFormatted} from "../utils/utils";
 import {LogLine, LogTypes} from "../models/LogLine";
 
 interface ResultsProps {
@@ -16,7 +16,7 @@ const Results: React.FC<ResultsProps> = ({fight}) => {
     const [accuracy, setAccuracy] = useState<number>(0);
 
     useEffect(() => {
-        setFightDuration(getFightDuration(fight));
+        setFightDuration(getFightDurationFormatted(fight));
 
         const totalDamage = fight.data
             .filter(log => log.type === LogTypes.DAMAGE)

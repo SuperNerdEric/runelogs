@@ -2,7 +2,6 @@ import {DamageLog, LogLine, LogTypes} from "../models/LogLine";
 import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
 import {Fight} from "../models/Fight";
 import {BoostedLevels} from "../models/BoostedLevels";
-import {convertMillisToTime, convertTimeToMillis, getFightDuration} from "./utils";
 import moment from 'moment';
 
 
@@ -39,7 +38,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     const fights: Fight[] = [];
     let currentFight: Fight | null = null;
     let player: string = ""; //todo support multiple players
-    let lastDamage: { time: string, index: number } | null = null;
+    let lastDamage: { time: number, index: number } | null = null;
     let boostedLevels: BoostedLevels | undefined;
     let playerEquipment: string[] | undefined;
     let fightStartTime: Date;
@@ -49,7 +48,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
         currentFight!.metaData = {
             date: currentFight!.firstLine.date,
-            fightLength: getFightDuration(currentFight!),
+            fightLengthMs: currentFight!.lastLine.fightTimeMs! - currentFight!.firstLine.fightTimeMs!,
             name: currentFight!.name,
             success: success,
             time: currentFight!.firstLine.time
@@ -75,7 +74,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         }
 
         // If there's a gap of over 60 seconds end the current fight
-        if (currentFight && lastDamage && convertTimeToMillis(logLine.time) - convertTimeToMillis(lastDamage.time) > 60000) {
+        if (currentFight && lastDamage && moment(`${logLine.date} ${logLine.time}`, 'MM-DD-YYYY HH:mm:ss.SSS').toDate().getTime() - lastDamage.time > 60000) {
             // eslint-disable-next-line no-loop-func
             currentFight.data = currentFight.data.filter((log, index) => index <= lastDamage!.index);
             currentFight.name += " - Incomplete";
@@ -85,7 +84,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         // If the current fight is null, start a new fight
         if (!currentFight && logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine) && logLine.target !== player) {
             fightStartTime = moment(`${logLine.date} ${logLine.time}`, 'MM-DD-YYYY HH:mm:ss.SSS').toDate();
-            logLine.fightTime = convertMillisToTime(0);
+            logLine.fightTimeMs = 0;
 
             const initialData: LogLine[] = [];
 
@@ -97,7 +96,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                     time: logLine.time,
                     timezone: logLine.timezone,
                     boostedLevels: boostedLevels,
-                    fightTime: convertMillisToTime(0)
+                    fightTimeMs: 0
                 });
             }
 
@@ -109,7 +108,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                     time: logLine.time,
                     timezone: logLine.timezone,
                     playerEquipment: playerEquipment,
-                    fightTime: convertMillisToTime(0)
+                    fightTimeMs: 0
                 });
             }
 
@@ -137,14 +136,13 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
             // Subtract the start time from the log's timestamp to get the relative time within the fight
             const logDate = moment(`${logLine.date} ${logLine.time}`, 'MM-DD-YYYY HH:mm:ss.SSS').toDate();
-            logLine.fightTime = convertMillisToTime(logDate.getTime() - fightStartTime!.getTime());
-
+            logLine.fightTimeMs = logDate.getTime() - fightStartTime!.getTime();
             currentFight.data.push(logLine);
         }
 
         if (currentFight && logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine)) {
             lastDamage = {
-                time: logLine.time,
+                time: moment(`${logLine.date} ${logLine.time}`, 'MM-DD-YYYY HH:mm:ss.SSS').toDate().getTime(),
                 index: currentFight.data.length - 1
             };
         }

@@ -10,6 +10,7 @@ import hitpointsImage from '../assets/Hitpoints.webp';
 import magicImage from '../assets/Magic.webp';
 import rangedImage from '../assets/Ranged.webp';
 import prayerImage from '../assets/Prayer.webp';
+import {formatHHmmss} from "../utils/utils";
 
 interface EventsTableProps {
     fight: Fight;
@@ -81,7 +82,7 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
                                           style={{cursor: 'default'}}
                                           onMouseEnter={(e) => e.currentTarget.classList.add('highlighted-row')}
                                           onMouseLeave={(e) => e.currentTarget.classList.remove('highlighted-row')}>
-                                    <TableCell>{log.fightTime}</TableCell>
+                                    <TableCell>{formatHHmmss(log.fightTimeMs!, true)}</TableCell>
                                     <TableCell style={{width: '120px', textAlign: 'right'}}>{log.type}</TableCell>
                                     <TableCell>
                                         {log.type === LogTypes.LOG_VERSION ? `Log version ${log.logVersion}` : ""}

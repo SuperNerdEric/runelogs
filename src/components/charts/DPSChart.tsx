@@ -1,6 +1,5 @@
 import React from 'react';
 import {Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
-import {calculateFightDuration, convertTimeToMillis} from "../../utils/utils";
 import {Fight} from "../../models/Fight";
 import {DamageLog, filterByType, LogTypes} from "../../models/LogLine";
 
@@ -38,14 +37,14 @@ export const calculateDPSByInterval = (data: DamageLog[], interval: number) => {
     const dpsData: { timestamp: number; dps: number }[] = [];
 
     if (data && data.length > 0) {
-        let currentIntervalStart = convertTimeToMillis(data[0].fightTime!);
+        let currentIntervalStart = data[0].fightTimeMs!;
         let currentIntervalTotalDamage = 0;
-        let endTime = convertTimeToMillis(data[data.length - 1].fightTime!);
+        let endTime = data[data.length - 1].fightTimeMs!;
 
         for (let timestamp = currentIntervalStart; timestamp <= endTime; timestamp += interval) {
             for (let i = 0; i < data.length; i++) {
                 const log = data[i];
-                const logTimestamp = convertTimeToMillis(log.fightTime!);
+                const logTimestamp = log.fightTimeMs!;
                 const totalDamage = log.damageAmount !== undefined ? log.damageAmount : 0;
 
                 if (logTimestamp >= currentIntervalStart && logTimestamp < timestamp) {
@@ -72,8 +71,7 @@ export const calculateDPSByInterval = (data: DamageLog[], interval: number) => {
 const DPSChart: React.FC<DPSChartProps> = ({fight}) => {
     const filteredLogs = filterByType(fight.data, LogTypes.DAMAGE);
 
-    const fightLength = calculateFightDuration(fight);
-    const interval = Math.min(Math.max(fightLength / 4, 600), 6000);
+    const interval = Math.min(Math.max(fight.metaData.fightLengthMs / 4, 600), 6000);
 
     const dpsData = calculateDPSByInterval(filteredLogs, interval);
 

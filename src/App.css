@@ -253,6 +253,7 @@
 }
 
 .fight-container {
+    position: relative;
     border: 1px solid black;
     background-color: #262a2e;
     width: 160px;
@@ -305,4 +306,12 @@
 
 .back-icon-wrapper:hover {
     background-color: grey;
+}
+
+.gold-star {
+    position: absolute;
+    top: 25%;
+    right: 10%;
+    font-size: 24px;
+    color: gold;
 }

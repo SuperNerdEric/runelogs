@@ -16,6 +16,6 @@ export interface FightMetaData {
     name: string;
     date: string;
     time: string;
-    fightLength: string;
+    fightLengthMs: number;
     success: boolean;
 }
