@@ -1,26 +1,10 @@
-import {DamageLog, LogLine, LogTypes} from "../models/LogLine";
+import {DamageLog, LogLine, LogTypes, TargetChangeLog} from "../models/LogLine";
 import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
 import {Fight} from "../models/Fight";
 import {BoostedLevels} from "../models/BoostedLevels";
 import moment from 'moment';
+import {BOSS_NAMES} from "./constants";
 
-
-const BOSS_NAMES = [
-    "Scurrius",
-    "Kree'arra",
-    "Commander Zilyana",
-    "General Graardor",
-    "K'ril Tsutsaroth",
-    "Nex",
-    "Kalphite Queen",
-    "Sarachnis",
-    "Scorpia",
-    "Abyssal Sire",
-    "Kraken",
-    "Dagannoth Rex",
-    "Dagannoth Supreme",
-    "Dagannoth Prime"
-];
 
 /**
  * If it is the logged in player that dealt/attempted the damage
@@ -29,6 +13,13 @@ function playerAttemptsDamage(log: DamageLog) {
     return Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
         Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!) ||
         log.hitsplatName === 'BLOCK_ME';
+}
+
+/**
+ * If a boss targets the logged in player
+ */
+function bossTargetsMe(player: string, log: TargetChangeLog) {
+    return log.target === player && BOSS_NAMES.includes(log.source);
 }
 
 export function logSplitter(fightData: LogLine[], progressCallback?: (progress: number) => void): Fight[] {
@@ -82,7 +73,9 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         }
 
         // If the current fight is null, start a new fight
-        if (!currentFight && logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine) && logLine.target !== player) {
+        if (!currentFight &&
+            ((logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine) && logLine.target !== player) ||
+            (logLine.type === LogTypes.TARGET_CHANGE && bossTargetsMe(player, logLine)))) {
             fightStartTime = moment(`${logLine.date} ${logLine.time}`, 'MM-DD-YYYY HH:mm:ss.SSS').toDate();
             logLine.fightTimeMs = 0;
 
