@@ -1,4 +1,12 @@
-import {BoostedLevelsLog, DamageLog, DeathLog, LoggedInPlayerLog, LogTypes, TargetChangeLog} from "../models/LogLine";
+import {
+    AttackAnimationLog,
+    BoostedLevelsLog,
+    DamageLog,
+    DeathLog,
+    LoggedInPlayerLog,
+    LogTypes,
+    TargetChangeLog
+} from "../models/LogLine";
 import {parseLogLine} from "../utils/FileParser";
 
 describe('parseLogLine', () => {
@@ -81,6 +89,22 @@ describe('parseLogLine', () => {
                 hitpoints: 89,
                 prayer: 71
             }
+        };
+
+        const parsedData = parseLogLine(logLine);
+
+        expect(parsedData).toEqual(expectedParsedData);
+    });
+
+    test('should parse a player attack animation log line', () => {
+        const logLine = '02-14-2024 10:12:23.702 CST\tPlayer attack animation\t428\tScurrius';
+        const expectedParsedData: AttackAnimationLog = {
+            type: LogTypes.PLAYER_ATTACK_ANIMATION,
+            date: '02-14-2024',
+            time: '10:12:23.702',
+            timezone: 'CST',
+            animationId: 428,
+            target: 'Scurrius',
         };
 
         const parsedData = parseLogLine(logLine);

@@ -112,6 +112,11 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
                                                 <span className="damage-amount">{log.damageAmount}</span>
                                             </>
                                         ) : ""}
+                                        {log.type === LogTypes.PLAYER_ATTACK_ANIMATION ? (
+                                            <>
+                                                <span className="attack-animation-text">{log.animationId} </span>
+                                            </>
+                                        ) : ""}
                                     </TableCell>
                                     <TableCell
                                         className={"source" in log && log.source === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>

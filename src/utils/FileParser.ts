@@ -20,7 +20,7 @@ export const parseLogLine = (logLine: string): LogLine | null => {
     const [, date, time, timezone, action] = match;
 
 
-    const logVersionPattern = new RegExp(`Log Version (${ANYTHING_PATTERN})`)
+    const logVersionPattern = new RegExp(`Log Version (${ANYTHING_PATTERN})`);
     match = action.match(logVersionPattern);
     if (match) {
         const [, logVersion] = match;
@@ -33,7 +33,7 @@ export const parseLogLine = (logLine: string): LogLine | null => {
             logVersion
         };
     }
-    const loggedInPlayerPattern = new RegExp(`Logged in player is (${ANYTHING_PATTERN})`)
+    const loggedInPlayerPattern = new RegExp(`Logged in player is (${ANYTHING_PATTERN})`);
     match = action.match(loggedInPlayerPattern);
     if (match) {
         const [, loggedInPlayer] = match;
@@ -68,7 +68,7 @@ export const parseLogLine = (logLine: string): LogLine | null => {
         };
     }
 
-    const playerEquipmentPattern = new RegExp(`Player equipment is (${ANYTHING_PATTERN})`)
+    const playerEquipmentPattern = new RegExp(`Player equipment is (${ANYTHING_PATTERN})`);
     match = action.match(playerEquipmentPattern);
     if (match) {
         const [, equpimentString] = match;
@@ -82,7 +82,7 @@ export const parseLogLine = (logLine: string): LogLine | null => {
         };
     }
 
-    const diesPattern = new RegExp(`^(${ANYTHING_PATTERN}) dies`)
+    const diesPattern = new RegExp(`^(${ANYTHING_PATTERN}) dies`);
     match = action.match(diesPattern);
     if (match) {
         const [, target] = match;
@@ -95,7 +95,7 @@ export const parseLogLine = (logLine: string): LogLine | null => {
         };
     }
 
-    const changedTargetPattern = new RegExp(`^(${ANYTHING_PATTERN}) changes target to (${ANYTHING_PATTERN})`)
+    const changedTargetPattern = new RegExp(`^(${ANYTHING_PATTERN}) changes target to (${ANYTHING_PATTERN})`);
     match = action.match(changedTargetPattern);
     if (match) {
         const [, source, target] = match;
@@ -109,6 +109,19 @@ export const parseLogLine = (logLine: string): LogLine | null => {
         };
     }
 
+    const playerAttackAnimationPattern = new RegExp(`Player attack animation\t(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})`);
+    match = action.match(playerAttackAnimationPattern);
+    if (match) {
+        const [, animationId, target] = match;
+        return {
+            type: LogTypes.PLAYER_ATTACK_ANIMATION,
+            date,
+            time,
+            timezone,
+            animationId: parseInt(animationId, 10),
+            target,
+        };
+    }
 
     const defaultPattern = new RegExp(`^(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})`);
 
