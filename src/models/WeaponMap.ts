@@ -15,7 +15,7 @@ export const weaponMap: Record<number, Weapon> = {};
 
 equipmentJson.forEach((equipmentItem: Equipment) => {
     if (equipmentItem.slot === "weapon") {
-        const weaponCategory: WeaponCategory = <WeaponCategory>equipmentItem.category;
+        const weaponCategory: WeaponCategory = equipmentItem.category as WeaponCategory;
 
         if (weaponCategory) {
             const weaponOptions = WeaponCategoryOptions[weaponCategory]!;

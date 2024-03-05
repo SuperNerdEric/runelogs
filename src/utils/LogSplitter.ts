@@ -189,7 +189,6 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
     // Insert in "fake" blowpipe animation logs for continuing to blowpipe
     filteredFights.forEach(fight => {
-        console.log(fight.data.filter(log => log.type === LogTypes.DAMAGE && log.target === "The Leviathan").length);
         let startedBlowpipingLog: AttackAnimationLog;
         let isBlowpiping: boolean = false;
 
@@ -197,7 +196,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
         fight.data.forEach(log => {
             if (log.type === LogTypes.PLAYER_ATTACK_ANIMATION) {
-                if (log.animationId == 5061 || log.animationId == 10656) {
+                if (log.animationId === 5061 || log.animationId === 10656) {
                     if (!isBlowpiping) {
                         startedBlowpipingLog = log;
                     }
@@ -208,7 +207,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
             if (isBlowpiping && (
                 log.type === LogTypes.STOPPED_BLOWPIPING ||
-                log.type === LogTypes.DEATH && log.target === fight.metaData.name) // The fight is over
+                (log.type === LogTypes.DEATH && log.target === fight.metaData.name)) // The fight is over
             ) {
                 // Insert in "fake" animation ids to represent all the times the blowpipe would have hit
                 let currentTimestamp = startedBlowpipingLog.fightTimeMs! + 1200;
