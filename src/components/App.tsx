@@ -10,6 +10,8 @@ import TopBar from "./TopBar";
 import {closeSnackbar, SnackbarKey, useSnackbar} from 'notistack';
 import FightSelector from "./sections/FightSelector";
 import {Icon} from '@iconify/react';
+import TickActivity from "./performance/TickActivity";
+import {BOSS_NAMES} from "../utils/constants";
 
 function App() {
     const fightsStorage = localforage.createInstance({
@@ -166,6 +168,7 @@ function App() {
                                 />
                             ))}
                         </Tabs>
+                        {(BOSS_NAMES.includes(selectedLogs.metaData.name) || selectedLogs.metaData.fightLengthMs >= 15000) && <TickActivity selectedLogs={selectedLogs}/>}
                         {selectedTab === TabsEnum.DAMAGE_DONE && <DamageDoneTab selectedLogs={selectedLogs}/>}
                         {selectedTab === TabsEnum.DAMAGE_TAKEN && <DamageTakenTab selectedLogs={selectedLogs}/>}
                         {selectedTab === TabsEnum.BOOSTS && <BoostsTab selectedLogs={selectedLogs}/>}

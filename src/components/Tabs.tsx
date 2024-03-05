@@ -46,13 +46,9 @@ export const DamageTakenTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}
 };
 
 export const BoostsTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}) => {
-    const filteredLogs = filterByType(selectedLogs.data, LogTypes.BOOSTED_LEVELS);
     return (
         <div className="damage-done-container">
-            <BoostsChart fight={{
-                ...selectedLogs!,
-                data: filteredLogs?.filter((log) => log.boostedLevels) as BoostedLevelsLog[],
-            }}/>
+            <BoostsChart fight={selectedLogs}/>
         </div>
     );
 };

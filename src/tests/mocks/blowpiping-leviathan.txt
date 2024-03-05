@@ -1,0 +1,277 @@
+02-29-2024 16:55:11.526 CST	Log Version 0.0.6
+02-29-2024 16:55:11.526 CST	Logged in player is Million Pies
+02-29-2024 16:55:11.526 CST	Boosted levels are [99, 99, 99, 112, 99, 121, 99]
+02-29-2024 16:55:11.527 CST	Player equipment is [27235, 27363, 19547, 28688, 27238, 27241, 26235, 13237, 25975, 21944]
+02-29-2024 16:55:16.970 CST	Boosted levels are [99, 99, 99, 112, 99, 121, 98]
+02-29-2024 16:55:18.149 CST	Player attack animation	10656	The Leviathan
+02-29-2024 16:55:18.150 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:55:18.150 CST	The Leviathan changes target to Million Pies
+02-29-2024 16:55:18.775 CST	Boosted levels are [99, 99, 99, 112, 99, 121, 97]
+02-29-2024 16:55:19.349 CST	The Leviathan	BLOCK_ME	0
+02-29-2024 16:55:20.547 CST	The Leviathan	BLOCK_ME	0
+02-29-2024 16:55:20.574 CST	Boosted levels are [99, 99, 99, 112, 99, 121, 96]
+02-29-2024 16:55:21.747 CST	The Leviathan	DAMAGE_ME	9
+02-29-2024 16:55:21.775 CST	Boosted levels are [99, 99, 99, 112, 99, 121, 95]
+02-29-2024 16:55:22.950 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:55:22.950 CST	The Leviathan	BLOCK_ME	0
+02-29-2024 16:55:22.975 CST	Boosted levels are [99, 99, 99, 112, 99, 121, 94]
+02-29-2024 16:55:24.150 CST	The Leviathan	DAMAGE_ME	23
+02-29-2024 16:55:24.175 CST	Boosted levels are [99, 99, 99, 112, 99, 121, 93]
+02-29-2024 16:55:24.748 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:55:25.351 CST	The Leviathan	DAMAGE_ME	18
+02-29-2024 16:55:25.376 CST	Boosted levels are [99, 99, 99, 112, 99, 121, 92]
+02-29-2024 16:55:26.548 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:55:26.549 CST	The Leviathan	BLOCK_ME	0
+02-29-2024 16:55:26.575 CST	Boosted levels are [99, 99, 99, 112, 99, 121, 91]
+02-29-2024 16:55:27.747 CST	The Leviathan	DAMAGE_ME	8
+02-29-2024 16:55:27.774 CST	Boosted levels are [99, 99, 99, 112, 99, 121, 90]
+02-29-2024 16:55:28.348 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:55:28.948 CST	The Leviathan	BLOCK_ME	0
+02-29-2024 16:55:28.978 CST	Boosted levels are [99, 99, 99, 112, 99, 121, 89]
+02-29-2024 16:55:30.168 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:55:30.169 CST	The Leviathan	BLOCK_ME	0
+02-29-2024 16:55:30.193 CST	Boosted levels are [99, 99, 99, 112, 99, 121, 88]
+02-29-2024 16:55:31.363 CST	Million Pies	DAMAGE_ME	6
+02-29-2024 16:55:31.371 CST	The Leviathan	DAMAGE_ME	25
+02-29-2024 16:55:31.382 CST	Boosted levels are [99, 99, 99, 112, 99, 115, 87]
+02-29-2024 16:55:31.947 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:55:32.545 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:55:32.545 CST	The Leviathan	BLOCK_ME	0
+02-29-2024 16:55:32.574 CST	Boosted levels are [99, 99, 99, 112, 99, 115, 86]
+02-29-2024 16:55:33.744 CST	The Leviathan	BLOCK_ME	0
+02-29-2024 16:55:33.771 CST	Boosted levels are [99, 99, 99, 112, 99, 115, 85]
+02-29-2024 16:55:34.949 CST	The Leviathan	BLOCK_ME	0
+02-29-2024 16:55:34.979 CST	Boosted levels are [99, 99, 99, 112, 99, 115, 84]
+02-29-2024 16:55:36.189 CST	The Leviathan	BLOCK_ME	0
+02-29-2024 16:55:36.210 CST	Boosted levels are [99, 99, 99, 112, 99, 115, 83]
+02-29-2024 16:55:36.769 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:55:37.412 CST	The Leviathan	DAMAGE_ME	9
+02-29-2024 16:55:37.438 CST	Boosted levels are [99, 99, 99, 112, 99, 115, 82]
+02-29-2024 16:55:37.989 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:55:38.549 CST	The Leviathan	DAMAGE_ME	2
+02-29-2024 16:55:38.577 CST	Boosted levels are [99, 99, 99, 112, 99, 115, 81]
+02-29-2024 16:55:39.168 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:55:39.749 CST	The Leviathan	DAMAGE_ME	6
+02-29-2024 16:55:39.780 CST	Boosted levels are [99, 99, 99, 112, 99, 115, 80]
+02-29-2024 16:55:40.349 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:55:40.948 CST	The Leviathan	DAMAGE_ME	26
+02-29-2024 16:55:40.948 CST	The Leviathan	Unknown_65	6
+02-29-2024 16:55:40.973 CST	Boosted levels are [99, 99, 99, 112, 99, 115, 79]
+02-29-2024 16:55:41.548 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:55:42.148 CST	The Leviathan	DAMAGE_ME	16
+02-29-2024 16:55:42.172 CST	Boosted levels are [99, 99, 99, 112, 99, 115, 78]
+02-29-2024 16:55:42.749 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:55:43.346 CST	The Leviathan	BLOCK_ME	0
+02-29-2024 16:55:43.375 CST	Boosted levels are [99, 99, 99, 112, 99, 115, 77]
+02-29-2024 16:55:43.950 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:55:43.950 CST	Million Pies	DAMAGE_ME	5
+02-29-2024 16:55:43.970 CST	Boosted levels are [99, 99, 99, 112, 99, 110, 77]
+02-29-2024 16:55:44.555 CST	The Leviathan	BLOCK_ME	0
+02-29-2024 16:55:44.583 CST	Boosted levels are [99, 99, 99, 112, 99, 110, 76]
+02-29-2024 16:55:45.148 CST	Player attack animation	1979	The Leviathan
+02-29-2024 16:55:45.149 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:55:45.149 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:55:45.169 CST	Player stopped blowpiping
+02-29-2024 16:55:45.747 CST	Player attack animation	10656	The Leviathan
+02-29-2024 16:55:45.768 CST	Boosted levels are [99, 99, 99, 112, 99, 110, 75]
+02-29-2024 16:55:46.944 CST	The Leviathan	BLOCK_ME	0
+02-29-2024 16:55:46.991 CST	Boosted levels are [99, 99, 99, 112, 99, 110, 74]
+02-29-2024 16:55:47.596 CST	Player stopped blowpiping
+02-29-2024 16:55:48.172 CST	Boosted levels are [99, 99, 99, 112, 99, 110, 73]
+02-29-2024 16:55:49.372 CST	Boosted levels are [99, 99, 99, 112, 99, 110, 72]
+02-29-2024 16:55:50.553 CST	Player equipment is [27235, 27363, 19547, 26374, 27238, 21000, 27241, 26235, 13237, 25975, 21944]
+02-29-2024 16:55:50.594 CST	Boosted levels are [99, 99, 99, 112, 99, 110, 71]
+02-29-2024 16:55:51.780 CST	Boosted levels are [99, 99, 99, 112, 99, 110, 70]
+02-29-2024 16:55:52.345 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:55:52.346 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:55:52.976 CST	Boosted levels are [99, 99, 99, 112, 99, 110, 69]
+02-29-2024 16:55:53.547 CST	The Leviathan	DAMAGE_ME	43
+02-29-2024 16:55:54.778 CST	Boosted levels are [99, 99, 99, 112, 99, 110, 68]
+02-29-2024 16:55:55.353 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:55:56.564 CST	The Leviathan	BLOCK_ME	0
+02-29-2024 16:55:56.589 CST	Boosted levels are [99, 99, 99, 112, 99, 110, 67]
+02-29-2024 16:55:58.396 CST	Boosted levels are [99, 99, 99, 112, 99, 110, 66]
+02-29-2024 16:55:58.951 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:55:58.952 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:55:58.953 CST	The Leviathan	Unknown_65	5
+02-29-2024 16:56:00.147 CST	The Leviathan	DAMAGE_ME	8
+02-29-2024 16:56:00.187 CST	Boosted levels are [99, 99, 99, 112, 99, 110, 65]
+02-29-2024 16:56:00.789 CST	Boosted levels are [99, 99, 99, 112, 99, 110, 97]
+02-29-2024 16:56:01.391 CST	Boosted levels are [99, 99, 99, 112, 99, 109, 97]
+02-29-2024 16:56:01.970 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:56:01.971 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:56:01.991 CST	Boosted levels are [99, 99, 99, 112, 99, 109, 96]
+02-29-2024 16:56:03.164 CST	The Leviathan	BLOCK_ME	0
+02-29-2024 16:56:03.788 CST	Boosted levels are [99, 99, 99, 112, 99, 109, 95]
+02-29-2024 16:56:04.950 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:56:04.950 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:56:05.579 CST	Boosted levels are [99, 99, 99, 112, 99, 109, 94]
+02-29-2024 16:56:06.164 CST	The Leviathan	DAMAGE_ME	1
+02-29-2024 16:56:07.392 CST	Boosted levels are [99, 99, 99, 112, 99, 109, 93]
+02-29-2024 16:56:07.971 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:56:07.972 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:56:09.152 CST	The Leviathan	DAMAGE_ME	2
+02-29-2024 16:56:09.805 CST	Boosted levels are [99, 99, 99, 112, 99, 109, 92]
+02-29-2024 16:56:10.948 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:56:10.948 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:56:11.569 CST	Boosted levels are [99, 99, 99, 112, 99, 109, 91]
+02-29-2024 16:56:12.148 CST	The Leviathan	BLOCK_ME	0
+02-29-2024 16:56:13.370 CST	Boosted levels are [99, 99, 99, 112, 99, 109, 90]
+02-29-2024 16:56:13.949 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:56:13.950 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:56:15.147 CST	The Leviathan	DAMAGE_ME	20
+02-29-2024 16:56:15.172 CST	Boosted levels are [99, 99, 99, 112, 99, 109, 89]
+02-29-2024 16:56:16.949 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:56:16.949 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:56:16.950 CST	The Leviathan	Unknown_65	5
+02-29-2024 16:56:16.976 CST	Boosted levels are [99, 99, 99, 112, 99, 109, 88]
+02-29-2024 16:56:18.146 CST	The Leviathan	DAMAGE_ME	7
+02-29-2024 16:56:18.788 CST	Boosted levels are [99, 99, 99, 112, 99, 109, 87]
+02-29-2024 16:56:19.350 CST	The Leviathan changes target to Million Pies
+02-29-2024 16:56:19.950 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:56:19.951 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:56:20.580 CST	Boosted levels are [99, 99, 99, 112, 99, 109, 86]
+02-29-2024 16:56:21.149 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:56:21.150 CST	The Leviathan	DAMAGE_ME	38
+02-29-2024 16:56:22.351 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:56:22.371 CST	Boosted levels are [99, 99, 99, 112, 99, 109, 85]
+02-29-2024 16:56:22.951 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:56:24.166 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:56:24.193 CST	Boosted levels are [99, 99, 99, 112, 99, 109, 84]
+02-29-2024 16:56:24.766 CST	The Leviathan	DAMAGE_ME	16
+02-29-2024 16:56:25.350 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:56:25.375 CST	Boosted levels are [99, 99, 99, 112, 99, 109, 83]
+02-29-2024 16:56:25.966 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:56:26.549 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:56:26.580 CST	Boosted levels are [99, 99, 99, 112, 99, 109, 82]
+02-29-2024 16:56:27.747 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:56:27.747 CST	The Leviathan	DAMAGE_ME	42
+02-29-2024 16:56:27.773 CST	Boosted levels are [99, 99, 99, 112, 99, 109, 81]
+02-29-2024 16:56:28.945 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:56:28.945 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:56:29.574 CST	Boosted levels are [99, 99, 99, 112, 99, 109, 80]
+02-29-2024 16:56:30.167 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:56:30.771 CST	The Leviathan	DAMAGE_ME	26
+02-29-2024 16:56:30.791 CST	Boosted levels are [99, 99, 99, 112, 99, 109, 79]
+02-29-2024 16:56:31.351 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:56:31.952 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:56:31.976 CST	Boosted levels are [99, 99, 99, 112, 99, 109, 78]
+02-29-2024 16:56:32.571 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:56:32.571 CST	Million Pies	DAMAGE_ME	7
+02-29-2024 16:56:32.571 CST	Million Pies	DAMAGE_ME	10
+02-29-2024 16:56:32.591 CST	Boosted levels are [99, 99, 99, 112, 99, 92, 78]
+02-29-2024 16:56:33.192 CST	Boosted levels are [99, 99, 99, 112, 99, 92, 77]
+02-29-2024 16:56:33.744 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:56:33.745 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:56:33.745 CST	The Leviathan	DAMAGE_MAX_ME	110
+02-29-2024 16:56:34.404 CST	Boosted levels are [99, 99, 99, 112, 99, 92, 76]
+02-29-2024 16:56:34.947 CST	The Leviathan	Unknown_65	5
+02-29-2024 16:56:35.572 CST	Player attack animation	1979	The Leviathan
+02-29-2024 16:56:35.573 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:56:35.594 CST	Boosted levels are [99, 99, 99, 112, 99, 92, 75]
+02-29-2024 16:56:36.164 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:56:36.797 CST	Boosted levels are [99, 99, 99, 112, 99, 92, 74]
+02-29-2024 16:56:37.348 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:56:37.967 CST	The Leviathan	DAMAGE_ME	35
+02-29-2024 16:56:38.013 CST	Boosted levels are [99, 99, 99, 112, 99, 92, 73]
+02-29-2024 16:56:38.548 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:56:39.197 CST	Boosted levels are [99, 99, 99, 112, 99, 92, 72]
+02-29-2024 16:56:40.413 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 71]
+02-29-2024 16:56:41.584 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 70]
+02-29-2024 16:56:42.148 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:56:42.148 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:56:42.780 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 69]
+02-29-2024 16:56:43.350 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:56:43.951 CST	The Leviathan	DAMAGE_ME	38
+02-29-2024 16:56:43.951 CST	The Leviathan changes target to Million Pies
+02-29-2024 16:56:43.974 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 68]
+02-29-2024 16:56:45.162 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:56:45.188 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 67]
+02-29-2024 16:56:46.384 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 66]
+02-29-2024 16:56:46.943 CST	The Leviathan	DAMAGE_ME	25
+02-29-2024 16:56:47.589 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 65]
+02-29-2024 16:56:48.772 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 64]
+02-29-2024 16:56:49.950 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:56:49.951 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:56:49.979 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 63]
+02-29-2024 16:56:51.764 CST	The Leviathan	BLOCK_ME	0
+02-29-2024 16:56:51.790 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 62]
+02-29-2024 16:56:52.973 CST	The Leviathan	Unknown_65	5
+02-29-2024 16:56:52.997 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 61]
+02-29-2024 16:56:54.172 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:56:54.196 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 60]
+02-29-2024 16:56:54.749 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:56:55.375 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 59]
+02-29-2024 16:56:56.550 CST	The Leviathan	DAMAGE_ME	15
+02-29-2024 16:56:56.568 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 90]
+02-29-2024 16:56:57.750 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:56:57.772 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 89]
+02-29-2024 16:56:58.950 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:56:58.972 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 88]
+02-29-2024 16:56:59.550 CST	The Leviathan	DAMAGE_ME	29
+02-29-2024 16:57:00.172 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 87]
+02-29-2024 16:57:00.750 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:57:00.750 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:57:01.391 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 86]
+02-29-2024 16:57:01.964 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:57:02.566 CST	The Leviathan	DAMAGE_ME	23
+02-29-2024 16:57:02.593 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 85]
+02-29-2024 16:57:03.168 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:57:03.750 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:57:03.779 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 84]
+02-29-2024 16:57:04.348 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:57:04.997 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 83]
+02-29-2024 16:57:05.548 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:57:05.549 CST	The Leviathan	DAMAGE_ME	17
+02-29-2024 16:57:06.190 CST	Boosted levels are [99, 99, 99, 112, 99, 99, 82]
+02-29-2024 16:57:06.766 CST	Player attack animation	9168	The Leviathan
+02-29-2024 16:57:06.767 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:57:07.348 CST	Million Pies	DAMAGE_ME	9
+02-29-2024 16:57:07.374 CST	Boosted levels are [99, 99, 99, 112, 99, 90, 81]
+02-29-2024 16:57:07.964 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:57:08.565 CST	Million Pies	DAMAGE_ME	6
+02-29-2024 16:57:08.565 CST	The Leviathan	DAMAGE_ME	52
+02-29-2024 16:57:08.590 CST	Boosted levels are [99, 99, 99, 112, 99, 84, 80]
+02-29-2024 16:57:09.169 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:57:09.773 CST	Player equipment is [27235, 27363, 19547, 28688, 27238, 27241, 26235, 13237, 25975, 21944]
+02-29-2024 16:57:09.806 CST	Boosted levels are [99, 99, 99, 112, 99, 84, 79]
+02-29-2024 16:57:10.370 CST	Player attack animation	10656	The Leviathan
+02-29-2024 16:57:10.370 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:57:10.989 CST	The Leviathan	Unknown_65	6
+02-29-2024 16:57:11.009 CST	Boosted levels are [99, 99, 99, 112, 99, 84, 78]
+02-29-2024 16:57:11.549 CST	The Leviathan	DAMAGE_ME	26
+02-29-2024 16:57:12.172 CST	Player attack animation	10656	The Leviathan
+02-29-2024 16:57:12.172 CST	Million Pies	DAMAGE_ME	5
+02-29-2024 16:57:12.172 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:57:12.200 CST	Boosted levels are [99, 99, 99, 112, 99, 79, 77]
+02-29-2024 16:57:12.767 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:57:13.351 CST	The Leviathan	BLOCK_ME	0
+02-29-2024 16:57:13.380 CST	Boosted levels are [99, 99, 99, 112, 99, 79, 76]
+02-29-2024 16:57:13.964 CST	Player attack animation	10656	The Leviathan
+02-29-2024 16:57:13.964 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:57:14.599 CST	Boosted levels are [99, 99, 99, 112, 99, 79, 75]
+02-29-2024 16:57:15.158 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:57:15.158 CST	The Leviathan	DAMAGE_ME	25
+02-29-2024 16:57:15.812 CST	Boosted levels are [99, 99, 99, 112, 99, 79, 74]
+02-29-2024 16:57:16.368 CST	Million Pies	DAMAGE_ME	31
+02-29-2024 16:57:16.368 CST	The Leviathan	DAMAGE_ME	13
+02-29-2024 16:57:16.398 CST	Boosted levels are [99, 99, 99, 112, 99, 48, 74]
+02-29-2024 16:57:16.974 CST	Boosted levels are [99, 99, 99, 112, 99, 48, 73]
+02-29-2024 16:57:17.565 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:57:17.566 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:57:17.566 CST	The Leviathan	DAMAGE_ME	20
+02-29-2024 16:57:18.207 CST	Boosted levels are [99, 99, 99, 112, 99, 48, 72]
+02-29-2024 16:57:18.766 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:57:18.767 CST	The Leviathan	DAMAGE_ME	22
+02-29-2024 16:57:19.393 CST	Boosted levels are [99, 99, 99, 112, 99, 48, 71]
+02-29-2024 16:57:19.946 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:57:19.946 CST	The Leviathan	DAMAGE_ME	27
+02-29-2024 16:57:20.629 CST	Boosted levels are [99, 99, 99, 112, 99, 48, 70]
+02-29-2024 16:57:21.164 CST	Million Pies	BLOCK_ME	0
+02-29-2024 16:57:21.165 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:57:21.165 CST	The Leviathan	DAMAGE_ME	23
+02-29-2024 16:57:21.793 CST	Boosted levels are [99, 99, 99, 112, 99, 48, 69]
+02-29-2024 16:57:22.364 CST	Million Pies changes target to The Leviathan
+02-29-2024 16:57:22.364 CST	The Leviathan	DAMAGE_ME	23
+02-29-2024 16:57:22.364 CST	The Leviathan dies
+02-29-2024 16:57:22.991 CST	Player stopped blowpiping

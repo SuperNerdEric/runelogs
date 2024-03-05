@@ -6,7 +6,7 @@ const fightsStorage = localforage.createInstance({
     name: 'myFightData'
 });
 
-function parseFileWithProgress(fileContent: string) {
+export function parseFileWithProgress(fileContent: string) {
     const parseResults = parseFileContent(fileContent, (progress) => {
         postMessage({type: 'progress', progress});
     });

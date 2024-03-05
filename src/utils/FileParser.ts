@@ -123,6 +123,17 @@ export const parseLogLine = (logLine: string): LogLine | null => {
         };
     }
 
+    const playerStoppedBlowpipingPattern = new RegExp(`Player stopped blowpiping`);
+    match = action.match(playerStoppedBlowpipingPattern);
+    if (match) {
+        return {
+            type: LogTypes.STOPPED_BLOWPIPING,
+            date,
+            time,
+            timezone,
+        };
+    }
+
     const defaultPattern = new RegExp(`^(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})`);
 
     match = action.match(defaultPattern);

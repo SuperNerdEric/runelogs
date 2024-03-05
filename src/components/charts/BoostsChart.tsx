@@ -1,16 +1,19 @@
-import React from 'react';
-import {Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
+import React, {useEffect, useState} from 'react';
+import {Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
 import {pairs as d3Pairs} from 'd3-array';
 import {Fight} from "../../models/Fight";
 import {BoostedLevels} from "../../models/BoostedLevels";
 import {BoostedLevelsLog, filterByType, LogLine, LogTypes} from "../../models/LogLine";
 import {formatHHmmss} from "../../utils/utils";
+import {MAGE_ANIMATION, MELEE_ANIMATIONS, RANGED_ANIMATIONS} from "../../models/Constants";
+import {alpha, FormControlLabel, Switch} from '@mui/material';
+import {styled} from "@mui/material/styles";
 
 interface DPSChartProps {
     fight: Fight;
 }
 
-const CustomTooltip: React.FC<any> = ({active, payload, label}) => {
+const CustomTooltip: React.FC<any> = ({active, payload, label, data}) => {
     if (active && payload && payload.length) {
 
         return (
@@ -21,7 +24,13 @@ const CustomTooltip: React.FC<any> = ({active, payload, label}) => {
                         {entry.name}: {entry.value}
                     </div>
                 ))}
-                {label}
+                {formatHHmmss(label, true)}
+
+                {payload[0].payload.animationId &&
+                    <div>
+                        Animation: {payload[0].payload.animationId}
+                    </div>
+                }
             </div>
         );
     }
@@ -78,33 +87,107 @@ export function calculateWeightedAverages(fight: Fight) {
 }
 
 const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
+    const [boostedLevelsData, setBoostedLevelsData] = useState<any[] | undefined>();
+    const [attackAnimationData, setAttackAnimationData] = useState<any[] | undefined>();
+    const [showAttackAnimations, setShowAttackAnimations] = useState<boolean>(true); // State variable to control visibility
+
+    useEffect(() => {
+        let currentBoost: BoostedLevels;
+
+        let tempBoost: any[] = [];
+        let tempAttack: any[] = [];
+
+        fight.data.forEach(log => {
+            if (log.type === LogTypes.BOOSTED_LEVELS) {
+                tempBoost.push({
+                    timestamp: log.fightTimeMs,
+                    formattedTimestamp: formatHHmmss(log.fightTimeMs!, true),
+                    attack: log.boostedLevels?.attack || 0,
+                    strength: log.boostedLevels?.strength || 0,
+                    defence: log.boostedLevels?.defence || 0,
+                    ranged: log.boostedLevels?.ranged || 0,
+                    magic: log.boostedLevels?.magic || 0,
+                    hitpoints: log.boostedLevels?.hitpoints || 0,
+                    prayer: log.boostedLevels?.prayer || 0,
+                });
+
+                currentBoost = log.boostedLevels;
+            }
+
+
+            if (log.type === LogTypes.PLAYER_ATTACK_ANIMATION || log.type === LogTypes.BLOWPIPE_ANIMATION) {
+                tempAttack.push({
+                    timestamp: log.fightTimeMs,
+                    formattedTimestamp: formatHHmmss(log.fightTimeMs!, true),
+                    animationId: log.animationId
+                });
+
+                // Add in a fake boost datapoint, only if it doesn't already exist
+                if (!tempBoost.find(data => data.timestamp === log.fightTimeMs)) {
+                    tempBoost.push({
+                        timestamp: log.fightTimeMs,
+                        formattedTimestamp: formatHHmmss(log.fightTimeMs!, true),
+                        attack: currentBoost.attack || 0,
+                        strength: currentBoost.strength || 0,
+                        defence: currentBoost.defence || 0,
+                        ranged: currentBoost.ranged || 0,
+                        magic: currentBoost.magic || 0,
+                        hitpoints: currentBoost?.hitpoints || 0,
+                        prayer: currentBoost?.prayer || 0,
+                        animationId: log.animationId
+                    });
+                }
+            }
+        })
+
+        tempBoost.push({
+            ...tempBoost[tempBoost.length - 1],
+            timestamp: fight.lastLine!.fightTimeMs,
+            formattedTimestamp: formatHHmmss(fight.lastLine!.fightTimeMs!, true),
+        });
+
+        const verticalMelee = "rgb(153, 38, 58)";
+        const verticalRanged = "rgb(72, 84, 55)";
+        const verticalMagic = "rgb(28, 95, 115)";
+
+        tempAttack.forEach(attack => {
+            if (MELEE_ANIMATIONS.includes(attack.animationId)) {
+                attack.color = verticalMelee;
+            } else if (RANGED_ANIMATIONS.includes(attack.animationId)) {
+                attack.color = verticalRanged;
+            } else if (MAGE_ANIMATION.includes(attack.animationId)) {
+                attack.color = verticalMagic;
+            }
+        })
+        setBoostedLevelsData(tempBoost);
+        setAttackAnimationData(tempAttack);
+    }, [fight]);
+
+
     const filteredLogs = filterByType(fight.data, LogTypes.BOOSTED_LEVELS);
-
-    let boostedLevelsData = filteredLogs.map((log: BoostedLevelsLog) => ({
-        timestamp: log.fightTimeMs,
-        formattedTimestamp: formatHHmmss(log.fightTimeMs!, true),
-        attack: log.boostedLevels?.attack || 0,
-        strength: log.boostedLevels?.strength || 0,
-        defence: log.boostedLevels?.defence || 0,
-        ranged: log.boostedLevels?.ranged || 0,
-        magic: log.boostedLevels?.magic || 0,
-        hitpoints: log.boostedLevels?.hitpoints || 0,
-        prayer: log.boostedLevels?.prayer || 0,
-    }));
-
-    boostedLevelsData.push({
-        ...boostedLevelsData[boostedLevelsData.length - 1],
-        timestamp: fight.lastLine!.fightTimeMs,
-        formattedTimestamp: formatHHmmss(fight.lastLine!.fightTimeMs!, true),
+    const averages = calculateWeightedAverages({
+        ...fight!,
+        data: filteredLogs?.filter((log) => log.boostedLevels) as BoostedLevelsLog[],
     });
-    const averages = calculateWeightedAverages(fight);
+
+    if (!boostedLevelsData || !attackAnimationData) {
+        return <div>Loading...</div>;
+    } else {
+        /*        console.log(boostedLevelsData)
+                attackAnimationData.map(data => {
+                    console.log(data.formattedTimestamp);
+                })*/
+    }
 
     return (
         <div>
             <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={boostedLevelsData} margin={{top: 11, left: 60, bottom: 20}}>
                     <XAxis
-                        dataKey="formattedTimestamp"
+                        dataKey="timestamp" // Use the actual timestamp as the dataKey
+                        type="number" // Specify the type as "number" for numerical values
+                        tickFormatter={(timestamp) => formatHHmmss(timestamp, true)}
+                        domain={[0, boostedLevelsData[boostedLevelsData.length - 1].timestamp]}
                     />
                     <YAxis
                         dataKey="attack"
@@ -140,21 +223,39 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
                                             </div>
                                         ))}
                                 </div>
+                                <div style={{position: 'absolute', top: 0, right: 0}}>
+                                    <FormControlLabel
+                                        control={<TanToggle checked={showAttackAnimations}
+                                                         onChange={() => setShowAttackAnimations(!showAttackAnimations)}
+                                                         color="default"/>}
+                                        label="Attacks"
+                                    />
+                                </div>
                             </div>
                         )}
                     />
-                    <Line type="stepAfter" dataKey="attack" stroke="#C69B6D" dot={false}/>
-                    <Line type="stepAfter" dataKey="strength" stroke="#C41E3A" dot={false}/>
-                    <Line type="stepAfter" dataKey="defence" stroke="#0070DD" dot={false}/>
-                    <Line type="stepAfter" dataKey="ranged" stroke="#AAD372" dot={false}/>
-                    <Line type="stepAfter" dataKey="magic" stroke="#3FC7EB" dot={false}/>
-                    <Tooltip content={(props) => <CustomTooltip {...props} />} cursor={{fill: '#3c3226'}}/>
+                    {attackAnimationData.map((line, index) => (
+                        showAttackAnimations && (
+                            <ReferenceLine key={index} x={line.timestamp} stroke={line.color} strokeDasharray="10 2"
+                                           ifOverflow="extendDomain"/>
+                        )
+                    ))}
+                    <Line type="stepAfter" dataKey="attack" stroke="#C69B6D" dot={false} animationDuration={0}/>
+                    <Line type="stepAfter" dataKey="strength" stroke="#C41E3A" dot={false} animationDuration={0}/>
+                    <Line type="stepAfter" dataKey="defence" stroke="#0070DD" dot={false} animationDuration={0}/>
+                    <Line type="stepAfter" dataKey="ranged" stroke="#AAD372" dot={false} animationDuration={0}/>
+                    <Line type="stepAfter" dataKey="magic" stroke="#3FC7EB" dot={false} animationDuration={0}/>
+                    <Tooltip content={(props) => <CustomTooltip {...props} data={boostedLevelsData}/>}
+                             cursor={{fill: '#3c3226'}}/>
                 </LineChart>
             </ResponsiveContainer>
             <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={boostedLevelsData} margin={{top: 11, left: 60, bottom: 20}}>
                     <XAxis
-                        dataKey="formattedTimestamp"
+                        dataKey="timestamp" // Use the actual timestamp as the dataKey
+                        type="number" // Specify the type as "number" for numerical values
+                        tickFormatter={(timestamp) => formatHHmmss(timestamp, true)}
+                        domain={[0, boostedLevelsData[boostedLevelsData.length - 1].timestamp]}
                     />
                     <YAxis
                         dataKey="attack"
@@ -193,8 +294,8 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
                             </div>
                         )}
                     />
-                    <Line type="stepAfter" dataKey="hitpoints" stroke="red" dot={false}/>
-                    <Line type="stepAfter" dataKey="prayer" stroke="yellow" dot={false}/>
+                    <Line type="stepAfter" dataKey="hitpoints" stroke="red" dot={false} animationDuration={0}/>
+                    <Line type="stepAfter" dataKey="prayer" stroke="yellow" dot={false} animationDuration={0}/>
                     <Tooltip content={(props) => <CustomTooltip {...props} />} cursor={{fill: '#3c3226'}}/>
                 </LineChart>
             </ResponsiveContainer>
@@ -225,3 +326,18 @@ function getStatColor(stat: keyof BoostedLevels) {
 }
 
 export default BoostsChart;
+
+const TanToggle = styled(Switch)(({ theme }) => ({
+    '& .MuiSwitch-switchBase.Mui-checked': {
+        color: "#D2B48C",
+        '&:hover': {
+            backgroundColor: alpha("#D2B48C", theme.palette.action.hoverOpacity),
+        },
+    },
+    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+        backgroundColor: "#D2B48C",
+    },
+    '& .MuiSwitch-track': {
+        backgroundColor: theme.palette.grey[400],
+    },
+}));

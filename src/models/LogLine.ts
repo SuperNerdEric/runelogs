@@ -8,7 +8,9 @@ export enum LogTypes {
     DEATH = 'Death',
     TARGET_CHANGE = 'Target Change',
     DAMAGE = 'Damage',
-    PLAYER_ATTACK_ANIMATION = 'Attack Animation'
+    PLAYER_ATTACK_ANIMATION = 'Attack Animation',
+    BLOWPIPE_ANIMATION = 'Blowpipe Animation',
+    STOPPED_BLOWPIPING = 'Stopped blowpiping'
 }
 
 export interface BaseLog {
@@ -63,6 +65,16 @@ export interface AttackAnimationLog extends BaseLog {
     target: string;
 }
 
+export interface BlowpipeAnimationLog extends BaseLog {
+    type: LogTypes.BLOWPIPE_ANIMATION;
+    animationId: number;
+    target: string;
+}
+
+export interface StoppedBlowpiping extends BaseLog {
+    type: LogTypes.STOPPED_BLOWPIPING;
+}
+
 export type LogLine =
     LogVersionLog
     | LoggedInPlayerLog
@@ -71,7 +83,9 @@ export type LogLine =
     | DeathLog
     | TargetChangeLog
     | DamageLog
-    | AttackAnimationLog;
+    | AttackAnimationLog
+    | BlowpipeAnimationLog
+    | StoppedBlowpiping;
 
 export function filterByType<T extends LogLine['type']>(logs: LogLine[], type: T): Extract<LogLine, { type: T }>[] {
     return logs.filter(log => log.type === type) as Extract<LogLine, { type: T }>[];
