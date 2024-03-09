@@ -23,8 +23,6 @@ export const parseLogLine = (logLine: string): LogLine | null => {
     let action = "";
     let tick = -1;
 
-    let usingNewPattern = false;
-
     if (!match) {
         match = logLine.match(newPattern);
         if (match) {
@@ -32,7 +30,6 @@ export const parseLogLine = (logLine: string): LogLine | null => {
             date = match[2];
             time = match[3];
             action = match[4];
-            usingNewPattern = true;
         } else {
             console.error('Invalid log line format:', logLine);
             return null;
