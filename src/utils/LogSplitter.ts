@@ -4,6 +4,7 @@ import {Fight} from "../models/Fight";
 import {BoostedLevels} from "../models/BoostedLevels";
 import moment from 'moment';
 import {BOSS_NAMES} from "./constants";
+import {SECONDS_PER_TICK} from "../models/Constants";
 
 
 /**
@@ -33,6 +34,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     let boostedLevels: BoostedLevels | undefined;
     let playerEquipment: string[] | undefined;
     let fightStartTime: Date;
+    let fightStartTick: number = -1;
 
     function endFight(lastLine: LogLine, success: boolean, nullFight: boolean = true) {
         currentFight!.lastLine = lastLine;
@@ -79,6 +81,9 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             (logLine.type === LogTypes.TARGET_CHANGE && bossTargetsMe(player, logLine))
         )) {
             fightStartTime = moment(`${logLine.date} ${logLine.time}`, 'MM-DD-YYYY HH:mm:ss.SSS').toDate();
+            if (logLine.tick !== undefined && logLine.tick !== -1) {
+                fightStartTick = logLine.tick;
+            }
             logLine.fightTimeMs = 0;
 
             const initialData: LogLine[] = [];
@@ -132,6 +137,11 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             // Subtract the start time from the log's timestamp to get the relative time within the fight
             const logDate = moment(`${logLine.date} ${logLine.time}`, 'MM-DD-YYYY HH:mm:ss.SSS').toDate();
             logLine.fightTimeMs = logDate.getTime() - fightStartTime!.getTime();
+
+            if (fightStartTick !== -1 && logLine.tick && logLine.tick !== -1) {
+                const tickDifference = logLine.tick - fightStartTick;
+                logLine.fightTimeMs = Math.round(tickDifference * SECONDS_PER_TICK * 10000) / 10;
+            }
             currentFight.data.push(logLine);
         }
 

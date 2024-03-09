@@ -1,8 +1,10 @@
 import {logSplitter} from "./LogSplitter";
 import {Fight} from "../models/Fight";
 import {LogLine, LogTypes} from "../models/LogLine";
+import {getMonsterName} from "./utils";
 
 export const parseLogLine = (logLine: string): LogLine | null => {
+    const TICK_PATTERN = '\\b\\d+\\b';
     const DATE_PATTERN = '\\d{2}-\\d{2}-\\d{4}';
     const TIME_PATTERN = '\\d{2}:\\d{2}:\\d{2}\\.\\d{3}';
     const TIMEZONE_PATTERN = '\\w+';
@@ -11,16 +13,35 @@ export const parseLogLine = (logLine: string): LogLine | null => {
 
     const pattern = new RegExp(`^(${DATE_PATTERN}) (${TIME_PATTERN}) (${TIMEZONE_PATTERN})\t(${ANYTHING_PATTERN})`);
 
+    const NEW_TIME_PATTERN = '\\d{2}:\\d{2}:\\d{2}';
+    const newPattern = new RegExp(`^(${TICK_PATTERN}) (${DATE_PATTERN}) (${NEW_TIME_PATTERN})\t(${ANYTHING_PATTERN})`);
+
     let match = logLine.match(pattern);
+    let date = "";
+    let time = "";
+    let timezone = "";
+    let action = "";
+    let tick = -1;
+
+    let usingNewPattern = false;
 
     if (!match) {
-        console.error('Invalid log line format:', logLine);
-        return null;
+        match = logLine.match(newPattern);
+        if (match) {
+            tick = Number(match[1]);
+            date = match[2];
+            time = match[3];
+            action = match[4];
+            usingNewPattern = true;
+        } else {
+            console.error('Invalid log line format:', logLine);
+            return null;
+        }
+    } else {
+        [, date, time, timezone, action] = match;
     }
-    const [, date, time, timezone, action] = match;
 
-
-    const logVersionPattern = new RegExp(`Log Version (${ANYTHING_PATTERN})`);
+    let logVersionPattern = new RegExp(`Log Version (${ANYTHING_PATTERN})`);
     match = action.match(logVersionPattern);
     if (match) {
         const [, logVersion] = match;
@@ -30,9 +51,11 @@ export const parseLogLine = (logLine: string): LogLine | null => {
             date,
             time,
             timezone,
-            logVersion
+            logVersion,
+            tick
         };
     }
+
     const loggedInPlayerPattern = new RegExp(`Logged in player is (${ANYTHING_PATTERN})`);
     match = action.match(loggedInPlayerPattern);
     if (match) {
@@ -42,7 +65,22 @@ export const parseLogLine = (logLine: string): LogLine | null => {
             date,
             time,
             timezone,
+            tick,
             loggedInPlayer
+        };
+    }
+
+    const playerRegionPattern = new RegExp(`Player region (${ANYTHING_PATTERN})`);
+    match = action.match(playerRegionPattern);
+    if (match) {
+        const [, playerRegion] = match;
+        return {
+            type: LogTypes.PLAYER_REGION,
+            date,
+            time,
+            timezone,
+            tick,
+            playerRegion: Number(playerRegion)
         };
     }
 
@@ -56,6 +94,7 @@ export const parseLogLine = (logLine: string): LogLine | null => {
             date,
             time,
             timezone,
+            tick,
             boostedLevels: {
                 attack,
                 strength,
@@ -78,6 +117,7 @@ export const parseLogLine = (logLine: string): LogLine | null => {
             date,
             time,
             timezone,
+            tick,
             playerEquipment
         };
     }
@@ -85,12 +125,14 @@ export const parseLogLine = (logLine: string): LogLine | null => {
     const diesPattern = new RegExp(`^(${ANYTHING_PATTERN}) dies`);
     match = action.match(diesPattern);
     if (match) {
-        const [, target] = match;
+        let [, target] = match;
+        target = getMonsterName(target);
         return {
             type: LogTypes.DEATH,
             date,
             time,
             timezone,
+            tick,
             target,
         };
     }
@@ -98,12 +140,15 @@ export const parseLogLine = (logLine: string): LogLine | null => {
     const changedTargetPattern = new RegExp(`^(${ANYTHING_PATTERN}) changes target to (${ANYTHING_PATTERN})`);
     match = action.match(changedTargetPattern);
     if (match) {
-        const [, source, target] = match;
+        let [, source, target] = match;
+        source = getMonsterName(source);
+        target = getMonsterName(target);
         return {
             type: LogTypes.TARGET_CHANGE,
             date,
             time,
             timezone,
+            tick,
             source,
             target
         };
@@ -112,12 +157,14 @@ export const parseLogLine = (logLine: string): LogLine | null => {
     const playerAttackAnimationPattern = new RegExp(`Player attack animation\t(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})`);
     match = action.match(playerAttackAnimationPattern);
     if (match) {
-        const [, animationId, target] = match;
+        let [, animationId, target] = match;
+        target = getMonsterName(target);
         return {
             type: LogTypes.PLAYER_ATTACK_ANIMATION,
             date,
             time,
             timezone,
+            tick,
             animationId: parseInt(animationId, 10),
             target,
         };
@@ -131,6 +178,7 @@ export const parseLogLine = (logLine: string): LogLine | null => {
             date,
             time,
             timezone,
+            tick,
         };
     }
 
@@ -141,13 +189,14 @@ export const parseLogLine = (logLine: string): LogLine | null => {
         console.error('Invalid log line format:', logLine);
         return null;
     }
-    const [, target, hitsplatName, damageAmount] = match;
-
+    let [, target, hitsplatName, damageAmount] = match;
+    target = getMonsterName(target);
     return {
         type: LogTypes.DAMAGE,
         date,
         time,
         timezone,
+        tick,
         target,
         hitsplatName,
         damageAmount: parseInt(damageAmount, 10),

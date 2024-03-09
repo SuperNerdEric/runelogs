@@ -103,7 +103,10 @@ export function getFightPerformance(fight: Fight): FightPerformance {
                     // We swapped weapons, see how many hits we should have gotten with the last weapon
                     if (currentWeaponSpeed) {
                         const durationSeconds = (log.fightTimeMs! - expectedLastTimestamp) / 1000;
-                        const { newWeaponHits, timeTaken } = getWeaponHitsForDuration(durationSeconds, currentWeaponSpeed, previousWeaponSpeed);
+                        const {
+                            newWeaponHits,
+                            timeTaken
+                        } = getWeaponHitsForDuration(durationSeconds, currentWeaponSpeed, previousWeaponSpeed);
                         expectedWeaponHits += newWeaponHits;
 
                         // Should end up close to log.fightTimeMs but not always the same, because log.fightTimeMs is just when we swapped weapons, not when we actually hit last
@@ -120,30 +123,30 @@ export function getFightPerformance(fight: Fight): FightPerformance {
             lastBoost = log.boostedLevels;
         }
         if (log.type === LogTypes.PLAYER_ATTACK_ANIMATION || log.type === LogTypes.BLOWPIPE_ANIMATION) {
-                actualWeaponHits += 1;
-                boostedHits += getBoostedHitWeight(fight, currentWeapon, lastBoost);
+            actualWeaponHits += 1;
+            boostedHits += getBoostedHitWeight(fight, currentWeapon, lastBoost);
 
-                let weaponSpeedSeconds = currentWeaponSpeed * SECONDS_PER_TICK;
+            let weaponSpeedSeconds = currentWeaponSpeed * SECONDS_PER_TICK;
 
-                // Don't count active time past the end of the fight
-                // If you sit idle for 3 ticks and then 1 hit the monster with a 5 tick weapon that shouldn't be 100%
-                if (log.fightTimeMs! + weaponSpeedSeconds * 1000 > fight.lastLine.fightTimeMs!) {
-                    weaponSpeedSeconds = (fight.lastLine.fightTimeMs! - log.fightTimeMs!) / 1000;
-                }
-                activeTime += weaponSpeedSeconds;
+            // Don't count active time past the end of the fight
+            // If you sit idle for 3 ticks and then 1 hit the monster with a 5 tick weapon that shouldn't be 100%
+            if (log.fightTimeMs! + weaponSpeedSeconds * 1000 > fight.lastLine.fightTimeMs!) {
+                weaponSpeedSeconds = (fight.lastLine.fightTimeMs! - log.fightTimeMs!) / 1000;
+            }
+            activeTime += weaponSpeedSeconds;
         }
     });
 
     // Rest of the fight after the last hit
     const durationSeconds = (fight.lastLine.fightTimeMs! - expectedLastTimestamp) / 1000;
-    const { newWeaponHits } = getWeaponHitsForDuration(durationSeconds, currentWeaponSpeed, previousWeaponSpeed);
+    const {newWeaponHits} = getWeaponHitsForDuration(durationSeconds, currentWeaponSpeed, previousWeaponSpeed);
     expectedWeaponHits += newWeaponHits;
 
     return {activeTime, actualWeaponHits, boostedHits, expectedWeaponHits};
 }
 
 interface PerformanceProps {
-    metricName: "Boosted-Activity" | "Activity" | "Boosted Hits";
+    metricName: "Activity" | "Boosted Hits";
     fight: Fight;
     performance: FightPerformance;
 }
@@ -172,11 +175,7 @@ function getPercentColor(percentage: number) {
 const Performance: React.FC<PerformanceProps> = ({metricName, fight, performance}) => {
     let percentage: number = 0;
 
-    if (metricName === "Boosted-Activity") {
-        const activity = (performance.activeTime / (fight.metaData.fightLengthMs / 1000));
-        const boostedHits = performance.boostedHits / performance.actualWeaponHits;
-        percentage = activity * boostedHits * 100;
-    } else if (metricName === "Activity") {
+    if (metricName === "Activity") {
         percentage = (performance.activeTime / (fight.metaData.fightLengthMs / 1000)) * 100;
     } else if (metricName === "Boosted Hits") {
         percentage = performance.boostedHits / performance.actualWeaponHits * 100;
@@ -231,8 +230,6 @@ const TickActivity: React.FC<TickActivityProps> = ({selectedLogs}) => {
                 <Performance metricName="Activity" fight={selectedLogs} performance={fightPerformance}/>}
             {fightPerformance &&
                 <Performance metricName="Boosted Hits" fight={selectedLogs} performance={fightPerformance}/>}
-            {fightPerformance &&
-                <Performance metricName="Boosted-Activity" fight={selectedLogs} performance={fightPerformance}/>}
         </div>
     );
 };

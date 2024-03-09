@@ -3,6 +3,7 @@ import {BoostedLevels} from "./BoostedLevels";
 export enum LogTypes {
     LOG_VERSION = 'Log Version',
     LOGGED_IN_PLAYER = 'Logged In Player',
+    PLAYER_REGION = 'Player Region',
     BOOSTED_LEVELS = 'Boosted Levels',
     PLAYER_EQUIPMENT = 'Player Equipment',
     DEATH = 'Death',
@@ -17,6 +18,7 @@ export interface BaseLog {
     date: string;
     time: string;
     timezone: string;
+    tick?: number;
     fightTimeMs?: number;
 }
 
@@ -29,6 +31,11 @@ export interface LogVersionLog extends BaseLog {
 export interface LoggedInPlayerLog extends BaseLog {
     type: LogTypes.LOGGED_IN_PLAYER;
     loggedInPlayer: string;
+}
+
+export interface PlayerRegionLog extends BaseLog {
+    type: LogTypes.PLAYER_REGION;
+    playerRegion: number;
 }
 
 export interface BoostedLevelsLog extends BaseLog {
@@ -78,6 +85,7 @@ export interface StoppedBlowpiping extends BaseLog {
 export type LogLine =
     LogVersionLog
     | LoggedInPlayerLog
+    | PlayerRegionLog
     | BoostedLevelsLog
     | PlayerEquipmentLog
     | DeathLog
