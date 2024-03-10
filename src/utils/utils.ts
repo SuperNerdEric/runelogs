@@ -1,8 +1,7 @@
 import {Fight} from "../models/Fight";
 import {LogLine, LogTypes} from "../models/LogLine";
 import moment from "moment/moment";
-// @ts-ignore
-import { npcs } from '../lib/npcsmin.js';
+import { npcIdMap } from '../lib/npcIdMap';
 
 export function getFightDurationFormatted(selectedLog: Fight): string {
     const fightDurationMilliseconds = selectedLog.metaData.fightLengthMs;
@@ -62,7 +61,6 @@ export const convertTimeToMillis = (time: string): number => {
 
 export const getMonsterName = (monsterId: string): string => {
     const parts: string[] = monsterId.split("-");
-    console.log(parts[0]);
-    const monster = npcs.find(npc => npc.id === Number(parts[0]));
-    return monster ? monster.name : monsterId;
+    const monster = npcIdMap[Number(parts[0])];
+    return monster ? monster: monsterId;
 }
