@@ -184,6 +184,9 @@ const Performance: React.FC<PerformanceProps> = ({metricName, fight, performance
     if (percentage > 100) {
         console.warn(`Past 100% performance for ${metricName} ${percentage}`);
         percentage = 100;
+    } else if (percentage < 0) {
+        console.warn(`Under 0% performance for ${metricName} ${percentage}`);
+        percentage = 0;
     }
 
     // Round to the nearest 0.01
