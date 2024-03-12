@@ -3,7 +3,7 @@ import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
 import {Fight} from "../models/Fight";
 import {BoostedLevels} from "../models/BoostedLevels";
 import moment from 'moment';
-import {BOSS_NAMES} from "./constants";
+import {BOSS_NAMES, PLAYER_HOUSE_REGION_1, PLAYER_HOUSE_REGION_2} from "./constants";
 import {SECONDS_PER_TICK} from "../models/Constants";
 
 
@@ -160,6 +160,13 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                 } else if (logLine.target === currentFight.loggedInPlayer) {
                     endFight(logLine, false);
                 }
+            }
+        }
+
+        // If the player goes to their house region, end the current fight
+        if (logLine.type === LogTypes.PLAYER_REGION && (logLine.playerRegion === PLAYER_HOUSE_REGION_1 || logLine.playerRegion === PLAYER_HOUSE_REGION_2)) {
+            if (currentFight) {
+                endFight(logLine, false);
             }
         }
 

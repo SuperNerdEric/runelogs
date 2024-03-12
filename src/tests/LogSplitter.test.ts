@@ -101,4 +101,24 @@ describe("logSplitter", () => {
         expect(result.length).toBe(2);
         expect(result[0].name).toBe("Scurrius - Incomplete - 1");
     });
+
+    it("should end the current fight when player goes to their house region", () => {
+        const fightData: LogLine[] = [
+            generateDamage("Monster1", 10),
+            generateDamage("Monster1", 5),
+            {
+                type: LogTypes.PLAYER_REGION,
+                date: "02-04-2024",
+                time: new Date().toLocaleTimeString(),
+                timezone: "",
+                playerRegion: 7769,
+            },
+            generateDamage("Monster1", 5),
+        ];
+
+        const result: Fight[] = logSplitter(fightData);
+
+        expect(result.length).toBe(2);
+        expect(result[0].metaData.success).toBe(false);
+    });
 });

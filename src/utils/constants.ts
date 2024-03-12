@@ -71,3 +71,6 @@ export const BOSS_NAMES = [
     "Venenatis",
     "Vet'ion",
 ];
+
+export const PLAYER_HOUSE_REGION_1 = 7769;
+export const PLAYER_HOUSE_REGION_2 = 7770;
