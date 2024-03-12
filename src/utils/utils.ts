@@ -3,16 +3,6 @@ import {LogLine, LogTypes} from "../models/LogLine";
 import moment from "moment/moment";
 import {npcIdMap} from '../lib/npcIdMap';
 
-export function getFightDurationFormatted(selectedLog: Fight): string {
-    const fightDurationMilliseconds = selectedLog.metaData.fightLengthMs;
-    const duration = new Date(Date.UTC(0, 0, 0, 0, 0, 0, fightDurationMilliseconds));
-    const minutes = duration.getUTCMinutes();
-    const seconds = duration.getUTCSeconds();
-    const milliseconds = duration.getUTCMilliseconds();
-
-    const formattedDuration = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${milliseconds}`;
-    return formattedDuration;
-}
 
 /**
  * Formats a given number of milliseconds into a string in the format "HH:mm:ss".
