@@ -1,3 +1,4 @@
+import { Actor } from "./Actor";
 import {BoostedLevels} from "./BoostedLevels";
 
 export enum LogTypes {
@@ -50,18 +51,18 @@ export interface PlayerEquipmentLog extends BaseLog {
 
 export interface DeathLog extends BaseLog {
     type: LogTypes.DEATH;
-    target: string;
+    target: Actor;
 }
 
 export interface TargetChangeLog extends BaseLog {
     type: LogTypes.TARGET_CHANGE;
-    source: string;
-    target: string;
+    source: Actor;
+    target: Actor;
 }
 
 export interface DamageLog extends BaseLog {
     type: LogTypes.DAMAGE;
-    target: string;
+    target: Actor;
     hitsplatName: string;
     damageAmount: number;
 }
@@ -69,13 +70,13 @@ export interface DamageLog extends BaseLog {
 export interface AttackAnimationLog extends BaseLog {
     type: LogTypes.PLAYER_ATTACK_ANIMATION;
     animationId: number;
-    target: string;
+    target: Actor;
 }
 
 export interface BlowpipeAnimationLog extends BaseLog {
     type: LogTypes.BLOWPIPE_ANIMATION;
     animationId: number;
-    target: string;
+    target: Actor;
 }
 
 export interface StoppedBlowpiping extends BaseLog {

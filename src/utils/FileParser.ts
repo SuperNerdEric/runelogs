@@ -1,7 +1,7 @@
 import {logSplitter} from "./LogSplitter";
 import {Fight} from "../models/Fight";
 import {LogLine, LogTypes} from "../models/LogLine";
-import {getMonsterName} from "./utils";
+import {getActor} from "./utils";
 
 export const parseLogLine = (logLine: string): LogLine | null => {
     const TICK_PATTERN = '\\b\\d+\\b';
@@ -123,14 +123,13 @@ export const parseLogLine = (logLine: string): LogLine | null => {
     match = action.match(diesPattern);
     if (match) {
         let [, target] = match;
-        target = getMonsterName(target);
         return {
             type: LogTypes.DEATH,
             date,
             time,
             timezone,
             tick,
-            target,
+            target: getActor(target),
         };
     }
 
@@ -138,16 +137,14 @@ export const parseLogLine = (logLine: string): LogLine | null => {
     match = action.match(changedTargetPattern);
     if (match) {
         let [, source, target] = match;
-        source = getMonsterName(source);
-        target = getMonsterName(target);
         return {
             type: LogTypes.TARGET_CHANGE,
             date,
             time,
             timezone,
             tick,
-            source,
-            target
+            source: getActor(source),
+            target: getActor(target),
         };
     }
 
@@ -155,7 +152,6 @@ export const parseLogLine = (logLine: string): LogLine | null => {
     match = action.match(playerAttackAnimationPattern);
     if (match) {
         let [, animationId, target] = match;
-        target = getMonsterName(target);
         return {
             type: LogTypes.PLAYER_ATTACK_ANIMATION,
             date,
@@ -163,7 +159,7 @@ export const parseLogLine = (logLine: string): LogLine | null => {
             timezone,
             tick,
             animationId: parseInt(animationId, 10),
-            target,
+            target: getActor(target),
         };
     }
 
@@ -187,14 +183,13 @@ export const parseLogLine = (logLine: string): LogLine | null => {
         return null;
     }
     let [, target, hitsplatName, damageAmount] = match;
-    target = getMonsterName(target);
     return {
         type: LogTypes.DAMAGE,
         date,
         time,
         timezone,
         tick,
-        target,
+        target: getActor(target),
         hitsplatName,
         damageAmount: parseInt(damageAmount, 10),
     };

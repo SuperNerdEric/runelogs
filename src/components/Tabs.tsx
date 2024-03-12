@@ -24,7 +24,7 @@ export const DamageDoneTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs})
                 (log) =>
                     (Object.values(DamageMeHitsplats).includes(log.hitsplatName) ||
                         Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName)) &&
-                    log.target !== selectedLogs?.loggedInPlayer
+                    log.target.name !== selectedLogs?.loggedInPlayer
             )!,
         }}
     />;
@@ -39,7 +39,7 @@ export const DamageTakenTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}
                 (log) =>
                     (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
                         Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!)) &&
-                    log.target === selectedLogs?.loggedInPlayer
+                    log.target.name === selectedLogs?.loggedInPlayer
             )!,
         }}
     />;
@@ -65,7 +65,7 @@ export const GroupDamageTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}
                             (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
                                 Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!) ||
                                 Object.values(DamageOtherHitsplats).includes(log.hitsplatName!)) &&
-                            selectedLogs.enemies.includes(log.target!)
+                            selectedLogs.enemies.includes(log.target!.name)
                     )!,
                 }}/>
             </div>
@@ -77,7 +77,7 @@ export const GroupDamageTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}
                             (Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
                                 Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!) ||
                                 Object.values(DamageOtherHitsplats).includes(log.hitsplatName!)) &&
-                            selectedLogs.enemies.includes(log.target!)
+                            selectedLogs.enemies.includes(log.target!.name)
                     )!,
                 }}
             />

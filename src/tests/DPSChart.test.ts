@@ -57,9 +57,9 @@ function generateDamageLog(date: string, time: string, damageAmount: number): Da
         type: LogTypes.DAMAGE,
         date,
         time,
-        fightTimeMs:  convertTimeToMillis(time),
+        fightTimeMs: convertTimeToMillis(time),
         timezone: "",
-        target: "Scurrius",
+        target: {name: "Scurrius"},
         damageAmount,
         hitsplatName: "DAMAGE_ME"
     };

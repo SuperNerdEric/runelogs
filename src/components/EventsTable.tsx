@@ -1,7 +1,7 @@
 import React from 'react';
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 import {Fight} from "../models/Fight";
-import {LogTypes} from "../models/LogLine";
+import {LogLine, LogTypes} from "../models/LogLine";
 import {BoostedLevels} from "../models/BoostedLevels";
 import attackImage from '../assets/Attack.webp';
 import strengthImage from '../assets/Strength.webp';
@@ -11,6 +11,8 @@ import magicImage from '../assets/Magic.webp';
 import rangedImage from '../assets/Ranged.webp';
 import prayerImage from '../assets/Prayer.webp';
 import {formatHHmmss} from "../utils/utils";
+import {BOSS_NAMES} from "../utils/constants";
+import {Actor} from "../models/Actor";
 
 interface EventsTableProps {
     fight: Fight;
@@ -28,12 +30,22 @@ const statImages: Record<keyof BoostedLevels, string> = {
     strength: strengthImage
 };
 
-// Function to get the image URL for a given item ID
-// https://chisel.weirdgloop.org/moid/data_files/itemsmin.js
-// https://chisel.weirdgloop.org/moid/data_files/npcsmin.js
-const getItemImage = (itemId: number): string => {
+const getItemImageUrl = (itemId: number): string => {
     return `https://chisel.weirdgloop.org/static/img/osrs-sprite/${itemId}.png`;
 };
+
+const getActorName = (log: LogLine, key: 'source' | 'target'): string => {
+    if (key in log) {
+        // @ts-ignore https://github.com/microsoft/TypeScript/issues/56389
+        const actor: Actor = log[key];
+        if (actor && "index" in actor && !BOSS_NAMES.includes(actor.name)) {
+            return `${actor.name} - ${actor.index}`;
+        } else if (actor) {
+            return actor.name;
+        }
+    }
+    return "";
+}
 
 const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showSource = false}) => {
 
@@ -77,6 +89,8 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
                     </TableHead>
                     <TableBody>
                         {logs.map((log, index) => {
+                            let source = getActorName(log, 'source');
+                            let target = getActorName(log, 'target');
                             return (
                                 <TableRow key={index} className={index % 2 === 0 ? 'even-row' : 'odd-row'}
                                           style={{cursor: 'default'}}
@@ -100,7 +114,8 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
                                                         justifyContent: 'center',
                                                         alignItems: 'center'
                                                     }}>
-                                                        <img src={getItemImage(parseInt(itemId))} alt={`Item ${itemId}`}
+                                                        <img src={getItemImageUrl(parseInt(itemId))}
+                                                             alt={`Item ${itemId}`}
                                                              style={{height: '22px'}}/>
                                                     </div>
                                                 ))}
@@ -124,12 +139,12 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
                                         ) : ""}
                                     </TableCell>
                                     <TableCell
-                                        className={"source" in log && log.source === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>
-                                        {"source" in log ? log.source : ""}
+                                        className={source === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>
+                                        {source}
                                     </TableCell>
                                     <TableCell
-                                        className={"target" in log && log.target === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>
-                                        {"target" in log ? log.target : ""}
+                                        className={target === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>
+                                        {target}
                                     </TableCell>
                                 </TableRow>
                             );

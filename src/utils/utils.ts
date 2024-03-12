@@ -2,6 +2,7 @@ import {Fight} from "../models/Fight";
 import {LogLine, LogTypes} from "../models/LogLine";
 import moment from "moment/moment";
 import {npcIdMap} from '../lib/npcIdMap';
+import {Actor} from "../models/Actor";
 
 
 /**
@@ -42,8 +43,24 @@ export const convertTimeToMillis = (time: string): number => {
     return milliseconds;
 };
 
-export const getMonsterName = (monsterId: string): string => {
-    const parts: string[] = monsterId.split("-");
-    const monster = npcIdMap[Number(parts[0])];
-    return monster ? monster : monsterId;
+/**
+ * Get an actor from a given string. If the actor is a monster, the string should be in the format "id-index".
+ *
+ * @param {string} actorString A string representing the actor
+ * @returns {Actor} An object representing the actor
+ */
+export const getActor = (actorString: string): Actor => {
+    const [id, index] = actorString.split("-");
+    if (index) {
+        const monsterName = npcIdMap[Number(id)];
+        return {
+            name: monsterName,
+            id: Number(id),
+            index: Number(index),
+        };
+    }
+
+    return {
+        name: actorString,
+    }
 }

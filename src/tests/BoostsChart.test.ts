@@ -8,7 +8,11 @@ describe('calculateWeightedAverages', () => {
         let logLines: LogLine[] = [
             {
                 type: LogTypes.BOOSTED_LEVELS,
-                date: "02-04-2024", time: "01:18:00.000", fightTimeMs: convertTimeToMillis("01:18:00.000"), timezone: "", boostedLevels: {
+                date: "02-04-2024",
+                time: "01:18:00.000",
+                fightTimeMs: convertTimeToMillis("01:18:00.000"),
+                timezone: "",
+                boostedLevels: {
                     attack: 99,
                     strength: 99,
                     defence: 99,
@@ -20,7 +24,11 @@ describe('calculateWeightedAverages', () => {
             },
             {
                 type: LogTypes.BOOSTED_LEVELS,
-                date: "02-04-2024", time: "01:18:50.000", fightTimeMs:  convertTimeToMillis("01:18:50.000"), timezone: "", boostedLevels: {
+                date: "02-04-2024",
+                time: "01:18:50.000",
+                fightTimeMs: convertTimeToMillis("01:18:50.000"),
+                timezone: "",
+                boostedLevels: {
                     attack: 1,
                     strength: 1,
                     defence: 1,
@@ -40,7 +48,11 @@ describe('calculateWeightedAverages', () => {
             loggedInPlayer: "Million Pies",
             firstLine: {
                 type: LogTypes.BOOSTED_LEVELS,
-                date: "02-04-2024", time: "01:18:00.000", fightTimeMs:  convertTimeToMillis("01:18:00.000"), timezone: "", boostedLevels: {
+                date: "02-04-2024",
+                time: "01:18:00.000",
+                fightTimeMs: convertTimeToMillis("01:18:00.000"),
+                timezone: "",
+                boostedLevels: {
                     attack: 99,
                     strength: 99,
                     defence: 99,
@@ -54,9 +66,9 @@ describe('calculateWeightedAverages', () => {
                 type: LogTypes.DAMAGE,
                 date: "02-04-2024",
                 time: "01:19:00.000",
-                fightTimeMs:  convertTimeToMillis("01:19:00.000"),
+                fightTimeMs: convertTimeToMillis("01:19:00.000"),
                 timezone: "",
-                target: "Scurrius",
+                target: {name: "Scurrius"},
                 damageAmount: 15,
                 hitsplatName: "Damage_Me"
             },

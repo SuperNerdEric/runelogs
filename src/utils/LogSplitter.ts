@@ -20,7 +20,7 @@ function playerAttemptsDamage(log: DamageLog) {
  * If a boss targets the logged in player
  */
 function bossTargetsMe(player: string, log: TargetChangeLog) {
-    return log.target === player && BOSS_NAMES.includes(log.source);
+    return log.target.name === player && BOSS_NAMES.includes(log.source.name);
 }
 
 export function logSplitter(fightData: LogLine[], progressCallback?: (progress: number) => void): Fight[] {
@@ -77,7 +77,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         // If the current fight is null, start a new fight
         if (!currentFight && (
             logLine.type === LogTypes.PLAYER_ATTACK_ANIMATION ||
-            (logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine) && logLine.target !== player) ||
+            (logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine) && logLine.target.name !== player) ||
             (logLine.type === LogTypes.TARGET_CHANGE && bossTargetsMe(player, logLine))
         )) {
             fightStartTime = moment(`${logLine.date} ${logLine.time}`, 'MM-DD-YYYY HH:mm:ss.SSS').toDate();
@@ -114,8 +114,8 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
             // @ts-ignore
             currentFight = {
-                name: logLine.target,
-                enemies: [logLine.target],
+                name: logLine.target.name,
+                enemies: [logLine.target.name],
                 data: [
                     ...initialData,
                     logLine
@@ -126,12 +126,12 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             };
         } else if (currentFight) {
             // Rename the fight if we encounter a boss in the middle of it
-            if ("target" in logLine && BOSS_NAMES.includes(logLine.target!) && currentFight.name !== logLine.target) {
-                currentFight.name = logLine.target!;
+            if ("target" in logLine && BOSS_NAMES.includes(logLine.target.name!) && currentFight.name !== logLine.target.name) {
+                currentFight.name = logLine.target!.name;
             }
             // Add target to list of enemies
-            if (logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine) && logLine.target !== player && !currentFight.enemies.includes(logLine.target!)) {
-                currentFight.enemies.push(logLine.target!);
+            if (logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine) && logLine.target.name !== player && !currentFight.enemies.includes(logLine.target.name!)) {
+                currentFight.enemies.push(logLine.target!.name);
             }
 
             // Subtract the start time from the log's timestamp to get the relative time within the fight
@@ -155,9 +155,9 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         if (logLine.type === LogTypes.DEATH && logLine.target) {
             // If the player or the fight name dies, end the current fight
             if (currentFight) {
-                if (logLine.target === currentFight.name) {
+                if (logLine.target.name === currentFight.name) {
                     endFight(logLine, true);
-                } else if (logLine.target === currentFight.loggedInPlayer) {
+                } else if (logLine.target.name === currentFight.loggedInPlayer) {
                     endFight(logLine, false);
                 }
             }
@@ -224,7 +224,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
             if (isBlowpiping && (
                 log.type === LogTypes.STOPPED_BLOWPIPING ||
-                (log.type === LogTypes.DEATH && log.target === fight.metaData.name)) // The fight is over
+                (log.type === LogTypes.DEATH && log.target.name === fight.metaData.name)) // The fight is over
             ) {
                 // Insert in "fake" animation ids to represent all the times the blowpipe would have hit
                 let currentTimestamp = startedBlowpipingLog.fightTimeMs! + 1200;

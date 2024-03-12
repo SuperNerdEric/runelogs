@@ -17,7 +17,7 @@ describe('parseLogLine', () => {
             date: '02-04-2024',
             time: '01:19:01.807',
             timezone: 'CST',
-            target: 'Scurrius',
+            target: {name: 'Scurrius'},
         };
 
         const parsedData = parseLogLine(logLine);
@@ -32,8 +32,8 @@ describe('parseLogLine', () => {
             date: '02-04-2024',
             time: '01:19:22.804',
             timezone: 'CST',
-            source: 'Scurrius',
-            target: 'Million Pies',
+            source: {name: 'Scurrius'},
+            target: {name: 'Million Pies'},
         };
 
         const parsedData = parseLogLine(logLine);
@@ -48,7 +48,7 @@ describe('parseLogLine', () => {
             date: '02-04-2024',
             time: '01:18:11.404',
             timezone: 'CST',
-            target: 'Scurrius',
+            target: {name: 'Scurrius'},
             hitsplatName: 'DAMAGE_ME',
             damageAmount: 15,
         };
@@ -104,7 +104,7 @@ describe('parseLogLine', () => {
             time: '10:12:23.702',
             timezone: 'CST',
             animationId: 428,
-            target: 'Scurrius',
+            target: {name: 'Scurrius'},
         };
 
         const parsedData = parseLogLine(logLine);

@@ -13,7 +13,7 @@ describe("logSplitter", () => {
             date: "02-04-2024",  // You might want to update this as well
             time: formattedTime,
             timezone: "",
-            target,
+            target: {name: target},
             damageAmount,
             hitsplatName: "DAMAGE_ME",
         };
@@ -24,7 +24,7 @@ describe("logSplitter", () => {
         date: "02-04-2024",
         time: new Date().toLocaleTimeString(),
         timezone: "",
-        target,
+        target: {name: target},
     });
 
 
