@@ -1,7 +1,7 @@
 import {Fight} from "../models/Fight";
 import {LogLine, LogTypes} from "../models/LogLine";
 import moment from "moment/moment";
-import { npcIdMap } from '../lib/npcIdMap';
+import {npcIdMap} from '../lib/npcIdMap';
 
 export function getFightDurationFormatted(selectedLog: Fight): string {
     const fightDurationMilliseconds = selectedLog.metaData.fightLengthMs;
@@ -15,11 +15,13 @@ export function getFightDurationFormatted(selectedLog: Fight): string {
 }
 
 /**
- * Formats milliseconds into a string in the format "HH:mm:ss".
- * Hours are only included if they exist in the duration.
+ * Formats a given number of milliseconds into a string in the format "HH:mm:ss".
+ * Hours are only included if the duration is at least 1 hour long.
+ * If the `includeMs` parameter is true, milliseconds are included in the format "HH:mm:ss.SSS".
  *
- * @param milliseconds The number of milliseconds to format.
- * @returns A string representing the formatted time.
+ * @param {number} milliseconds - The number of milliseconds to format.
+ * @param {boolean} includeMs - A boolean indicating whether to include milliseconds in the output.
+ * @returns {string} A string representing the formatted time.
  */
 export function formatHHmmss(milliseconds: number, includeMs: boolean): string {
     if (!includeMs) {
@@ -27,21 +29,12 @@ export function formatHHmmss(milliseconds: number, includeMs: boolean): string {
         milliseconds = Math.round(milliseconds / 1000) * 1000;
     }
 
-    let formatString = '';
-    // Add hours if they exist
-    if (moment.duration(milliseconds).hours() > 0) {
-        formatString += 'HH:';
-    }
-
-    // Always add minutes and seconds
-    formatString += 'mm:ss';
-
+    const duration = moment.utc(milliseconds);
+    let formatString = duration.hours() > 0 ? 'HH:mm:ss' : 'mm:ss';
     if (includeMs) {
         formatString += '.SSS';
     }
-
-    const formattedDuration = moment.utc(milliseconds).format(formatString);
-    return formattedDuration;
+    return duration.format(formatString);
 }
 
 export function calculateAccuracy(fight: Fight) {
@@ -62,5 +55,5 @@ export const convertTimeToMillis = (time: string): number => {
 export const getMonsterName = (monsterId: string): string => {
     const parts: string[] = monsterId.split("-");
     const monster = npcIdMap[Number(parts[0])];
-    return monster ? monster: monsterId;
+    return monster ? monster : monsterId;
 }
