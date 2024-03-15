@@ -3,7 +3,7 @@ import '../App.css';
 import Dropzone from './Dropzone';
 import {Button, CircularProgress, Tab, Tabs} from '@mui/material';
 import Instructions from "./Instructions";
-import {BoostsTab, DamageDoneTab, DamageTakenTab, EventsTab, GroupDamageTab, TabsEnum} from './Tabs';
+import {BoostsTab, DamageDoneTab, DamageTakenTab, EventsTab, TabsEnum} from './Tabs';
 import {Fight, FightMetaData} from "../models/Fight";
 import localforage from "localforage";
 import TopBar from "./TopBar";
@@ -172,7 +172,6 @@ function App() {
                         {selectedTab === TabsEnum.DAMAGE_DONE && <DamageDoneTab selectedLogs={selectedLogs}/>}
                         {selectedTab === TabsEnum.DAMAGE_TAKEN && <DamageTakenTab selectedLogs={selectedLogs}/>}
                         {selectedTab === TabsEnum.BOOSTS && <BoostsTab selectedLogs={selectedLogs}/>}
-                        {selectedTab === TabsEnum.GROUP_DAMAGE && <GroupDamageTab selectedLogs={selectedLogs}/>}
                         {selectedTab === TabsEnum.EVENTS && <EventsTab selectedLogs={selectedLogs}/>}
                     </div>
                 )}

@@ -10,6 +10,7 @@ export enum LogTypes {
     DEATH = 'Death',
     TARGET_CHANGE = 'Target Change',
     DAMAGE = 'Damage',
+    HEAL = 'Heal',
     PLAYER_ATTACK_ANIMATION = 'Attack Animation',
     BLOWPIPE_ANIMATION = 'Blowpipe Animation',
     STOPPED_BLOWPIPING = 'Stopped blowpiping'
@@ -62,9 +63,18 @@ export interface TargetChangeLog extends BaseLog {
 
 export interface DamageLog extends BaseLog {
     type: LogTypes.DAMAGE;
+    source: Actor;
     target: Actor;
     hitsplatName: string;
     damageAmount: number;
+}
+
+export interface HealLog extends BaseLog {
+    type: LogTypes.HEAL;
+    source: Actor;
+    target: Actor;
+    hitsplatName: string;
+    healAmount: number;
 }
 
 export interface AttackAnimationLog extends BaseLog {
@@ -92,6 +102,7 @@ export type LogLine =
     | DeathLog
     | TargetChangeLog
     | DamageLog
+    | HealLog
     | AttackAnimationLog
     | BlowpipeAnimationLog
     | StoppedBlowpiping;

@@ -1,9 +1,10 @@
-import {logSplitter} from "./LogSplitter";
+import {isMine, logSplitter} from "./LogSplitter";
 import {Fight} from "../models/Fight";
 import {LogLine, LogTypes} from "../models/LogLine";
 import {getActor} from "./utils";
+import {Actor} from "../models/Actor";
 
-export const parseLogLine = (logLine: string): LogLine | null => {
+export const parseLogLine = (logLine: string, player?: string): LogLine | null => {
     const TICK_PATTERN = '\\b\\d+\\b';
     const DATE_PATTERN = '\\d{2}-\\d{2}-\\d{4}';
     const TIME_PATTERN = '\\d{2}:\\d{2}:\\d{2}\\.\\d{3}';
@@ -182,16 +183,34 @@ export const parseLogLine = (logLine: string): LogLine | null => {
         console.error('Invalid log line format:', logLine);
         return null;
     }
-    let [, target, hitsplatName, damageAmount] = match;
+    let [, target, hitsplatName, amount] = match;
+    let source: Actor = {name: "Unknown"};
+    if (player && target !== player && isMine(hitsplatName)) {
+        source = {name: player};
+    }
+    if (hitsplatName === "HEAL") {
+        return {
+            type: LogTypes.HEAL,
+            date,
+            time,
+            timezone,
+            tick,
+            source,
+            target: getActor(target),
+            hitsplatName,
+            healAmount: parseInt(amount, 10),
+        }
+    }
     return {
         type: LogTypes.DAMAGE,
         date,
         time,
         timezone,
         tick,
+        source,
         target: getActor(target),
         hitsplatName,
-        damageAmount: parseInt(damageAmount, 10),
+        damageAmount: parseInt(amount, 10),
     };
 };
 
@@ -200,12 +219,16 @@ export function parseFileContent(fileContent: string, progressCallback: (progres
         const lines = fileContent.split('\n');
         let parsedLines = 0;
         let fightData: LogLine[] = [];
+        let loggedInPlayer = "";
 
         for (const line of lines) {
-            const logLine = parseLogLine(line.trim());
+            const logLine = parseLogLine(line.trim(), loggedInPlayer);
 
             if (logLine) {
                 fightData.push(logLine);
+                if (logLine.type === LogTypes.LOGGED_IN_PLAYER) {
+                    loggedInPlayer = logLine.loggedInPlayer;
+                }
             }
 
             parsedLines++;

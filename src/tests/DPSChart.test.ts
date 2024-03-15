@@ -59,6 +59,7 @@ function generateDamageLog(date: string, time: string, damageAmount: number): Da
         time,
         fightTimeMs: convertTimeToMillis(time),
         timezone: "",
+        source: {name: "Million Pies"},
         target: {name: "Scurrius"},
         damageAmount,
         hitsplatName: "DAMAGE_ME"

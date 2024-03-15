@@ -7,13 +7,17 @@ import {BOSS_NAMES, PLAYER_HOUSE_REGION_1, PLAYER_HOUSE_REGION_2} from "./consta
 import {SECONDS_PER_TICK} from "../models/Constants";
 
 
+export function isMine(hitsplatName: string) {
+    return Object.values(DamageMeHitsplats).includes(hitsplatName) ||
+        Object.values(DamageMaxMeHitsplats).includes(hitsplatName) ||
+        hitsplatName === 'BLOCK_ME';
+}
+
 /**
  * If it is the logged in player that dealt/attempted the damage
  */
 function playerAttemptsDamage(log: DamageLog) {
-    return Object.values(DamageMeHitsplats).includes(log.hitsplatName!) ||
-        Object.values(DamageMaxMeHitsplats).includes(log.hitsplatName!) ||
-        log.hitsplatName === 'BLOCK_ME';
+    return isMine(log.hitsplatName!);
 }
 
 /**

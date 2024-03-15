@@ -127,6 +127,12 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
                                                 <span className="damage-amount">{log.damageAmount}</span>
                                             </>
                                         ) : ""}
+                                        {log.type === LogTypes.HEAL ? (
+                                            <>
+                                                <span className="hitsplat-name">{log.hitsplatName} </span>
+                                                <span className="heal-amount">{log.healAmount}</span>
+                                            </>
+                                        ) : ""}
                                         {log.type === LogTypes.PLAYER_ATTACK_ANIMATION ? (
                                             <>
                                                 <span className="attack-animation-text">{log.animationId} </span>

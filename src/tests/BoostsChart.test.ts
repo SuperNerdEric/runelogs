@@ -68,6 +68,7 @@ describe('calculateWeightedAverages', () => {
                 time: "01:19:00.000",
                 fightTimeMs: convertTimeToMillis("01:19:00.000"),
                 timezone: "",
+                source: {name: "Million Pies"},
                 target: {name: "Scurrius"},
                 damageAmount: 15,
                 hitsplatName: "Damage_Me"

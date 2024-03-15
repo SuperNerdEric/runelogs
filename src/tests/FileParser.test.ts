@@ -48,6 +48,7 @@ describe('parseLogLine', () => {
             date: '02-04-2024',
             time: '01:18:11.404',
             timezone: 'CST',
+            source: {name: 'Million Pies'},
             target: {name: 'Scurrius'},
             hitsplatName: 'DAMAGE_ME',
             damageAmount: 15,

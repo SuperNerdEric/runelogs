@@ -13,6 +13,7 @@ describe("logSplitter", () => {
             date: "02-04-2024",  // You might want to update this as well
             time: formattedTime,
             timezone: "",
+            source: {name: "Million Pies"},
             target: {name: target},
             damageAmount,
             hitsplatName: "DAMAGE_ME",
