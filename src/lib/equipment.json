@@ -2979,6 +2979,33 @@
     "speed": -1
   },
   {
+    "name": "Ancient halo",
+    "id": 24153,
+    "version": "Broken",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Ancient halo",
+    "id": 24203,
+    "version": "Locked",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Ancient halo",
+    "id": 24201,
+    "version": "Normal",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Ancient kiteshield",
     "id": 12468,
     "version": "",
@@ -3814,6 +3841,15 @@
     "category": "Blunt",
     "isTwoHanded": false,
     "speed": 4
+  },
+  {
+    "name": "Atlatl dart",
+    "id": 28991,
+    "version": "",
+    "slot": "ammo",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
   },
   {
     "name": "Attack cape",
@@ -6228,6 +6264,87 @@
     "speed": 4
   },
   {
+    "name": "Blood moon chestplate",
+    "id": 29067,
+    "version": "Broken",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blood moon chestplate",
+    "id": 29022,
+    "version": "New",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blood moon chestplate",
+    "id": 29043,
+    "version": "Used",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blood moon helm",
+    "id": 29073,
+    "version": "Broken",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blood moon helm",
+    "id": 29028,
+    "version": "New",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blood moon helm",
+    "id": 29047,
+    "version": "Used",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blood moon tassets",
+    "id": 29070,
+    "version": "Broken",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blood moon tassets",
+    "id": 29025,
+    "version": "New",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blood moon tassets",
+    "id": 29045,
+    "version": "Used",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Blood tiara",
     "id": 5549,
     "version": "",
@@ -6520,6 +6637,96 @@
     "id": 12301,
     "version": "",
     "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blue moon chestplate",
+    "id": 29058,
+    "version": "Broken",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blue moon chestplate",
+    "id": 29013,
+    "version": "New",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blue moon chestplate",
+    "id": 29037,
+    "version": "Used",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blue moon helm",
+    "id": 29064,
+    "version": "Broken",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blue moon helm",
+    "id": 29019,
+    "version": "New",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blue moon helm",
+    "id": 29041,
+    "version": "Used",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blue moon spear",
+    "id": 28988,
+    "version": "",
+    "slot": "weapon",
+    "category": "Bladed Staff",
+    "isTwoHanded": true,
+    "speed": 5
+  },
+  {
+    "name": "Blue moon tassets",
+    "id": 29061,
+    "version": "Broken",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blue moon tassets",
+    "id": 29016,
+    "version": "New",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blue moon tassets",
+    "id": 29039,
+    "version": "Used",
+    "slot": "legs",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -13662,6 +13869,33 @@
     "speed": 0
   },
   {
+    "name": "Dizana's max hood",
+    "id": 28904,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Dizana's quiver",
+    "id": 28951,
+    "version": "Charged",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Dizana's quiver",
+    "id": 28947,
+    "version": "Uncharged",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Doctor's hat",
     "id": 6547,
     "version": "",
@@ -14976,6 +15210,15 @@
     "speed": 0
   },
   {
+    "name": "Dual macuahuitl",
+    "id": 28997,
+    "version": "",
+    "slot": "weapon",
+    "category": "Spiked",
+    "isTwoHanded": true,
+    "speed": 4
+  },
+  {
     "name": "Dual sai",
     "id": 23206,
     "version": "",
@@ -15079,6 +15322,105 @@
     "id": 7927,
     "version": "",
     "slot": "ring",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo boots",
+    "id": 28945,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Eclipse atlatl",
+    "id": 29000,
+    "version": "",
+    "slot": "weapon",
+    "category": "Thrown",
+    "isTwoHanded": true,
+    "speed": 3
+  },
+  {
+    "name": "Eclipse moon chestplate",
+    "id": 29049,
+    "version": "Broken",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Eclipse moon chestplate",
+    "id": 29004,
+    "version": "New",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Eclipse moon chestplate",
+    "id": 29031,
+    "version": "Used",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Eclipse moon helm",
+    "id": 29055,
+    "version": "Broken",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Eclipse moon helm",
+    "id": 29010,
+    "version": "New",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Eclipse moon helm",
+    "id": 29035,
+    "version": "Used",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Eclipse moon tassets",
+    "id": 29052,
+    "version": "Broken",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Eclipse moon tassets",
+    "id": 29007,
+    "version": "New",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Eclipse moon tassets",
+    "id": 29033,
+    "version": "Used",
+    "slot": "legs",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -19296,6 +19638,42 @@
     "speed": 0
   },
   {
+    "name": "Guild hunter boots",
+    "id": 29269,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Guild hunter headwear",
+    "id": 29263,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Guild hunter legs",
+    "id": 29267,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Guild hunter top",
+    "id": 29265,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Guthan's chainskirt",
     "id": 4926,
     "version": "0",
@@ -20583,8 +20961,26 @@
     "speed": 0
   },
   {
+    "name": "Hunter's spear",
+    "id": 29305,
+    "version": "",
+    "slot": "weapon",
+    "category": "Thrown",
+    "isTwoHanded": false,
+    "speed": 5
+  },
+  {
     "name": "Hunters' crossbow",
     "id": 10156,
+    "version": "",
+    "slot": "weapon",
+    "category": "Crossbow",
+    "isTwoHanded": false,
+    "speed": 3
+  },
+  {
+    "name": "Hunters' sunlight crossbow",
+    "id": 28869,
     "version": "",
     "slot": "weapon",
     "category": "Crossbow",
@@ -21370,6 +21766,15 @@
     "id": 13344,
     "version": "",
     "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Irit tar",
+    "id": 28837,
+    "version": "",
+    "slot": "ammo",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -25011,6 +25416,42 @@
     "speed": 4
   },
   {
+    "name": "Mixed hide boots",
+    "id": 29286,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Mixed hide cape",
+    "id": 29289,
+    "version": "",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Mixed hide legs",
+    "id": 29283,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Mixed hide top",
+    "id": 29280,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Mole slippers",
     "id": 23285,
     "version": "",
@@ -25159,6 +25600,15 @@
     "id": 9071,
     "version": "",
     "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Moonlight antler bolts",
+    "id": 28878,
+    "version": "",
+    "slot": "ammo",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -35118,6 +35568,51 @@
     "speed": 0
   },
   {
+    "name": "Sulphur blades",
+    "id": 29084,
+    "version": "",
+    "slot": "weapon",
+    "category": "Slash Sword",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
+    "name": "Sunfire fanatic chausses",
+    "id": 28939,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Sunfire fanatic cuirass",
+    "id": 28936,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Sunfire fanatic helm",
+    "id": 28933,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Sunlight antler bolts",
+    "id": 28872,
+    "version": "",
+    "slot": "ammo",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Superior calamity breeches",
     "id": 26693,
     "version": "Broken",
@@ -35820,6 +36315,15 @@
     "speed": 0
   },
   {
+    "name": "Tecu salamander",
+    "id": 28834,
+    "version": "",
+    "slot": "weapon",
+    "category": "Salamander",
+    "isTwoHanded": true,
+    "speed": 4
+  },
+  {
     "name": "Terrifying charm",
     "id": 27483,
     "version": "",
@@ -35998,6 +36502,24 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Tonalztics of ralos",
+    "id": 28922,
+    "version": "Charged",
+    "slot": "weapon",
+    "category": "Thrown",
+    "isTwoHanded": false,
+    "speed": 6
+  },
+  {
+    "name": "Tonalztics of ralos",
+    "id": 28919,
+    "version": "Uncharged",
+    "slot": "weapon",
+    "category": "Thrown",
+    "isTwoHanded": false,
+    "speed": 6
   },
   {
     "name": "Top hat",
