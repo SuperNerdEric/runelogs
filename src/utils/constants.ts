@@ -70,7 +70,17 @@ export const BOSS_NAMES = [
     "TzTok-Jad",
     "Venenatis",
     "Vet'ion",
+    "Blood Moon",
+    "Blue Moon",
+    "Eclipse Moon",
 ];
 
 export const PLAYER_HOUSE_REGION_1 = 7769;
 export const PLAYER_HOUSE_REGION_2 = 7770;
+
+export const BLOOD_MOON_REGION = 5526;
+export const BLUE_MOON_REGION = 5783;
+export const ECLIPSE_MOON_REGION = 6038;
+export const NEYPOTZLI_REGION_1 = 5525;
+export const NEYPOTZLI_REGION_2 = 5527;
+export const NEYPOTZLI_REGION_3 = 6039;

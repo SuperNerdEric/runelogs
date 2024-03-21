@@ -3,7 +3,15 @@ import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
 import {Fight} from "../models/Fight";
 import {BoostedLevels} from "../models/BoostedLevels";
 import moment from 'moment';
-import {BOSS_NAMES, PLAYER_HOUSE_REGION_1, PLAYER_HOUSE_REGION_2} from "./constants";
+import {
+    BLOOD_MOON_REGION,
+    BLUE_MOON_REGION,
+    BOSS_NAMES,
+    ECLIPSE_MOON_REGION,
+    NEYPOTZLI_REGION_1, NEYPOTZLI_REGION_2, NEYPOTZLI_REGION_3,
+    PLAYER_HOUSE_REGION_1,
+    PLAYER_HOUSE_REGION_2
+} from "./constants";
 import {SECONDS_PER_TICK} from "../models/Constants";
 
 
@@ -37,6 +45,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     let lastDamage: { time: number, index: number } | null = null;
     let boostedLevels: BoostedLevels | undefined;
     let playerEquipment: string[] | undefined;
+    let playerRegion: number | undefined;
     let fightStartTime: Date;
     let fightStartTick: number = -1;
 
@@ -168,10 +177,26 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         }
 
         // If the player goes to their house region, end the current fight
-        if (logLine.type === LogTypes.PLAYER_REGION && (logLine.playerRegion === PLAYER_HOUSE_REGION_1 || logLine.playerRegion === PLAYER_HOUSE_REGION_2)) {
-            if (currentFight) {
-                endFight(logLine, false);
+        if (logLine.type === LogTypes.PLAYER_REGION) {
+            if (logLine.playerRegion === PLAYER_HOUSE_REGION_1 || logLine.playerRegion === PLAYER_HOUSE_REGION_2) {
+                if (currentFight) {
+                    endFight(logLine, false);
+                }
             }
+            if (logLine.playerRegion === BLOOD_MOON_REGION || logLine.playerRegion === BLUE_MOON_REGION || logLine.playerRegion === ECLIPSE_MOON_REGION) {
+                if (currentFight) {
+                    endFight(logLine, false);
+                }
+            }
+            if (playerRegion && (playerRegion === BLOOD_MOON_REGION || playerRegion === BLUE_MOON_REGION || playerRegion === ECLIPSE_MOON_REGION)) {
+                if (logLine.playerRegion === NEYPOTZLI_REGION_1 || logLine.playerRegion === NEYPOTZLI_REGION_2 || logLine.playerRegion === NEYPOTZLI_REGION_3) {
+                    // We left one of the boss rooms into the Neypotzli region, assume we beat the boss
+                    if (currentFight) {
+                        endFight(logLine, true);
+                    }
+                }
+            }
+            playerRegion = logLine.playerRegion;
         }
 
         parsedLines++;

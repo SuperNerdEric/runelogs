@@ -5520,7 +5520,7 @@ export const npcIdMap: Record<number, string> = {
     5518: "Elder Gnome child",
     5519: "Two-pints",
     5520: "Jarr",
-    5521: "Le-sabrè",
+    5521: "Le-sabrï¿½",
     5522: "Flax keeper",
     5523: "Hatius Cosaintus",
     5524: "Sir Rebral",
@@ -13009,7 +13009,7 @@ export const npcIdMap: Record<number, string> = {
     13007: "Flies",
     13008: "Flies",
     13009: "null",
-    13010: "Blood Moon",
+    13010: "13010", // It's actually Blood Moon but some weird shit happening here
     13011: "Blood Moon",
     13012: "Eclipse Moon",
     13013: "Blue Moon",

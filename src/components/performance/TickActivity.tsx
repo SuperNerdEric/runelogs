@@ -47,14 +47,21 @@ function getBoostedHitWeight(fight: Fight, weapon: Weapon, boosts: BoostedLevels
         magicBoost = 21;
     }
 
-    if (weapon.combatClass === CombatClass.Ranged) {
-        boostedHitWeight = (boosts.ranged - baseLevels) / rangedBoost
-    } else if (weapon.combatClass === CombatClass.Magic) {
-        boostedHitWeight = (boosts.magic - baseLevels) / magicBoost
-    } else if (weapon.combatClass === CombatClass.Melee) {
+    if (weapon) {
+        if (weapon.combatClass === CombatClass.Ranged) {
+            boostedHitWeight = (boosts.ranged - baseLevels) / rangedBoost
+        } else if (weapon.combatClass === CombatClass.Magic) {
+            boostedHitWeight = (boosts.magic - baseLevels) / magicBoost
+        } else if (weapon.combatClass === CombatClass.Melee) {
+            const levelsBoostedAttack = boosts.attack - baseLevels;
+            const levelsBoostedStrength = boosts.strength - baseLevels;
+            boostedHitWeight = ((levelsBoostedAttack + levelsBoostedStrength) / 2) / meleeBoost;
+        }
+    } else {
+        // Assume we are punching / kicking, but we could really be casting a spell
         const levelsBoostedAttack = boosts.attack - baseLevels;
         const levelsBoostedStrength = boosts.strength - baseLevels;
-        boostedHitWeight = ((levelsBoostedAttack + levelsBoostedStrength) / 2) / meleeBoost
+        boostedHitWeight = ((levelsBoostedAttack + levelsBoostedStrength) / 2) / meleeBoost;
     }
 
     return boostedHitWeight;

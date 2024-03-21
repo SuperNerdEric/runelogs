@@ -101,6 +101,7 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
                                     <TableCell>
                                         {log.type === LogTypes.LOG_VERSION ? `Log version ${log.logVersion}` : ""}
                                         {log.type === LogTypes.LOGGED_IN_PLAYER ? `Logged in player ${log.loggedInPlayer}` : ""}
+                                        {log.type === LogTypes.PLAYER_REGION ? `${log.playerRegion}` : ""}
                                         {log.type === LogTypes.BOOSTED_LEVELS ? renderStatImages(log.boostedLevels) : ""}
                                         {log.type === LogTypes.PLAYER_EQUIPMENT && Array.isArray(log.playerEquipment) ? (
                                             <div style={{display: 'flex'}}>
