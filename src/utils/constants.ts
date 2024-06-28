@@ -73,6 +73,7 @@ export const BOSS_NAMES = [
     "Blood Moon",
     "Blue Moon",
     "Eclipse Moon",
+    "Sol Heredit",
 ];
 
 export const PLAYER_HOUSE_REGION_1 = 7769;
