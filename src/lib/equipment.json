@@ -195,7 +195,7 @@
     "slot": "weapon",
     "category": "Axe",
     "isTwoHanded": true,
-    "speed": 5
+    "speed": 7
   },
   {
     "name": "3rd age full helmet",
@@ -6201,6 +6201,33 @@
     "speed": 5
   },
   {
+    "name": "Blessed dizana's quiver",
+    "id": 28828,
+    "version": "Broken",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blessed dizana's quiver",
+    "id": 28957,
+    "version": "Locked",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blessed dizana's quiver",
+    "id": 28955,
+    "version": "Normal",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Blessed spirit shield",
     "id": 12831,
     "version": "",
@@ -7184,6 +7211,15 @@
   {
     "name": "Book of darkness (or)",
     "id": 26490,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Book of egg",
+    "id": 29433,
     "version": "",
     "slot": "shield",
     "category": "",
@@ -12321,6 +12357,15 @@
     "speed": 4
   },
   {
+    "name": "Cursed amulet of magic",
+    "id": 29486,
+    "version": "",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Cursed banana",
     "id": 25500,
     "version": "",
@@ -13347,24 +13392,6 @@
     "speed": 0
   },
   {
-    "name": "Desert camo legs",
-    "id": 10063,
-    "version": "",
-    "slot": "legs",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Desert camo top",
-    "id": 10061,
-    "version": "",
-    "slot": "body",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
     "name": "Desert disguise",
     "id": 4611,
     "version": "",
@@ -13869,10 +13896,46 @@
     "speed": 0
   },
   {
+    "name": "Dizana's max cape",
+    "id": 28830,
+    "version": "Broken",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Dizana's max cape",
+    "id": 28906,
+    "version": "Locked",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Dizana's max cape",
+    "id": 28902,
+    "version": "Normal",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Dizana's max hood",
     "id": 28904,
     "version": "",
     "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Dizana's quiver",
+    "id": 28826,
+    "version": "Broken",
+    "slot": "cape",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -13888,8 +13951,26 @@
   },
   {
     "name": "Dizana's quiver",
+    "id": 28953,
+    "version": "Charged + Locked",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Dizana's quiver",
     "id": 28947,
     "version": "Uncharged",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Dizana's quiver",
+    "id": 28949,
+    "version": "Uncharged + Locked",
     "slot": "cape",
     "category": "",
     "isTwoHanded": false,
@@ -15340,7 +15421,7 @@
     "id": 29000,
     "version": "",
     "slot": "weapon",
-    "category": "Thrown",
+    "category": "Bow",
     "isTwoHanded": true,
     "speed": 3
   },
@@ -15439,6 +15520,42 @@
     "id": 21140,
     "version": "",
     "slot": "ring",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Egg priest mitre",
+    "id": 29443,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Egg priest necklace",
+    "id": 29441,
+    "version": "",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Egg priest robe",
+    "id": 29437,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Egg priest robe top",
+    "id": 29439,
+    "version": "",
+    "slot": "body",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -19494,7 +19611,7 @@
     "speed": 0
   },
   {
-    "name": "Group iron bracers",
+    "name": "Group ironman bracers",
     "id": 26168,
     "version": "",
     "slot": "hands",
@@ -19503,7 +19620,7 @@
     "speed": 0
   },
   {
-    "name": "Group iron bracers (unranked)",
+    "name": "Group ironman bracers (unranked)",
     "id": 27046,
     "version": "",
     "slot": "hands",
@@ -19512,7 +19629,7 @@
     "speed": 0
   },
   {
-    "name": "Group iron helm",
+    "name": "Group ironman helm",
     "id": 26156,
     "version": "",
     "slot": "head",
@@ -19521,7 +19638,7 @@
     "speed": 0
   },
   {
-    "name": "Group iron helm (unranked)",
+    "name": "Group ironman helm (unranked)",
     "id": 27042,
     "version": "",
     "slot": "head",
@@ -19530,7 +19647,7 @@
     "speed": 0
   },
   {
-    "name": "Group iron platebody",
+    "name": "Group ironman platebody",
     "id": 26158,
     "version": "II",
     "slot": "body",
@@ -19539,7 +19656,7 @@
     "speed": 0
   },
   {
-    "name": "Group iron platebody",
+    "name": "Group ironman platebody",
     "id": 26160,
     "version": "III",
     "slot": "body",
@@ -19548,7 +19665,7 @@
     "speed": 0
   },
   {
-    "name": "Group iron platebody",
+    "name": "Group ironman platebody",
     "id": 26162,
     "version": "IV",
     "slot": "body",
@@ -19557,7 +19674,7 @@
     "speed": 0
   },
   {
-    "name": "Group iron platebody",
+    "name": "Group ironman platebody",
     "id": 26164,
     "version": "V",
     "slot": "body",
@@ -19566,7 +19683,7 @@
     "speed": 0
   },
   {
-    "name": "Group iron platebody (unranked)",
+    "name": "Group ironman platebody (unranked)",
     "id": 27048,
     "version": "II",
     "slot": "body",
@@ -19575,7 +19692,7 @@
     "speed": 0
   },
   {
-    "name": "Group iron platebody (unranked)",
+    "name": "Group ironman platebody (unranked)",
     "id": 27050,
     "version": "III",
     "slot": "body",
@@ -19584,7 +19701,7 @@
     "speed": 0
   },
   {
-    "name": "Group iron platebody (unranked)",
+    "name": "Group ironman platebody (unranked)",
     "id": 27052,
     "version": "IV",
     "slot": "body",
@@ -19593,7 +19710,7 @@
     "speed": 0
   },
   {
-    "name": "Group iron platebody (unranked)",
+    "name": "Group ironman platebody (unranked)",
     "id": 27054,
     "version": "V",
     "slot": "body",
@@ -19602,7 +19719,7 @@
     "speed": 0
   },
   {
-    "name": "Group iron platelegs",
+    "name": "Group ironman platelegs",
     "id": 26166,
     "version": "",
     "slot": "legs",
@@ -19611,7 +19728,7 @@
     "speed": 0
   },
   {
-    "name": "Group iron platelegs (unranked)",
+    "name": "Group ironman platelegs (unranked)",
     "id": 27044,
     "version": "",
     "slot": "legs",
@@ -19641,7 +19758,7 @@
     "name": "Guild hunter boots",
     "id": 29269,
     "version": "",
-    "slot": "head",
+    "slot": "feet",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -19659,7 +19776,7 @@
     "name": "Guild hunter legs",
     "id": 29267,
     "version": "",
-    "slot": "head",
+    "slot": "legs",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -19668,7 +19785,7 @@
     "name": "Guild hunter top",
     "id": 29265,
     "version": "",
-    "slot": "head",
+    "slot": "body",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -20331,7 +20448,7 @@
     "speed": 0
   },
   {
-    "name": "Hardcore group iron bracers",
+    "name": "Hardcore group ironman bracers",
     "id": 26182,
     "version": "",
     "slot": "hands",
@@ -20340,7 +20457,7 @@
     "speed": 0
   },
   {
-    "name": "Hardcore group iron helm",
+    "name": "Hardcore group ironman helm",
     "id": 26170,
     "version": "",
     "slot": "head",
@@ -20349,7 +20466,7 @@
     "speed": 0
   },
   {
-    "name": "Hardcore group iron platebody",
+    "name": "Hardcore group ironman platebody",
     "id": 26172,
     "version": "II",
     "slot": "body",
@@ -20358,7 +20475,7 @@
     "speed": 0
   },
   {
-    "name": "Hardcore group iron platebody",
+    "name": "Hardcore group ironman platebody",
     "id": 26174,
     "version": "III",
     "slot": "body",
@@ -20367,7 +20484,7 @@
     "speed": 0
   },
   {
-    "name": "Hardcore group iron platebody",
+    "name": "Hardcore group ironman platebody",
     "id": 26176,
     "version": "IV",
     "slot": "body",
@@ -20376,7 +20493,7 @@
     "speed": 0
   },
   {
-    "name": "Hardcore group iron platebody",
+    "name": "Hardcore group ironman platebody",
     "id": 26178,
     "version": "V",
     "slot": "body",
@@ -20385,7 +20502,7 @@
     "speed": 0
   },
   {
-    "name": "Hardcore group iron platelegs",
+    "name": "Hardcore group ironman platelegs",
     "id": 26180,
     "version": "",
     "slot": "legs",
@@ -22657,24 +22774,6 @@
     "id": 21720,
     "version": "Reward",
     "slot": "head",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Jungle camo legs",
-    "id": 10059,
-    "version": "",
-    "slot": "legs",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Jungle camo top",
-    "id": 10057,
-    "version": "",
-    "slot": "body",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -27711,24 +27810,6 @@
     "speed": 0
   },
   {
-    "name": "Polar camo legs",
-    "id": 10067,
-    "version": "",
-    "slot": "legs",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Polar camo top",
-    "id": 10065,
-    "version": "",
-    "slot": "body",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
     "name": "Portable waystone",
     "id": 26549,
     "version": "",
@@ -27810,46 +27891,10 @@
     "speed": 0
   },
   {
-    "name": "Prince leggings",
-    "id": 6185,
-    "version": "",
-    "slot": "legs",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Prince tunic",
-    "id": 6184,
-    "version": "",
-    "slot": "body",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
     "name": "Princely monkey",
     "id": 24867,
     "version": "",
     "slot": "cape",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Princess blouse",
-    "id": 6186,
-    "version": "",
-    "slot": "body",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Princess skirt",
-    "id": 6187,
-    "version": "",
-    "slot": "legs",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -28294,6 +28339,168 @@
     "category": "Bow",
     "isTwoHanded": true,
     "speed": 3
+  },
+  {
+    "name": "Rainbow cape",
+    "id": 29493,
+    "version": "Asexual",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Rainbow cape",
+    "id": 29491,
+    "version": "Bisexual",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Rainbow cape",
+    "id": 29505,
+    "version": "Gay",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Rainbow cape",
+    "id": 29501,
+    "version": "Genderqueer",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Rainbow cape",
+    "id": 29503,
+    "version": "Lesbian",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Rainbow cape",
+    "id": 29499,
+    "version": "Non-binary",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Rainbow cape",
+    "id": 29497,
+    "version": "Pansexual",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Rainbow cape",
+    "id": 29489,
+    "version": "Pride",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Rainbow cape",
+    "id": 29495,
+    "version": "Transgender",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Rainbow crown shirt",
+    "id": 29510,
+    "version": "Asexual",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Rainbow crown shirt",
+    "id": 29509,
+    "version": "Bisexual",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Rainbow crown shirt",
+    "id": 29516,
+    "version": "Gay",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Rainbow crown shirt",
+    "id": 29514,
+    "version": "Genderqueer",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Rainbow crown shirt",
+    "id": 29515,
+    "version": "Lesbian",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Rainbow crown shirt",
+    "id": 29513,
+    "version": "Non-binary",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Rainbow crown shirt",
+    "id": 29512,
+    "version": "Pansexual",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Rainbow crown shirt",
+    "id": 29507,
+    "version": "Pride",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Rainbow crown shirt",
+    "id": 29511,
+    "version": "Transgender",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
   },
   {
     "name": "Rainbow jumper",
@@ -29839,6 +30046,42 @@
     "id": 12397,
     "version": "",
     "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Royal frog blouse",
+    "id": 6186,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Royal frog leggings",
+    "id": 6185,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Royal frog skirt",
+    "id": 6187,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Royal frog tunic",
+    "id": 6184,
+    "version": "",
+    "slot": "body",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -35573,7 +35816,7 @@
     "version": "",
     "slot": "weapon",
     "category": "Slash Sword",
-    "isTwoHanded": false,
+    "isTwoHanded": true,
     "speed": 4
   },
   {
@@ -40507,24 +40750,6 @@
     "category": "Stab Sword",
     "isTwoHanded": false,
     "speed": 4
-  },
-  {
-    "name": "Wood camo legs",
-    "id": 10055,
-    "version": "",
-    "slot": "legs",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Wood camo top",
-    "id": 10053,
-    "version": "",
-    "slot": "body",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
   },
   {
     "name": "Woodcutting cape",
