@@ -145,7 +145,17 @@ function App() {
                             >
                                 <Icon icon="ic:round-arrow-back"/>
                             </div>
-                            <label>{selectedLogs.name}</label>
+                            {selectedLogs.isNpc ? (
+                                <a href={`https://oldschool.runescape.wiki/w/${selectedLogs.mainEnemyName}`}
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   className="link"
+                                >
+                                    {selectedLogs.fightTitle}
+                                </a>
+                            ) : (
+                                <label>{selectedLogs.fightTitle}</label>
+                            )}
                         </div>
                         <Tabs
                             value={selectedTab}
@@ -168,7 +178,8 @@ function App() {
                                 />
                             ))}
                         </Tabs>
-                        {(BOSS_NAMES.includes(selectedLogs.metaData.name) || selectedLogs.metaData.fightLengthMs >= 15000) && <TickActivity selectedLogs={selectedLogs}/>}
+                        {(BOSS_NAMES.includes(selectedLogs.metaData.name) || selectedLogs.metaData.fightLengthMs >= 15000) &&
+                            <TickActivity selectedLogs={selectedLogs}/>}
                         {selectedTab === TabsEnum.DAMAGE_DONE && <DamageDoneTab selectedLogs={selectedLogs}/>}
                         {selectedTab === TabsEnum.DAMAGE_TAKEN && <DamageTakenTab selectedLogs={selectedLogs}/>}
                         {selectedTab === TabsEnum.BOOSTS && <BoostsTab selectedLogs={selectedLogs}/>}

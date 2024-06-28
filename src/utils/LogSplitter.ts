@@ -55,7 +55,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         currentFight!.metaData = {
             date: currentFight!.firstLine.date,
             fightLengthMs: currentFight!.lastLine.fightTimeMs! - currentFight!.firstLine.fightTimeMs!,
-            name: currentFight!.name,
+            name: currentFight!.fightTitle,
             success: success,
             time: currentFight!.firstLine.time
         }
@@ -83,7 +83,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         if (currentFight && lastDamage && moment(`${logLine.date} ${logLine.time}`, 'MM-DD-YYYY HH:mm:ss.SSS').toDate().getTime() - lastDamage.time > 60000) {
             // eslint-disable-next-line no-loop-func
             currentFight.data = currentFight.data.filter((log, index) => index <= lastDamage!.index);
-            currentFight.name += " - Incomplete";
+            currentFight.fightTitle += " - Incomplete";
             endFight(currentFight.data[currentFight.data.length - 1], false);
         }
 
@@ -125,9 +125,12 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                 });
             }
 
+            // todo: I think we can remove this when we remove blowpiping logic
             // @ts-ignore
             currentFight = {
-                name: logLine.target.name,
+                fightTitle: logLine.target.name,
+                mainEnemyName: logLine.target.name,
+                isNpc: !!logLine.target.id,
                 enemies: [logLine.target.name],
                 data: [
                     ...initialData,
@@ -139,8 +142,10 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             };
         } else if (currentFight) {
             // Rename the fight if we encounter a boss in the middle of it
-            if ("target" in logLine && BOSS_NAMES.includes(logLine.target.name!) && currentFight.name !== logLine.target.name) {
-                currentFight.name = logLine.target!.name;
+            if ("target" in logLine && BOSS_NAMES.includes(logLine.target.name!) && currentFight.fightTitle !== logLine.target.name) {
+                currentFight.fightTitle = logLine.target!.name;
+                currentFight.mainEnemyName = logLine.target!.name;
+                currentFight.isNpc = !!logLine.target.id;
             }
             // Add target to list of enemies
             if (logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine) && logLine.target.name !== player && !currentFight.enemies.includes(logLine.target.name!)) {
@@ -168,7 +173,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         if (logLine.type === LogTypes.DEATH && logLine.target) {
             // If the player or the fight name dies, end the current fight
             if (currentFight) {
-                if (logLine.target.name === currentFight.name) {
+                if (logLine.target.name === currentFight.fightTitle) {
                     endFight(logLine, true);
                 } else if (logLine.target.name === currentFight.loggedInPlayer) {
                     endFight(logLine, false);
@@ -224,11 +229,11 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
         // Make fight names unique
         let count = 1;
-        if (fightNameCounts.has(fight.name)) {
-            count = fightNameCounts.get(fight.name)! + 1;
+        if (fightNameCounts.has(fight.fightTitle)) {
+            count = fightNameCounts.get(fight.fightTitle)! + 1;
         }
-        fightNameCounts.set(fight.name, count);
-        fight.name = `${fight.name} - ${count}`;
+        fightNameCounts.set(fight.fightTitle, count);
+        fight.fightTitle = `${fight.fightTitle} - ${count}`;
 
         return true;
     });
