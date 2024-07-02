@@ -4,7 +4,7 @@ export interface Fight {
     fightTitle: string; // Unique fight name with a number appended to it
     mainEnemyName: string; // The name of the main enemy in the fight to be used for wiki link
     isNpc: boolean;
-    metaData: FightMetaData;
+    metaData?: FightMetaData;
     data: LogLine[];
     enemies: string[];
     loggedInPlayer: string;

@@ -1,4 +1,4 @@
-import {AttackAnimationLog, DamageLog, LogLine, LogTypes, TargetChangeLog} from "../models/LogLine";
+import {DamageLog, LogLine, LogTypes, TargetChangeLog} from "../models/LogLine";
 import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
 import {Fight} from "../models/Fight";
 import {BoostedLevels} from "../models/BoostedLevels";
@@ -125,8 +125,6 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                 });
             }
 
-            // todo: I think we can remove this when we remove blowpiping logic
-            // @ts-ignore
             currentFight = {
                 fightTitle: logLine.target.name,
                 mainEnemyName: logLine.target.name,
