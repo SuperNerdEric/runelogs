@@ -7,7 +7,7 @@ import {
     BLOOD_MOON_REGION,
     BLUE_MOON_REGION,
     BOSS_NAMES,
-    ECLIPSE_MOON_REGION,
+    ECLIPSE_MOON_REGION, MINION_TO_BOSS,
     NEYPOTZLI_REGION_1, NEYPOTZLI_REGION_2, NEYPOTZLI_REGION_3,
     PLAYER_HOUSE_REGION_1,
     PLAYER_HOUSE_REGION_2
@@ -139,6 +139,13 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                 firstLine: logLine,
                 lastLine: logLine
             };
+
+            const boss = MINION_TO_BOSS[logLine.target.name];
+            if (boss) {
+                currentFight!.fightTitle = boss;
+                currentFight!.mainEnemyName = boss;
+            }
+
         } else if (currentFight) {
             // Rename the fight if we encounter a boss in the middle of it
             if ("target" in logLine && BOSS_NAMES.includes(logLine.target.name!) && currentFight.fightTitle !== logLine.target.name) {

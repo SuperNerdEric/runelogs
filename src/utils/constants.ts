@@ -76,6 +76,17 @@ export const BOSS_NAMES = [
     "Sol Heredit",
 ];
 
+export const BOSS_TO_MINIONS = {
+    "Nylocas Vasilias": ["Nylocas Hagios", "Nylocas Ischyros", "Nylocas Toxobolos"],
+};
+
+export const MINION_TO_BOSS = Object.entries(BOSS_TO_MINIONS).reduce((acc, [boss, minions]) => {
+    minions.forEach(minion => {
+        acc[minion] = boss;
+    });
+    return acc;
+}, {} as { [key: string]: string });
+
 export const PLAYER_HOUSE_REGION_1 = 7769;
 export const PLAYER_HOUSE_REGION_2 = 7770;
 
