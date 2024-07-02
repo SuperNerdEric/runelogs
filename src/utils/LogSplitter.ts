@@ -125,6 +125,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                 });
             }
 
+            // @ts-ignore
             currentFight = {
                 fightTitle: logLine.target.name,
                 mainEnemyName: logLine.target.name,
