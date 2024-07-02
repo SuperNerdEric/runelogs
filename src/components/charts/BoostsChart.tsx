@@ -115,7 +115,7 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
             }
 
 
-            if (log.type === LogTypes.PLAYER_ATTACK_ANIMATION || log.type === LogTypes.BLOWPIPE_ANIMATION) {
+            if (log.type === LogTypes.PLAYER_ATTACK_ANIMATION) {
                 tempAttack.push({
                     timestamp: log.fightTimeMs,
                     formattedTimestamp: formatHHmmss(log.fightTimeMs!, true),

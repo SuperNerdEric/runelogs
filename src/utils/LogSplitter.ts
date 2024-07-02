@@ -233,49 +233,5 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         return true;
     });
 
-    // Insert in "fake" blowpipe animation logs for continuing to blowpipe
-    filteredFights.forEach(fight => {
-        let startedBlowpipingLog: AttackAnimationLog;
-        let isBlowpiping: boolean = false;
-
-        const fakeData: LogLine[] = [];
-
-        fight.data.forEach(log => {
-            if (log.type === LogTypes.PLAYER_ATTACK_ANIMATION) {
-                if (log.animationId === 5061 || log.animationId === 10656) {
-                    if (!isBlowpiping) {
-                        startedBlowpipingLog = log;
-                    }
-
-                    isBlowpiping = true;
-                }
-            }
-
-            if (isBlowpiping && (
-                log.type === LogTypes.STOPPED_BLOWPIPING ||
-                (log.type === LogTypes.DEATH && log.target.name === fight.metaData.name)) // The fight is over
-            ) {
-                // Insert in "fake" animation ids to represent all the times the blowpipe would have hit
-                let currentTimestamp = startedBlowpipingLog.fightTimeMs! + 1200;
-                while (currentTimestamp < log.fightTimeMs!) {
-                    fakeData.push({
-                        type: LogTypes.BLOWPIPE_ANIMATION,
-                        fightTimeMs: currentTimestamp,
-                        date: log.date,
-                        target: startedBlowpipingLog.target,
-                        time: log.time,
-                        timezone: log.timezone,
-                        animationId: startedBlowpipingLog.animationId
-                    });
-                    currentTimestamp += 1200;
-                }
-                isBlowpiping = false;
-            }
-        })
-
-        const combinedData = [...fight.data, ...fakeData];
-        fight.data = combinedData.sort((a, b) => a.fightTimeMs! - b.fightTimeMs!);
-    })
-
     return filteredFights;
 }
