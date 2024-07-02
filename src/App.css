@@ -368,3 +368,12 @@
 .tan-switch .MuiSwitch-track {
     background-color: tan !important;
 }
+
+.link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
