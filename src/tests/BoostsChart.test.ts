@@ -42,7 +42,7 @@ describe('calculateWeightedAverages', () => {
 
         // @ts-ignore
         const fight: Fight = {
-            name: "Test",
+            fightTitle: "Test",
             data: logLines,
             enemies: [],
             loggedInPlayer: "Million Pies",
