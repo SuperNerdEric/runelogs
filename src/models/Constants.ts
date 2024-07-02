@@ -55,6 +55,8 @@ export const MELEE_ANIMATIONS = [
     7515, // Dragon sword spec
     8145, // Rapier
     1711, // Zamorakian spear
+    1712, // Blue moon spear slash
+    1710, // Blue moon spear crush
     2062, // Verac's flail, bone mace
     2066, // Dharok's greataxe slash
     2067, // Dharok's greataxe crush
@@ -83,6 +85,7 @@ export const MELEE_ANIMATIONS = [
     7511, // Dinh's bulwark
     6696, // Dragonfire shield spec
     7516, // Maul
+    11124, // Elder maul spec
     1665, // Gadderhammer, Granite maul
     1666, // Granite maul block
     1667, // Granite maul spec
@@ -91,7 +94,8 @@ export const MELEE_ANIMATIONS = [
     3157, // Dragon 2h spec
     12033, // Dragon longsword spec
     12031, // Dragon scimitar spec
-    405 // Dragon spear spec
+    405, // Dragon spear spec
+    10989 // Dual macuahuitl
 ]
 
 export const RANGED_ANIMATIONS = [
@@ -99,6 +103,8 @@ export const RANGED_ANIMATIONS = [
     1074, // Magic shortbow spec
     7617, // Rune knife, thrownaxe
     8194, // Dragon knife
+    8195, // Dragon knife poisoned
+    8291, // Dragon knife spec
     5061, // Blowpipe
     10656, // Blazing Blowpipe
     7554, // Dart throw
@@ -107,10 +113,18 @@ export const RANGED_ANIMATIONS = [
     9964, // Webweaver bow spec
     7552, // Crossbow
     9168, // Zaryte crossbow
-    7555 // Ballista
+    9206, // Rune crossbow (or)
+    7555, // Ballista
+    9858, // Venator bow
+    11057, // Eclipse atlatl
+    11060, // Eclipse atlatl spec
+    10923, // Tonalztics of ralos
+    10914 // Tonalztics of ralos spec
 ]
 
 export const MAGE_ANIMATION = [
+    710, // Bind, snare, entangle without staff
+    1161, // Bind, snare, entangle with staff
     711, // Strike, Bolt, and Blast without staff
     1162, // Strike, Bolt, and Blast with staff
     727, // Wave without staff
@@ -126,5 +140,7 @@ export const MAGE_ANIMATION = [
     1978, // Rush and Blitz
     1979, // Burst and Barrage
     9493, // Tumeken's shadow
-    10501 // Warped sceptre
+    10501, // Warped sceptre
+    8972, // Arceuus grasp
+    8977 // Arceuus demonbane
 ]
