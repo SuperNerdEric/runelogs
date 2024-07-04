@@ -42,9 +42,9 @@ describe('calculateWeightedAverages', () => {
 
         // @ts-ignore
         const fight: Fight = {
-            fightTitle: "Test",
+            name: "Test",
             data: logLines,
-            enemies: [],
+            enemyNames: [],
             loggedInPlayer: "Million Pies",
             firstLine: {
                 type: LogTypes.BOOSTED_LEVELS,

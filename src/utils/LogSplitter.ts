@@ -7,12 +7,17 @@ import {
     BLOOD_MOON_REGION,
     BLUE_MOON_REGION,
     BOSS_NAMES,
-    ECLIPSE_MOON_REGION, MINION_TO_BOSS,
-    NEYPOTZLI_REGION_1, NEYPOTZLI_REGION_2, NEYPOTZLI_REGION_3,
+    ECLIPSE_MOON_REGION,
+    MINION_TO_BOSS,
+    NEYPOTZLI_REGION_1,
+    NEYPOTZLI_REGION_2,
+    NEYPOTZLI_REGION_3,
     PLAYER_HOUSE_REGION_1,
-    PLAYER_HOUSE_REGION_2
+    PLAYER_HOUSE_REGION_2,
+    RAID_NAME_REGION_MAPPING
 } from "./constants";
 import {SECONDS_PER_TICK} from "../models/Constants";
+import {Raid} from "../models/Raid";
 
 
 export function isMine(hitsplatName: string) {
@@ -35,11 +40,11 @@ function bossTargetsMe(player: string, log: TargetChangeLog) {
     return log.target.name === player && BOSS_NAMES.includes(log.source.name);
 }
 
-export function logSplitter(fightData: LogLine[], progressCallback?: (progress: number) => void): Fight[] {
+export function logSplitter(fightData: LogLine[], progressCallback?: (progress: number) => void): (Fight | Raid)[] {
     const totalLines = fightData.length;
     let parsedLines = 0;
 
-    const fights: Fight[] = [];
+    const fights: (Fight | Raid)[] = [];
     let currentFight: Fight | null = null;
     let player: string = ""; //todo support multiple players
     let lastDamage: { time: number, index: number } | null = null;
@@ -48,6 +53,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     let playerRegion: number | undefined;
     let fightStartTime: Date;
     let fightStartTick: number = -1;
+    let currentRaid: Raid | null = null;
 
     function endFight(lastLine: LogLine, success: boolean, nullFight: boolean = true) {
         currentFight!.lastLine = lastLine;
@@ -55,11 +61,27 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         currentFight!.metaData = {
             date: currentFight!.firstLine.date,
             fightLengthMs: currentFight!.lastLine.fightTimeMs! - currentFight!.firstLine.fightTimeMs!,
-            name: currentFight!.fightTitle,
+            name: currentFight!.name,
             success: success,
             time: currentFight!.firstLine.time
         }
-        fights.push(currentFight!);
+
+        // If the fight has no damage logs from the player, discard it
+        const hasPlayerDamage = currentFight!.data.some((logLine) =>
+            logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine)
+        );
+        if (!hasPlayerDamage) {
+            return;
+        }
+
+        const raidName = playerRegion ? RAID_NAME_REGION_MAPPING[playerRegion] : null;
+        if (raidName) {
+            currentRaid = currentRaid || {name: raidName, fights: []};
+            currentRaid.fights.push(currentFight as Fight);
+        } else {
+            fights.push(currentFight as Fight);
+        }
+
         if (nullFight) {
             currentFight = null;
         }
@@ -83,7 +105,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         if (currentFight && lastDamage && moment(`${logLine.date} ${logLine.time}`, 'MM-DD-YYYY HH:mm:ss.SSS').toDate().getTime() - lastDamage.time > 60000) {
             // eslint-disable-next-line no-loop-func
             currentFight.data = currentFight.data.filter((log, index) => index <= lastDamage!.index);
-            currentFight.fightTitle += " - Incomplete";
+            currentFight.name += " - Incomplete";
             endFight(currentFight.data[currentFight.data.length - 1], false);
         }
 
@@ -127,10 +149,10 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
             // @ts-ignore
             currentFight = {
-                fightTitle: logLine.target.name,
+                name: logLine.target.name,
                 mainEnemyName: logLine.target.name,
                 isNpc: !!logLine.target.id,
-                enemies: [logLine.target.name],
+                enemyNames: [logLine.target.name],
                 data: [
                     ...initialData,
                     logLine
@@ -142,20 +164,20 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
             const boss = MINION_TO_BOSS[logLine.target.name];
             if (boss) {
-                currentFight!.fightTitle = boss;
+                currentFight!.name = boss;
                 currentFight!.mainEnemyName = boss;
             }
 
         } else if (currentFight) {
             // Rename the fight if we encounter a boss in the middle of it
-            if ("target" in logLine && BOSS_NAMES.includes(logLine.target.name!) && currentFight.fightTitle !== logLine.target.name) {
-                currentFight.fightTitle = logLine.target!.name;
+            if ("target" in logLine && BOSS_NAMES.includes(logLine.target.name!) && currentFight.name !== logLine.target.name) {
+                currentFight.name = logLine.target!.name;
                 currentFight.mainEnemyName = logLine.target!.name;
                 currentFight.isNpc = !!logLine.target.id;
             }
             // Add target to list of enemies
-            if (logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine) && logLine.target.name !== player && !currentFight.enemies.includes(logLine.target.name!)) {
-                currentFight.enemies.push(logLine.target!.name);
+            if (logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine) && logLine.target.name !== player && !currentFight.enemyNames.includes(logLine.target.name!)) {
+                currentFight.enemyNames.push(logLine.target!.name);
             }
 
             // Subtract the start time from the log's timestamp to get the relative time within the fight
@@ -179,7 +201,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         if (logLine.type === LogTypes.DEATH && logLine.target) {
             // If the player or the fight name dies, end the current fight
             if (currentFight) {
-                if (logLine.target.name === currentFight.fightTitle) {
+                if (logLine.target.name === currentFight.name) {
                     endFight(logLine, true);
                 } else if (logLine.target.name === currentFight.loggedInPlayer) {
                     endFight(logLine, false);
@@ -187,8 +209,8 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             }
         }
 
-        // If the player goes to their house region, end the current fight
         if (logLine.type === LogTypes.PLAYER_REGION) {
+            // If the player goes to their house region, end the current fight
             if (logLine.playerRegion === PLAYER_HOUSE_REGION_1 || logLine.playerRegion === PLAYER_HOUSE_REGION_2) {
                 if (currentFight) {
                     endFight(logLine, false);
@@ -207,12 +229,25 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                     }
                 }
             }
+
+            if (currentRaid) {
+                const raidName = playerRegion ? RAID_NAME_REGION_MAPPING[logLine.playerRegion] : null;
+
+                // If we were in a raid and left it, end the current raid and the current fight
+                if (!raidName) {
+                    if (currentFight) {
+                        endFight(logLine, false);
+                    }
+                    fights.push(currentRaid);
+                    currentRaid = null;
+                }
+            }
             playerRegion = logLine.playerRegion;
         }
 
         parsedLines++;
         if (progressCallback && parsedLines % 200 === 0) {
-            const progress = 50 + (parsedLines / totalLines) * 50;
+            const progress = 30 + (parsedLines / totalLines) * 70;
             progressCallback(progress);
         }
     }
@@ -225,21 +260,15 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     const fightNameCounts: Map<string, number> = new Map(); // Map to store counts of each fight name
 
     const filteredFights = fights.filter((fight) => {
-        // If the fight has no damage logs from the player, discard it
-        const hasPlayerDamage = fight.data.some((logLine) =>
-            logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine)
-        );
-        if (!hasPlayerDamage) {
-            return false;
-        }
 
         // Make fight names unique
         let count = 1;
-        if (fightNameCounts.has(fight.fightTitle)) {
-            count = fightNameCounts.get(fight.fightTitle)! + 1;
+        if (fightNameCounts.has(fight.name)) {
+            count = fightNameCounts.get(fight.name)! + 1;
         }
-        fightNameCounts.set(fight.fightTitle, count);
-        fight.fightTitle = `${fight.fightTitle} - ${count}`;
+        fightNameCounts.set(fight.name, count);
+
+        fight.name = `${fight.name} - ${count}`;
 
         return true;
     });

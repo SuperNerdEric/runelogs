@@ -296,6 +296,24 @@
     border-color: white;
 }
 
+.raid-fight-container {
+    position: relative;
+    border: 1px solid black;
+    background-color: #262a2e;
+    width: 300px;
+    height: 40px;
+    padding: 10px;
+    margin-bottom: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.raid-fight-container:hover {
+    border-color: white;
+}
+
 .fight-title {
     font-size: 18px;
 }
@@ -376,4 +394,14 @@
 
 .link:hover {
     text-decoration: underline;
+}
+
+.dropdown-fight-selector {
+    background-color: #141414;
+    border: 3px solid grey;
+    color: white;
+    font-size: calc(8px + 1vmin);
+    margin-top: 10px;
+    padding: 5px 10px;
+    border-radius: 5px;
 }

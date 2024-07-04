@@ -1,12 +1,13 @@
 import {LogLine} from "./LogLine";
+import {Raid} from "./Raid";
 
 export interface Fight {
-    fightTitle: string; // Unique fight name with a number appended to it
+    name: string; // Unique fight name with a number appended to it
     mainEnemyName: string; // The name of the main enemy in the fight to be used for wiki link
     isNpc: boolean;
     metaData: FightMetaData;
     data: LogLine[];
-    enemies: string[];
+    enemyNames: string[];
     loggedInPlayer: string;
 
     // Just for easy reference later
@@ -20,4 +21,8 @@ export interface FightMetaData {
     time: string;
     fightLengthMs: number;
     success: boolean;
+}
+
+export function isFight(fight: Fight | Raid): fight is Fight {
+    return (fight as Fight).metaData !== undefined;
 }

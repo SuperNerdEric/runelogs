@@ -87,6 +87,16 @@ export const MINION_TO_BOSS = Object.entries(BOSS_TO_MINIONS).reduce((acc, [boss
     return acc;
 }, {} as { [key: string]: string });
 
+export const COX_REGIONS = [12889, 13136, 13137, 13138, 13139, 13140, 13141, 13145, 13393, 13394, 13395, 13396, 13397, 13401];
+export const TOB_REGIONS = [12611, 12612, 12613, 12867, 12869, 13122, 13123, 13125, 13379];
+export const TOA_REGIONS = [14160, 14162, 14164, 14674, 14676, 15184, 15186, 15188, 15696, 15698, 15700];
+
+export const RAID_NAME_REGION_MAPPING: { [key: string]: string } = {};
+COX_REGIONS.forEach(region => RAID_NAME_REGION_MAPPING[region] = 'Chambers of Xeric');
+TOB_REGIONS.forEach(region => RAID_NAME_REGION_MAPPING[region] = 'Theatre of Blood');
+TOA_REGIONS.forEach(region => RAID_NAME_REGION_MAPPING[region] = 'Tombs of Amascut');
+
+
 export const PLAYER_HOUSE_REGION_1 = 7769;
 export const PLAYER_HOUSE_REGION_2 = 7770;
 

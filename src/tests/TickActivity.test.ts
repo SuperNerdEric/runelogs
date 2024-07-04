@@ -6,6 +6,7 @@ describe('getFightPerformance', () => {
     test('should get expected number of hits', async () => {
         const parsedFights = getMockFights("blowpiping-leviathan.txt");
         const fight = parsedFights![0];
+        // @ts-ignore
         const results = getFightPerformance(fight);
         expect(results.expectedWeaponHits).toEqual(64); // checked in excel
         expect(results.actualWeaponHits).toEqual(62);
@@ -15,6 +16,7 @@ describe('getFightPerformance', () => {
     test('should be 100%', async () => {
         const parsedFights = getMockFights("scurrius-6.txt");
         const fight = parsedFights![0];
+        // @ts-ignore
         const results = getFightPerformance(fight);
         expect(results.expectedWeaponHits).toEqual(14);
         expect(results.actualWeaponHits).toEqual(14);

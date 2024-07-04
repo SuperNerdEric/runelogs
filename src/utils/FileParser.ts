@@ -3,6 +3,7 @@ import {Fight} from "../models/Fight";
 import {LogLine, LogTypes} from "../models/LogLine";
 import {getActor} from "./utils";
 import {Actor} from "../models/Actor";
+import {Raid} from "../models/Raid";
 
 export const parseLogLine = (logLine: string, player?: string): LogLine | null => {
     const TICK_PATTERN = '\\b\\d+\\b';
@@ -202,7 +203,7 @@ export const parseLogLine = (logLine: string, player?: string): LogLine | null =
     };
 };
 
-export function parseFileContent(fileContent: string, progressCallback: (progress: number) => void): Fight[] | null {
+export function parseFileContent(fileContent: string, progressCallback: (progress: number) => void): (Fight | Raid)[] | null {
     try {
         const lines = fileContent.split('\n');
         let parsedLines = 0;
@@ -221,12 +222,12 @@ export function parseFileContent(fileContent: string, progressCallback: (progres
 
             parsedLines++;
             if (progressCallback && parsedLines % 200 === 0) {
-                const progress = (parsedLines / lines.length) * 50;
+                const progress = (parsedLines / lines.length) * 30;
                 progressCallback(progress);
             }
         }
 
-        let fights: Fight[] = logSplitter(fightData, progressCallback);
+        let fights: (Fight | Raid)[] = logSplitter(fightData, progressCallback);
 
         return fights;
     } catch (error) {
