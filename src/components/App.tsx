@@ -4,7 +4,7 @@ import Dropzone from './Dropzone';
 import {Button, CircularProgress, Tab, Tabs} from '@mui/material';
 import Instructions from "./Instructions";
 import {BoostsTab, DamageDoneTab, DamageTakenTab, EventsTab, TabsEnum} from './Tabs';
-import {Fight, FightMetaData} from "../models/Fight";
+import {Fight, FightMetaData, isFight} from "../models/Fight";
 import localforage from "localforage";
 import TopBar from "./TopBar";
 import {closeSnackbar, SnackbarKey, useSnackbar} from 'notistack';
@@ -12,6 +12,8 @@ import FightSelector from "./sections/FightSelector";
 import {Icon} from '@iconify/react';
 import TickActivity from "./performance/TickActivity";
 import {BOSS_NAMES} from "../utils/constants";
+import {isRaidMetaData, Raid, RaidMetaData} from "../models/Raid";
+import DropdownFightSelector from "./sections/DropdownFightSelector";
 
 function App() {
     const fightsStorage = localforage.createInstance({
@@ -49,15 +51,17 @@ function App() {
 
                 setParseInProgress(false);
             } else if (type === 'item') {
-                setSelectedLogs(item);
+                setSelectedFight(item);
             }
         };
 
         return worker;
     });
 
-    const [fightMetadata, setFightMetadata] = useState<FightMetaData[] | null>(null);
-    const [selectedLogs, setSelectedLogs] = useState<Fight | null>(null);
+    const [fightMetadata, setFightMetadata] = useState<(FightMetaData | RaidMetaData)[] | null>(null);
+    const [selectedFightMetadataIndex, setSelectedFightMetadataIndex] = useState<number | null>(null);
+    const [selectedRaidIndex, setSelectedRaidIndex] = useState<number | undefined>(undefined);
+    const [selectedFight, setSelectedFight] = useState<Fight | null>(null);
     const [selectedTab, setSelectedTab] = useState<TabsEnum>(TabsEnum.DAMAGE_DONE);
 
     const [parseInProgress, setParseInProgress] = useState<boolean>(false);
@@ -76,7 +80,7 @@ function App() {
     const handleDelete = () => {
         // Delete data from localforage and reset states
         fightsStorage.removeItem('fightData').then(() => {
-            setSelectedLogs(null);
+            setSelectedFight(null);
             setFightMetadata(null);
             setLoadingStorage(false);
         }).catch(error => {
@@ -84,16 +88,45 @@ function App() {
         });
     };
 
-    const handleSelectFight = (index: number) => {
-        worker.postMessage({type: 'getItem', index});
+    const handleSelectFight = (index: number, raidIndex?: number) => {
+        worker.postMessage({type: 'getItem', index, raidIndex});
+        setSelectedFightMetadataIndex(index);
+        setSelectedRaidIndex(raidIndex);
+    };
+
+    const handleRaidSelectFight = (raidIndex: number) => {
+        worker.postMessage({type: 'getItem', index: selectedFightMetadataIndex, raidIndex});
+        setSelectedRaidIndex(raidIndex);
+    };
+
+    const renderDropdownFightSelector = () => {
+        if (selectedFightMetadataIndex !== null && fightMetadata && isRaidMetaData(fightMetadata[selectedFightMetadataIndex])) {
+            const raidMetaData = fightMetadata[selectedFightMetadataIndex] as RaidMetaData;
+            return (
+                <div>
+                    <DropdownFightSelector fights={raidMetaData.fights} onSelectFight={handleRaidSelectFight} selectedFightIndex={selectedRaidIndex} />
+                </div>
+            );
+        }
+        return null;
     };
 
     useEffect(() => {
         // Check if fight data exists in localforage
-        fightsStorage.getItem<Fight[]>('fightData')
-            .then((data: Fight[] | null) => {
+        fightsStorage.getItem<(Fight | Raid)[]>('fightData')
+            .then((data: (Fight | Raid)[] | null) => {
                 if (data) {
-                    setFightMetadata(data.map(fight => fight.metaData));
+                    setFightMetadata(data.map(fight =>
+                    {
+                        if (isFight(fight)) {
+                            return fight.metaData
+                        } else {
+                            return {
+                                name: fight.name,
+                                fights: fight.fights.map(fight => fight.metaData)
+                            } as RaidMetaData;
+                        }
+                    }));
                 }
                 setLoadingStorage(false);
             })
@@ -108,7 +141,7 @@ function App() {
         <div className="App">
             <div className="App-body">
                 <TopBar onDeleteData={handleDelete}
-                        showDeleteButton={!loadingStorage && !parseInProgress && (!!selectedLogs || !!fightMetadata)}/>
+                        showDeleteButton={!loadingStorage && !parseInProgress && (!!selectedFight || !!fightMetadata)}/>
                 {loadingStorage && (
                     <div className="loading-indicator-container">
                         <div className="loading-content">
@@ -125,38 +158,43 @@ function App() {
                         </div>
                     </div>
                 )}
-                {!loadingStorage && !parseInProgress && !selectedLogs && !fightMetadata && (
+                {!loadingStorage && !parseInProgress && !selectedFight && !fightMetadata && (
                     <div>
                         <Instructions/>
                         <Dropzone onParse={handleParse}/>
                     </div>
                 )}
-                {!loadingStorage && !parseInProgress && !selectedLogs && fightMetadata && (
+                {!loadingStorage && !parseInProgress && !selectedFight && fightMetadata && (
                     <div>
                         <FightSelector fights={fightMetadata!} onSelectFight={handleSelectFight}/>
                     </div>
                 )}
-                {!loadingStorage && !parseInProgress && selectedLogs && (
+                {!loadingStorage && !parseInProgress && selectedFight && (
                     <div className="App-main">
                         <div style={{display: 'flex', alignItems: 'center'}}>
                             <div
                                 className="back-icon-wrapper"
-                                onClick={() => setSelectedLogs(null)}
+                                onClick={() => setSelectedFight(null)}
                             >
                                 <Icon icon="ic:round-arrow-back"/>
                             </div>
-                            {selectedLogs.isNpc ? (
-                                <a href={`https://oldschool.runescape.wiki/w/${selectedLogs.mainEnemyName}`}
-                                   target="_blank"
-                                   rel="noopener noreferrer"
-                                   className="link"
-                                >
-                                    {selectedLogs.fightTitle}
-                                </a>
+                            {selectedFightMetadataIndex !== null && fightMetadata && isRaidMetaData(fightMetadata[selectedFightMetadataIndex]) ? (
+                                <label>{fightMetadata[selectedFightMetadataIndex].name}</label>
                             ) : (
-                                <label>{selectedLogs.fightTitle}</label>
+                                selectedFight.isNpc ? (
+                                    <a href={`https://oldschool.runescape.wiki/w/${selectedFight.mainEnemyName}`}
+                                       target="_blank"
+                                       rel="noopener noreferrer"
+                                       className="link"
+                                    >
+                                        {selectedFight.name}
+                                    </a>
+                                ) : (
+                                    <label>{selectedFight.name}</label>
+                                )
                             )}
                         </div>
+                        {renderDropdownFightSelector()}
                         <Tabs
                             value={selectedTab}
                             onChange={handleTabChange}
@@ -178,12 +216,12 @@ function App() {
                                 />
                             ))}
                         </Tabs>
-                        {(BOSS_NAMES.includes(selectedLogs.metaData.name) || selectedLogs.metaData.fightLengthMs >= 15000) &&
-                            <TickActivity selectedLogs={selectedLogs}/>}
-                        {selectedTab === TabsEnum.DAMAGE_DONE && <DamageDoneTab selectedLogs={selectedLogs}/>}
-                        {selectedTab === TabsEnum.DAMAGE_TAKEN && <DamageTakenTab selectedLogs={selectedLogs}/>}
-                        {selectedTab === TabsEnum.BOOSTS && <BoostsTab selectedLogs={selectedLogs}/>}
-                        {selectedTab === TabsEnum.EVENTS && <EventsTab selectedLogs={selectedLogs}/>}
+                        {(BOSS_NAMES.includes(selectedFight.metaData.name) || selectedFight.metaData.fightLengthMs >= 15000) &&
+                            <TickActivity selectedLogs={selectedFight}/>}
+                        {selectedTab === TabsEnum.DAMAGE_DONE && <DamageDoneTab selectedLogs={selectedFight}/>}
+                        {selectedTab === TabsEnum.DAMAGE_TAKEN && <DamageTakenTab selectedLogs={selectedFight}/>}
+                        {selectedTab === TabsEnum.BOOSTS && <BoostsTab selectedLogs={selectedFight}/>}
+                        {selectedTab === TabsEnum.EVENTS && <EventsTab selectedLogs={selectedFight}/>}
                     </div>
                 )}
             </div>

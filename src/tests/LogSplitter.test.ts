@@ -1,6 +1,7 @@
 import {LogLine, LogTypes} from "../models/LogLine";
 import {logSplitter} from "../utils/LogSplitter";
 import {Fight} from "../models/Fight";
+import {Raid} from "../models/Raid";
 
 
 describe("logSplitter", () => {
@@ -39,12 +40,12 @@ describe("logSplitter", () => {
             generatedeath("Monster2"),
         ];
 
-        const result: Fight[] = logSplitter(fightData);
+        const result: (Fight | Raid)[] = logSplitter(fightData);
 
         // Expecting three fights: Monster1, Monster2, Monster1
         expect(result.length).toBe(2);
-        expect(result[0].fightTitle).toBe("Monster1 - 1");
-        expect(result[1].fightTitle).toBe("Monster2 - 1");
+        expect(result[0].name).toBe("Monster1 - 1");
+        expect(result[1].name).toBe("Monster2 - 1");
     });
 
     it("should include fight even if didn't succeed in doing damage", () => {
@@ -55,7 +56,7 @@ describe("logSplitter", () => {
             generatedeath("Monster1"),
         ];
 
-        const result: Fight[] = logSplitter(fightData);
+        const result: (Fight | Raid)[] = logSplitter(fightData);
 
         expect(result.length).toBe(1);
     });
@@ -69,10 +70,10 @@ describe("logSplitter", () => {
             generatedeath("Scurrius"),
         ];
 
-        const result: Fight[] = logSplitter(fightData);
+        const result: (Fight | Raid)[] = logSplitter(fightData);
 
         expect(result.length).toBe(1);
-        expect(result[0].fightTitle).toBe("Scurrius - 1");
+        expect(result[0].name).toBe("Scurrius - 1");
     });
 
     it("should not split fights if a boss is encountered second", () => {
@@ -84,10 +85,10 @@ describe("logSplitter", () => {
             generatedeath("Scurrius"),
         ];
 
-        const result: Fight[] = logSplitter(fightData);
+        const result: (Fight | Raid)[] = logSplitter(fightData);
 
         expect(result.length).toBe(1);
-        expect(result[0].fightTitle).toBe("Scurrius - 1");
+        expect(result[0].name).toBe("Scurrius - 1");
     });
 
     it("should split fights if there is a gap of over 60 seconds", () => {
@@ -97,10 +98,10 @@ describe("logSplitter", () => {
             generatedeath("Scurrius"),
         ];
 
-        const result: Fight[] = logSplitter(fightData);
+        const result: (Fight | Raid)[] = logSplitter(fightData);
 
         expect(result.length).toBe(2);
-        expect(result[0].fightTitle).toBe("Scurrius - Incomplete - 1");
+        expect(result[0].name).toBe("Scurrius - Incomplete - 1");
     });
 
     it("should end the current fight when player goes to their house region", () => {
@@ -117,9 +118,10 @@ describe("logSplitter", () => {
             generateDamage("Monster1", 5),
         ];
 
-        const result: Fight[] = logSplitter(fightData);
+        const result: (Fight | Raid)[] = logSplitter(fightData);
 
         expect(result.length).toBe(2);
+        // @ts-ignore
         expect(result[0].metaData.success).toBe(false);
     });
 });
