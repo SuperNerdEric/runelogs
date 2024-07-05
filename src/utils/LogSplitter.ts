@@ -259,19 +259,12 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
     const fightNameCounts: Map<string, number> = new Map(); // Map to store counts of each fight name
 
-    const filteredFights = fights.filter((fight) => {
-
-        // Make fight names unique
-        let count = 1;
-        if (fightNameCounts.has(fight.name)) {
-            count = fightNameCounts.get(fight.name)! + 1;
-        }
+    // Make fight names unique
+    fights.forEach((fight) => {
+        const count = (fightNameCounts.get(fight.name) || 0) + 1;
         fightNameCounts.set(fight.name, count);
-
         fight.name = `${fight.name} - ${count}`;
-
-        return true;
     });
 
-    return filteredFights;
+    return fights;
 }
