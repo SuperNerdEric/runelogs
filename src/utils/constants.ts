@@ -90,7 +90,7 @@ export const MY_BOSS_NAMES = [
     "Sarachnis",
     "Scorpia",
     "Abyssal Sire",
-    "Kraken",
+    // "Kraken", // Removed for now, as the pet is also named Kraken
     "The Leviathan",
     "The Whisperer",
     "Vardorvis",
