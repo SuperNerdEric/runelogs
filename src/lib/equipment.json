@@ -7083,6 +7083,15 @@
     "speed": 0
   },
   {
+    "name": "Bone claws",
+    "id": 29577,
+    "version": "",
+    "slot": "weapon",
+    "category": "Claw",
+    "isTwoHanded": true,
+    "speed": 4
+  },
+  {
     "name": "Bone club",
     "id": 5018,
     "version": "",
@@ -12654,6 +12663,33 @@
     "speed": 0
   },
   {
+    "name": "Dark squall hood",
+    "id": 29566,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Dark squall robe bottom",
+    "id": 29570,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Dark squall robe top",
+    "id": 29568,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Dark trousers",
     "id": 19964,
     "version": "",
@@ -15732,6 +15768,33 @@
     "speed": 0
   },
   {
+    "name": "Elite black full helm",
+    "id": 29560,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Elite black platebody",
+    "id": 29562,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Elite black platelegs",
+    "id": 29564,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Elite calamity breeches",
     "id": 26694,
     "version": "Broken",
@@ -15973,6 +16036,15 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Emberlight",
+    "id": 29589,
+    "version": "",
+    "slot": "weapon",
+    "category": "Slash Sword",
+    "isTwoHanded": false,
+    "speed": 4
   },
   {
     "name": "Emerald amulet",
@@ -27360,15 +27432,6 @@
     "speed": 0
   },
   {
-    "name": "Pendant of lucien",
-    "id": 86,
-    "version": "",
-    "slot": "neck",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
     "name": "Penguin mask",
     "id": 12428,
     "version": "",
@@ -28042,6 +28105,15 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Purging staff",
+    "id": 29594,
+    "version": "",
+    "slot": "weapon",
+    "category": "Staff",
+    "isTwoHanded": false,
+    "speed": 5
   },
   {
     "name": "Purple boater",
@@ -32272,6 +32344,15 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Scorching bow",
+    "id": 29591,
+    "version": "",
+    "slot": "weapon",
+    "category": "Bow",
+    "isTwoHanded": true,
+    "speed": 4
   },
   {
     "name": "Scroll sack",
