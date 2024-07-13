@@ -9,6 +9,7 @@ import {
     BOSS_NAMES,
     ECLIPSE_MOON_REGION,
     MINION_TO_BOSS,
+    MY_BOSS_NAMES,
     NEYPOTZLI_REGION_1,
     NEYPOTZLI_REGION_2,
     NEYPOTZLI_REGION_3,
@@ -113,7 +114,9 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         if (!currentFight && (
             logLine.type === LogTypes.PLAYER_ATTACK_ANIMATION ||
             (logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine) && logLine.target.name !== player) ||
-            (logLine.type === LogTypes.TARGET_CHANGE && bossTargetsMe(player, logLine))
+            (logLine.type === LogTypes.TARGET_CHANGE && bossTargetsMe(player, logLine)) ||
+            (logLine.type === LogTypes.TARGET_CHANGE && MY_BOSS_NAMES.includes(logLine.source.name)) ||
+            (logLine.type === LogTypes.DAMAGE && MY_BOSS_NAMES.includes(logLine.target.name))
         )) {
             fightStartTime = moment(`${logLine.date} ${logLine.time}`, 'MM-DD-YYYY HH:mm:ss.SSS').toDate();
             if (logLine.tick !== undefined && logLine.tick !== -1) {
