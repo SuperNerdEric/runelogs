@@ -5,7 +5,7 @@ import {getActor} from "./utils";
 import {Actor} from "../models/Actor";
 import {Raid} from "../models/Raid";
 
-export const parseLogLine = (logLine: string, player?: string): LogLine | null => {
+export const parseLogLine = (logLine: string, player?: string, logVersion?: string): LogLine | null => {
     const TICK_PATTERN = '\\b\\d+\\b';
     const DATE_PATTERN = '\\d{2}-\\d{2}-\\d{4}';
     const TIME_PATTERN = '\\d{2}:\\d{2}:\\d{2}\\.\\d{3}';
@@ -165,21 +165,31 @@ export const parseLogLine = (logLine: string, player?: string): LogLine | null =
         };
     }
 
-    const defaultPattern = new RegExp(`^(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})`);
+    if (logVersion === "1.1.0") {
+        const defaultPattern = new RegExp(`^(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})`);
 
-    match = action.match(defaultPattern);
-    if (!match) {
-        console.error('Invalid log line format:', logLine);
-        return null;
-    }
-    let [, target, hitsplatName, amount] = match;
-    let source: Actor = {name: "Unknown"};
-    if (player && target !== player && isMine(hitsplatName)) {
-        source = {name: player};
-    }
-    if (hitsplatName === "HEAL") {
+        match = action.match(defaultPattern);
+        if (!match) {
+            console.error('Invalid log line format:', logLine);
+            return null;
+        }
+        let [, sourceString, hitsplatName, target, amount] = match;
+        let source: Actor = {name: sourceString};
+        if (hitsplatName === "HEAL") {
+            return {
+                type: LogTypes.HEAL,
+                date,
+                time,
+                timezone,
+                tick,
+                source,
+                target: getActor(target),
+                hitsplatName,
+                healAmount: parseInt(amount, 10),
+            }
+        }
         return {
-            type: LogTypes.HEAL,
+            type: LogTypes.DAMAGE,
             date,
             time,
             timezone,
@@ -187,20 +197,46 @@ export const parseLogLine = (logLine: string, player?: string): LogLine | null =
             source,
             target: getActor(target),
             hitsplatName,
-            healAmount: parseInt(amount, 10),
+            damageAmount: parseInt(amount, 10),
+        };
+    } else {
+        const defaultPattern = new RegExp(`^(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})`);
+
+        match = action.match(defaultPattern);
+        if (!match) {
+            console.error('Invalid log line format:', logLine);
+            return null;
         }
+        let [, target, hitsplatName, amount] = match;
+        let source: Actor = {name: "Unknown"};
+        if (player && target !== player && isMine(hitsplatName)) {
+            source = {name: player};
+        }
+        if (hitsplatName === "HEAL") {
+            return {
+                type: LogTypes.HEAL,
+                date,
+                time,
+                timezone,
+                tick,
+                source,
+                target: getActor(target),
+                hitsplatName,
+                healAmount: parseInt(amount, 10),
+            }
+        }
+        return {
+            type: LogTypes.DAMAGE,
+            date,
+            time,
+            timezone,
+            tick,
+            source,
+            target: getActor(target),
+            hitsplatName,
+            damageAmount: parseInt(amount, 10),
+        };
     }
-    return {
-        type: LogTypes.DAMAGE,
-        date,
-        time,
-        timezone,
-        tick,
-        source,
-        target: getActor(target),
-        hitsplatName,
-        damageAmount: parseInt(amount, 10),
-    };
 };
 
 export function parseFileContent(fileContent: string, progressCallback: (progress: number) => void): (Fight | Raid)[] | null {
@@ -209,14 +245,18 @@ export function parseFileContent(fileContent: string, progressCallback: (progres
         let parsedLines = 0;
         let fightData: LogLine[] = [];
         let loggedInPlayer = "";
+        let logVersion: string = "";
 
         for (const line of lines) {
-            const logLine = parseLogLine(line.trim(), loggedInPlayer);
+            const logLine = parseLogLine(line.trim(), loggedInPlayer, logVersion);
 
             if (logLine) {
                 fightData.push(logLine);
                 if (logLine.type === LogTypes.LOGGED_IN_PLAYER) {
                     loggedInPlayer = logLine.loggedInPlayer;
+                }
+                if (logLine.type === LogTypes.LOG_VERSION) {
+                    logVersion = logLine.logVersion;
                 }
             }
 
