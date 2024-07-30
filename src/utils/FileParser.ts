@@ -165,7 +165,7 @@ export const parseLogLine = (logLine: string, player?: string, logVersion?: stri
         };
     }
 
-    if (logVersion === "1.1.0") {
+    if (logVersion === "1.1.0" || logVersion === "1.1.1") {
         const defaultPattern = new RegExp(`^(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})`);
 
         match = action.match(defaultPattern);
