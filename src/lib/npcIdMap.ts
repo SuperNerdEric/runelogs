@@ -13655,4 +13655,13 @@ export const npcIdMap: Record<number, string> = {
     13653: "null",
     13654: "null",
     13655: "Zembo",
+    13656: "Vardorvis",
+    13657: "Cerberus",
+    13658: "Bee Swarm",
+    13659: "Thermonuclear smoke devil",
+    13660: "Jaguar warrior",
+    13661: "TzTok-Jad",
+    13662: "Durial321",
+    13663: "Magic Mark",
+    13664: "Ranging Ro",
 };
