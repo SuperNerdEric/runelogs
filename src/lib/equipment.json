@@ -3663,6 +3663,15 @@
     "speed": 6
   },
   {
+    "name": "Armadyl godsword (deadman)",
+    "id": 29605,
+    "version": "",
+    "slot": "weapon",
+    "category": "2h Sword",
+    "isTwoHanded": true,
+    "speed": 6
+  },
+  {
     "name": "Armadyl godsword (or)",
     "id": 20368,
     "version": "",
@@ -7083,15 +7092,6 @@
     "speed": 0
   },
   {
-    "name": "Bone claws",
-    "id": 29577,
-    "version": "",
-    "slot": "weapon",
-    "category": "Claw",
-    "isTwoHanded": true,
-    "speed": 4
-  },
-  {
     "name": "Bone club",
     "id": 5018,
     "version": "",
@@ -9036,6 +9036,15 @@
     "speed": 0
   },
   {
+    "name": "Burning claws",
+    "id": 29577,
+    "version": "",
+    "slot": "weapon",
+    "category": "Claw",
+    "isTwoHanded": true,
+    "speed": 4
+  },
+  {
     "name": "Butterfly net",
     "id": 10010,
     "version": "",
@@ -10332,6 +10341,15 @@
     "speed": 4
   },
   {
+    "name": "Corrupted dark bow",
+    "id": 29599,
+    "version": "",
+    "slot": "weapon",
+    "category": "Bow",
+    "isTwoHanded": true,
+    "speed": 5
+  },
+  {
     "name": "Corrupted dragon claws",
     "id": 28534,
     "version": "",
@@ -10645,6 +10663,15 @@
     "category": "Slash Sword",
     "isTwoHanded": false,
     "speed": 4
+  },
+  {
+    "name": "Corrupted volatile nightmare staff",
+    "id": 29602,
+    "version": "",
+    "slot": "weapon",
+    "category": "Staff",
+    "isTwoHanded": false,
+    "speed": 5
   },
   {
     "name": "Corrupted zuriel's hood (bh)",
@@ -12600,6 +12627,15 @@
     "speed": 8
   },
   {
+    "name": "Dark bow (deadman)",
+    "id": 29611,
+    "version": "",
+    "slot": "weapon",
+    "category": "Bow",
+    "isTwoHanded": true,
+    "speed": 8
+  },
+  {
     "name": "Dark bow tie",
     "id": 19970,
     "version": "",
@@ -13368,9 +13404,9 @@
     "name": "Defensive shield",
     "id": 8856,
     "version": "",
-    "slot": "weapon",
+    "slot": "shield",
     "category": "",
-    "isTwoHanded": true,
+    "isTwoHanded": false,
     "speed": 0
   },
   {
@@ -21420,6 +21456,15 @@
     "speed": 0
   },
   {
+    "name": "Imbued guthix cape (deadman)",
+    "id": 29615,
+    "version": "",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Imbued guthix max cape",
     "id": 24242,
     "version": "Broken",
@@ -21485,6 +21530,15 @@
   {
     "name": "Imbued saradomin cape (Last Man Standing)",
     "id": 23607,
+    "version": "",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Imbued saradomin cape (deadman)",
+    "id": 29617,
     "version": "",
     "slot": "cape",
     "category": "",
@@ -21566,6 +21620,15 @@
   {
     "name": "Imbued zamorak cape (Last Man Standing)",
     "id": 23605,
+    "version": "",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Imbued zamorak cape (deadman)",
+    "id": 29613,
     "version": "",
     "slot": "cape",
     "category": "",
@@ -27427,6 +27490,15 @@
     "id": 10555,
     "version": "Normal",
     "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Pendant of lucien",
+    "id": 86,
+    "version": "",
+    "slot": "neck",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -39753,6 +39825,15 @@
     "speed": 4
   },
   {
+    "name": "Voidwaker (deadman)",
+    "id": 29607,
+    "version": "",
+    "slot": "weapon",
+    "category": "Slash Sword",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Volatile nightmare staff",
     "id": 24424,
     "version": "",
@@ -39764,6 +39845,15 @@
   {
     "name": "Volatile nightmare staff (Last Man Standing)",
     "id": 25517,
+    "version": "",
+    "slot": "weapon",
+    "category": "Staff",
+    "isTwoHanded": false,
+    "speed": 5
+  },
+  {
+    "name": "Volatile nightmare staff (deadman)",
+    "id": 29609,
     "version": "",
     "slot": "weapon",
     "category": "Staff",
