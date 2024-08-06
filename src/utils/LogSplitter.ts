@@ -112,7 +112,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
         // If the current fight is null, start a new fight
         if (!currentFight && (
-            logLine.type === LogTypes.PLAYER_ATTACK_ANIMATION ||
+            (logLine.type === LogTypes.PLAYER_ATTACK_ANIMATION && logLine.source?.name === player) ||
             (logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine) && logLine.target.name !== player) ||
             (logLine.type === LogTypes.TARGET_CHANGE && bossTargetsMe(player, logLine)) ||
             (logLine.type === LogTypes.TARGET_CHANGE && MY_BOSS_NAMES.includes(logLine.source.name)) ||
