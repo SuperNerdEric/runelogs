@@ -78,6 +78,7 @@ export interface HealLog extends BaseLog {
 export interface AttackAnimationLog extends BaseLog {
     type: LogTypes.PLAYER_ATTACK_ANIMATION;
     animationId: number;
+    source?: Actor;
     target: Actor;
 }
 

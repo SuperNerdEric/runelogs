@@ -150,22 +150,40 @@ export const parseLogLine = (logLine: string, player?: string, logVersion?: stri
         };
     }
 
-    const playerAttackAnimationPattern = new RegExp(`Player attack animation\t(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})`);
-    match = action.match(playerAttackAnimationPattern);
-    if (match) {
-        let [, animationId, target] = match;
-        return {
-            type: LogTypes.PLAYER_ATTACK_ANIMATION,
-            date,
-            time,
-            timezone,
-            tick,
-            animationId: parseInt(animationId, 10),
-            target: getActor(target),
-        };
+    if (logVersion === "1.1.2") {
+        const playerAttackAnimationPattern = new RegExp(`^(${ANYTHING_PATTERN}) attack animation (${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})`);
+        match = action.match(playerAttackAnimationPattern);
+        if (match) {
+            let [, source, animationId, target] = match;
+            return {
+                type: LogTypes.PLAYER_ATTACK_ANIMATION,
+                date,
+                time,
+                timezone,
+                tick,
+                animationId: parseInt(animationId, 10),
+                source: getActor(source),
+                target: getActor(target),
+            };
+        }
+    } else {
+        const playerAttackAnimationPattern = new RegExp(`Player attack animation\t(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})`);
+        match = action.match(playerAttackAnimationPattern);
+        if (match) {
+            let [, animationId, target] = match;
+            return {
+                type: LogTypes.PLAYER_ATTACK_ANIMATION,
+                date,
+                time,
+                timezone,
+                tick,
+                animationId: parseInt(animationId, 10),
+                target: getActor(target),
+            };
+        }
     }
 
-    if (logVersion === "1.1.0" || logVersion === "1.1.1") {
+    if (logVersion === "1.1.0" || logVersion === "1.1.1" || logVersion === "1.1.2") {
         const defaultPattern = new RegExp(`^(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})`);
 
         match = action.match(defaultPattern);

@@ -129,7 +129,7 @@ export function getFightPerformance(fight: Fight): FightPerformance {
         if (log.type === LogTypes.BOOSTED_LEVELS) {
             lastBoost = log.boostedLevels;
         }
-        if (log.type === LogTypes.PLAYER_ATTACK_ANIMATION) {
+        if (log.type === LogTypes.PLAYER_ATTACK_ANIMATION && (!log.source || log.source.name === fight.loggedInPlayer)) {
             actualWeaponHits += 1;
             boostedHits += getBoostedHitWeight(fight, currentWeapon, lastBoost);
 
