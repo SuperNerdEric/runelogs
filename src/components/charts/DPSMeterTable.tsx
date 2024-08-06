@@ -86,6 +86,8 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({fight, actor}) => {
         return `${(damage / highestDamage) * maxWidth}px`;
     };
 
+    const sortedDPSData = Object.entries(dpsData).sort((a, b) => b[1].totalDamage - a[1].totalDamage);
+
     return (
         <div className="logs-box" style={{maxHeight: 500, overflowY: 'auto', marginBottom: '10px'}}>
             <TableContainer>
@@ -99,7 +101,7 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({fight, actor}) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {Object.entries(dpsData).map(([source, data]: [string, DPSData], index: number) => {
+                        {sortedDPSData.map(([source, data]: [string, DPSData], index: number) => {
                             const damagePercentage = Number(((data.totalDamage / totalDamage) * 100).toFixed(2));
 
                             return (
@@ -116,7 +118,7 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({fight, actor}) => {
                                     <TableCell style={{textAlign: 'center'}}>
                                         <div style={{display: 'flex', alignItems: 'center'}}>
                                             <span
-                                                style={{marginRight: '5px'}}>{damagePercentage ? `${damagePercentage}%` : ``}</span>
+                                                style={{textAlign: 'left', minWidth: '50px', marginRight: '5px'}}>{damagePercentage ? `${damagePercentage}%` : ``}</span>
                                             <div style={{
                                                 backgroundColor: source === loggedInPlayer ? '#abd473' : '#007bff',
                                                 height: '14px',
