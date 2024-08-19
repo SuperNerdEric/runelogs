@@ -3,29 +3,50 @@ import { Encounter } from "./LogLine";
 
 export interface Waves {
     name: string;
-    waveFights: Fight[]
+    waves: Wave[];
+    metaData: WavesMetaData;
+}
+
+export interface Wave {
+    name: string;
+    fights: Fight[];
+    metaData: WaveMetaData;
 }
 
 export function isWaves(e: Encounter): e is Waves {
-    return (e as Waves).waveFights !== undefined;
+    return (e as Waves).waves !== undefined;
 }
 
 export interface WavesMetaData {
     name: string;
-    waveFights: FightMetaData[]
+    waves: WaveMetaData[];
 }
 
-export function isWaveMetadata(metaData: FightMetaData | WavesMetaData | null): metaData is WavesMetaData {
+export interface WaveMetaData {
+    name: string;
+    fights: FightMetaData[];
+    waveLengthTicks: number;
+    success: boolean;
+}
+
+export function isWaveMetaData(metaData: FightMetaData | WavesMetaData | null): metaData is WavesMetaData {
     if(metaData === null) {
         return false;
     } else {
-        return (metaData as WavesMetaData).waveFights !== undefined;
+        return (metaData as WavesMetaData).waves !== undefined;
     }
 }
 
-export function getWaveMetadata(fight: Waves): WavesMetaData {
+export function getWaveMetaData(wave: Wave): WaveMetaData {
     return {
-        name: fight.name,
-        waveFights: fight.waveFights.map(fight => fight.metaData)
+        ...wave.metaData,
+        fights: wave.fights.map(fight => fight.metaData),
+    }
+}
+
+export function getWavesMetaData(waves: Waves): WavesMetaData {
+    return {
+        name: waves.name,
+        waves: waves.waves?.map(getWaveMetaData) ?? []
     };
 }

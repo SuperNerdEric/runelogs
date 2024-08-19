@@ -25,5 +25,5 @@ export interface FightMetaData {
 }
 
 export function isFight(fight: Encounter): fight is Fight {
-    return (fight as Fight).metaData !== undefined;
+    return (fight as Fight).loggedInPlayer !== undefined;
 }
