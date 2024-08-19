@@ -5,7 +5,7 @@ import {getActor} from "./utils";
 import {Actor} from "../models/Actor";
 import {Raid} from "../models/Raid";
 import * as semver from 'semver';
-import { Wave } from "../models/Wave";
+import { Waves } from "../models/Waves";
 
 export const parseLogLine = (logLine: string, player?: string, logVersion?: string): LogLine | null => {
     const TICK_PATTERN = '\\b\\d+\\b';

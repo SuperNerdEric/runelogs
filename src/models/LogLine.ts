@@ -2,7 +2,7 @@ import { Actor } from "./Actor";
 import {BoostedLevels} from "./BoostedLevels";
 import { Fight, FightMetaData } from "./Fight";
 import { Raid, RaidMetaData } from "./Raid";
-import { Wave, WaveMetaData } from "./Wave";
+import { Waves, WavesMetaData } from "./Waves";
 
 export enum LogTypes {
     LOG_VERSION = 'Log Version',
@@ -122,5 +122,5 @@ export function filterByType<T extends LogLine['type']>(logs: LogLine[], type: T
 }
 
 
-export type Encounter = Fight | Raid | Wave;
-export type EncounterMetaData = FightMetaData | RaidMetaData | WaveMetaData;
+export type Encounter = Fight | Raid | Waves;
+export type EncounterMetaData = FightMetaData | RaidMetaData | WavesMetaData;

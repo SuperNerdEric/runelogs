@@ -1,9 +1,9 @@
 import {Fight, isFight} from "../models/Fight";
 import {parseFileContent} from "../utils/FileParser";
 import localforage from 'localforage';
-import {getRaidMetadata, isRaid, Raid, RaidMetaData} from "../models/Raid";
+import {getRaidMetadata, isRaid} from "../models/Raid";
 import { Encounter } from "../models/LogLine";
-import { getWaveMetadata, isWave } from "../models/Wave";
+import { getWaveMetadata } from "../models/Waves";
 
 const fightsStorage = localforage.createInstance({
     name: 'myFightData'
@@ -13,6 +13,8 @@ export function parseFileWithProgress(fileContent: string) {
     const parseResults = parseFileContent(fileContent, (progress) => {
         postMessage({type: 'progress', progress});
     });
+
+    console.log(parseResults);
 
     const fightMetadata = parseResults?.map(fight => {
         if (isFight(fight)) {
