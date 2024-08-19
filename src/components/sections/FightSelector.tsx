@@ -2,6 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {FightMetaData} from "../../models/Fight";
 import {formatHHmmss} from "../../utils/utils";
 import {isRaidMetaData, RaidMetaData} from "../../models/Raid";
+import { isWaveMetadata } from '../../models/Wave';
+import { EncounterMetaData } from '../../models/LogLine';
 
 interface FightProps {
     fight: FightMetaData;
@@ -76,7 +78,7 @@ const RaidFight: React.FC<RaidFightProps> = ({fight, index, raidIndex, fightName
 };
 
 interface FightSelectorProps {
-    fights: (FightMetaData | RaidMetaData)[];
+    fights: (EncounterMetaData)[];
     onSelectFight: (index: number, raidIndex?: number) => void;
 }
 
@@ -92,23 +94,35 @@ const Banner: React.FC<BannerProps> = ({name}) => {
     );
 };
 
+type FightGroup = {
+    [name: string]: {
+        isRaid: boolean;
+        isWave: boolean;
+        fights: {
+            fight: FightMetaData,
+            index: number,
+            raidIndex?: number
+        }[]
+    }
+}
+
 const FightSelector: React.FC<FightSelectorProps> = ({fights, onSelectFight}) => {
     // Group fights by name and record shortest fight time for each group
-    const [groupedFights, setGroupedFights] = useState<{
-        [name: string]: { isRaid: boolean, fights: { fight: FightMetaData, index: number, raidIndex?: number }[]}
-    }>({});
+    const [groupedFights, setGroupedFights] = useState<FightGroup>({});
 
     useEffect(() => {
-        const tempGroupedFights: { [name: string]: { isRaid: boolean, fights: { fight: FightMetaData, index: number }[]}} = {};
+        const tempGroupedFights: FightGroup = {};
 
         fights.forEach((fight, index) => {
-            if(!isRaidMetaData(fight)) {
+            if (isRaidMetaData(fight)) {
+                tempGroupedFights[fight.name] = {isRaid: true, isWave: false, fights: fight.fights.map((f, i) => ({fight: f, index: index, raidIndex: i}))};
+            } else if (isWaveMetadata(fight)) {
+                tempGroupedFights[fight.name] = {isRaid: false, isWave: true, fights: fight.waveFights.map((f, i) => ({fight: f, index: index, raidIndex: i}))};
+            } else {
                 if (!tempGroupedFights[fight.name]) {
-                    tempGroupedFights[fight.name] = {isRaid: false, fights: []};
+                    tempGroupedFights[fight.name] = {isRaid: false, isWave: false, fights: []};
                 }
                 tempGroupedFights[fight.name].fights.push({fight, index});
-            } else {
-                tempGroupedFights[fight.name] = {isRaid: true, fights: fight.fights.map((f, i) => ({fight: f, index: index, raidIndex: i}))};
             }
         });
 

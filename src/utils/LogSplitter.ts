@@ -1,4 +1,4 @@
-import {DamageLog, LogLine, LogTypes, PositionLog, TargetChangeLog} from "../models/LogLine";
+import {DamageLog, Encounter, LogLine, LogTypes, PositionLog, TargetChangeLog} from "../models/LogLine";
 import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
 import {Fight} from "../models/Fight";
 import {BoostedLevels} from "../models/BoostedLevels";
@@ -19,6 +19,7 @@ import {
 } from "./constants";
 import {SECONDS_PER_TICK} from "../models/Constants";
 import {Raid} from "../models/Raid";
+import { Wave } from "../models/Wave";
 
 
 export function isMine(hitsplatName: string) {
@@ -41,11 +42,11 @@ function bossTargetsMe(player: string, log: TargetChangeLog) {
     return log.target.name === player && BOSS_NAMES.includes(log.source.name);
 }
 
-export function logSplitter(fightData: LogLine[], progressCallback?: (progress: number) => void): (Fight | Raid)[] {
+export function logSplitter(fightData: LogLine[], progressCallback?: (progress: number) => void): (Encounter)[] {
     const totalLines = fightData.length;
     let parsedLines = 0;
 
-    const fights: (Fight | Raid)[] = [];
+    const fights: (Encounter)[] = [];
     let logVersion: string = "";
     let currentFight: Fight | null = null;
     let player: string = ""; //todo support multiple players
@@ -57,6 +58,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     let fightStartTime: Date;
     let fightStartTick: number = -1;
     let currentRaid: Raid | null = null;
+    let currentWave: Wave | null = null;
 
     function endFight(lastLine: LogLine, success: boolean, nullFight: boolean = true) {
         currentFight!.lastLine = lastLine;

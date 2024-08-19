@@ -1,4 +1,4 @@
-import {LogLine} from "./LogLine";
+import {Encounter, LogLine} from "./LogLine";
 import {Raid} from "./Raid";
 
 export interface Fight {
@@ -24,6 +24,6 @@ export interface FightMetaData {
     success: boolean;
 }
 
-export function isFight(fight: Fight | Raid): fight is Fight {
+export function isFight(fight: Encounter): fight is Fight {
     return (fight as Fight).metaData !== undefined;
 }

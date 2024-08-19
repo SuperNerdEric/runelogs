@@ -12,8 +12,12 @@ import FightSelector from './sections/FightSelector';
 import {Icon} from '@iconify/react';
 import TickActivity from './performance/TickActivity';
 import {BOSS_NAMES} from '../utils/constants';
-import {isRaidMetaData, Raid, RaidMetaData} from '../models/Raid';
+import {getRaidMetadata, isRaidMetaData, Raid, RaidMetaData} from "../models/Raid";
+import { getWaveMetadata, isWave, isWaveMetadata } from '../models/Wave';
+
 import DropdownFightSelector from './sections/DropdownFightSelector';
+import { Encounter, EncounterMetaData } from '../models/LogLine';
+
 import ReactGA from 'react-ga4';
 import * as semver from "semver";
 
@@ -65,7 +69,7 @@ function App() {
         return worker;
     });
 
-    const [fightMetadata, setFightMetadata] = useState<(FightMetaData | RaidMetaData)[] | null>(null);
+    const [fightMetadata, setFightMetadata] = useState<EncounterMetaData[] | null>(null);
     const [selectedFightMetadataIndex, setSelectedFightMetadataIndex] = useState<number | null>(null);
     const [selectedRaidIndex, setSelectedRaidIndex] = useState<number | undefined>(undefined);
     const [selectedFight, setSelectedFight] = useState<Fight | null>(null);
@@ -146,6 +150,8 @@ function App() {
                         data.map((fight) => {
                             if (isFight(fight)) {
                                 return fight.metaData;
+                            } else if (isWave(fight)) {
+                                return getWaveMetadata(fight);
                             } else {
                                 return {
                                     name: fight.name,
