@@ -81,13 +81,12 @@ interface WaveProps {
     wave: WaveMetaData;
     index: number;
     waveIndex: number;
-    fightName: string;
     onSelectFight: (index: number, waveIndex: number, fightIndex: number) => void;
     isShortest: boolean;
 }
 
 
-const Wave: React.FC<WaveProps> = ({wave, index, waveIndex, fightName, onSelectFight}) => {
+const Wave: React.FC<WaveProps> = ({wave, index, waveIndex, onSelectFight}) => {
     const nameColor = wave.success ? 'rgb(128, 230, 102)' : 'rgb(230, 128, 102)';
     const handleClick = (fightIndex: number) => {
         onSelectFight(index, waveIndex, fightIndex);
@@ -145,6 +144,8 @@ const FightSelector: React.FC<FightSelectorProps> = ({fights, onSelectFight}) =>
     // Group fights by name and record shortest fight time for each group
     const [groupedFights, setGroupedFights] = useState<FightGroup>({});
 
+    console.log(groupedFights);
+
     useEffect(() => {
         const tempGroupedFights: FightGroup = {};
 
@@ -199,7 +200,6 @@ const FightSelector: React.FC<FightSelectorProps> = ({fights, onSelectFight}) =>
                                         wave={wave.wave}
                                         index={wave.index}
                                         waveIndex={wave.waveIndex!}
-                                        fightName={wave.wave.name}
                                         onSelectFight={onSelectFight}
                                         isShortest={false}
                                     />

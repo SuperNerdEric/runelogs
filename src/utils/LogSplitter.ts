@@ -73,9 +73,18 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     function endFight(lastLine: LogLine, success: boolean, nullFight: boolean = true) {
         currentFight!.lastLine = lastLine;
 
+        const startFightTimeMs = currentFight!.firstLine.fightTimeMs!;
+        // The fight might end because a wave ended, in which case we take the wave end time.
+        const endFightTimeMs = currentFight!.lastLine.fightTimeMs;
+        const calcWaveFightLength = () => {
+            const logDate = moment(`${lastLine.date} ${lastLine.time}`, 'MM-DD-YYYY HH:mm:ss.SSS').toDate();
+            return logDate.getTime() - fightStartTime!.getTime();
+        }
+
+        const fightLengthMs = (endFightTimeMs) ? endFightTimeMs - startFightTimeMs : calcWaveFightLength();
         currentFight!.metaData = {
             date: currentFight!.firstLine.date,
-            fightLengthMs: currentFight!.lastLine.fightTimeMs! - currentFight!.firstLine.fightTimeMs!,
+            fightLengthMs,
             name: currentFight!.name,
             success: success,
             time: currentFight!.firstLine.time
@@ -85,6 +94,8 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         const hasPlayerDamage = currentFight!.data.some((logLine) =>
             logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine)
         );
+
+        console.log(`end fight ${currentFight!.name} ${success} ${hasPlayerDamage}`, currentFight, lastLine);
         if (!hasPlayerDamage) {
             return;
         }
@@ -112,9 +123,13 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         if (!currentWave || !currentWaves) {
             return;
         }
+        // flush any existing fights (e.g. healers despawning after jads)
+        if (currentFight) {
+            endFight(lastLine, true, true);
+        }
         currentWave.metaData.waveLengthTicks = lastLine.tick! - currentWaveStartTick;
         currentWave.metaData.success = success;
-        console.log(`Wave ${currentWave.name} ended with ${success}`);
+        console.log(`end wave ${currentWave.name} ${success}`, lastLine);
         currentWaves.waves.push(currentWave);
         currentWave = null;
         currentWaveStartTick = -1;
@@ -176,6 +191,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                 fightStartTick = logLine.tick;
             }
             logLine.fightTimeMs = 0;
+            console.log(`starting fight`, logLine);
 
             const initialData: LogLine[] = [];
 
@@ -322,17 +338,12 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                 }
             }
             if (currentWaves) {
-                const waveName = playerRegion ? WAVE_BASED_REGION_MAPPING[logLine.playerRegion] : null;
-                if (!waveName) {
-                    if (currentFight) {
-                        endFight(logLine, false);
-                    }
-                    fights.push(currentWaves);
-                    currentWaves = null;
-                }
+                // assume success if region changes, although if someone teleports out of the waves...
+                endWave(logLine, true);
+                fights.push(currentWaves);
+                currentWaves = null;
             }
             
-            endWave(logLine, false);
             playerRegion = logLine.playerRegion;
         }
 
