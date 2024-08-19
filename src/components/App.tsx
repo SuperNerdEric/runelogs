@@ -13,7 +13,7 @@ import {Icon} from '@iconify/react';
 import TickActivity from './performance/TickActivity';
 import {BOSS_NAMES} from '../utils/constants';
 import {getRaidMetadata, isRaidMetaData, Raid, RaidMetaData} from "../models/Raid";
-import { getWaveMetadata, isWaves, isWaveMetadata } from '../models/Waves';
+import { getWavesMetaData, isWaves, isWaveMetaData } from '../models/Waves';
 import DropdownFightSelector from './sections/DropdownFightSelector';
 import { Encounter, EncounterMetaData } from '../models/LogLine';
 
@@ -101,10 +101,11 @@ function App() {
             });
     };
 
-    const handleSelectFight = (index: number, raidIndex?: number) => {
-        worker.postMessage({type: 'getItem', index, raidIndex});
+    // raidIndex can be waveIndex
+    const handleSelectFight = (index: number, raidIndex?: number, subIndex?: number) => {
+        worker.postMessage({type: 'getItem', index, raidIndex, subIndex});
         setSelectedFightMetadataIndex(index);
-        setSelectedRaidIndex(raidIndex);
+        setSelectedRaidIndex(subIndex);
     };
 
     const handleRaidSelectFight = (raidIndex: number) => {
@@ -142,15 +143,15 @@ function App() {
     useEffect(() => {
         // Check if fight data exists in localforage
         fightsStorage
-            .getItem<(Fight | Raid)[]>('fightData')
-            .then((data: (Fight | Raid)[] | null) => {
+            .getItem<Encounter[]>('fightData')
+            .then((data: Encounter[] | null) => {
                 if (data) {
                     setFightMetadata(
                         data.map((fight) => {
                             if (isFight(fight)) {
                                 return fight.metaData;
-                            } else if (isWave(fight)) {
-                                return getWaveMetadata(fight);
+                            } else if (isWaves(fight)) {
+                                return getWavesMetadata(fight);
                             } else {
                                 return getRaidMetadata(fight);
                             }
