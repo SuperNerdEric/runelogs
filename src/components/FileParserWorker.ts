@@ -1,7 +1,9 @@
 import {Fight, isFight} from "../models/Fight";
 import {parseFileContent} from "../utils/FileParser";
 import localforage from 'localforage';
-import {Raid, RaidMetaData} from "../models/Raid";
+import {getRaidMetadata, isRaid, Raid, RaidMetaData} from "../models/Raid";
+import { Encounter } from "../models/LogLine";
+import { getWaveMetadata, isWave } from "../models/Wave";
 
 const fightsStorage = localforage.createInstance({
     name: 'myFightData'
@@ -15,13 +17,11 @@ export function parseFileWithProgress(fileContent: string) {
     const fightMetadata = parseResults?.map(fight => {
         if (isFight(fight)) {
             return fight.metaData;
+        } else if (isRaid(fight)) {
+            return getRaidMetadata(fight);
         } else {
-            return {
-                name: fight.name,
-                fights: fight.fights.map(fight => fight.metaData)
-            } as RaidMetaData;
+            return getWaveMetadata(fight);
         }
-
     }) || [];
     const parseResultMessage = {
         fightMetadata,
@@ -33,7 +33,7 @@ export function parseFileWithProgress(fileContent: string) {
 }
 
 function getSpecificItem(fightIndex: number, raidIndex?: number) {
-    fightsStorage.getItem<Fight[]>('fightData').then((parseResults: (Fight | Raid)[] | null) => {
+    fightsStorage.getItem<Fight[]>('fightData').then((parseResults: (Encounter)[] | null) => {
         if (parseResults && fightIndex >= 0 && fightIndex < parseResults.length) {
             if(isFight(parseResults[fightIndex])) {
                 return parseResults[fightIndex];
