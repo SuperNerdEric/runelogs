@@ -59,7 +59,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     let fightStartTime: Date;
     let fightStartTick: number = -1;
     let currentRaid: Raid | null = null;
-    let currentWave: Waves | null = null;
+    let currentWaves: Waves | null = null;
 
     function endFight(lastLine: LogLine, success: boolean, nullFight: boolean = true) {
         currentFight!.lastLine = lastLine;
@@ -81,12 +81,13 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         }
 
         const raidName = playerRegion ? RAID_NAME_REGION_MAPPING[playerRegion] : null;
-        const waveName = playerRegion ? WAVE_BASED_REGION_MAPPING[playerRegion] : null;
+        const wavesName = playerRegion ? WAVE_BASED_REGION_MAPPING[playerRegion] : null;
         if (raidName) {
             currentRaid = currentRaid || {name: raidName, fights: []};
             currentRaid.fights.push(currentFight as Fight);
-        } else if (waveName) {
-            currentWave = currentWave || {name: waveName, waveNumber: 1, waveFights: []};
+        } else if (wavesName) {
+            currentWaves = currentWaves || {name: wavesName, waveFights: []};
+            currentWaves.waveFights.push(currentFight as Fight);
         } else {
             fights.push(currentFight as Fight);
         }
@@ -282,6 +283,16 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                     }
                     fights.push(currentRaid);
                     currentRaid = null;
+                }
+            }
+            if (currentWaves) {
+                const waveName = playerRegion ? WAVE_BASED_REGION_MAPPING[logLine.playerRegion] : null;
+                if (!waveName) {
+                    if (currentFight) {
+                        endFight(logLine, false);
+                    }
+                    fights.push(currentWaves);
+                    currentWaves = null;
                 }
             }
             playerRegion = logLine.playerRegion;

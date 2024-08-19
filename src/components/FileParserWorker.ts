@@ -14,8 +14,6 @@ export function parseFileWithProgress(fileContent: string) {
         postMessage({type: 'progress', progress});
     });
 
-    console.log(parseResults);
-
     const fightMetadata = parseResults?.map(fight => {
         if (isFight(fight)) {
             return fight.metaData;
@@ -34,14 +32,16 @@ export function parseFileWithProgress(fileContent: string) {
     fightsStorage.setItem('fightData', parseResults);
 }
 
-function getSpecificItem(fightIndex: number, raidIndex?: number) {
+function getSpecificItem(fightIndex: number, subIndex?: number) {
     fightsStorage.getItem<Fight[]>('fightData').then((parseResults: (Encounter)[] | null) => {
         if (parseResults && fightIndex >= 0 && fightIndex < parseResults.length) {
-            if(isFight(parseResults[fightIndex])) {
-                return parseResults[fightIndex];
+            const result = parseResults[fightIndex];
+            if(isFight(result)) {
+                return result;
+            } else if (isRaid(result)) {
+                return result.fights[subIndex!];
             } else {
-               // @ts-ignore
-                return  parseResults[fightIndex].fights[raidIndex!];
+                return result.waveFights[subIndex!];
             }
         }
         return null;
