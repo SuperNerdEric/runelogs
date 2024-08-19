@@ -160,6 +160,10 @@ COX_REGIONS.forEach(region => RAID_NAME_REGION_MAPPING[region] = 'Chambers of Xe
 TOB_REGIONS.forEach(region => RAID_NAME_REGION_MAPPING[region] = 'Theatre of Blood');
 TOA_REGIONS.forEach(region => RAID_NAME_REGION_MAPPING[region] = 'Tombs of Amascut');
 
+export const WAVE_BASED_REGION_MAPPING: {[region: string]: string} = {
+    9043: "The Inferno",
+};
+
 
 export const PLAYER_HOUSE_REGION_1 = 7769;
 export const PLAYER_HOUSE_REGION_2 = 7770;

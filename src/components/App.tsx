@@ -13,8 +13,7 @@ import {Icon} from '@iconify/react';
 import TickActivity from './performance/TickActivity';
 import {BOSS_NAMES} from '../utils/constants';
 import {getRaidMetadata, isRaidMetaData, Raid, RaidMetaData} from "../models/Raid";
-import { getWaveMetadata, isWave, isWaveMetadata } from '../models/Wave';
-
+import { getWaveMetadata, isWaves, isWaveMetadata } from '../models/Waves';
 import DropdownFightSelector from './sections/DropdownFightSelector';
 import { Encounter, EncounterMetaData } from '../models/LogLine';
 
@@ -153,10 +152,7 @@ function App() {
                             } else if (isWave(fight)) {
                                 return getWaveMetadata(fight);
                             } else {
-                                return {
-                                    name: fight.name,
-                                    fights: fight.fights.map((fight) => fight.metaData),
-                                } as RaidMetaData;
+                                return getRaidMetadata(fight);
                             }
                         })
                     );

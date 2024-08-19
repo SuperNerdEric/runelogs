@@ -15,11 +15,12 @@ import {
     NEYPOTZLI_REGION_3,
     PLAYER_HOUSE_REGION_1,
     PLAYER_HOUSE_REGION_2,
-    RAID_NAME_REGION_MAPPING
+    RAID_NAME_REGION_MAPPING,
+    WAVE_BASED_REGION_MAPPING
 } from "./constants";
 import {SECONDS_PER_TICK} from "../models/Constants";
 import {Raid} from "../models/Raid";
-import { Wave } from "../models/Wave";
+import { Waves } from "../models/Waves";
 
 
 export function isMine(hitsplatName: string) {
@@ -46,7 +47,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     const totalLines = fightData.length;
     let parsedLines = 0;
 
-    const fights: (Encounter)[] = [];
+    const fights: Encounter[] = [];
     let logVersion: string = "";
     let currentFight: Fight | null = null;
     let player: string = ""; //todo support multiple players
@@ -58,7 +59,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     let fightStartTime: Date;
     let fightStartTick: number = -1;
     let currentRaid: Raid | null = null;
-    let currentWave: Wave | null = null;
+    let currentWave: Waves | null = null;
 
     function endFight(lastLine: LogLine, success: boolean, nullFight: boolean = true) {
         currentFight!.lastLine = lastLine;
@@ -80,9 +81,12 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         }
 
         const raidName = playerRegion ? RAID_NAME_REGION_MAPPING[playerRegion] : null;
+        const waveName = playerRegion ? WAVE_BASED_REGION_MAPPING[playerRegion] : null;
         if (raidName) {
             currentRaid = currentRaid || {name: raidName, fights: []};
             currentRaid.fights.push(currentFight as Fight);
+        } else if (waveName) {
+            currentWave = currentWave || {name: waveName, waveNumber: 1, waveFights: []};
         } else {
             fights.push(currentFight as Fight);
         }

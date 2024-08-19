@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {FightMetaData} from "../../models/Fight";
 import {formatHHmmss} from "../../utils/utils";
 import {isRaidMetaData, RaidMetaData} from "../../models/Raid";
-import { isWaveMetadata } from '../../models/Wave';
+import { isWaveMetadata } from '../../models/Waves';
 import { EncounterMetaData } from '../../models/LogLine';
 
 interface FightProps {
