@@ -3,12 +3,11 @@ import { Encounter } from "./LogLine";
 
 export interface Waves {
     name: string;
-    waveNumber: number;
     waveFights: Fight[]
 }
 
 export function isWaves(e: Encounter): e is Waves {
-    return (e as Waves).waveNumber !== undefined;
+    return (e as Waves).waveFights !== undefined;
 }
 
 export interface WavesMetaData {
