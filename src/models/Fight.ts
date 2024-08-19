@@ -1,5 +1,4 @@
 import {Encounter, LogLine} from "./LogLine";
-import {Raid} from "./Raid";
 
 export interface Fight {
     name: string; // Unique fight name with a number appended to it
