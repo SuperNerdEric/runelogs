@@ -52,6 +52,7 @@
     text-align: left;
     max-width: 800px;
     margin: 20px auto 0;
+    font-size: 28px;
 }
 
 @media (max-width: 800px) {
@@ -404,4 +405,17 @@
     margin-top: 10px;
     padding: 5px 10px;
     border-radius: 5px;
+}
+
+.demo-container {
+    max-width: 800px;
+    margin: 20px auto 0;
+}
+
+.demo-container img {
+    max-width: 100%;
+    max-height: 900px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
 }
