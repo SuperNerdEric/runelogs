@@ -14,8 +14,14 @@ import TickActivity from "./performance/TickActivity";
 import {BOSS_NAMES} from "../utils/constants";
 import {isRaidMetaData, Raid, RaidMetaData} from "../models/Raid";
 import DropdownFightSelector from "./sections/DropdownFightSelector";
+import ReactGA from 'react-ga4';
 
 function App() {
+    useEffect(() => {
+        ReactGA.initialize("G-XL7FZPRS36");
+        ReactGA.send({hitType: "pageview"});
+    }, [])
+
     const fightsStorage = localforage.createInstance({
         name: 'myFightData'
     });
