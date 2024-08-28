@@ -35,7 +35,7 @@ const Dropzone: React.FC<DropzoneProps> = ({onParse}) => {
                 variant="contained"
                 color="primary"
                 component="span"
-                startIcon={<CloudUploadIcon style={{color: 'grey', fontSize: '6em'}}/>}
+                startIcon={<CloudUploadIcon style={{color: 'grey', fontSize: '4em'}}/>}
                 style={{background: 'white', color: 'black', borderRadius: '25px'}}
             >
                 Upload file
