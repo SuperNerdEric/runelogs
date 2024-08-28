@@ -2700,6 +2700,24 @@
     "speed": 0
   },
   {
+    "name": "Amulet of rancour",
+    "id": 29801,
+    "version": "Tradeable",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Amulet of rancour",
+    "id": 29804,
+    "version": "Untradeable",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Amulet of strength",
     "id": 1725,
     "version": "",
@@ -2788,6 +2806,15 @@
     "category": "Slash Sword",
     "isTwoHanded": false,
     "speed": 5
+  },
+  {
+    "name": "Amy's saw (off-hand)",
+    "id": 29774,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
   },
   {
     "name": "Ancestral hat",
@@ -3328,6 +3355,51 @@
     "category": "Staff",
     "isTwoHanded": false,
     "speed": 4
+  },
+  {
+    "name": "Aranea boots",
+    "id": 29806,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Araxyte slayer helmet",
+    "id": 29816,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Araxyte slayer helmet (i)",
+    "id": 29822,
+    "version": "Emir's Arena",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Araxyte slayer helmet (i)",
+    "id": 29818,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Araxyte slayer helmet (i)",
+    "id": 29820,
+    "version": "Soul Wars",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
   },
   {
     "name": "Arcane grimoire",
@@ -8845,6 +8917,15 @@
     "category": "Unarmed",
     "isTwoHanded": false,
     "speed": 4
+  },
+  {
+    "name": "Bruma torch (off-hand)",
+    "id": 29777,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
   },
   {
     "name": "Bryophyta's staff",
@@ -19189,8 +19270,8 @@
   },
   {
     "name": "Granite maul",
-    "id": 4153,
-    "version": "Normal",
+    "id": 12848,
+    "version": "Clamp",
     "slot": "weapon",
     "category": "Blunt",
     "isTwoHanded": true,
@@ -19198,8 +19279,8 @@
   },
   {
     "name": "Granite maul",
-    "id": 24225,
-    "version": "Ornate handle",
+    "id": 4153,
+    "version": "Normal",
     "slot": "weapon",
     "category": "Blunt",
     "isTwoHanded": true,
@@ -19215,18 +19296,18 @@
     "speed": 7
   },
   {
-    "name": "Granite maul (or)",
-    "id": 12848,
-    "version": "Normal",
+    "name": "Granite maul (ornate handle)",
+    "id": 24227,
+    "version": "Clamp",
     "slot": "weapon",
     "category": "Blunt",
     "isTwoHanded": true,
     "speed": 7
   },
   {
-    "name": "Granite maul (or)",
-    "id": 24227,
-    "version": "Ornate handle",
+    "name": "Granite maul (ornate handle)",
+    "id": 24225,
+    "version": "Normal",
     "slot": "weapon",
     "category": "Blunt",
     "isTwoHanded": true,
@@ -21679,6 +21760,15 @@
     "category": "Blunt",
     "isTwoHanded": false,
     "speed": 6
+  },
+  {
+    "name": "Imcando hammer (off-hand)",
+    "id": 29775,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
   },
   {
     "name": "Imp mask",
@@ -26739,6 +26829,15 @@
     "speed": 0
   },
   {
+    "name": "Noxious halberd",
+    "id": 29796,
+    "version": "",
+    "slot": "weapon",
+    "category": "Polearm",
+    "isTwoHanded": true,
+    "speed": 5
+  },
+  {
     "name": "Nunchaku",
     "id": 19918,
     "version": "",
@@ -27051,7 +27150,7 @@
     "slot": "weapon",
     "category": "Unarmed",
     "isTwoHanded": false,
-    "speed": 5
+    "speed": 4
   },
   {
     "name": "Old demon mask",
@@ -27393,7 +27492,7 @@
     "slot": "weapon",
     "category": "Unarmed",
     "isTwoHanded": false,
-    "speed": 5
+    "speed": 4
   },
   {
     "name": "Pearl bolts",
@@ -27438,7 +27537,7 @@
     "slot": "weapon",
     "category": "Unarmed",
     "isTwoHanded": false,
-    "speed": 5
+    "speed": 4
   },
   {
     "name": "Pearl fly fishing rod",
@@ -27447,7 +27546,7 @@
     "slot": "weapon",
     "category": "Unarmed",
     "isTwoHanded": false,
-    "speed": 5
+    "speed": 4
   },
   {
     "name": "Pegasian boots",
