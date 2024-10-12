@@ -15,6 +15,7 @@ import {BOSS_NAMES} from "../utils/constants";
 import {isRaidMetaData, Raid, RaidMetaData} from "../models/Raid";
 import DropdownFightSelector from "./sections/DropdownFightSelector";
 import ReactGA from 'react-ga4';
+import DemoSlider from "./DemoSlider";
 
 function App() {
     useEffect(() => {
@@ -110,7 +111,8 @@ function App() {
             const raidMetaData = fightMetadata[selectedFightMetadataIndex] as RaidMetaData;
             return (
                 <div>
-                    <DropdownFightSelector fights={raidMetaData.fights} onSelectFight={handleRaidSelectFight} selectedFightIndex={selectedRaidIndex} />
+                    <DropdownFightSelector fights={raidMetaData.fights} onSelectFight={handleRaidSelectFight}
+                                           selectedFightIndex={selectedRaidIndex}/>
                 </div>
             );
         }
@@ -122,8 +124,7 @@ function App() {
         fightsStorage.getItem<(Fight | Raid)[]>('fightData')
             .then((data: (Fight | Raid)[] | null) => {
                 if (data) {
-                    setFightMetadata(data.map(fight =>
-                    {
+                    setFightMetadata(data.map(fight => {
                         if (isFight(fight)) {
                             return fight.metaData
                         } else {
@@ -168,6 +169,7 @@ function App() {
                     <div>
                         <Instructions/>
                         <Dropzone onParse={handleParse}/>
+                        <DemoSlider/>
                     </div>
                 )}
                 {!loadingStorage && !parseInProgress && !selectedFight && fightMetadata && (
