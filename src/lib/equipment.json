@@ -234,6 +234,15 @@
     "speed": 0
   },
   {
+    "name": "3rd age mage hat (Last Man Standing)",
+    "id": 27183,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "3rd age pickaxe",
     "id": 20014,
     "version": "",
@@ -279,8 +288,26 @@
     "speed": 0
   },
   {
+    "name": "3rd age range coif (Last Man Standing)",
+    "id": 27201,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "3rd age range legs",
     "id": 10332,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "3rd age range legs (Last Man Standing)",
+    "id": 27200,
     "version": "",
     "slot": "legs",
     "category": "",
@@ -297,6 +324,15 @@
     "speed": 0
   },
   {
+    "name": "3rd age range top (Last Man Standing)",
+    "id": 27199,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "3rd age robe",
     "id": 10340,
     "version": "",
@@ -306,8 +342,26 @@
     "speed": 0
   },
   {
+    "name": "3rd age robe (Last Man Standing)",
+    "id": 20577,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "3rd age robe top",
     "id": 10338,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "3rd age robe top (Last Man Standing)",
+    "id": 20576,
     "version": "",
     "slot": "body",
     "category": "",
@@ -2268,6 +2322,69 @@
     "speed": 0
   },
   {
+    "name": "Alchemist gloves",
+    "id": 29986,
+    "version": "",
+    "slot": "hands",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Alchemist labcoat",
+    "id": 29978,
+    "version": "Apron off",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Alchemist labcoat",
+    "id": 29980,
+    "version": "Apron on",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Alchemist pants",
+    "id": 29982,
+    "version": "Apron off",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Alchemist pants",
+    "id": 29984,
+    "version": "Apron on",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Alchemist's amulet",
+    "id": 29990,
+    "version": "Charged",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Alchemist's amulet",
+    "id": 29988,
+    "version": "Uncharged",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Ale of the gods",
     "id": 20056,
     "version": "",
@@ -2702,16 +2819,16 @@
   {
     "name": "Amulet of rancour",
     "id": 29801,
-    "version": "Tradeable",
+    "version": "",
     "slot": "neck",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
   {
-    "name": "Amulet of rancour",
+    "name": "Amulet of rancour (s)",
     "id": 29804,
-    "version": "Untradeable",
+    "version": "",
     "slot": "neck",
     "category": "",
     "isTwoHanded": false,
@@ -2790,6 +2907,15 @@
     "speed": 0
   },
   {
+    "name": "Amulet of torture (Last Man Standing)",
+    "id": 27173,
+    "version": "",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Amulet of torture (or)",
     "id": 20366,
     "version": "",
@@ -2844,8 +2970,26 @@
     "speed": 0
   },
   {
+    "name": "Ancestral robe bottom (Last Man Standing)",
+    "id": 27194,
+    "version": "",
+    "slot": "Legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Ancestral robe top",
     "id": 21021,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Ancestral robe top (Last Man Standing)",
+    "id": 27193,
     "version": "",
     "slot": "body",
     "category": "",
@@ -2997,6 +3141,15 @@
     "speed": 6
   },
   {
+    "name": "Ancient godsword (Last Man Standing)",
+    "id": 27184,
+    "version": "",
+    "slot": "weapon",
+    "category": "2h sword",
+    "isTwoHanded": true,
+    "speed": 6
+  },
+  {
     "name": "Ancient gorilla greegree",
     "id": 4028,
     "version": "",
@@ -3128,6 +3281,15 @@
     "version": "",
     "slot": "weapon",
     "category": "Staff",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
+    "name": "Ancient staff (Last Man Standing)",
+    "id": 20431,
+    "version": "",
+    "slot": "weapon",
+    "category": "staff",
     "isTwoHanded": false,
     "speed": 4
   },
@@ -3503,7 +3665,16 @@
   {
     "name": "Arclight",
     "id": 19675,
-    "version": "",
+    "version": "Charged",
+    "slot": "weapon",
+    "category": "Slash Sword",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
+    "name": "Arclight",
+    "id": 30305,
+    "version": "Inactive",
     "slot": "weapon",
     "category": "Slash Sword",
     "isTwoHanded": false,
@@ -3931,6 +4102,15 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Atlatl dart (Last Man Standing)",
+    "id": 29852,
+    "version": "",
+    "slot": "weapon",
+    "category": "Bow",
+    "isTwoHanded": true,
+    "speed": 3
   },
   {
     "name": "Attack cape",
@@ -4761,6 +4941,87 @@
     "speed": 4
   },
   {
+    "name": "Beige pumpkin",
+    "id": 30242,
+    "version": "Angry",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Beige pumpkin",
+    "id": 30243,
+    "version": "Depressed",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Beige pumpkin",
+    "id": 30237,
+    "version": "Disgusted",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Beige pumpkin",
+    "id": 30241,
+    "version": "Evil",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Beige pumpkin",
+    "id": 30246,
+    "version": "Happy",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Beige pumpkin",
+    "id": 30247,
+    "version": "Laughing",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Beige pumpkin",
+    "id": 30245,
+    "version": "Sad",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Beige pumpkin",
+    "id": 30244,
+    "version": "Shocked",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Beige pumpkin",
+    "id": 30239,
+    "version": "Silly",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Bellator ring",
     "id": 28316,
     "version": "",
@@ -4781,6 +5042,15 @@
   {
     "name": "Berserker helm",
     "id": 3751,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Berserker helm (Last Man Standing)",
+    "id": 27169,
     "version": "",
     "slot": "head",
     "category": "",
@@ -4864,6 +5134,15 @@
     "id": 5521,
     "version": "",
     "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Bird mask",
+    "id": 29931,
+    "version": "",
+    "slot": "head",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -5060,6 +5339,15 @@
   {
     "name": "Black d'hide chaps",
     "id": 2497,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Black d'hide chaps (Last Man Standing)",
+    "id": 20424,
     "version": "",
     "slot": "legs",
     "category": "",
@@ -6399,6 +6687,15 @@
     "speed": 0
   },
   {
+    "name": "Blood moon chestplate (Last Man Standing)",
+    "id": 29846,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Blood moon helm",
     "id": 29073,
     "version": "Broken",
@@ -6426,6 +6723,15 @@
     "speed": 0
   },
   {
+    "name": "Blood moon helm (Last Man Standing)",
+    "id": 29848,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Blood moon tassets",
     "id": 29070,
     "version": "Broken",
@@ -6447,6 +6753,15 @@
     "name": "Blood moon tassets",
     "id": 29045,
     "version": "Used",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blood moon tassets (Last Man Standing)",
+    "id": 29847,
+    "version": "",
     "slot": "legs",
     "category": "",
     "isTwoHanded": false,
@@ -6777,6 +7092,15 @@
     "speed": 0
   },
   {
+    "name": "Blue moon chestplate (Last Man Standing)",
+    "id": 29843,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Blue moon helm",
     "id": 29064,
     "version": "Broken",
@@ -6804,8 +7128,26 @@
     "speed": 0
   },
   {
+    "name": "Blue moon helm (Last Man Standing)",
+    "id": 29845,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Blue moon spear",
     "id": 28988,
+    "version": "",
+    "slot": "weapon",
+    "category": "Bladed Staff",
+    "isTwoHanded": true,
+    "speed": 5
+  },
+  {
+    "name": "Blue moon spear (Last Man Standing)",
+    "id": 29849,
     "version": "",
     "slot": "weapon",
     "category": "Bladed Staff",
@@ -6834,6 +7176,15 @@
     "name": "Blue moon tassets",
     "id": 29039,
     "version": "Used",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blue moon tassets (Last Man Standing)",
+    "id": 29844,
+    "version": "",
     "slot": "legs",
     "category": "",
     "isTwoHanded": false,
@@ -9124,6 +9475,33 @@
     "category": "Claw",
     "isTwoHanded": true,
     "speed": 4
+  },
+  {
+    "name": "Butler's tray",
+    "id": 29912,
+    "version": "",
+    "slot": "weapon",
+    "category": "Unarmed",
+    "isTwoHanded": true,
+    "speed": 4
+  },
+  {
+    "name": "Butler's uniform (bottom)",
+    "id": 29915,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Butler's uniform (top)",
+    "id": 29916,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
   },
   {
     "name": "Butterfly net",
@@ -11583,204 +11961,6 @@
     "speed": 4
   },
   {
-    "name": "Crystal halberd (historical)",
-    "id": 13101,
-    "version": "1/10",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (historical)",
-    "id": 13100,
-    "version": "2/10",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (historical)",
-    "id": 13099,
-    "version": "3/10",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (historical)",
-    "id": 13098,
-    "version": "4/10",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (historical)",
-    "id": 13097,
-    "version": "5/10",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (historical)",
-    "id": 13096,
-    "version": "6/10",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (historical)",
-    "id": 13095,
-    "version": "7/10",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (historical)",
-    "id": 13094,
-    "version": "8/10",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (historical)",
-    "id": 13093,
-    "version": "9/10",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (historical)",
-    "id": 13092,
-    "version": "Full",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (historical)",
-    "id": 13091,
-    "version": "New",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (i)",
-    "id": 13090,
-    "version": "1/10",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (i)",
-    "id": 13089,
-    "version": "2/10",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (i)",
-    "id": 13088,
-    "version": "3/10",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (i)",
-    "id": 13087,
-    "version": "4/10",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (i)",
-    "id": 13086,
-    "version": "5/10",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (i)",
-    "id": 13085,
-    "version": "6/10",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (i)",
-    "id": 13084,
-    "version": "7/10",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (i)",
-    "id": 13083,
-    "version": "8/10",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (i)",
-    "id": 13082,
-    "version": "9/10",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (i)",
-    "id": 13081,
-    "version": "Full",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
-    "name": "Crystal halberd (i)",
-    "id": 13080,
-    "version": "New",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 7
-  },
-  {
     "name": "Crystal halberd (perfected)",
     "id": 23897,
     "version": "",
@@ -12748,6 +12928,87 @@
     "id": 25557,
     "version": "",
     "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Dark green pumpkin",
+    "id": 30287,
+    "version": "Angry",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Dark green pumpkin",
+    "id": 30288,
+    "version": "Depressed",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Dark green pumpkin",
+    "id": 30284,
+    "version": "Disgusted",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Dark green pumpkin",
+    "id": 30286,
+    "version": "Evil",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Dark green pumpkin",
+    "id": 30291,
+    "version": "Happy",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Dark green pumpkin",
+    "id": 30292,
+    "version": "Laughing",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Dark green pumpkin",
+    "id": 30290,
+    "version": "Sad",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Dark green pumpkin",
+    "id": 30289,
+    "version": "Shocked",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Dark green pumpkin",
+    "id": 30285,
+    "version": "Silly",
+    "slot": "head",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -14769,6 +15030,15 @@
     "speed": 4
   },
   {
+    "name": "Dragon hunter wand",
+    "id": 30070,
+    "version": "",
+    "slot": "weapon",
+    "category": "Staff",
+    "isTwoHanded": false,
+    "speed": 5
+  },
+  {
     "name": "Dragon javelin",
     "id": 19486,
     "version": "Poison",
@@ -14866,6 +15136,15 @@
     "category": "Thrown",
     "isTwoHanded": false,
     "speed": 2
+  },
+  {
+    "name": "Dragon knife (Last Man Standing)",
+    "id": 27157,
+    "version": "",
+    "slot": "weapon",
+    "category": "thrown",
+    "isTwoHanded": false,
+    "speed": 3
   },
   {
     "name": "Dragon longsword",
@@ -15062,6 +15341,15 @@
     "version": "",
     "slot": "weapon",
     "category": "Slash Sword",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
+    "name": "Dragon scimitar (Last Man Standing)",
+    "id": 20406,
+    "version": "",
+    "slot": "weapon",
+    "category": "slash sword",
     "isTwoHanded": false,
     "speed": 4
   },
@@ -15453,6 +15741,15 @@
     "speed": 4
   },
   {
+    "name": "Dual macuahuitl (Last Man Standing)",
+    "id": 29850,
+    "version": "",
+    "slot": "weapon",
+    "category": "Spiked",
+    "isTwoHanded": true,
+    "speed": 4
+  },
+  {
     "name": "Dual sai",
     "id": 23206,
     "version": "",
@@ -15579,6 +15876,15 @@
     "speed": 3
   },
   {
+    "name": "Eclipse atlatl (Last Man Standing)",
+    "id": 29851,
+    "version": "",
+    "slot": "weapon",
+    "category": "Bow",
+    "isTwoHanded": true,
+    "speed": 3
+  },
+  {
     "name": "Eclipse moon chestplate",
     "id": 29049,
     "version": "Broken",
@@ -15600,6 +15906,15 @@
     "name": "Eclipse moon chestplate",
     "id": 29031,
     "version": "Used",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Eclipse moon chestplate (Last Man Standing)",
+    "id": 29840,
+    "version": "",
     "slot": "body",
     "category": "",
     "isTwoHanded": false,
@@ -15633,6 +15948,15 @@
     "speed": 0
   },
   {
+    "name": "Eclipse moon helm (Last Man Standing)",
+    "id": 29842,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Eclipse moon tassets",
     "id": 29052,
     "version": "Broken",
@@ -15654,6 +15978,15 @@
     "name": "Eclipse moon tassets",
     "id": 29033,
     "version": "Used",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Eclipse moon tassets (Last Man Standing)",
+    "id": 29841,
+    "version": "",
     "slot": "legs",
     "category": "",
     "isTwoHanded": false,
@@ -15750,6 +16083,15 @@
     "speed": 0
   },
   {
+    "name": "Elder chaos hood (Last Man Standing)",
+    "id": 27176,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Elder chaos hood (or)",
     "id": 27119,
     "version": "",
@@ -15768,6 +16110,15 @@
     "speed": 0
   },
   {
+    "name": "Elder chaos robe (Last Man Standing)",
+    "id": 27175,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Elder chaos robe (or)",
     "id": 27117,
     "version": "",
@@ -15779,6 +16130,15 @@
   {
     "name": "Elder chaos top",
     "id": 20517,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Elder chaos top (Last Man Standing)",
+    "id": 27174,
     "version": "",
     "slot": "body",
     "category": "",
@@ -16243,6 +16603,42 @@
     "category": "Slash Sword",
     "isTwoHanded": false,
     "speed": 5
+  },
+  {
+    "name": "Emissary hood",
+    "id": 29868,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Emissary robe bottom",
+    "id": 29872,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Emissary robe top",
+    "id": 29870,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Emissary sandals",
+    "id": 29874,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
   },
   {
     "name": "Empty blaster",
@@ -17415,6 +17811,15 @@
     "speed": 0
   },
   {
+    "name": "Fremennik kilt (Last Man Standing)",
+    "id": 27177,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Fremennik pink cloak",
     "id": 3787,
     "version": "",
@@ -17901,6 +18306,15 @@
     "speed": 0
   },
   {
+    "name": "Ghostly hood (Last Man Standing)",
+    "id": 27166,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Ghostly robe (bottom)",
     "id": 6108,
     "version": "",
@@ -17910,8 +18324,26 @@
     "speed": 0
   },
   {
+    "name": "Ghostly robe (bottom) (Last Man Standing)",
+    "id": 27168,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Ghostly robe (top)",
     "id": 6107,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Ghostly robe (top) (Last Man Standing)",
+    "id": 27167,
     "version": "",
     "slot": "body",
     "category": "",
@@ -18205,6 +18637,15 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Glacial temotli",
+    "id": 29889,
+    "version": "",
+    "slot": "weapon",
+    "category": "Spiked",
+    "isTwoHanded": true,
+    "speed": 4
   },
   {
     "name": "Glarial's amulet",
@@ -18702,6 +19143,15 @@
     "speed": 0
   },
   {
+    "name": "Graceful boots (Varlamore)",
+    "id": 30062,
+    "version": "Worn",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Graceful cape",
     "id": 11853,
     "version": "Worn",
@@ -18794,6 +19244,15 @@
   {
     "name": "Graceful cape (Trailblazer)",
     "id": 25074,
+    "version": "Worn",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Graceful cape (Varlamore)",
+    "id": 30050,
     "version": "Worn",
     "slot": "cape",
     "category": "",
@@ -18900,6 +19359,15 @@
     "speed": 0
   },
   {
+    "name": "Graceful gloves (Varlamore)",
+    "id": 30059,
+    "version": "Worn",
+    "slot": "hands",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Graceful hood",
     "id": 11851,
     "version": "Worn",
@@ -18992,6 +19460,15 @@
   {
     "name": "Graceful hood (Trailblazer)",
     "id": 25071,
+    "version": "Worn",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Graceful hood (Varlamore)",
+    "id": 30047,
     "version": "Worn",
     "slot": "head",
     "category": "",
@@ -19098,6 +19575,15 @@
     "speed": 0
   },
   {
+    "name": "Graceful legs (Varlamore)",
+    "id": 30056,
+    "version": "Worn",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Graceful top",
     "id": 11855,
     "version": "Worn",
@@ -19190,6 +19676,15 @@
   {
     "name": "Graceful top (Trailblazer)",
     "id": 25077,
+    "version": "Worn",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Graceful top (Varlamore)",
+    "id": 30053,
     "version": "Worn",
     "slot": "body",
     "category": "",
@@ -20232,6 +20727,15 @@
     "speed": 0
   },
   {
+    "name": "Guthix chaps (Last Man Standing)",
+    "id": 27180,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Guthix cloak",
     "id": 10448,
     "version": "",
@@ -20316,6 +20820,15 @@
     "name": "Guthix halo",
     "id": 12639,
     "version": "Normal",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Guthix halo (Last Man Standing)",
+    "id": 27163,
+    "version": "",
     "slot": "head",
     "category": "",
     "isTwoHanded": false,
@@ -20961,6 +21474,15 @@
     "speed": 0
   },
   {
+    "name": "Helmet of the moon",
+    "id": 30111,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Herblore cape",
     "id": 9775,
     "version": "Trimmed",
@@ -21226,6 +21748,42 @@
     "id": 19946,
     "version": "",
     "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Hueycoatl hide body",
+    "id": 30076,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Hueycoatl hide chaps",
+    "id": 30079,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Hueycoatl hide coif",
+    "id": 30073,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Hueycoatl hide vambraces",
+    "id": 30082,
+    "version": "",
+    "slot": "hands",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -21987,6 +22545,15 @@
     "speed": 0
   },
   {
+    "name": "Infinity boots (Last Man Standing)",
+    "id": 27170,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Infinity bottoms",
     "id": 6924,
     "version": "",
@@ -22068,8 +22635,26 @@
     "speed": 0
   },
   {
+    "name": "Inquisitor's great helm (Last Man Standing)",
+    "id": 27195,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Inquisitor's hauberk",
     "id": 24420,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Inquisitor's hauberk (Last Man Standing)",
+    "id": 27196,
     "version": "",
     "slot": "body",
     "category": "",
@@ -22086,8 +22671,26 @@
     "speed": 4
   },
   {
+    "name": "Inquisitor's mace (Last Man Standing)",
+    "id": 27198,
+    "version": "",
+    "slot": "weapon",
+    "category": "spiked",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Inquisitor's plateskirt",
     "id": 24421,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Inquisitor's plateskirt (Last Man Standing)",
+    "id": 27197,
     "version": "",
     "slot": "legs",
     "category": "",
@@ -22954,6 +23557,15 @@
     "id": 21084,
     "version": "",
     "slot": "ring",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Jaguar mask",
+    "id": 29932,
+    "version": "",
+    "slot": "head",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -25353,6 +25965,15 @@
     "speed": 0
   },
   {
+    "name": "Mithril gloves (Last Man Standing)",
+    "id": 20581,
+    "version": "",
+    "slot": "hands",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Mithril gloves (wrapped)",
     "id": 27110,
     "version": "",
@@ -26514,6 +27135,15 @@
     "speed": 0
   },
   {
+    "name": "Mystic robe bottom (dark) (Last Man Standing)",
+    "id": 27159,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Mystic robe bottom (dusk)",
     "id": 23053,
     "version": "",
@@ -26525,6 +27155,15 @@
   {
     "name": "Mystic robe bottom (light)",
     "id": 4113,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Mystic robe bottom (light) (Last Man Standing)",
+    "id": 27161,
     "version": "",
     "slot": "legs",
     "category": "",
@@ -26568,6 +27207,15 @@
     "speed": 0
   },
   {
+    "name": "Mystic robe top (dark) (Last Man Standing)",
+    "id": 27158,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Mystic robe top (dusk)",
     "id": 23050,
     "version": "",
@@ -26579,6 +27227,15 @@
   {
     "name": "Mystic robe top (light)",
     "id": 4111,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Mystic robe top (light) (Last Man Standing)",
+    "id": 27160,
     "version": "",
     "slot": "body",
     "category": "",
@@ -26678,6 +27335,15 @@
   {
     "name": "Necklace of anguish",
     "id": 19547,
+    "version": "",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Necklace of anguish (Last Man Standing)",
+    "id": 27172,
     "version": "",
     "slot": "neck",
     "category": "",
@@ -27306,6 +27972,15 @@
     "speed": 0
   },
   {
+    "name": "Opal dragon bolts (e) (Last Man Standing)",
+    "id": 27192,
+    "version": "",
+    "slot": "ammo",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Opal machete",
     "id": 6313,
     "version": "",
@@ -27364,6 +28039,87 @@
     "id": 286,
     "version": "",
     "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Orange pumpkin",
+    "id": 30269,
+    "version": "Angry",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Orange pumpkin",
+    "id": 30270,
+    "version": "Depressed",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Orange pumpkin",
+    "id": 30266,
+    "version": "Disgusted",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Orange pumpkin",
+    "id": 30268,
+    "version": "Evil",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Orange pumpkin",
+    "id": 30273,
+    "version": "Happy",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Orange pumpkin",
+    "id": 30274,
+    "version": "Laughing",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Orange pumpkin",
+    "id": 30272,
+    "version": "Sad",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Orange pumpkin",
+    "id": 30271,
+    "version": "Shocked",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Orange pumpkin",
+    "id": 30267,
+    "version": "Silly",
+    "slot": "head",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -27594,6 +28350,24 @@
     "speed": 0
   },
   {
+    "name": "Pendant of ates",
+    "id": 29893,
+    "version": "Charged",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Pendant of ates",
+    "id": 29892,
+    "version": "Inert",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Pendant of lucien",
     "id": 86,
     "version": "",
@@ -27636,7 +28410,7 @@
     "slot": "weapon",
     "category": "Polestaff",
     "isTwoHanded": false,
-    "speed": 4
+    "speed": 5
   },
   {
     "name": "Pharaoh's sceptre",
@@ -27645,7 +28419,7 @@
     "slot": "weapon",
     "category": "Polestaff",
     "isTwoHanded": false,
-    "speed": 4
+    "speed": 5
   },
   {
     "name": "Phasmatys flag",
@@ -28053,6 +28827,87 @@
     "speed": 0
   },
   {
+    "name": "Powder grey pumpkin",
+    "id": 30296,
+    "version": "Angry",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Powder grey pumpkin",
+    "id": 30297,
+    "version": "Depressed",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Powder grey pumpkin",
+    "id": 30293,
+    "version": "Disgusted",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Powder grey pumpkin",
+    "id": 30295,
+    "version": "Evil",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Powder grey pumpkin",
+    "id": 30300,
+    "version": "Happy",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Powder grey pumpkin",
+    "id": 30301,
+    "version": "Laughing",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Powder grey pumpkin",
+    "id": 30299,
+    "version": "Sad",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Powder grey pumpkin",
+    "id": 30298,
+    "version": "Shocked",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Powder grey pumpkin",
+    "id": 30294,
+    "version": "Silly",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Prayer cape",
     "id": 9760,
     "version": "Trimmed",
@@ -28096,6 +28951,24 @@
     "category": "Unarmed",
     "isTwoHanded": true,
     "speed": 4
+  },
+  {
+    "name": "Prescription goggles",
+    "id": 29976,
+    "version": "Focused",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Prescription goggles",
+    "id": 29974,
+    "version": "Unfocused",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
   },
   {
     "name": "Priest gown (bottom)",
@@ -28163,6 +29036,15 @@
   {
     "name": "Prop sword",
     "id": 22316,
+    "version": "",
+    "slot": "weapon",
+    "category": "Blunt",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
+    "name": "Prop sword (Death on the Isle)",
+    "id": 29911,
     "version": "",
     "slot": "weapon",
     "category": "Blunt",
@@ -28917,6 +29799,15 @@
     "speed": 0
   },
   {
+    "name": "Ram mask",
+    "id": 29929,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Ram skull helm",
     "id": 7917,
     "version": "",
@@ -28982,6 +29873,15 @@
   {
     "name": "Rangers' tunic",
     "id": 12596,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Rangers' tunic (Last Man Standing)",
+    "id": 27179,
     "version": "",
     "slot": "body",
     "category": "",
@@ -29352,6 +30252,87 @@
     "name": "Red partyhat",
     "id": 1038,
     "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Red pumpkin",
+    "id": 30278,
+    "version": "Angry",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Red pumpkin",
+    "id": 30279,
+    "version": "Depressed",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Red pumpkin",
+    "id": 30275,
+    "version": "Disgusted",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Red pumpkin",
+    "id": 30277,
+    "version": "Evil",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Red pumpkin",
+    "id": 30282,
+    "version": "Happy",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Red pumpkin",
+    "id": 30283,
+    "version": "Laughing",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Red pumpkin",
+    "id": 30281,
+    "version": "Sad",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Red pumpkin",
+    "id": 30280,
+    "version": "Shocked",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Red pumpkin",
+    "id": 30276,
+    "version": "Silly",
     "slot": "head",
     "category": "",
     "isTwoHanded": false,
@@ -30684,6 +31665,15 @@
     "name": "Rune defender",
     "id": 8850,
     "version": "Normal",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Rune defender (Last Man Standing)",
+    "id": 27185,
+    "version": "",
     "slot": "shield",
     "category": "",
     "isTwoHanded": false,
@@ -32265,6 +33255,15 @@
     "speed": 0
   },
   {
+    "name": "Saradomin chaps (Last Man Standing)",
+    "id": 27182,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Saradomin cloak",
     "id": 10446,
     "version": "",
@@ -32367,6 +33366,15 @@
     "name": "Saradomin halo",
     "id": 12637,
     "version": "Normal",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Saradomin halo (Last Man Standing)",
+    "id": 27165,
+    "version": "",
     "slot": "head",
     "category": "",
     "isTwoHanded": false,
@@ -32512,6 +33520,15 @@
     "id": 26254,
     "version": "",
     "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Scarecrow shirt",
+    "id": 30232,
+    "version": "",
+    "slot": "body",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -34101,6 +35118,15 @@
     "speed": 5
   },
   {
+    "name": "Snake mask",
+    "id": 29933,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Snakeskin bandana",
     "id": 6326,
     "version": "",
@@ -34409,6 +35435,15 @@
   {
     "name": "Spiked manacles",
     "id": 23389,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Spiked manacles (Last Man Standing)",
+    "id": 27178,
     "version": "",
     "slot": "feet",
     "category": "",
@@ -36963,6 +37998,24 @@
     "speed": 3
   },
   {
+    "name": "Tome of earth",
+    "id": 30064,
+    "version": "Charged",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Tome of earth",
+    "id": 30066,
+    "version": "Empty",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Tome of fire",
     "id": 20714,
     "version": "Charged",
@@ -36975,6 +38028,15 @@
     "name": "Tome of fire",
     "id": 20716,
     "version": "Empty",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Tome of fire (Last Man Standing)",
+    "id": 27358,
+    "version": "",
     "slot": "shield",
     "category": "",
     "isTwoHanded": false,
@@ -37350,6 +38412,15 @@
     "speed": 0
   },
   {
+    "name": "Tormented bracelet (Last Man Standing)",
+    "id": 27171,
+    "version": "",
+    "slot": "hands",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Tormented bracelet (or)",
     "id": 23444,
     "version": "",
@@ -37368,6 +38439,15 @@
     "speed": 0
   },
   {
+    "name": "Torva full helm (unobtainable item)",
+    "id": 30302,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Torva platebody",
     "id": 26384,
     "version": "Restored",
@@ -37377,9 +38457,27 @@
     "speed": 0
   },
   {
+    "name": "Torva platebody (unobtainable item)",
+    "id": 30303,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Torva platelegs",
     "id": 26386,
     "version": "Restored",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Torva platelegs (unobtainable item)",
+    "id": 30304,
+    "version": "",
     "slot": "legs",
     "category": "",
     "isTwoHanded": false,
@@ -38774,6 +39872,15 @@
   {
     "name": "Unholy book",
     "id": 3842,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Unholy book (Last Man Standing)",
+    "id": 27191,
     "version": "",
     "slot": "shield",
     "category": "",
@@ -40671,6 +41778,87 @@
     "speed": 0
   },
   {
+    "name": "White pumpkin",
+    "id": 30251,
+    "version": "Angry",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "White pumpkin",
+    "id": 30252,
+    "version": "Depressed",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "White pumpkin",
+    "id": 30248,
+    "version": "Disgusted",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "White pumpkin",
+    "id": 30250,
+    "version": "Evil",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "White pumpkin",
+    "id": 30255,
+    "version": "Happy",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "White pumpkin",
+    "id": 30256,
+    "version": "Laughing",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "White pumpkin",
+    "id": 30254,
+    "version": "Sad",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "White pumpkin",
+    "id": 30253,
+    "version": "Shocked",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "White pumpkin",
+    "id": 30249,
+    "version": "Silly",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "White scimitar",
     "id": 6611,
     "version": "",
@@ -40986,6 +42174,15 @@
     "speed": 0
   },
   {
+    "name": "Wizard boots (Last Man Standing)",
+    "id": 27162,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Wizard hat",
     "id": 1017,
     "version": "",
@@ -41006,6 +42203,15 @@
   {
     "name": "Wolf mask",
     "id": 23407,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wolf mask (Death on the Isle)",
+    "id": 29930,
     "version": "",
     "slot": "head",
     "category": "",
@@ -41409,6 +42615,87 @@
     "speed": 0
   },
   {
+    "name": "Yellow pumpkin",
+    "id": 30260,
+    "version": "Angry",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Yellow pumpkin",
+    "id": 30261,
+    "version": "Depressed",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Yellow pumpkin",
+    "id": 30257,
+    "version": "Disgusted",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Yellow pumpkin",
+    "id": 30259,
+    "version": "Evil",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Yellow pumpkin",
+    "id": 30264,
+    "version": "Happy",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Yellow pumpkin",
+    "id": 30265,
+    "version": "Laughing",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Yellow pumpkin",
+    "id": 30263,
+    "version": "Sad",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Yellow pumpkin",
+    "id": 30262,
+    "version": "Shocked",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Yellow pumpkin",
+    "id": 30258,
+    "version": "Silly",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Yellow robe bottoms",
     "id": 2918,
     "version": "",
@@ -41510,6 +42797,15 @@
   {
     "name": "Zamorak chaps",
     "id": 10372,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Zamorak chaps (Last Man Standing)",
+    "id": 27181,
     "version": "",
     "slot": "legs",
     "category": "",
@@ -41619,6 +42915,15 @@
     "name": "Zamorak halo",
     "id": 12638,
     "version": "Normal",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Zamorak halo (Last Man Standing)",
+    "id": 27164,
+    "version": "",
     "slot": "head",
     "category": "",
     "isTwoHanded": false,
@@ -41794,6 +43099,15 @@
     "category": "Crossbow",
     "isTwoHanded": false,
     "speed": 5
+  },
+  {
+    "name": "Zaryte crossbow (Last Man Standing)",
+    "id": 27186,
+    "version": "",
+    "slot": "weapon",
+    "category": "crossbow",
+    "isTwoHanded": false,
+    "speed": 6
   },
   {
     "name": "Zaryte vambraces",
