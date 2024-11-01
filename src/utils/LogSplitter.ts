@@ -166,7 +166,8 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
             // Include current player positions at the beginning of the fight
             if (Object.keys(playerPositions).length > 0) {
-                Object.values(playerPositions).forEach((positionLog) => {
+                const positionLogs = Object.values(playerPositions);
+                for (const positionLog of positionLogs) {
                     const newPositionLog: PositionLog = {
                         type: LogTypes.PLAYER_POSITION,
                         date: logLine.date,
@@ -178,7 +179,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                         position: positionLog.position
                     };
                     initialData.push(newPositionLog);
-                });
+                }
             }
 
             // @ts-ignore
