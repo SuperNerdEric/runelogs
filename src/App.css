@@ -405,3 +405,59 @@
     padding: 5px 10px;
     border-radius: 5px;
 }
+
+/* Map Container Styling */
+.leaflet-container {
+    background: #000;
+}
+
+/* Playback Controls Styling */
+.playback-controls {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: black;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.playback-controls button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.playback-controls input[type='range'] {
+    margin-right: 10px;
+}
+
+.playback-controls span {
+    white-space: nowrap;
+}
+
+.play-pause-button svg {
+    fill: white;
+}
+
+.play-pause-button svg:hover {
+    fill: #ccc;
+}
+
+.mouse-hover-tooltip {
+    position: absolute;
+    pointer-events: none;
+    background-color: rgba(100, 100, 100, 0.8);
+    color: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+}
+

@@ -4,12 +4,14 @@ import BoostsChart from "./charts/BoostsChart";
 import EventsTable from "./EventsTable";
 import {Fight} from "../models/Fight";
 import {filterByType, LogTypes} from "../models/LogLine";
+import MainReplayComponent from "./replay/MainReplayComponent";
 
 export enum TabsEnum {
     DAMAGE_DONE = 'Damage Done',
     DAMAGE_TAKEN = 'Damage Taken',
     BOOSTS = 'Boosts',
     EVENTS = 'Events',
+    REPLAY = 'Replay',
 }
 
 export const DamageDoneTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}) => {
@@ -50,4 +52,8 @@ export const BoostsTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}) => 
 
 export const EventsTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}) => {
     return <EventsTable fight={selectedLogs} height={'80vh'} showSource={true}/>;
+};
+
+export const ReplayTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}) => {
+    return <MainReplayComponent fight={selectedLogs}/>;
 };
