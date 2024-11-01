@@ -150,7 +150,7 @@ export const parseLogLine = (logLine: string, player?: string, logVersion?: stri
         };
     }
 
-    if (logVersion === "1.1.2") {
+    if (logVersion === "1.1.2" || logVersion === "1.2.0") {
         const playerAttackAnimationPattern = new RegExp(`^(${ANYTHING_PATTERN}) attack animation (${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})`);
         match = action.match(playerAttackAnimationPattern);
         if (match) {
@@ -183,7 +183,27 @@ export const parseLogLine = (logLine: string, player?: string, logVersion?: stri
         }
     }
 
-    if (logVersion === "1.1.0" || logVersion === "1.1.1" || logVersion === "1.1.2") {
+    const positionLogPattern = new RegExp(`(${ANYTHING_BUT_TAB_PATTERN}) position \\((\\d+), (\\d+), (\\d+)\\)$`);
+
+    match = action.match(positionLogPattern);
+    if (match) {
+        const [, playerName, x, y, plane] = match;
+        return {
+            type: LogTypes.PLAYER_POSITION,
+            date,
+            time,
+            timezone,
+            tick,
+            source: getActor(playerName),
+            position: {
+                x: parseInt(x, 10),
+                y: parseInt(y, 10),
+                plane: parseInt(plane, 10),
+            },
+        };
+    }
+
+    if (logVersion === "1.1.0" || logVersion === "1.1.1" || logVersion === "1.1.2" || logVersion === "1.2.0") {
         const defaultPattern = new RegExp(`^(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})`);
 
         match = action.match(defaultPattern);

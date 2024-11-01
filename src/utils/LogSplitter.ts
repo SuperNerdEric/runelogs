@@ -1,4 +1,4 @@
-import {DamageLog, LogLine, LogTypes, TargetChangeLog} from "../models/LogLine";
+import {DamageLog, LogLine, LogTypes, PositionLog, TargetChangeLog} from "../models/LogLine";
 import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
 import {Fight} from "../models/Fight";
 import {BoostedLevels} from "../models/BoostedLevels";
@@ -46,11 +46,13 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     let parsedLines = 0;
 
     const fights: (Fight | Raid)[] = [];
+    let logVersion: string = "";
     let currentFight: Fight | null = null;
     let player: string = ""; //todo support multiple players
     let lastDamage: { time: number, index: number } | null = null;
     let boostedLevels: BoostedLevels | undefined;
     let playerEquipment: string[] | undefined;
+    let playerPositions: { [playerName: string]: PositionLog } = {};
     let playerRegion: number | undefined;
     let fightStartTime: Date;
     let fightStartTick: number = -1;
@@ -90,6 +92,10 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     }
 
     for (const logLine of fightData) {
+        if (logLine.type === LogTypes.LOG_VERSION) {
+            logVersion = logLine.logVersion;
+        }
+
         if (logLine.type === LogTypes.LOGGED_IN_PLAYER) {
             player = logLine.loggedInPlayer;
         }
@@ -100,6 +106,12 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
         if (logLine.type === LogTypes.PLAYER_EQUIPMENT) {
             playerEquipment = logLine.playerEquipment;
+        }
+
+        if (logLine.type === LogTypes.PLAYER_POSITION) {
+            const positionLog = logLine as PositionLog;
+            const playerName = positionLog.source.name;
+            playerPositions[playerName] = positionLog;
         }
 
         // If there's a gap of over 60 seconds end the current fight
@@ -131,6 +143,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                 initialData.push({
                     type: LogTypes.BOOSTED_LEVELS,
                     date: logLine.date,
+                    tick: fightStartTick,
                     time: logLine.time,
                     timezone: logLine.timezone,
                     boostedLevels: boostedLevels,
@@ -143,10 +156,28 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                 initialData.push({
                     type: LogTypes.PLAYER_EQUIPMENT,
                     date: logLine.date,
+                    tick: fightStartTick,
                     time: logLine.time,
                     timezone: logLine.timezone,
                     playerEquipment: playerEquipment,
                     fightTimeMs: 0
+                });
+            }
+
+            // Include current player positions at the beginning of the fight
+            if (Object.keys(playerPositions).length > 0) {
+                Object.values(playerPositions).forEach((positionLog) => {
+                    const newPositionLog: PositionLog = {
+                        type: LogTypes.PLAYER_POSITION,
+                        date: logLine.date,
+                        tick: fightStartTick,
+                        time: logLine.time,
+                        timezone: logLine.timezone,
+                        fightTimeMs: 0,
+                        source: positionLog.source,
+                        position: positionLog.position
+                    };
+                    initialData.push(newPositionLog);
                 });
             }
 
@@ -161,6 +192,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                     logLine
                 ],
                 loggedInPlayer: player,
+                logVersion: logVersion,
                 firstLine: logLine,
                 lastLine: logLine
             };

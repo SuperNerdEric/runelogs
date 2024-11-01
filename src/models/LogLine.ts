@@ -11,7 +11,8 @@ export enum LogTypes {
     TARGET_CHANGE = 'Target Change',
     DAMAGE = 'Damage',
     HEAL = 'Heal',
-    PLAYER_ATTACK_ANIMATION = 'Attack Animation'
+    PLAYER_ATTACK_ANIMATION = 'Attack Animation',
+    PLAYER_POSITION = 'Player Position',
 }
 
 export interface BaseLog {
@@ -82,6 +83,12 @@ export interface AttackAnimationLog extends BaseLog {
     target: Actor;
 }
 
+export interface PositionLog extends BaseLog {
+    type: LogTypes.PLAYER_POSITION;
+    source: Actor;
+    position: { x: number; y: number; plane: number };
+}
+
 export type LogLine =
     LogVersionLog
     | LoggedInPlayerLog
@@ -92,7 +99,8 @@ export type LogLine =
     | TargetChangeLog
     | DamageLog
     | HealLog
-    | AttackAnimationLog;
+    | AttackAnimationLog
+    | PositionLog;
 
 export function filterByType<T extends LogLine['type']>(logs: LogLine[], type: T): Extract<LogLine, { type: T }>[] {
     return logs.filter(log => log.type === type) as Extract<LogLine, { type: T }>[];

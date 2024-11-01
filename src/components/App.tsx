@@ -2,28 +2,28 @@ import React, {useEffect, useState} from 'react';
 import '../App.css';
 import Dropzone from './Dropzone';
 import {Button, CircularProgress, Tab, Tabs} from '@mui/material';
-import Instructions from "./Instructions";
-import {BoostsTab, DamageDoneTab, DamageTakenTab, EventsTab, TabsEnum} from './Tabs';
-import {Fight, FightMetaData, isFight} from "../models/Fight";
-import localforage from "localforage";
-import TopBar from "./TopBar";
+import Instructions from './Instructions';
+import {BoostsTab, DamageDoneTab, DamageTakenTab, EventsTab, ReplayTab, TabsEnum} from './Tabs';
+import {Fight, FightMetaData, isFight} from '../models/Fight';
+import localforage from 'localforage';
+import TopBar from './TopBar';
 import {closeSnackbar, SnackbarKey, useSnackbar} from 'notistack';
-import FightSelector from "./sections/FightSelector";
+import FightSelector from './sections/FightSelector';
 import {Icon} from '@iconify/react';
-import TickActivity from "./performance/TickActivity";
-import {BOSS_NAMES} from "../utils/constants";
-import {isRaidMetaData, Raid, RaidMetaData} from "../models/Raid";
-import DropdownFightSelector from "./sections/DropdownFightSelector";
+import TickActivity from './performance/TickActivity';
+import {BOSS_NAMES} from '../utils/constants';
+import {isRaidMetaData, Raid, RaidMetaData} from '../models/Raid';
+import DropdownFightSelector from './sections/DropdownFightSelector';
 import ReactGA from 'react-ga4';
 
 function App() {
     useEffect(() => {
-        ReactGA.initialize("G-XL7FZPRS36");
-        ReactGA.send({hitType: "pageview"});
-    }, [])
+        ReactGA.initialize('G-XL7FZPRS36');
+        ReactGA.send({hitType: 'pageview'});
+    }, []);
 
     const fightsStorage = localforage.createInstance({
-        name: 'myFightData'
+        name: 'myFightData',
     });
 
     const {enqueueSnackbar} = useSnackbar();
@@ -42,7 +42,7 @@ function App() {
     );
 
     const [worker] = useState<Worker>(() => {
-        const worker = new Worker(new URL("FileParserWorker.ts", import.meta.url));
+        const worker = new Worker(new URL('FileParserWorker.ts', import.meta.url));
 
         worker.onmessage = (event) => {
             const {type, progress, parseResultMessage, item} = event.data;
@@ -85,13 +85,16 @@ function App() {
 
     const handleDelete = () => {
         // Delete data from localforage and reset states
-        fightsStorage.removeItem('fightData').then(() => {
-            setSelectedFight(null);
-            setFightMetadata(null);
-            setLoadingStorage(false);
-        }).catch(error => {
-            console.error("Error deleting fight data from localforage:", error);
-        });
+        fightsStorage
+            .removeItem('fightData')
+            .then(() => {
+                setSelectedFight(null);
+                setFightMetadata(null);
+                setLoadingStorage(false);
+            })
+            .catch((error) => {
+                console.error('Error deleting fight data from localforage:', error);
+            });
     };
 
     const handleSelectFight = (index: number, raidIndex?: number) => {
@@ -106,38 +109,55 @@ function App() {
     };
 
     const renderDropdownFightSelector = () => {
-        if (selectedFightMetadataIndex !== null && fightMetadata && isRaidMetaData(fightMetadata[selectedFightMetadataIndex])) {
+        if (
+            selectedFightMetadataIndex !== null &&
+            fightMetadata &&
+            isRaidMetaData(fightMetadata[selectedFightMetadataIndex])
+        ) {
             const raidMetaData = fightMetadata[selectedFightMetadataIndex] as RaidMetaData;
             return (
                 <div>
-                    <DropdownFightSelector fights={raidMetaData.fights} onSelectFight={handleRaidSelectFight} selectedFightIndex={selectedRaidIndex} />
+                    <DropdownFightSelector
+                        fights={raidMetaData.fights}
+                        onSelectFight={handleRaidSelectFight}
+                        selectedFightIndex={selectedRaidIndex}
+                    />
                 </div>
             );
         }
         return null;
     };
 
+    const availableTabs = Object.values(TabsEnum).filter((tab) => {
+        if (tab === TabsEnum.REPLAY) {
+            return selectedFight?.logVersion === '1.2.0';
+        }
+        return true;
+    });
+
     useEffect(() => {
         // Check if fight data exists in localforage
-        fightsStorage.getItem<(Fight | Raid)[]>('fightData')
+        fightsStorage
+            .getItem<(Fight | Raid)[]>('fightData')
             .then((data: (Fight | Raid)[] | null) => {
                 if (data) {
-                    setFightMetadata(data.map(fight =>
-                    {
-                        if (isFight(fight)) {
-                            return fight.metaData
-                        } else {
-                            return {
-                                name: fight.name,
-                                fights: fight.fights.map(fight => fight.metaData)
-                            } as RaidMetaData;
-                        }
-                    }));
+                    setFightMetadata(
+                        data.map((fight) => {
+                            if (isFight(fight)) {
+                                return fight.metaData;
+                            } else {
+                                return {
+                                    name: fight.name,
+                                    fights: fight.fights.map((fight) => fight.metaData),
+                                } as RaidMetaData;
+                            }
+                        })
+                    );
                 }
                 setLoadingStorage(false);
             })
             .catch((error: any) => {
-                console.error("Error getting fight data from localforage:", error);
+                console.error('Error getting fight data from localforage:', error);
                 setLoadingStorage(false);
             });
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -146,8 +166,10 @@ function App() {
     return (
         <div className="App">
             <div className="App-body">
-                <TopBar onDeleteData={handleDelete}
-                        showDeleteButton={!loadingStorage && !parseInProgress && (!!selectedFight || !!fightMetadata)}/>
+                <TopBar
+                    onDeleteData={handleDelete}
+                    showDeleteButton={!loadingStorage && !parseInProgress && (!!selectedFight || !!fightMetadata)}
+                />
                 {loadingStorage && (
                     <div className="loading-indicator-container">
                         <div className="loading-content">
@@ -178,26 +200,24 @@ function App() {
                 {!loadingStorage && !parseInProgress && selectedFight && (
                     <div className="App-main">
                         <div style={{display: 'flex', alignItems: 'center'}}>
-                            <div
-                                className="back-icon-wrapper"
-                                onClick={() => setSelectedFight(null)}
-                            >
+                            <div className="back-icon-wrapper" onClick={() => setSelectedFight(null)}>
                                 <Icon icon="ic:round-arrow-back"/>
                             </div>
-                            {selectedFightMetadataIndex !== null && fightMetadata && isRaidMetaData(fightMetadata[selectedFightMetadataIndex]) ? (
+                            {selectedFightMetadataIndex !== null &&
+                            fightMetadata &&
+                            isRaidMetaData(fightMetadata[selectedFightMetadataIndex]) ? (
                                 <label>{fightMetadata[selectedFightMetadataIndex].name}</label>
+                            ) : selectedFight.isNpc ? (
+                                <a
+                                    href={`https://oldschool.runescape.wiki/w/${selectedFight.mainEnemyName}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="link"
+                                >
+                                    {selectedFight.name}
+                                </a>
                             ) : (
-                                selectedFight.isNpc ? (
-                                    <a href={`https://oldschool.runescape.wiki/w/${selectedFight.mainEnemyName}`}
-                                       target="_blank"
-                                       rel="noopener noreferrer"
-                                       className="link"
-                                    >
-                                        {selectedFight.name}
-                                    </a>
-                                ) : (
-                                    <label>{selectedFight.name}</label>
-                                )
+                                <label>{selectedFight.name}</label>
                             )}
                         </div>
                         {renderDropdownFightSelector()}
@@ -211,7 +231,7 @@ function App() {
                                 marginBottom: '20px',
                             }}
                         >
-                            {Object.values(TabsEnum).map((tab) => (
+                            {availableTabs.map((tab) => (
                                 <Tab
                                     key={tab}
                                     label={tab}
@@ -222,12 +242,14 @@ function App() {
                                 />
                             ))}
                         </Tabs>
-                        {(BOSS_NAMES.includes(selectedFight.metaData.name) || selectedFight.metaData.fightLengthMs >= 15000) &&
-                            <TickActivity selectedLogs={selectedFight}/>}
+                        {(BOSS_NAMES.includes(selectedFight.metaData.name) ||
+                                selectedFight.metaData.fightLengthMs >= 15000) &&
+                            selectedTab !== TabsEnum.REPLAY && <TickActivity selectedLogs={selectedFight}/>}
                         {selectedTab === TabsEnum.DAMAGE_DONE && <DamageDoneTab selectedLogs={selectedFight}/>}
                         {selectedTab === TabsEnum.DAMAGE_TAKEN && <DamageTakenTab selectedLogs={selectedFight}/>}
                         {selectedTab === TabsEnum.BOOSTS && <BoostsTab selectedLogs={selectedFight}/>}
                         {selectedTab === TabsEnum.EVENTS && <EventsTab selectedLogs={selectedFight}/>}
+                        {selectedTab === TabsEnum.REPLAY && <ReplayTab selectedLogs={selectedFight}/>}
                     </div>
                 )}
             </div>
