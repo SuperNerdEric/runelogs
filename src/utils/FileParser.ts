@@ -4,6 +4,7 @@ import {LogLine, LogTypes} from "../models/LogLine";
 import {getActor} from "./utils";
 import {Actor} from "../models/Actor";
 import {Raid} from "../models/Raid";
+import * as semver from 'semver';
 
 export const parseLogLine = (logLine: string, player?: string, logVersion?: string): LogLine | null => {
     const TICK_PATTERN = '\\b\\d+\\b';
@@ -150,7 +151,7 @@ export const parseLogLine = (logLine: string, player?: string, logVersion?: stri
         };
     }
 
-    if (logVersion === "1.1.2" || logVersion === "1.2.0") {
+    if (logVersion && semver.gte(logVersion, "1.1.2")) {
         const playerAttackAnimationPattern = new RegExp(`^(${ANYTHING_PATTERN}) attack animation (${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})`);
         match = action.match(playerAttackAnimationPattern);
         if (match) {
@@ -203,7 +204,7 @@ export const parseLogLine = (logLine: string, player?: string, logVersion?: stri
         };
     }
 
-    if (logVersion === "1.1.0" || logVersion === "1.1.1" || logVersion === "1.1.2" || logVersion === "1.2.0") {
+    if (logVersion && semver.gte(logVersion, "1.1.0")) {
         const defaultPattern = new RegExp(`^(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})`);
 
         match = action.match(defaultPattern);

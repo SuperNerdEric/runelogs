@@ -15,6 +15,7 @@ import {BOSS_NAMES} from '../utils/constants';
 import {isRaidMetaData, Raid, RaidMetaData} from '../models/Raid';
 import DropdownFightSelector from './sections/DropdownFightSelector';
 import ReactGA from 'react-ga4';
+import * as semver from "semver";
 
 function App() {
     useEffect(() => {
@@ -130,7 +131,7 @@ function App() {
 
     const availableTabs = Object.values(TabsEnum).filter((tab) => {
         if (tab === TabsEnum.REPLAY) {
-            return selectedFight?.logVersion === '1.2.0';
+            return selectedFight?.logVersion && semver.gte(selectedFight?.logVersion, "1.2.0");
         }
         return true;
     });
