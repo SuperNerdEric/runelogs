@@ -144,8 +144,6 @@ const FightSelector: React.FC<FightSelectorProps> = ({fights, onSelectFight}) =>
     // Group fights by name and record shortest fight time for each group
     const [groupedFights, setGroupedFights] = useState<FightGroup>({});
 
-    console.log(groupedFights);
-
     useEffect(() => {
         const tempGroupedFights: FightGroup = {};
 

@@ -95,7 +95,6 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine)
         );
 
-        console.log(`end fight ${currentFight!.name} ${success} ${hasPlayerDamage}`, currentFight, lastLine);
         if (!hasPlayerDamage) {
             return;
         }
@@ -129,7 +128,6 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         }
         currentWave.metaData.waveLengthTicks = lastLine.tick! - currentWaveStartTick;
         currentWave.metaData.success = success;
-        console.log(`end wave ${currentWave.name} ${success}`, lastLine);
         currentWaves.waves.push(currentWave);
         currentWave = null;
         currentWaveStartTick = -1;
@@ -191,7 +189,6 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                 fightStartTick = logLine.tick;
             }
             logLine.fightTimeMs = 0;
-            console.log(`starting fight`, logLine);
 
             const initialData: LogLine[] = [];
 
