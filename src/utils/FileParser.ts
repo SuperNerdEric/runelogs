@@ -2,9 +2,7 @@ import {isMine, logSplitter} from "./LogSplitter";
 import {Encounter, LogLine, LogTypes} from "../models/LogLine";
 import {getActor} from "./utils";
 import {Actor} from "../models/Actor";
-import {Raid} from "../models/Raid";
 import * as semver from 'semver';
-import { Waves } from "../models/Waves";
 
 export const parseLogLine = (logLine: string, player?: string, logVersion?: string): LogLine | null => {
     const TICK_PATTERN = '\\b\\d+\\b';
