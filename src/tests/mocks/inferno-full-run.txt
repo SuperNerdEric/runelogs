@@ -1,4 +1,4 @@
-2132474 08-18-2024 21:05:43	josaph696 changes target to 3089-2302
+132474 08-18-2024 21:05:43	josaph696 changes target to 3089-2302
 132476 08-18-2024 21:05:44	Log Version 1.1.1
 132476 08-18-2024 21:05:44	Logged in player is Supalosa
 137034 08-18-2024 21:51:19	7679-10516 changes target to BrightLore
