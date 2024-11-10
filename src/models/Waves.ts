@@ -1,5 +1,5 @@
 import {Fight, FightMetaData} from "./Fight";
-import { Encounter } from "./LogLine";
+import {Encounter} from "./LogLine";
 
 export interface Waves {
     name: string;
