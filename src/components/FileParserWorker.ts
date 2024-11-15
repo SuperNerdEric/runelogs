@@ -1,7 +1,9 @@
 import {Fight, isFight} from "../models/Fight";
 import {parseFileContent} from "../utils/FileParser";
 import localforage from 'localforage';
-import {Raid, RaidMetaData} from "../models/Raid";
+import {getRaidMetadata, isRaid} from "../models/Raid";
+import { Encounter } from "../models/LogLine";
+import { getWavesMetaData } from "../models/Waves";
 
 const fightsStorage = localforage.createInstance({
     name: 'myFightData'
@@ -15,13 +17,11 @@ export function parseFileWithProgress(fileContent: string) {
     const fightMetadata = parseResults?.map(fight => {
         if (isFight(fight)) {
             return fight.metaData;
+        } else if (isRaid(fight)) {
+            return getRaidMetadata(fight);
         } else {
-            return {
-                name: fight.name,
-                fights: fight.fights.map(fight => fight.metaData)
-            } as RaidMetaData;
+            return getWavesMetaData(fight);
         }
-
     }) || [];
     const parseResultMessage = {
         fightMetadata,
@@ -32,14 +32,17 @@ export function parseFileWithProgress(fileContent: string) {
     fightsStorage.setItem('fightData', parseResults);
 }
 
-function getSpecificItem(fightIndex: number, raidIndex?: number) {
-    fightsStorage.getItem<Fight[]>('fightData').then((parseResults: (Fight | Raid)[] | null) => {
+// subIndex may be the wave number within a waves list
+function getSpecificItem(fightIndex: number, raidIndex?: number, subIndex?: number) {
+    fightsStorage.getItem<Fight[]>('fightData').then((parseResults: (Encounter)[] | null) => {
         if (parseResults && fightIndex >= 0 && fightIndex < parseResults.length) {
-            if(isFight(parseResults[fightIndex])) {
-                return parseResults[fightIndex];
+            const result = parseResults[fightIndex];
+            if(isFight(result)) {
+                return result;
+            } else if (isRaid(result)) {
+                return result.fights[raidIndex!];
             } else {
-               // @ts-ignore
-                return  parseResults[fightIndex].fights[raidIndex!];
+                return result.waves[raidIndex!].fights[subIndex!];
             }
         }
         return null;
@@ -51,10 +54,10 @@ function getSpecificItem(fightIndex: number, raidIndex?: number) {
 }
 
 onmessage = (event) => {
-    const {type, fileContent, index, raidIndex} = event.data;
+    const {type, fileContent, index, raidIndex, subIndex} = event.data;
     if (type === 'parse') {
         parseFileWithProgress(fileContent);
     } else if (type === 'getItem') {
-        getSpecificItem(index, raidIndex);
+        getSpecificItem(index, raidIndex, subIndex);
     }
 };

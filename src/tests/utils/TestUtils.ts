@@ -1,7 +1,6 @@
-import {Fight} from "../../models/Fight";
 import {parseFileContent} from "../../utils/FileParser";
 import * as fs from "fs";
-import {Raid} from "../../models/Raid";
+import { Encounter } from "../../models/LogLine";
 
 const MOCK_DATA_DIRECTORY = "./src/tests/mocks/";
 
@@ -10,10 +9,10 @@ const MOCK_DATA_DIRECTORY = "./src/tests/mocks/";
  * @param fileName The name of the file in the mock directory
  * @returns The array of fights parsed from the file content, or null if parsing fails.
  */
-export function getMockFights(fileName: string): (Fight | Raid)[] | null {
+export function getMockFights(fileName: string): (Encounter)[] | null {
     try {
         const fileContent = fs.readFileSync(MOCK_DATA_DIRECTORY + fileName, 'utf-8');
-        const fights: (Fight | Raid)[] | null = parseFileContent(fileContent, () => {
+        const fights: (Encounter)[] | null = parseFileContent(fileContent, () => {
         });
         return fights;
     } catch (error) {

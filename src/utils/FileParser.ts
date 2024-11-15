@@ -1,9 +1,7 @@
 import {isMine, logSplitter} from "./LogSplitter";
-import {Fight} from "../models/Fight";
-import {LogLine, LogTypes} from "../models/LogLine";
+import {Encounter, LogLine, LogTypes} from "../models/LogLine";
 import {getActor} from "./utils";
 import {Actor} from "../models/Actor";
-import {Raid} from "../models/Raid";
 import * as semver from 'semver';
 
 export const parseLogLine = (logLine: string, player?: string, logVersion?: string): LogLine | null => {
@@ -151,6 +149,32 @@ export const parseLogLine = (logLine: string, player?: string, logVersion?: stri
         };
     }
 
+    const infernoWaveStartedPattern = new RegExp(`<col=${ANYTHING_PATTERN}>Wave: (${ANYTHING_PATTERN})</col>`);
+    match = action.match(infernoWaveStartedPattern);
+    if (match) {
+        let [, wave] = match;
+        return {
+            type: LogTypes.WAVE_START,
+            date,
+            time,
+            timezone,
+            tick,
+            waveNumber: parseInt(wave, 10),
+        };
+    }
+
+    const infernoWaveEndedPattern = new RegExp(`Wave completed!`);
+    match = action.match(infernoWaveEndedPattern);
+    if (match) {
+        return {
+            type: LogTypes.WAVE_END,
+            date,
+            time,
+            timezone,
+            tick,
+        };
+    }
+
     if (logVersion && semver.gte(logVersion, "1.1.2")) {
         const playerAttackAnimationPattern = new RegExp(`^(${ANYTHING_PATTERN}) attack animation (${ANYTHING_BUT_TAB_PATTERN})\t(${ANYTHING_BUT_TAB_PATTERN})`);
         match = action.match(playerAttackAnimationPattern);
@@ -278,7 +302,7 @@ export const parseLogLine = (logLine: string, player?: string, logVersion?: stri
     }
 };
 
-export function parseFileContent(fileContent: string, progressCallback: (progress: number) => void): (Fight | Raid)[] | null {
+export function parseFileContent(fileContent: string, progressCallback: (progress: number) => void): (Encounter)[] | null {
     try {
         const lines = fileContent.split('\n');
         let parsedLines = 0;
@@ -306,7 +330,7 @@ export function parseFileContent(fileContent: string, progressCallback: (progres
             }
         }
 
-        let fights: (Fight | Raid)[] = logSplitter(fightData, progressCallback);
+        let fights: (Encounter)[] = logSplitter(fightData, progressCallback);
 
         return fights;
     } catch (error) {

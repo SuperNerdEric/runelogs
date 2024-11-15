@@ -66,7 +66,6 @@ export const BOSS_NAMES = [
     "Phantom Muspah",
     "Skotizo",
     "Thermonuclear Smoke Devil",
-    "TzKal-Zuk",
     "TzTok-Jad",
     "Venenatis",
     "Vet'ion",
@@ -133,7 +132,6 @@ export const MY_BOSS_NAMES = [
     "Obor",
     "Phantom Muspah",
     "Skotizo",
-    "TzKal-Zuk",
     "TzTok-Jad",
     "Venenatis",
     "Vet'ion",
@@ -159,6 +157,10 @@ export const RAID_NAME_REGION_MAPPING: { [key: string]: string } = {};
 COX_REGIONS.forEach(region => RAID_NAME_REGION_MAPPING[region] = 'Chambers of Xeric');
 TOB_REGIONS.forEach(region => RAID_NAME_REGION_MAPPING[region] = 'Theatre of Blood');
 TOA_REGIONS.forEach(region => RAID_NAME_REGION_MAPPING[region] = 'Tombs of Amascut');
+
+export const WAVE_BASED_REGION_MAPPING: {[region: string]: string} = {
+    9043: "The Inferno",
+};
 
 
 export const PLAYER_HOUSE_REGION_1 = 7769;

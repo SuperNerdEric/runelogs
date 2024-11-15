@@ -1,4 +1,4 @@
-import {LogLine, LogTypes} from "../models/LogLine";
+import {Encounter, LogLine, LogTypes} from "../models/LogLine";
 import {logSplitter} from "../utils/LogSplitter";
 import {Fight} from "../models/Fight";
 import {Raid} from "../models/Raid";
@@ -40,7 +40,7 @@ describe("logSplitter", () => {
             generatedeath("Monster2"),
         ];
 
-        const result: (Fight | Raid)[] = logSplitter(fightData);
+        const result: (Encounter)[] = logSplitter(fightData);
 
         // Expecting three fights: Monster1, Monster2, Monster1
         expect(result.length).toBe(2);
@@ -56,7 +56,7 @@ describe("logSplitter", () => {
             generatedeath("Monster1"),
         ];
 
-        const result: (Fight | Raid)[] = logSplitter(fightData);
+        const result: (Encounter)[] = logSplitter(fightData);
 
         expect(result.length).toBe(1);
     });
@@ -70,7 +70,7 @@ describe("logSplitter", () => {
             generatedeath("Scurrius"),
         ];
 
-        const result: (Fight | Raid)[] = logSplitter(fightData);
+        const result: (Encounter)[] = logSplitter(fightData);
 
         expect(result.length).toBe(1);
         expect(result[0].name).toBe("Scurrius - 1");
@@ -85,7 +85,7 @@ describe("logSplitter", () => {
             generatedeath("Scurrius"),
         ];
 
-        const result: (Fight | Raid)[] = logSplitter(fightData);
+        const result: (Encounter)[] = logSplitter(fightData);
 
         expect(result.length).toBe(1);
         expect(result[0].name).toBe("Scurrius - 1");
@@ -98,7 +98,7 @@ describe("logSplitter", () => {
             generatedeath("Scurrius"),
         ];
 
-        const result: (Fight | Raid)[] = logSplitter(fightData);
+        const result: (Encounter)[] = logSplitter(fightData);
 
         expect(result.length).toBe(2);
         expect(result[0].name).toBe("Scurrius - Incomplete - 1");
@@ -118,7 +118,7 @@ describe("logSplitter", () => {
             generateDamage("Monster1", 5),
         ];
 
-        const result: (Fight | Raid)[] = logSplitter(fightData);
+        const result: (Encounter)[] = logSplitter(fightData);
 
         expect(result.length).toBe(2);
         // @ts-ignore

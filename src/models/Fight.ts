@@ -1,5 +1,4 @@
-import {LogLine} from "./LogLine";
-import {Raid} from "./Raid";
+import {Encounter, LogLine} from "./LogLine";
 
 export interface Fight {
     name: string; // Unique fight name with a number appended to it
@@ -24,6 +23,6 @@ export interface FightMetaData {
     success: boolean;
 }
 
-export function isFight(fight: Fight | Raid): fight is Fight {
-    return (fight as Fight).metaData !== undefined;
+export function isFight(fight: Encounter): fight is Fight {
+    return (fight as Fight).loggedInPlayer !== undefined;
 }
