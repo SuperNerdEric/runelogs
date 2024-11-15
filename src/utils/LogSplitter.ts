@@ -1,4 +1,4 @@
-import {DamageLog, LogLine, LogTypes, PositionLog, TargetChangeLog} from "../models/LogLine";
+import {DamageLog, Encounter, LogLine, LogTypes, PositionLog, TargetChangeLog} from "../models/LogLine";
 import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
 import {Fight} from "../models/Fight";
 import {BoostedLevels} from "../models/BoostedLevels";
@@ -15,10 +15,12 @@ import {
     NEYPOTZLI_REGION_3,
     PLAYER_HOUSE_REGION_1,
     PLAYER_HOUSE_REGION_2,
-    RAID_NAME_REGION_MAPPING
+    RAID_NAME_REGION_MAPPING,
+    WAVE_BASED_REGION_MAPPING
 } from "./constants";
 import {SECONDS_PER_TICK} from "../models/Constants";
 import {Raid} from "../models/Raid";
+import { Wave, Waves } from "../models/Waves";
 
 
 export function isMine(hitsplatName: string) {
@@ -41,11 +43,11 @@ function bossTargetsMe(player: string, log: TargetChangeLog) {
     return log.target.name === player && BOSS_NAMES.includes(log.source.name);
 }
 
-export function logSplitter(fightData: LogLine[], progressCallback?: (progress: number) => void): (Fight | Raid)[] {
+export function logSplitter(fightData: LogLine[], progressCallback?: (progress: number) => void): (Encounter)[] {
     const totalLines = fightData.length;
     let parsedLines = 0;
 
-    const fights: (Fight | Raid)[] = [];
+    const fights: Encounter[] = [];
     let logVersion: string = "";
     let currentFight: Fight | null = null;
     let player: string = ""; //todo support multiple players
@@ -57,13 +59,32 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     let fightStartTime: Date;
     let fightStartTick: number = -1;
     let currentRaid: Raid | null = null;
+    let currentWaves: Waves | null = null;
+    let currentWave: Wave | null = null;
+    let currentWaveStartTick: number = -1;
+
+    const createWave = (name: string, tick: number | undefined): Wave => {
+        if (tick !== undefined && tick !== -1) {
+            currentWaveStartTick = tick;
+        }
+        return {name, fights: [], metaData: {name, fights: [], waveLengthTicks: -1, success: false}};
+    };
 
     function endFight(lastLine: LogLine, success: boolean, nullFight: boolean = true) {
         currentFight!.lastLine = lastLine;
 
+        const startFightTimeMs = currentFight!.firstLine.fightTimeMs!;
+        // The fight might end because a wave ended, in which case we take the wave end time.
+        const endFightTimeMs = currentFight!.lastLine.fightTimeMs;
+        const calcWaveFightLength = () => {
+            const logDate = moment(`${lastLine.date} ${lastLine.time}`, 'MM-DD-YYYY HH:mm:ss.SSS').toDate();
+            return logDate.getTime() - fightStartTime!.getTime();
+        }
+
+        const fightLengthMs = (endFightTimeMs) ? endFightTimeMs - startFightTimeMs : calcWaveFightLength();
         currentFight!.metaData = {
             date: currentFight!.firstLine.date,
-            fightLengthMs: currentFight!.lastLine.fightTimeMs! - currentFight!.firstLine.fightTimeMs!,
+            fightLengthMs,
             name: currentFight!.name,
             success: success,
             time: currentFight!.firstLine.time
@@ -73,14 +94,20 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         const hasPlayerDamage = currentFight!.data.some((logLine) =>
             logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine)
         );
+
         if (!hasPlayerDamage) {
             return;
         }
 
         const raidName = playerRegion ? RAID_NAME_REGION_MAPPING[playerRegion] : null;
+        const wavesName = playerRegion ? WAVE_BASED_REGION_MAPPING[playerRegion] : null;
         if (raidName) {
             currentRaid = currentRaid || {name: raidName, fights: []};
             currentRaid.fights.push(currentFight as Fight);
+        } else if (wavesName) {
+            currentWave = currentWave || createWave(`Wave ${currentFight?.mainEnemyName}`, lastLine.tick);
+            currentWaves = currentWaves || {name: wavesName, waves: [currentWave!], metaData: {name: wavesName, waves: [currentWave.metaData]}};
+            currentWave.fights.push(currentFight as Fight);
         } else {
             fights.push(currentFight as Fight);
         }
@@ -89,6 +116,21 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             currentFight = null;
         }
         lastDamage = null;
+    }
+
+    function endWave(lastLine: LogLine, success: boolean) {
+        if (!currentWave || !currentWaves) {
+            return;
+        }
+        // flush any existing fights (e.g. healers despawning after jads)
+        if (currentFight) {
+            endFight(lastLine, true, true);
+        }
+        currentWave.metaData.waveLengthTicks = lastLine.tick! - currentWaveStartTick;
+        currentWave.metaData.success = success;
+        currentWaves.waves.push(currentWave);
+        currentWave = null;
+        currentWaveStartTick = -1;
     }
 
     for (const logLine of fightData) {
@@ -112,6 +154,18 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             const positionLog = logLine as PositionLog;
             const playerName = positionLog.source.name;
             playerPositions[playerName] = positionLog;
+        }
+
+        if (logLine.type === LogTypes.WAVE_START) {
+            const wavesName = playerRegion ? WAVE_BASED_REGION_MAPPING[playerRegion] : null;
+            currentWave = createWave(`Wave ${logLine.waveNumber}`, logLine.tick!);
+            if (!currentWaves && wavesName) {
+                currentWaves = {name: wavesName, waves: [], metaData: {name: wavesName, waves: []}};
+            }
+        }
+
+        if (logLine.type === LogTypes.WAVE_END) {
+            endWave(logLine, true);
         }
 
         // If there's a gap of over 60 seconds end the current fight
@@ -241,6 +295,8 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                     endFight(logLine, true);
                 } else if (logLine.target.name === currentFight.loggedInPlayer) {
                     endFight(logLine, false);
+                    // end wave if player dies
+                    endWave(logLine, false);
                 }
             }
         }
@@ -278,6 +334,13 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                     currentRaid = null;
                 }
             }
+            if (currentWaves) {
+                // assume success if region changes, although if someone teleports out of the waves...
+                endWave(logLine, true);
+                fights.push(currentWaves);
+                currentWaves = null;
+            }
+            
             playerRegion = logLine.playerRegion;
         }
 
@@ -291,6 +354,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     // If we reach the end of the logs, end the current fight
     if (currentFight) {
         endFight(currentFight.data[currentFight.data.length - 1], false, false);
+        endWave(currentFight.data[currentFight.data.length - 1], false);
     }
 
     const fightNameCounts: Map<string, number> = new Map(); // Map to store counts of each fight name

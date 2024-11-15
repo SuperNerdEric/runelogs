@@ -4,7 +4,7 @@ import Dropzone from './Dropzone';
 import {Button, CircularProgress, Tab, Tabs} from '@mui/material';
 import Instructions from './Instructions';
 import {BoostsTab, DamageDoneTab, DamageTakenTab, EventsTab, ReplayTab, TabsEnum} from './Tabs';
-import {Fight, FightMetaData, isFight} from '../models/Fight';
+import {Fight, isFight} from '../models/Fight';
 import localforage from 'localforage';
 import TopBar from './TopBar';
 import {closeSnackbar, SnackbarKey, useSnackbar} from 'notistack';
@@ -12,8 +12,11 @@ import FightSelector from './sections/FightSelector';
 import {Icon} from '@iconify/react';
 import TickActivity from './performance/TickActivity';
 import {BOSS_NAMES} from '../utils/constants';
-import {isRaidMetaData, Raid, RaidMetaData} from '../models/Raid';
+import {getRaidMetadata, isRaidMetaData, RaidMetaData} from "../models/Raid";
+import { getWavesMetaData, isWaves } from '../models/Waves';
 import DropdownFightSelector from './sections/DropdownFightSelector';
+import { Encounter, EncounterMetaData } from '../models/LogLine';
+
 import ReactGA from 'react-ga4';
 import * as semver from "semver";
 
@@ -65,7 +68,7 @@ function App() {
         return worker;
     });
 
-    const [fightMetadata, setFightMetadata] = useState<(FightMetaData | RaidMetaData)[] | null>(null);
+    const [fightMetadata, setFightMetadata] = useState<EncounterMetaData[] | null>(null);
     const [selectedFightMetadataIndex, setSelectedFightMetadataIndex] = useState<number | null>(null);
     const [selectedRaidIndex, setSelectedRaidIndex] = useState<number | undefined>(undefined);
     const [selectedFight, setSelectedFight] = useState<Fight | null>(null);
@@ -98,10 +101,11 @@ function App() {
             });
     };
 
-    const handleSelectFight = (index: number, raidIndex?: number) => {
-        worker.postMessage({type: 'getItem', index, raidIndex});
+    // raidIndex can be waveIndex
+    const handleSelectFight = (index: number, raidIndex?: number, subIndex?: number) => {
+        worker.postMessage({type: 'getItem', index, raidIndex, subIndex});
         setSelectedFightMetadataIndex(index);
-        setSelectedRaidIndex(raidIndex);
+        setSelectedRaidIndex(subIndex);
     };
 
     const handleRaidSelectFight = (raidIndex: number) => {
@@ -139,18 +143,17 @@ function App() {
     useEffect(() => {
         // Check if fight data exists in localforage
         fightsStorage
-            .getItem<(Fight | Raid)[]>('fightData')
-            .then((data: (Fight | Raid)[] | null) => {
+            .getItem<Encounter[]>('fightData')
+            .then((data: Encounter[] | null) => {
                 if (data) {
                     setFightMetadata(
                         data.map((fight) => {
                             if (isFight(fight)) {
                                 return fight.metaData;
+                            } else if (isWaves(fight)) {
+                                return getWavesMetaData(fight);
                             } else {
-                                return {
-                                    name: fight.name,
-                                    fights: fight.fights.map((fight) => fight.metaData),
-                                } as RaidMetaData;
+                                return getRaidMetadata(fight);
                             }
                         })
                     );

@@ -1,8 +1,13 @@
 import {Fight, FightMetaData} from "./Fight";
+import { Encounter, EncounterMetaData } from "./LogLine";
 
 export interface Raid {
     name: string;
     fights: Fight[]
+}
+
+export function isRaid(e: Encounter): e is Raid {
+    return (e as Raid).fights !== undefined;
 }
 
 export interface RaidMetaData {
@@ -15,10 +20,17 @@ export interface RaidMetaData {
     fights: FightMetaData[]
 }
 
-export function isRaidMetaData(metaData: FightMetaData | RaidMetaData | null): metaData is RaidMetaData {
+export function isRaidMetaData(metaData: EncounterMetaData | null): metaData is RaidMetaData {
     if(metaData === null) {
         return false;
     } else {
         return (metaData as RaidMetaData).fights !== undefined;
     }
+}
+
+export function getRaidMetadata(fight: Raid): RaidMetaData {
+    return {
+        name: fight.name,
+        fights: fight.fights.map(fight => fight.metaData)
+    };
 }

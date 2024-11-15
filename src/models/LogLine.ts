@@ -1,5 +1,8 @@
 import { Actor } from "./Actor";
 import {BoostedLevels} from "./BoostedLevels";
+import { Fight, FightMetaData } from "./Fight";
+import { Raid, RaidMetaData } from "./Raid";
+import { Waves, WavesMetaData } from "./Waves";
 
 export enum LogTypes {
     LOG_VERSION = 'Log Version',
@@ -13,6 +16,8 @@ export enum LogTypes {
     HEAL = 'Heal',
     PLAYER_ATTACK_ANIMATION = 'Attack Animation',
     PLAYER_POSITION = 'Player Position',
+    WAVE_START = 'Wave Start',
+    WAVE_END = 'Wave End',
 }
 
 export interface BaseLog {
@@ -89,6 +94,14 @@ export interface PositionLog extends BaseLog {
     position: { x: number; y: number; plane: number };
 }
 
+export interface WaveStartLog extends BaseLog {
+    type: LogTypes.WAVE_START;
+    waveNumber: number;
+}
+export interface WaveEndLog extends BaseLog {
+    type: LogTypes.WAVE_END;
+}
+
 export type LogLine =
     LogVersionLog
     | LoggedInPlayerLog
@@ -100,9 +113,14 @@ export type LogLine =
     | DamageLog
     | HealLog
     | AttackAnimationLog
-    | PositionLog;
+    | PositionLog
+    | WaveStartLog
+    | WaveEndLog;
 
 export function filterByType<T extends LogLine['type']>(logs: LogLine[], type: T): Extract<LogLine, { type: T }>[] {
     return logs.filter(log => log.type === type) as Extract<LogLine, { type: T }>[];
 }
 
+
+export type Encounter = Fight | Raid | Waves;
+export type EncounterMetaData = FightMetaData | RaidMetaData | WavesMetaData;
