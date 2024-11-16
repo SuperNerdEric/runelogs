@@ -168,13 +168,8 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
         if (logLine.type === LogTypes.PLAYER_EQUIPMENT) {
             const playerEquipmentLog = logLine as PlayerEquipmentLog;
-            if (playerEquipmentLog.source.id) {
-                const key = `${playerEquipmentLog.source.id}-${playerEquipmentLog.source.index}`;
-                playerEquipmentLogs[key] = playerEquipmentLog;
-            } else {
-                const playerName = playerEquipmentLog.source.name;
-                playerEquipmentLogs[playerName] = playerEquipmentLog;
-            }
+            const playerName = playerEquipmentLog.source.name;
+            playerEquipmentLogs[playerName] = playerEquipmentLog;
         }
 
         if (logLine.type === LogTypes.POSITION) {
