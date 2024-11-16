@@ -20,7 +20,7 @@ import {
 } from "./constants";
 import {SECONDS_PER_TICK} from "../models/Constants";
 import {Raid} from "../models/Raid";
-import { Wave, Waves } from "../models/Waves";
+import {Wave, Waves} from "../models/Waves";
 
 
 export function isMine(hitsplatName: string) {
@@ -54,7 +54,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     let lastDamage: { time: number, index: number } | null = null;
     let boostedLevels: BoostedLevels | undefined;
     let playerEquipment: string[] | undefined;
-    let playerPositions: { [playerName: string]: PositionLog } = {};
+    let positionLogs: { [name: string]: PositionLog } = {};
     let playerRegion: number | undefined;
     let fightStartTime: Date;
     let fightStartTick: number = -1;
@@ -106,7 +106,11 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             currentRaid.fights.push(currentFight as Fight);
         } else if (wavesName) {
             currentWave = currentWave || createWave(`Wave ${currentFight?.mainEnemyName}`, lastLine.tick);
-            currentWaves = currentWaves || {name: wavesName, waves: [currentWave!], metaData: {name: wavesName, waves: [currentWave.metaData]}};
+            currentWaves = currentWaves || {
+                name: wavesName,
+                waves: [currentWave!],
+                metaData: {name: wavesName, waves: [currentWave.metaData]}
+            };
             currentWave.fights.push(currentFight as Fight);
         } else {
             fights.push(currentFight as Fight);
@@ -116,6 +120,14 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             currentFight = null;
         }
         lastDamage = null;
+
+        // I think Supporting Pillars aren't despawning at the end of Verzik P1, but instead being set to invisible
+        // which we aren't checking for, so we need to delete their positions
+        for (let positionLogsKey in positionLogs) {
+            if (positionLogsKey.startsWith("8379-") || positionLogsKey.startsWith("10840-") || positionLogsKey.startsWith("10857-")) {
+                delete positionLogs[positionLogsKey];
+            }
+        }
     }
 
     function endWave(lastLine: LogLine, success: boolean) {
@@ -150,10 +162,19 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             playerEquipment = logLine.playerEquipment;
         }
 
-        if (logLine.type === LogTypes.PLAYER_POSITION) {
+        if (logLine.type === LogTypes.POSITION) {
             const positionLog = logLine as PositionLog;
-            const playerName = positionLog.source.name;
-            playerPositions[playerName] = positionLog;
+            if (positionLog.source.id) {
+                const key = `${positionLog.source.id}-${positionLog.source.index}`;
+                positionLogs[key] = positionLog;
+            } else {
+                const playerName = positionLog.source.name;
+                positionLogs[playerName] = positionLog;
+            }
+        }
+
+        if (logLine.type === LogTypes.NPC_DESPAWNED) {
+            delete positionLogs[`${logLine.source.id}-${logLine.source.index}`];
         }
 
         if (logLine.type === LogTypes.WAVE_START) {
@@ -218,12 +239,12 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                 });
             }
 
-            // Include current player positions at the beginning of the fight
-            if (Object.keys(playerPositions).length > 0) {
-                const positionLogs = Object.values(playerPositions);
-                for (const positionLog of positionLogs) {
+            // Include current positions at the beginning of the fight
+            if (Object.keys(positionLogs).length > 0) {
+                const positionLogValues = Object.values(positionLogs);
+                for (const positionLog of positionLogValues) {
                     const newPositionLog: PositionLog = {
-                        type: LogTypes.PLAYER_POSITION,
+                        type: LogTypes.POSITION,
                         date: logLine.date,
                         tick: fightStartTick,
                         time: logLine.time,
@@ -340,7 +361,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                 fights.push(currentWaves);
                 currentWaves = null;
             }
-            
+
             playerRegion = logLine.playerRegion;
         }
 

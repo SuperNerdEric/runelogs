@@ -46,9 +46,9 @@ export class Position {
         return Math.sqrt(diffX * diffX + diffY * diffY);
     }
 
-    toLeaflet(map: LeafletMap, rectangleOptions?: PolylineOptions): Rectangle {
+    toLeaflet(map: LeafletMap, rectangleOptions?: PolylineOptions, size: number = 1): Rectangle {
         const startLatLng = this.toLatLng(map);
-        const endLatLng = new Position(this.x + 1, this.y + 1, this.z).toLatLng(map);
+        const endLatLng = new Position(this.x + size, this.y + size, this.z).toLatLng(map);
         const bounds = L.latLngBounds(startLatLng, endLatLng);
 
         // Default rectangle options

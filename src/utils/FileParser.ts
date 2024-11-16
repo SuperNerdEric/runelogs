@@ -208,23 +208,59 @@ export const parseLogLine = (logLine: string, player?: string, logVersion?: stri
         }
     }
 
-    const positionLogPattern = new RegExp(`(${ANYTHING_BUT_TAB_PATTERN}) position \\((\\d+), (\\d+), (\\d+)\\)$`);
+    if (logVersion && semver.gte(logVersion, "1.3.0")) {
+        const positionLogPattern = new RegExp(`(${ANYTHING_BUT_TAB_PATTERN})\tPOSITION\t\\((\\d+), (\\d+), (\\d+)\\)$`);
 
-    match = action.match(positionLogPattern);
+        match = action.match(positionLogPattern);
+        if (match) {
+            const [, actorName, x, y, plane] = match;
+            return {
+                type: LogTypes.POSITION,
+                date,
+                time,
+                timezone,
+                tick,
+                source: getActor(actorName),
+                position: {
+                    x: parseInt(x, 10),
+                    y: parseInt(y, 10),
+                    plane: parseInt(plane, 10),
+                },
+            };
+        }
+    } else {
+        const positionLogPattern = new RegExp(`(${ANYTHING_BUT_TAB_PATTERN}) position \\((\\d+), (\\d+), (\\d+)\\)$`);
+
+        match = action.match(positionLogPattern);
+        if (match) {
+            const [, playerName, x, y, plane] = match;
+            return {
+                type: LogTypes.POSITION,
+                date,
+                time,
+                timezone,
+                tick,
+                source: getActor(playerName),
+                position: {
+                    x: parseInt(x, 10),
+                    y: parseInt(y, 10),
+                    plane: parseInt(plane, 10),
+                },
+            };
+        }
+    }
+
+    const despawnedPattern = new RegExp(`^(${ANYTHING_BUT_TAB_PATTERN})\tDESPAWNED$`);
+    match = action.match(despawnedPattern);
     if (match) {
-        const [, playerName, x, y, plane] = match;
+        let [, target] = match;
         return {
-            type: LogTypes.PLAYER_POSITION,
+            type: LogTypes.NPC_DESPAWNED,
             date,
             time,
             timezone,
             tick,
-            source: getActor(playerName),
-            position: {
-                x: parseInt(x, 10),
-                y: parseInt(y, 10),
-                plane: parseInt(plane, 10),
-            },
+            source: getActor(target),
         };
     }
 

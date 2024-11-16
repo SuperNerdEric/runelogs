@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import MapComponent from './MapComponent';
 import PlaybackControls from './PlaybackControls';
 import {Fight} from '../../models/Fight';
-import {LogTypes, PositionLog} from '../../models/LogLine';
+import {LogTypes, NPCDespawned, PositionLog} from '../../models/LogLine';
 
 interface MainReplayComponentProps {
     fight: Fight;
@@ -18,46 +18,84 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
         [playerName: string]: { x: number; y: number; plane: number };
     }>({});
 
+    const [npcPositions, setNpcPositions] = useState<{
+        [npcKey: string]: { x: number; y: number; plane: number };
+    }>({});
+    const [initialNpcPositions, setInitialNpcPositions] = useState<{
+        [npcKey: string]: { x: number; y: number; plane: number };
+    }>({});
+
     // Calculate max time based on fight length
     const maxTick = Math.max(...fight.data.map((log) => log.tick || 0));
     const maxTime = (maxTick - (fight.data[0].tick || 0)) * 0.6;
 
-    // Preprocess position logs
-    const playerPositionLogs = useMemo(() => {
-        const logs: { [playerName: string]: PositionLog[] } = {};
+    // Preprocess position logs and collect despawn times
+    const {playerPositionLogs, npcPositionLogs, npcDespawnTimes} = useMemo(() => {
+        const logs = {
+            playerLogs: {} as { [playerName: string]: PositionLog[] },
+            npcLogs: {} as { [npcKey: string]: PositionLog[] },
+            npcDespawnTimes: {} as { [npcKey: string]: number }
+        };
+
         fight.data.forEach((logLine) => {
-            if (logLine.type === LogTypes.PLAYER_POSITION) {
+            if (logLine.type === LogTypes.POSITION) {
                 const positionLog = logLine as PositionLog;
-                const playerName = positionLog.source.name;
-                if (!logs[playerName]) {
-                    logs[playerName] = [];
+                const source = positionLog.source;
+                const key = source.id !== undefined
+                    ? `${source.name}-${source.id}-${source.index}`
+                    : source.name;
+
+                if (source.id !== undefined) {
+                    if (!logs.npcLogs[key]) logs.npcLogs[key] = [];
+                    logs.npcLogs[key].push(positionLog);
+                } else {
+                    if (!logs.playerLogs[key]) logs.playerLogs[key] = [];
+                    logs.playerLogs[key].push(positionLog);
                 }
-                logs[playerName].push(positionLog);
+            } else if (logLine.type === LogTypes.NPC_DESPAWNED) {
+                const npcDespawnLog = logLine as NPCDespawned;
+                const npc = npcDespawnLog.source;
+                const key = `${npc.name}-${npc.id}-${npc.index}`;
+                logs.npcDespawnTimes[key] = (logLine.tick! - fight.data[0].tick!) * 0.6;
             }
         });
-        // Sort logs by tick
-        Object.values(logs).forEach((positionLogs) => {
+
+        Object.values(logs.playerLogs).forEach((positionLogs) => {
             positionLogs.sort((a, b) => (a.tick || 0) - (b.tick || 0));
         });
-        return logs;
+        Object.values(logs.npcLogs).forEach((positionLogs) => {
+            positionLogs.sort((a, b) => (a.tick || 0) - (b.tick || 0));
+        });
+
+        return {
+            playerPositionLogs: logs.playerLogs,
+            npcPositionLogs: logs.npcLogs,
+            npcDespawnTimes: logs.npcDespawnTimes,
+        };
     }, [fight.data]);
 
-    // Extract initial player positions
-    useEffect(() => {
-        const initialPositions: { [playerName: string]: { x: number; y: number; plane: number } } = {};
-        Object.entries(playerPositionLogs).forEach(([playerName, positionLogs]) => {
+    const extractInitialPositions = (logs: { [key: string]: PositionLog[] }) => {
+        const initialPositions: { [key: string]: { x: number; y: number; plane: number } } = {};
+        Object.entries(logs).forEach(([key, positionLogs]) => {
             if (positionLogs.length > 0) {
-                initialPositions[playerName] = positionLogs[0].position;
+                initialPositions[key] = positionLogs[0].position;
             }
         });
-        setInitialPlayerPositions(initialPositions);
+        return initialPositions;
+    };
+
+    useEffect(() => {
+        setInitialPlayerPositions(extractInitialPositions(playerPositionLogs));
     }, [playerPositionLogs]);
 
-    // Update positions based on current time
+    useEffect(() => {
+        setInitialNpcPositions(extractInitialPositions(npcPositionLogs));
+    }, [npcPositionLogs]);
+
+    // Update player positions based on current time
     useEffect(() => {
         const positions: { [playerName: string]: { x: number; y: number; plane: number } } = {};
         Object.entries(playerPositionLogs).forEach(([playerName, positionLogs]) => {
-            // Find the last position log where logTime <= currentTime
             let lastPositionLog: PositionLog | null = null;
             for (const log of positionLogs) {
                 const logTime = (log.tick! - fight.data[0].tick!) * 0.6;
@@ -73,6 +111,33 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
         });
         setPlayerPositions(positions);
     }, [currentTime, playerPositionLogs, fight.data]);
+
+    // Update NPC positions based on current time and despawn times
+    useEffect(() => {
+        const positions: { [npcKey: string]: { x: number; y: number; plane: number } } = {};
+        Object.entries(npcPositionLogs).forEach(([npcKey, positionLogs]) => {
+            let lastPositionLog: PositionLog | null = null;
+            const despawnTime = npcDespawnTimes[npcKey];
+
+            for (const log of positionLogs) {
+                const logTime = (log.tick! - fight.data[0].tick!) * 0.6;
+                if (logTime <= currentTime) {
+                    lastPositionLog = log;
+                } else {
+                    break;
+                }
+            }
+
+            if (lastPositionLog) {
+                if (despawnTime !== undefined && currentTime >= despawnTime) {
+                    // NPC has despawned; exclude from positions
+                    return;
+                }
+                positions[npcKey] = lastPositionLog.position;
+            }
+        });
+        setNpcPositions(positions);
+    }, [currentTime, npcPositionLogs, fight.data, npcDespawnTimes]);
 
     // Handle play/pause functionality
     useEffect(() => {
@@ -104,6 +169,8 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
             <MapComponent
                 playerPositions={playerPositions}
                 initialPlayerPositions={initialPlayerPositions}
+                npcPositions={npcPositions}
+                initialNpcPositions={initialNpcPositions}
                 plane={0}
             />
             <PlaybackControls

@@ -15,7 +15,8 @@ export enum LogTypes {
     DAMAGE = 'Damage',
     HEAL = 'Heal',
     PLAYER_ATTACK_ANIMATION = 'Attack Animation',
-    PLAYER_POSITION = 'Player Position',
+    POSITION = 'Position',
+    NPC_DESPAWNED = 'NPC_DESPAWNED',
     WAVE_START = 'Wave Start',
     WAVE_END = 'Wave End',
 }
@@ -89,9 +90,14 @@ export interface AttackAnimationLog extends BaseLog {
 }
 
 export interface PositionLog extends BaseLog {
-    type: LogTypes.PLAYER_POSITION;
+    type: LogTypes.POSITION;
     source: Actor;
     position: { x: number; y: number; plane: number };
+}
+
+export interface NPCDespawned extends BaseLog {
+    type: LogTypes.NPC_DESPAWNED;
+    source: Actor;
 }
 
 export interface WaveStartLog extends BaseLog {
@@ -114,6 +120,7 @@ export type LogLine =
     | HealLog
     | AttackAnimationLog
     | PositionLog
+    | NPCDespawned
     | WaveStartLog
     | WaveEndLog;
 

@@ -139,7 +139,7 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
                                                 <span className="attack-animation-text">{log.animationId} </span>
                                             </>
                                         ) : ""}
-                                        {log.type === LogTypes.PLAYER_POSITION ? `(${log.position.x}, ${log.position.y}, ${log.position.plane})` : ""}
+                                        {log.type === LogTypes.POSITION ? `(${log.position.x}, ${log.position.y}, ${log.position.plane})` : ""}
                                     </TableCell>
                                     <TableCell
                                         className={source === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>

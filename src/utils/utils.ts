@@ -52,9 +52,14 @@ export const convertTimeToMillis = (time: string): number => {
 export const getActor = (actorString: string): Actor => {
     const [id, index] = actorString.split("-");
     if (index) {
-        const monsterName = npcIdMap[Number(id)];
+        const monster = npcIdMap[Number(id)];
+        if (!monster) {
+            return {
+                name: actorString,
+            }
+        }
         return {
-            name: monsterName,
+            name: monster.name,
             id: Number(id),
             index: Number(index),
         };
