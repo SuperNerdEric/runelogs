@@ -105,19 +105,38 @@ export const parseLogLine = (logLine: string, player?: string, logVersion?: stri
         };
     }
 
-    const playerEquipmentPattern = new RegExp(`Player equipment is (${ANYTHING_PATTERN})`);
-    match = action.match(playerEquipmentPattern);
-    if (match) {
-        const [, equpimentString] = match;
-        const playerEquipment: string[] = JSON.parse(equpimentString).map((item: number) => item.toString());
-        return {
-            type: LogTypes.PLAYER_EQUIPMENT,
-            date,
-            time,
-            timezone,
-            tick,
-            playerEquipment
-        };
+    if (logVersion && semver.gte(logVersion, "1.3.0")) {
+        const playerEquipmentPattern = new RegExp(`(${ANYTHING_BUT_TAB_PATTERN})\tEQUIPMENT\t(${ANYTHING_PATTERN})`);
+        match = action.match(playerEquipmentPattern);
+        if (match) {
+            const [, source, equpimentString] = match;
+            const playerEquipment: string[] = JSON.parse(equpimentString).map((item: number) => item.toString());
+            return {
+                type: LogTypes.PLAYER_EQUIPMENT,
+                date,
+                time,
+                timezone,
+                tick,
+                source: getActor(source),
+                playerEquipment,
+            };
+        }
+    } else {
+        const playerEquipmentPattern = new RegExp(`Player equipment is (${ANYTHING_PATTERN})`);
+        match = action.match(playerEquipmentPattern);
+        if (match) {
+            const [, equipmentString] = match;
+            const playerEquipment: string[] = JSON.parse(equipmentString).map((item: number) => item.toString());
+            return {
+                type: LogTypes.PLAYER_EQUIPMENT,
+                date,
+                time,
+                timezone,
+                tick,
+                source: { name: player || "" },
+                playerEquipment,
+            };
+        }
     }
 
     const diesPattern = new RegExp(`^(${ANYTHING_PATTERN}) dies`);
