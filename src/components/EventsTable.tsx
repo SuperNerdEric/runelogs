@@ -105,21 +105,24 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
                                         {log.type === LogTypes.BOOSTED_LEVELS ? renderStatImages(log.boostedLevels) : ""}
                                         {log.type === LogTypes.PLAYER_EQUIPMENT && Array.isArray(log.playerEquipment) ? (
                                             <div style={{display: 'flex'}}>
-                                                {log.playerEquipment.map((itemId: string, i: number) => (
-                                                    <div key={i} style={{
-                                                        width: '22px',
-                                                        overflow: 'hidden',
-                                                        marginRight: '5px',
-                                                        backgroundColor: '#494945',
-                                                        display: 'flex',
-                                                        justifyContent: 'center',
-                                                        alignItems: 'center'
-                                                    }}>
-                                                        <img src={getItemImageUrl(parseInt(itemId))}
-                                                             alt={`Item ${itemId}`}
-                                                             style={{height: '22px'}}/>
-                                                    </div>
-                                                ))}
+                                                {log.playerEquipment.map((itemId: string, i: number) => {
+                                                    const id = parseInt(itemId);
+                                                    return id > 0 ? (
+                                                        <div key={i} style={{
+                                                            width: '22px',
+                                                            overflow: 'hidden',
+                                                            marginRight: '5px',
+                                                            backgroundColor: '#494945',
+                                                            display: 'flex',
+                                                            justifyContent: 'center',
+                                                            alignItems: 'center'
+                                                        }}>
+                                                            <img src={getItemImageUrl(id)}
+                                                                 alt={`Item ${itemId}`}
+                                                                 style={{height: '22px'}}/>
+                                                        </div>
+                                                    ) : null;
+                                                })}
                                             </div>
                                         ) : ""}
                                         {log.type === LogTypes.DAMAGE ? (

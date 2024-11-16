@@ -1,4 +1,12 @@
-import {DamageLog, Encounter, LogLine, LogTypes, PositionLog, TargetChangeLog} from "../models/LogLine";
+import {
+    DamageLog,
+    Encounter,
+    LogLine,
+    LogTypes,
+    PlayerEquipmentLog,
+    PositionLog,
+    TargetChangeLog
+} from "../models/LogLine";
 import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
 import {Fight} from "../models/Fight";
 import {BoostedLevels} from "../models/BoostedLevels";
@@ -53,7 +61,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     let player: string = ""; //todo support multiple players
     let lastDamage: { time: number, index: number } | null = null;
     let boostedLevels: BoostedLevels | undefined;
-    let playerEquipment: string[] | undefined;
+    let playerEquipmentLogs: { [name: string]: PlayerEquipmentLog } = {};
     let positionLogs: { [name: string]: PositionLog } = {};
     let playerRegion: number | undefined;
     let fightStartTime: Date;
@@ -159,7 +167,14 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
         }
 
         if (logLine.type === LogTypes.PLAYER_EQUIPMENT) {
-            playerEquipment = logLine.playerEquipment;
+            const playerEquipmentLog = logLine as PlayerEquipmentLog;
+            if (playerEquipmentLog.source.id) {
+                const key = `${playerEquipmentLog.source.id}-${playerEquipmentLog.source.index}`;
+                playerEquipmentLogs[key] = playerEquipmentLog;
+            } else {
+                const playerName = playerEquipmentLog.source.name;
+                playerEquipmentLogs[playerName] = playerEquipmentLog;
+            }
         }
 
         if (logLine.type === LogTypes.POSITION) {
@@ -227,16 +242,21 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             }
 
             // Include current player equipment at the beginning of the fight
-            if (playerEquipment) {
-                initialData.push({
-                    type: LogTypes.PLAYER_EQUIPMENT,
-                    date: logLine.date,
-                    tick: fightStartTick,
-                    time: logLine.time,
-                    timezone: logLine.timezone,
-                    playerEquipment: playerEquipment,
-                    fightTimeMs: 0
-                });
+            if (Object.keys(playerEquipmentLogs).length > 0) {
+                const playerEquipmentLogValues = Object.values(playerEquipmentLogs);
+                for (const playerEquipmentLog of playerEquipmentLogValues) {
+                    const newPlayerEquipmentLog: PlayerEquipmentLog = {
+                        type: LogTypes.PLAYER_EQUIPMENT,
+                        date: logLine.date,
+                        tick: fightStartTick,
+                        time: logLine.time,
+                        timezone: logLine.timezone,
+                        fightTimeMs: 0,
+                        source: playerEquipmentLog.source,
+                        playerEquipment: playerEquipmentLog.playerEquipment
+                    };
+                    initialData.push(newPlayerEquipmentLog);
+                }
             }
 
             // Include current positions at the beginning of the fight

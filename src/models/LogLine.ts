@@ -52,6 +52,7 @@ export interface BoostedLevelsLog extends BaseLog {
 
 export interface PlayerEquipmentLog extends BaseLog {
     type: LogTypes.PLAYER_EQUIPMENT;
+    source: Actor;
     playerEquipment: string[];
 }
 
