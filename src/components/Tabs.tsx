@@ -55,5 +55,5 @@ export const EventsTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}) => 
 };
 
 export const ReplayTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}) => {
-    return <MainReplayComponent fight={selectedLogs}/>;
+    return <MainReplayComponent key={selectedLogs.name + "-" + selectedLogs.metaData.date} fight={selectedLogs}/>;
 };

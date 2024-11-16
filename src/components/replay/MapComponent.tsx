@@ -8,12 +8,16 @@ import MapCenterSetter from './MapCenterSetter';
 interface MapComponentProps {
     playerPositions: { [playerName: string]: { x: number; y: number; plane: number } };
     initialPlayerPositions: { [playerName: string]: { x: number; y: number; plane: number } };
+    npcPositions: { [npcKey: string]: { x: number; y: number; plane: number } };
+    initialNpcPositions: { [npcKey: string]: { x: number; y: number; plane: number } };
     plane: number;
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({
                                                        playerPositions,
                                                        initialPlayerPositions,
+                                                       npcPositions,
+                                                       initialNpcPositions,
                                                        plane,
                                                    }) => {
     return (
@@ -33,7 +37,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
                 tms={true}
             />
             <MapCenterSetter initialPlayerPositions={initialPlayerPositions} />
-            <MapMarkers playerPositions={playerPositions} />
+            <MapMarkers playerPositions={playerPositions} npcPositions={npcPositions} />
             <MouseHover plane={plane} />
         </MapContainer>
     );
