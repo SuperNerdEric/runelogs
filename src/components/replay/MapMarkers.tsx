@@ -2,10 +2,11 @@ import React from 'react';
 import {ImageOverlay, Popup, Rectangle, useMap} from 'react-leaflet';
 import {Position} from "../../utils/Position";
 import {NPC, npcIdMap} from "../../lib/npcIdMap";
+import {GamePosition} from "./GameState";
 
 interface MapMarkersProps {
-    playerPositions: { [playerName: string]: { x: number; y: number; plane: number } };
-    npcPositions: { [npcKey: string]: { x: number; y: number; plane: number } };
+    playerPositions: { [playerName: string]: GamePosition };
+    npcPositions: { [npcKey: string]: GamePosition };
 }
 
 const MapMarkers: React.FC<MapMarkersProps> = ({playerPositions, npcPositions}) => {

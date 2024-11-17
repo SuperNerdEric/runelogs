@@ -1,8 +1,9 @@
-import { Actor } from "./Actor";
+import {Actor} from "./Actor";
 import {BoostedLevels} from "./BoostedLevels";
-import { Fight, FightMetaData } from "./Fight";
-import { Raid, RaidMetaData } from "./Raid";
-import { Waves, WavesMetaData } from "./Waves";
+import {Fight, FightMetaData} from "./Fight";
+import {Raid, RaidMetaData} from "./Raid";
+import {Waves, WavesMetaData} from "./Waves";
+import {GamePosition} from "../components/replay/GameState";
 
 export enum LogTypes {
     LOG_VERSION = 'Log Version',
@@ -93,7 +94,7 @@ export interface AttackAnimationLog extends BaseLog {
 export interface PositionLog extends BaseLog {
     type: LogTypes.POSITION;
     source: Actor;
-    position: { x: number; y: number; plane: number };
+    position: GamePosition;
 }
 
 export interface NPCDespawned extends BaseLog {

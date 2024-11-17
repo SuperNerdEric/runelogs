@@ -1,25 +1,23 @@
-import { useEffect, useRef } from 'react';
-import { useMap } from 'react-leaflet';
-import { Position } from '../../utils/Position';
+import {useEffect, useRef} from 'react';
+import {useMap} from 'react-leaflet';
+import {Position} from '../../utils/Position';
+import {GamePosition} from "./GameState";
 
 interface MapCenterSetterProps {
-    initialPlayerPositions: { [playerName: string]: { x: number; y: number; plane: number } };
+    initialPlayerPosition: GamePosition;
 }
 
-const MapCenterSetter: React.FC<MapCenterSetterProps> = ({ initialPlayerPositions }) => {
+const MapCenterSetter: React.FC<MapCenterSetterProps> = ({initialPlayerPosition}) => {
     const map = useMap();
     const hasCentered = useRef(false);
 
     useEffect(() => {
-        if (!hasCentered.current && Object.keys(initialPlayerPositions).length > 0) {
+        if (!hasCentered.current && Object.keys(initialPlayerPosition).length > 0) {
             hasCentered.current = true;
-
-            const firstPlayerName = Object.keys(initialPlayerPositions)[0];
-            const positionData = initialPlayerPositions[firstPlayerName];
-            const centerLatLng = Position.toLatLng(map, positionData.x, positionData.y);
+            const centerLatLng = Position.toLatLng(map, initialPlayerPosition.x, initialPlayerPosition.y);
             map.setView(centerLatLng, map.getZoom());
         }
-    }, [map, initialPlayerPositions]);
+    }, [map, initialPlayerPosition]);
 
     return null;
 };

@@ -1,8 +1,12 @@
-import React, {useEffect, useMemo, useState} from 'react';
+// MainReplayComponent.tsx
+import React, {useEffect, useState} from 'react';
 import MapComponent from './MapComponent';
 import PlaybackControls from './PlaybackControls';
+import PlayerSelector from './PlayerSelector';
 import {Fight} from '../../models/Fight';
-import {LogTypes, NPCDespawned, PositionLog} from '../../models/LogLine';
+import {createGameStates, GamePosition, GameState, getCurrentGameState} from './GameState';
+import PlayerEquipment from "./PlayerEquipment";
+import * as semver from "semver";
 
 interface MainReplayComponentProps {
     fight: Fight;
@@ -10,134 +14,35 @@ interface MainReplayComponentProps {
 
 const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
     const [currentTime, setCurrentTime] = useState(0);
+    const [initialPlayerPosition, setInitialPlayerPosition] = useState<GamePosition | undefined>(undefined);
+    const [gameStates, setGameStates] = useState<GameState[]>([]);
+    const [currentGameState, setCurrentGameState] = useState<GameState | undefined>(undefined);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [playerPositions, setPlayerPositions] = useState<{
-        [playerName: string]: { x: number; y: number; plane: number };
-    }>({});
-    const [initialPlayerPositions, setInitialPlayerPositions] = useState<{
-        [playerName: string]: { x: number; y: number; plane: number };
-    }>({});
-
-    const [npcPositions, setNpcPositions] = useState<{
-        [npcKey: string]: { x: number; y: number; plane: number };
-    }>({});
-    const [initialNpcPositions, setInitialNpcPositions] = useState<{
-        [npcKey: string]: { x: number; y: number; plane: number };
-    }>({});
+    const [selectedPlayerName, setSelectedPlayerName] = useState<string | undefined>(undefined);
 
     // Calculate max time based on fight length
     const maxTick = Math.max(...fight.data.map((log) => log.tick || 0));
-    const maxTime = (maxTick - (fight.data[0].tick || 0)) * 0.6;
+    const initialTick = fight.data[0].tick || 0;
+    const maxTime = (maxTick - initialTick) * 0.6;
 
-    // Preprocess position logs and collect despawn times
-    const {playerPositionLogs, npcPositionLogs, npcDespawnTimes} = useMemo(() => {
-        const logs = {
-            playerLogs: {} as { [playerName: string]: PositionLog[] },
-            npcLogs: {} as { [npcKey: string]: PositionLog[] },
-            npcDespawnTimes: {} as { [npcKey: string]: number }
-        };
-
-        fight.data.forEach((logLine) => {
-            if (logLine.type === LogTypes.POSITION) {
-                const positionLog = logLine as PositionLog;
-                const source = positionLog.source;
-                const key = source.id !== undefined
-                    ? `${source.name}-${source.id}-${source.index}`
-                    : source.name;
-
-                if (source.id !== undefined) {
-                    if (!logs.npcLogs[key]) logs.npcLogs[key] = [];
-                    logs.npcLogs[key].push(positionLog);
-                } else {
-                    if (!logs.playerLogs[key]) logs.playerLogs[key] = [];
-                    logs.playerLogs[key].push(positionLog);
-                }
-            } else if (logLine.type === LogTypes.NPC_DESPAWNED) {
-                const npcDespawnLog = logLine as NPCDespawned;
-                const npc = npcDespawnLog.source;
-                const key = `${npc.name}-${npc.id}-${npc.index}`;
-                logs.npcDespawnTimes[key] = (logLine.tick! - fight.data[0].tick!) * 0.6;
-            }
-        });
-
-        Object.values(logs.playerLogs).forEach((positionLogs) => {
-            positionLogs.sort((a, b) => (a.tick || 0) - (b.tick || 0));
-        });
-        Object.values(logs.npcLogs).forEach((positionLogs) => {
-            positionLogs.sort((a, b) => (a.tick || 0) - (b.tick || 0));
-        });
-
-        return {
-            playerPositionLogs: logs.playerLogs,
-            npcPositionLogs: logs.npcLogs,
-            npcDespawnTimes: logs.npcDespawnTimes,
-        };
+    // Preprocess fight data into game states for easier playback
+    useEffect(() => {
+        setGameStates(createGameStates(fight));
     }, [fight.data]);
 
-    const extractInitialPositions = (logs: { [key: string]: PositionLog[] }) => {
-        const initialPositions: { [key: string]: { x: number; y: number; plane: number } } = {};
-        Object.entries(logs).forEach(([key, positionLogs]) => {
-            if (positionLogs.length > 0) {
-                initialPositions[key] = positionLogs[0].position;
-            }
-        });
-        return initialPositions;
-    };
-
+    // Extract initial player position
     useEffect(() => {
-        setInitialPlayerPositions(extractInitialPositions(playerPositionLogs));
-    }, [playerPositionLogs]);
+        if (gameStates.length > 0) {
+            const initialState = gameStates[0];
+            const initialPosition = Object.values(initialState.players).find((state) => state.position !== undefined)?.position;
+            setInitialPlayerPosition(initialPosition);
+        }
+    }, [gameStates]);
 
+    // Update currentGameState based on currentTime
     useEffect(() => {
-        setInitialNpcPositions(extractInitialPositions(npcPositionLogs));
-    }, [npcPositionLogs]);
-
-    // Update player positions based on current time
-    useEffect(() => {
-        const positions: { [playerName: string]: { x: number; y: number; plane: number } } = {};
-        Object.entries(playerPositionLogs).forEach(([playerName, positionLogs]) => {
-            let lastPositionLog: PositionLog | null = null;
-            for (const log of positionLogs) {
-                const logTime = (log.tick! - fight.data[0].tick!) * 0.6;
-                if (logTime <= currentTime) {
-                    lastPositionLog = log;
-                } else {
-                    break;
-                }
-            }
-            if (lastPositionLog) {
-                positions[playerName] = lastPositionLog.position;
-            }
-        });
-        setPlayerPositions(positions);
-    }, [currentTime, playerPositionLogs, fight.data]);
-
-    // Update NPC positions based on current time and despawn times
-    useEffect(() => {
-        const positions: { [npcKey: string]: { x: number; y: number; plane: number } } = {};
-        Object.entries(npcPositionLogs).forEach(([npcKey, positionLogs]) => {
-            let lastPositionLog: PositionLog | null = null;
-            const despawnTime = npcDespawnTimes[npcKey];
-
-            for (const log of positionLogs) {
-                const logTime = (log.tick! - fight.data[0].tick!) * 0.6;
-                if (logTime <= currentTime) {
-                    lastPositionLog = log;
-                } else {
-                    break;
-                }
-            }
-
-            if (lastPositionLog) {
-                if (despawnTime !== undefined && currentTime >= despawnTime) {
-                    // NPC has despawned; exclude from positions
-                    return;
-                }
-                positions[npcKey] = lastPositionLog.position;
-            }
-        });
-        setNpcPositions(positions);
-    }, [currentTime, npcPositionLogs, fight.data, npcDespawnTimes]);
+        setCurrentGameState(getCurrentGameState(gameStates, currentTime, initialTick));
+    }, [gameStates, currentTime, initialTick]);
 
     // Handle play/pause functionality
     useEffect(() => {
@@ -164,15 +69,71 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
         setIsPlaying(false); // Pause playback when slider is moved
     };
 
+    const handleSelectPlayer = (playerName: string | undefined) => {
+        setSelectedPlayerName(playerName);
+    };
+
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                setSelectedPlayerName(undefined);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
+
+    // @ts-ignore
     return (
-        <div>
-            <MapComponent
-                playerPositions={playerPositions}
-                initialPlayerPositions={initialPlayerPositions}
-                npcPositions={npcPositions}
-                initialNpcPositions={initialNpcPositions}
-                plane={0}
-            />
+        <div style={{position: 'relative'}}>
+            {currentGameState && initialPlayerPosition && (
+                <>
+                    <MapComponent
+                        playerPositions={Object.fromEntries(
+                            Object.entries(currentGameState.players)
+                                .filter(([name, state]) => state.position !== undefined)
+                                .map(([name, state]) => [name, state.position as GamePosition])
+                        )}
+                        initialPlayerPosition={initialPlayerPosition}
+                        npcPositions={Object.fromEntries(
+                            Object.entries(currentGameState.npcs)
+                                .filter(([key, state]) => state.position !== undefined)
+                                .map(([key, state]) => [key, state.position as GamePosition])
+                        )}
+                        plane={0}
+                    />
+                    {fight.logVersion && semver.gte(fight.logVersion, "1.3.0") &&
+                        <div
+                            style={{
+                                position: 'absolute',
+                                bottom: '10px',
+                                right: '10px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'flex-end',
+                            }}
+                        >
+                            {selectedPlayerName &&
+                                currentGameState &&
+                                currentGameState.players[selectedPlayerName] &&
+                                currentGameState.players[selectedPlayerName].equipment !== undefined && (
+                                    <PlayerEquipment
+                                        // @ts-ignore
+                                        equipment={currentGameState.players[selectedPlayerName].equipment}
+                                    />
+                                )}
+                            <PlayerSelector
+                                players={Object.keys(currentGameState.players)}
+                                selectedPlayer={selectedPlayerName}
+                                onSelectPlayer={handleSelectPlayer}
+                            />
+                        </div>
+                    }
+                </>
+            )}
             <PlaybackControls
                 isPlaying={isPlaying}
                 onPlayPause={handlePlayPause}
