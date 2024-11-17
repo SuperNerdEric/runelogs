@@ -4,20 +4,20 @@ import 'leaflet/dist/leaflet.css';
 import MapMarkers from './MapMarkers';
 import MouseHover from './MouseHover';
 import MapCenterSetter from './MapCenterSetter';
+import {GamePosition} from "./GameState";
 
 interface MapComponentProps {
-    playerPositions: { [playerName: string]: { x: number; y: number; plane: number } };
-    initialPlayerPositions: { [playerName: string]: { x: number; y: number; plane: number } };
-    npcPositions: { [npcKey: string]: { x: number; y: number; plane: number } };
-    initialNpcPositions: { [npcKey: string]: { x: number; y: number; plane: number } };
+    playerPositions: { [playerName: string]: GamePosition };
+    initialPlayerPosition: GamePosition;
+    npcPositions: { [npcKey: string]: GamePosition };
     plane: number;
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({
                                                        playerPositions,
-                                                       initialPlayerPositions,
+                                                       initialPlayerPosition,
                                                        npcPositions,
-                                                       initialNpcPositions,
+
                                                        plane,
                                                    }) => {
     return (
@@ -36,7 +36,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
                 noWrap={true}
                 tms={true}
             />
-            <MapCenterSetter initialPlayerPositions={initialPlayerPositions} />
+            <MapCenterSetter initialPlayerPosition={initialPlayerPosition} />
             <MapMarkers playerPositions={playerPositions} npcPositions={npcPositions} />
             <MouseHover plane={plane} />
         </MapContainer>

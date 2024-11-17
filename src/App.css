@@ -409,20 +409,22 @@
 /* Map Container Styling */
 .leaflet-container {
     background: #000;
+    z-index: 0 !important;
 }
 
 /* Playback Controls Styling */
 .playback-controls {
     position: absolute;
-    bottom: 10px;
+    bottom: 0px;
     left: 50%;
     transform: translateX(-50%);
-    background: black;
+    background: #262a2e;
     color: white;
     padding: 10px;
     border-radius: 5px;
     display: flex;
     align-items: center;
+    border: white 1px solid;
 }
 
 .playback-controls button {
