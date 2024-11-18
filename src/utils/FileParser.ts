@@ -82,30 +82,55 @@ export const parseLogLine = (logLine: string, player?: string, logVersion?: stri
         };
     }
 
-    const boostedLevelsPattern = new RegExp(`Boosted levels are \\[(\\d+), (\\d+), (\\d+), (\\d+), (\\d+), (\\d+), (\\d+)\\]`);
-    match = action.match(boostedLevelsPattern);
-    if (match) {
-        const [, attack, strength, defence, ranged, magic, hitpoints, prayer] = match.map(Number);
-
-        return {
-            type: LogTypes.BOOSTED_LEVELS,
-            date,
-            time,
-            timezone,
-            tick,
-            boostedLevels: {
-                attack,
-                strength,
-                defence,
-                ranged,
-                magic,
-                hitpoints,
-                prayer
-            }
-        };
-    }
-
     if (logVersion && semver.gte(logVersion, "1.3.0")) {
+        const baseLevelsPattern = new RegExp(`(${ANYTHING_BUT_TAB_PATTERN})\tBASE_STATS\t\\[(\\d+), (\\d+), (\\d+), (\\d+), (\\d+), (\\d+), (\\d+)\\]`);
+        match = action.match(baseLevelsPattern);
+        if (match) {
+            const [, source, attack, strength, defence, ranged, magic, hitpoints, prayer] = match;
+
+            return {
+                type: LogTypes.BASE_LEVELS,
+                date,
+                time,
+                timezone,
+                tick,
+                source: getActor(source),
+                baseLevels: {
+                    attack: Number(attack),
+                    strength: Number(strength),
+                    defence: Number(defence),
+                    ranged: Number(ranged),
+                    magic: Number(magic),
+                    hitpoints: Number(hitpoints),
+                    prayer: Number(prayer)
+                }
+            };
+        }
+
+        const boostedLevelsPattern = new RegExp(`(${ANYTHING_BUT_TAB_PATTERN})\tBOOSTED_STATS\t\\[(\\d+), (\\d+), (\\d+), (\\d+), (\\d+), (\\d+), (\\d+)\\]`);
+        match = action.match(boostedLevelsPattern);
+        if (match) {
+            const [, source, attack, strength, defence, ranged, magic, hitpoints, prayer] = match;
+
+            return {
+                type: LogTypes.BOOSTED_LEVELS,
+                date,
+                time,
+                timezone,
+                tick,
+                source: getActor(source),
+                boostedLevels: {
+                    attack: Number(attack),
+                    strength: Number(strength),
+                    defence: Number(defence),
+                    ranged: Number(ranged),
+                    magic: Number(magic),
+                    hitpoints: Number(hitpoints),
+                    prayer: Number(prayer)
+                }
+            };
+        }
+
         const playerEquipmentPattern = new RegExp(`(${ANYTHING_BUT_TAB_PATTERN})\tEQUIPMENT\t(${ANYTHING_PATTERN})`);
         match = action.match(playerEquipmentPattern);
         if (match) {
@@ -138,6 +163,30 @@ export const parseLogLine = (logLine: string, player?: string, logVersion?: stri
             };
         }
     } else {
+        const boostedLevelsPattern = new RegExp(`Boosted levels are \\[(\\d+), (\\d+), (\\d+), (\\d+), (\\d+), (\\d+), (\\d+)\\]`);
+        match = action.match(boostedLevelsPattern);
+        if (match) {
+            const [, attack, strength, defence, ranged, magic, hitpoints, prayer] = match.map(Number);
+
+            return {
+                type: LogTypes.BOOSTED_LEVELS,
+                date,
+                time,
+                timezone,
+                tick,
+                source: { name: player || "" },
+                boostedLevels: {
+                    attack,
+                    strength,
+                    defence,
+                    ranged,
+                    magic,
+                    hitpoints,
+                    prayer
+                }
+            };
+        }
+
         const playerEquipmentPattern = new RegExp(`Player equipment is (${ANYTHING_PATTERN})`);
         match = action.match(playerEquipmentPattern);
         if (match) {

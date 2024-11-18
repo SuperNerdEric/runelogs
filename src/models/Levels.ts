@@ -1,4 +1,4 @@
-export interface BoostedLevels {
+export interface Levels {
     attack: number;
     strength: number;
     defence: number;

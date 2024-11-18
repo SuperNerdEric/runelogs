@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
 import {pairs as d3Pairs} from 'd3-array';
 import {Fight} from "../../models/Fight";
-import {BoostedLevels} from "../../models/BoostedLevels";
+import {Levels} from "../../models/Levels";
 import {BoostedLevelsLog, filterByType, LogLine, LogTypes} from "../../models/LogLine";
 import {formatHHmmss} from "../../utils/utils";
 import {MAGE_ANIMATION, MELEE_ANIMATIONS, RANGED_ANIMATIONS} from "../../models/Constants";
@@ -39,7 +39,7 @@ const CustomTooltip: React.FC<any> = ({active, payload, label, data}) => {
 };
 
 export function calculateWeightedAverages(fight: Fight) {
-    const weightedValues: Array<{ stat: keyof BoostedLevels, values: Array<{ weightedValue: number }> }> = [];
+    const weightedValues: Array<{ stat: keyof Levels, values: Array<{ weightedValue: number }> }> = [];
     const startTime = fight.firstLine.fightTimeMs!;
     const endTime = fight.lastLine.fightTimeMs!;
 
@@ -59,20 +59,20 @@ export function calculateWeightedAverages(fight: Fight) {
             const timeDiffInSeconds = (endTime - startTime) / 1000;
 
             for (const key in (pair[0] as BoostedLevelsLog).boostedLevels) {
-                const value1 = (pair[0] as BoostedLevelsLog).boostedLevels[key as keyof BoostedLevels];
+                const value1 = (pair[0] as BoostedLevelsLog).boostedLevels[key as keyof Levels];
                 const weightedValue = value1 * (timeDiffInSeconds / totalTimeInSeconds);
 
-                const existingStat = weightedValues.find(item => item.stat === key as keyof BoostedLevels);
+                const existingStat = weightedValues.find(item => item.stat === key as keyof Levels);
                 if (existingStat) {
                     existingStat.values.push({weightedValue});
                 } else {
-                    weightedValues.push({stat: key as keyof BoostedLevels, values: [{weightedValue}]});
+                    weightedValues.push({stat: key as keyof Levels, values: [{weightedValue}]});
                 }
             }
         })
     }
 
-    const averages: Partial<BoostedLevels> = {};
+    const averages: Partial<Levels> = {};
 
     for (const stat of weightedValues) {
         let totalWeightedValue = 0;
@@ -83,7 +83,7 @@ export function calculateWeightedAverages(fight: Fight) {
         averages[stat.stat] = averageWeightedValue;
     }
 
-    return averages as BoostedLevels;
+    return averages as Levels;
 }
 
 const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
@@ -92,13 +92,13 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
     const [showAttackAnimations, setShowAttackAnimations] = useState<boolean>(true); // State variable to control visibility
 
     useEffect(() => {
-        let currentBoost: BoostedLevels;
+        let currentBoost: Levels;
 
         let tempBoost: any[] = [];
         let tempAttack: any[] = [];
 
         fight.data.forEach(log => {
-            if (log.type === LogTypes.BOOSTED_LEVELS) {
+            if (log.type === LogTypes.BOOSTED_LEVELS && log.source?.name === fight.loggedInPlayer) {
                 tempBoost.push({
                     timestamp: log.fightTimeMs,
                     formattedTimestamp: formatHHmmss(log.fightTimeMs!, true),
@@ -216,7 +216,7 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
                                                 alignItems: 'center'
                                             }}>
                                                 <span style={{
-                                                    color: getStatColor(stat as keyof BoostedLevels),
+                                                    color: getStatColor(stat as keyof Levels),
                                                     marginBottom: '5px'
                                                 }}>{stat}</span>
                                                 <span>{average.toFixed(3)}</span>
@@ -284,7 +284,7 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
                                                 alignItems: 'center'
                                             }}>
                                                 <span style={{
-                                                    color: getStatColor(stat as keyof BoostedLevels),
+                                                    color: getStatColor(stat as keyof Levels),
                                                     marginBottom: '5px'
                                                 }}>{stat}</span>
                                                 <span>{average.toFixed(3)}</span>
@@ -304,7 +304,7 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
     );
 };
 
-function getStatColor(stat: keyof BoostedLevels) {
+function getStatColor(stat: keyof Levels) {
     switch (stat) {
         case 'attack':
             return '#C69B6D';

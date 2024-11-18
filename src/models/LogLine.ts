@@ -1,5 +1,5 @@
 import {Actor} from "./Actor";
-import {BoostedLevels} from "./BoostedLevels";
+import {Levels} from "./Levels";
 import {Fight, FightMetaData} from "./Fight";
 import {Raid, RaidMetaData} from "./Raid";
 import {Waves, WavesMetaData} from "./Waves";
@@ -9,6 +9,7 @@ export enum LogTypes {
     LOG_VERSION = 'Log Version',
     LOGGED_IN_PLAYER = 'Logged In Player',
     PLAYER_REGION = 'Player Region',
+    BASE_LEVELS = 'Base Levels',
     BOOSTED_LEVELS = 'Boosted Levels',
     PRAYER = 'Prayers',
     PLAYER_EQUIPMENT = 'Player Equipment',
@@ -47,9 +48,16 @@ export interface PlayerRegionLog extends BaseLog {
     playerRegion: number;
 }
 
+export interface BaseLevelsLog extends BaseLog {
+    type: LogTypes.BASE_LEVELS;
+    source: Actor;
+    baseLevels: Levels;
+}
+
 export interface BoostedLevelsLog extends BaseLog {
     type: LogTypes.BOOSTED_LEVELS;
-    boostedLevels: BoostedLevels;
+    source: Actor;
+    boostedLevels: Levels;
 }
 
 export interface PrayerLog extends BaseLog {
@@ -121,6 +129,7 @@ export type LogLine =
     LogVersionLog
     | LoggedInPlayerLog
     | PlayerRegionLog
+    | BaseLevelsLog
     | BoostedLevelsLog
     | PrayerLog
     | PlayerEquipmentLog

@@ -12,6 +12,7 @@ describe('calculateWeightedAverages', () => {
                 time: "01:18:00.000",
                 fightTimeMs: convertTimeToMillis("01:18:00.000"),
                 timezone: "",
+                source: {name: "Million Pies"},
                 boostedLevels: {
                     attack: 99,
                     strength: 99,
@@ -28,6 +29,7 @@ describe('calculateWeightedAverages', () => {
                 time: "01:18:50.000",
                 fightTimeMs: convertTimeToMillis("01:18:50.000"),
                 timezone: "",
+                source: {name: "Million Pies"},
                 boostedLevels: {
                     attack: 1,
                     strength: 1,
@@ -52,6 +54,7 @@ describe('calculateWeightedAverages', () => {
                 time: "01:18:00.000",
                 fightTimeMs: convertTimeToMillis("01:18:00.000"),
                 timezone: "",
+                source: {name: "Million Pies"},
                 boostedLevels: {
                     attack: 99,
                     strength: 99,

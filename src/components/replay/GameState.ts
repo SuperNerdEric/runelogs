@@ -1,5 +1,14 @@
 import {Fight} from '../../models/Fight';
-import {LogTypes, NPCDespawned, PlayerEquipmentLog, PositionLog, PrayerLog} from '../../models/LogLine';
+import {
+    BaseLevelsLog,
+    BoostedLevelsLog,
+    LogTypes,
+    NPCDespawned,
+    PlayerEquipmentLog,
+    PositionLog,
+    PrayerLog
+} from '../../models/LogLine';
+import {Levels} from "../../models/Levels";
 
 export interface GamePosition {
     x: number;
@@ -8,6 +17,8 @@ export interface GamePosition {
 }
 
 export interface PlayerState {
+    baseLevels?: Levels;
+    boostedLevels?: Levels;
     position?: GamePosition;
     prayers?: string[];
     equipment?: string[];
@@ -72,6 +83,32 @@ export function createGameStates(fight: Fight): GameState[] {
                     }
                     npcState.position = positionLog.position;
                 }
+                break;
+            }
+
+            case LogTypes.BASE_LEVELS: {
+                const baseLevelsLog = log as BaseLevelsLog;
+                const actorName = baseLevelsLog.source.name;
+
+                let playerState = currentState.players[actorName];
+                if (!playerState) {
+                    playerState = {};
+                    currentState.players[actorName] = playerState;
+                }
+                playerState.baseLevels = baseLevelsLog.baseLevels;
+                break;
+            }
+
+            case LogTypes.BOOSTED_LEVELS: {
+                const boostedLevelsLog = log as BoostedLevelsLog;
+                const actorName = boostedLevelsLog.source.name;
+
+                let playerState = currentState.players[actorName];
+                if (!playerState) {
+                    playerState = {};
+                    currentState.players[actorName] = playerState;
+                }
+                playerState.boostedLevels = boostedLevelsLog.boostedLevels;
                 break;
             }
 
