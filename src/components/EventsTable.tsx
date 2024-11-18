@@ -2,7 +2,7 @@ import React from 'react';
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 import {Fight} from "../models/Fight";
 import {LogLine, LogTypes} from "../models/LogLine";
-import {BoostedLevels} from "../models/BoostedLevels";
+import {Levels} from "../models/Levels";
 import attackImage from '../assets/Attack.webp';
 import strengthImage from '../assets/Strength.webp';
 import defenceImage from '../assets/Defence.webp';
@@ -49,7 +49,7 @@ interface EventsTableProps {
     showSource?: boolean;
 }
 
-const statImages: Record<keyof BoostedLevels, string> = {
+const statImages: Record<keyof Levels, string> = {
     attack: attackImage,
     defence: defenceImage,
     hitpoints: hitpointsImage,
@@ -81,13 +81,13 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
     const logs = fight.data;
     const loggedInPlayer = fight.loggedInPlayer;
 
-    const renderStatImages = (boostedLevels: BoostedLevels) => {
+    const renderStatImages = (levels: Levels) => {
         return (
             <div style={{display: 'flex', alignItems: 'center'}}>
-                {Object.entries(boostedLevels).map(([stat, value], index) => (
+                {Object.entries(levels).map(([stat, value], index) => (
                     <div key={index} style={{display: 'inline-block', marginRight: '10px'}}>
                         <img
-                            src={statImages[stat as keyof BoostedLevels]}
+                            src={statImages[stat as keyof Levels]}
                             alt={stat}
                             style={{
                                 marginRight: '5px',
@@ -158,6 +158,7 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
                                         {log.type === LogTypes.LOG_VERSION ? `Log version ${log.logVersion}` : ""}
                                         {log.type === LogTypes.LOGGED_IN_PLAYER ? `Logged in player ${log.loggedInPlayer}` : ""}
                                         {log.type === LogTypes.PLAYER_REGION ? `${log.playerRegion}` : ""}
+                                        {log.type === LogTypes.BASE_LEVELS ? renderStatImages(log.baseLevels) : ""}
                                         {log.type === LogTypes.BOOSTED_LEVELS ? renderStatImages(log.boostedLevels) : ""}
                                         {log.type === LogTypes.PRAYER ? renderPrayerImages(log.prayers) : ""}
                                         {log.type === LogTypes.PLAYER_EQUIPMENT && Array.isArray(log.playerEquipment) ? (

@@ -4,7 +4,7 @@ import {LogTypes} from "../../models/LogLine";
 import {weaponMap} from "../../models/WeaponMap";
 import {COX_MONSTERS, SECONDS_PER_TICK, TOA_MONSTERS} from "../../models/Constants";
 import {CombatClass, Weapon} from "../../models/Weapon";
-import {BoostedLevels} from "../../models/BoostedLevels";
+import {Levels} from "../../models/Levels";
 import {Tooltip} from '@mui/material';
 
 interface TickActivityProps {
@@ -24,7 +24,7 @@ export interface FightPerformance {
  * 1 means they are boosted fully with the best possible boosted (e.g. 99 -> 118 with super combat)
  * Interpolated between
  */
-function getBoostedHitWeight(fight: Fight, weapon: Weapon, boosts: BoostedLevels): number {
+function getBoostedHitWeight(fight: Fight, weapon: Weapon, boosts: Levels): number {
     let boostedHitWeight = 0;
 
     const baseLevels = 99; // todo assuming user is max right now
@@ -100,7 +100,7 @@ export function getFightPerformance(fight: Fight): FightPerformance {
     let currentWeaponSpeed = 0;
     let currentWeapon: Weapon;
     let activeTime = 0;
-    let lastBoost: BoostedLevels;
+    let lastBoost: Levels;
 
     fight.data.forEach(log => {
         if (log.type === LogTypes.PLAYER_EQUIPMENT) {

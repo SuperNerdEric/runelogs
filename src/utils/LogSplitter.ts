@@ -1,4 +1,6 @@
 import {
+    BaseLevelsLog,
+    BoostedLevelsLog,
     DamageLog,
     Encounter,
     LogLine,
@@ -10,7 +12,6 @@ import {
 } from "../models/LogLine";
 import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
 import {Fight} from "../models/Fight";
-import {BoostedLevels} from "../models/BoostedLevels";
 import moment from 'moment';
 import {
     BLOOD_MOON_REGION,
@@ -61,7 +62,8 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     let currentFight: Fight | null = null;
     let player: string = ""; //todo support multiple players
     let lastDamage: { time: number, index: number } | null = null;
-    let boostedLevels: BoostedLevels | undefined;
+    let baseLevelLogs: { [name: string]: BaseLevelsLog } = {};
+    let boostedLevelLogs: { [name: string]: BoostedLevelsLog } = {};
     let prayerLogs: { [name: string]: PrayerLog } = {};
     let playerEquipmentLogs: { [name: string]: PlayerEquipmentLog } = {};
     let positionLogs: { [name: string]: PositionLog } = {};
@@ -164,8 +166,16 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             player = logLine.loggedInPlayer;
         }
 
+        if (logLine.type === LogTypes.BASE_LEVELS) {
+            const baseLevelsLog = logLine as BaseLevelsLog;
+            const playerName = baseLevelsLog.source.name;
+            baseLevelLogs[playerName] = baseLevelsLog;
+        }
+
         if (logLine.type === LogTypes.BOOSTED_LEVELS) {
-            boostedLevels = logLine.boostedLevels;
+            const boostedLevelsLog = logLine as BoostedLevelsLog;
+            const playerName = boostedLevelsLog.source.name;
+            boostedLevelLogs[playerName] = boostedLevelsLog;
         }
 
         if (logLine.type === LogTypes.PRAYER) {
@@ -232,17 +242,40 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
             const initialData: LogLine[] = [];
 
+            // Include current base levels at the beginning of the fight
+            if (Object.keys(baseLevelLogs).length > 0) {
+                const baseLevelLogValues = Object.values(baseLevelLogs);
+                for (const baseLevelsLog of baseLevelLogValues) {
+                    const newBaseLevelsLog: BaseLevelsLog = {
+                        type: LogTypes.BASE_LEVELS,
+                        date: logLine.date,
+                        tick: fightStartTick,
+                        time: logLine.time,
+                        timezone: logLine.timezone,
+                        fightTimeMs: 0,
+                        source: baseLevelsLog.source,
+                        baseLevels: baseLevelsLog.baseLevels
+                    };
+                    initialData.push(newBaseLevelsLog);
+                }
+            }
+
             // Include current boosted levels at the beginning of the fight
-            if (boostedLevels) {
-                initialData.push({
-                    type: LogTypes.BOOSTED_LEVELS,
-                    date: logLine.date,
-                    tick: fightStartTick,
-                    time: logLine.time,
-                    timezone: logLine.timezone,
-                    boostedLevels: boostedLevels,
-                    fightTimeMs: 0
-                });
+            if (Object.keys(boostedLevelLogs).length > 0) {
+                const boostedLevelLogValues = Object.values(boostedLevelLogs);
+                for (const boostedLevelsLog of boostedLevelLogValues) {
+                    const newBoostedLevelsLog: BoostedLevelsLog = {
+                        type: LogTypes.BOOSTED_LEVELS,
+                        date: logLine.date,
+                        tick: fightStartTick,
+                        time: logLine.time,
+                        timezone: logLine.timezone,
+                        fightTimeMs: 0,
+                        source: boostedLevelsLog.source,
+                        boostedLevels: boostedLevelsLog.boostedLevels
+                    };
+                    initialData.push(newBoostedLevelsLog);
+                }
             }
 
             // Include current prayers at the beginning of the fight

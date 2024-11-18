@@ -81,6 +81,7 @@ describe('parseLogLine', () => {
             date: '02-14-2024',
             time: '10:12:23.702',
             timezone: 'CST',
+            source: {name: "Million Pies"},
             boostedLevels: {
                 attack: 1,
                 strength: 2,

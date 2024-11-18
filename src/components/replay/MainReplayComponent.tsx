@@ -8,6 +8,7 @@ import {createGameStates, GamePosition, GameState, getCurrentGameState} from './
 import PlayerEquipment from "./PlayerEquipment";
 import * as semver from "semver";
 import Prayers from './Prayers';
+import CombatLevels from './CombatLevels';
 
 interface MainReplayComponentProps {
     fight: Fight;
@@ -121,6 +122,15 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
                                 currentGameState &&
                                 currentGameState.players[selectedPlayerName] && (
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                                        {currentGameState.players[selectedPlayerName].baseLevels && currentGameState.players[selectedPlayerName].boostedLevels &&
+                                            (
+                                            <CombatLevels
+                                                // @ts-ignore
+                                                baseLevels={currentGameState.players[selectedPlayerName].baseLevels}
+                                                // @ts-ignore
+                                                boostedLevels={currentGameState.players[selectedPlayerName].boostedLevels}
+                                            />
+                                        )}
                                         {currentGameState.players[selectedPlayerName].equipment && (
                                             <PlayerEquipment
                                                 // @ts-ignore
