@@ -13,6 +13,35 @@ import prayerImage from '../assets/Prayer.webp';
 import {formatHHmmss} from "../utils/utils";
 import {BOSS_NAMES} from "../utils/constants";
 import {Actor} from "../models/Actor";
+import ThickSkin from "../assets/prayers/inactive/ThickSkin.png";
+import BurstOfStrength from "../assets/prayers/inactive/BurstOfStrength.png";
+import ClarityOfThought from "../assets/prayers/inactive/ClarityOfThought.png";
+import SharpEye from "../assets/prayers/inactive/SharpEye.png";
+import MysticWill from "../assets/prayers/inactive/MysticWill.png";
+import RockSkin from "../assets/prayers/inactive/RockSkin.png";
+import SuperhumanStrength from "../assets/prayers/inactive/SuperhumanStrength.png";
+import ImprovedReflexes from "../assets/prayers/inactive/ImprovedReflexes.png";
+import RapidRestore from "../assets/prayers/inactive/RapidRestore.png";
+import RapidHeal from "../assets/prayers/inactive/RapidHeal.png";
+import ProtectItem from "../assets/prayers/inactive/ProtectItem.png";
+import HawkEye from "../assets/prayers/inactive/HawkEye.png";
+import MysticLore from "../assets/prayers/inactive/MysticLore.png";
+import SteelSkin from "../assets/prayers/inactive/SteelSkin.png";
+import UltimateStrength from "../assets/prayers/inactive/UltimateStrength.png";
+import IncredibleReflexes from "../assets/prayers/inactive/IncredibleReflexes.png";
+import ProtectFromMagic from "../assets/prayers/inactive/ProtectFromMagic.png";
+import ProtectFromMissiles from "../assets/prayers/inactive/ProtectFromMissiles.png";
+import ProtectFromMelee from "../assets/prayers/inactive/ProtectFromMelee.png";
+import EagleEye from "../assets/prayers/inactive/EagleEye.png";
+import MysticMight from "../assets/prayers/inactive/MysticMight.png";
+import Retribution from "../assets/prayers/inactive/Retribution.png";
+import Redemption from "../assets/prayers/inactive/Redemption.png";
+import Smite from "../assets/prayers/inactive/Smite.png";
+import Chivalry from "../assets/prayers/inactive/Chivalry.png";
+import Piety from "../assets/prayers/inactive/Piety.png";
+import Preserve from "../assets/prayers/inactive/Preserve.png";
+import Rigour from "../assets/prayers/inactive/Rigour.png";
+import Augury from "../assets/prayers/inactive/Augury.png";
 
 interface EventsTableProps {
     fight: Fight;
@@ -73,6 +102,33 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
         );
     };
 
+    const renderPrayerImages = (prayers: string[]) => {
+        return (
+            <div style={{display: 'flex', alignItems: 'center'}}>
+                {prayers.map((prayerIdStr, index) => {
+                    const prayerId = parseInt(prayerIdStr, 10);
+                    const prayerImage = prayerImages[prayerId];
+                    if (prayerImage) {
+                        return (
+                            <div key={index} style={{display: 'inline-block', marginLeft: '0px'}}>
+                                <img
+                                    key={index}
+                                    src={prayerImage}
+                                    alt={`Prayer ${prayerId}`}
+                                    style={{
+                                        scale: '0.75',
+                                        verticalAlign: 'middle',
+                                    }}
+                                />
+                            </div>
+                        );
+                    }
+                    return null;
+                })}
+            </div>
+        );
+    };
+
     return (
         <div className="logs-box" style={{maxHeight: height, overflowY: 'auto'}}>
             <TableContainer>
@@ -103,6 +159,7 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
                                         {log.type === LogTypes.LOGGED_IN_PLAYER ? `Logged in player ${log.loggedInPlayer}` : ""}
                                         {log.type === LogTypes.PLAYER_REGION ? `${log.playerRegion}` : ""}
                                         {log.type === LogTypes.BOOSTED_LEVELS ? renderStatImages(log.boostedLevels) : ""}
+                                        {log.type === LogTypes.PRAYER ? renderPrayerImages(log.prayers) : ""}
                                         {log.type === LogTypes.PLAYER_EQUIPMENT && Array.isArray(log.playerEquipment) ? (
                                             <div style={{display: 'flex'}}>
                                                 {log.playerEquipment.map((itemId: string, i: number) => {
@@ -164,3 +221,35 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
 };
 
 export default EventsTable;
+
+const prayerImages: { [prayerId: number]: string } = {
+    4104: ThickSkin,
+    4105: BurstOfStrength,
+    4106: ClarityOfThought,
+    4122: SharpEye,
+    4123: MysticWill,
+    4107: RockSkin,
+    4108: SuperhumanStrength,
+    4109: ImprovedReflexes,
+    4110: RapidRestore,
+    4111: RapidHeal,
+    4112: ProtectItem,
+    4124: HawkEye,
+    4125: MysticLore,
+    4113: SteelSkin,
+    4114: UltimateStrength,
+    4115: IncredibleReflexes,
+    4116: ProtectFromMagic,
+    4117: ProtectFromMissiles,
+    4118: ProtectFromMelee,
+    4126: EagleEye,
+    4127: MysticMight,
+    4119: Retribution,
+    4120: Redemption,
+    4121: Smite,
+    4128: Chivalry,
+    4129: Piety,
+    5466: Preserve,
+    5464: Rigour,
+    5465: Augury,
+};

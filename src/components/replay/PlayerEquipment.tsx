@@ -41,7 +41,7 @@ const PlayerEquipment: React.FC<PlayerEquipmentProps> = ({ equipment }) => {
                 backgroundSize: 'cover',
                 border: '4px solid grey',
                 marginRight: '10px',
-                marginBottom: '50px',
+                marginBottom: '5px',
             }}
         >
             {equipment.map((itemIdStr, index) => {

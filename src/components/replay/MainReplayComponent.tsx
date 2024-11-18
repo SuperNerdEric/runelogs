@@ -7,6 +7,7 @@ import {Fight} from '../../models/Fight';
 import {createGameStates, GamePosition, GameState, getCurrentGameState} from './GameState';
 import PlayerEquipment from "./PlayerEquipment";
 import * as semver from "semver";
+import Prayers from './Prayers';
 
 interface MainReplayComponentProps {
     fight: Fight;
@@ -118,12 +119,21 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
                         >
                             {selectedPlayerName &&
                                 currentGameState &&
-                                currentGameState.players[selectedPlayerName] &&
-                                currentGameState.players[selectedPlayerName].equipment !== undefined && (
-                                    <PlayerEquipment
-                                        // @ts-ignore
-                                        equipment={currentGameState.players[selectedPlayerName].equipment}
-                                    />
+                                currentGameState.players[selectedPlayerName] && (
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                                        {currentGameState.players[selectedPlayerName].equipment && (
+                                            <PlayerEquipment
+                                                // @ts-ignore
+                                                equipment={currentGameState.players[selectedPlayerName].equipment}
+                                            />
+                                        )}
+                                        {currentGameState.players[selectedPlayerName].prayers && (
+                                            <Prayers
+                                                // @ts-ignore
+                                                prayers={currentGameState.players[selectedPlayerName].prayers}
+                                            />
+                                        )}
+                                    </div>
                                 )}
                             <PlayerSelector
                                 players={Object.keys(currentGameState.players)}
