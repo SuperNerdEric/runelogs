@@ -10,6 +10,7 @@ export enum LogTypes {
     LOGGED_IN_PLAYER = 'Logged In Player',
     PLAYER_REGION = 'Player Region',
     BOOSTED_LEVELS = 'Boosted Levels',
+    PRAYER = 'Prayers',
     PLAYER_EQUIPMENT = 'Player Equipment',
     DEATH = 'Death',
     TARGET_CHANGE = 'Target Change',
@@ -17,7 +18,7 @@ export enum LogTypes {
     HEAL = 'Heal',
     PLAYER_ATTACK_ANIMATION = 'Attack Animation',
     POSITION = 'Position',
-    NPC_DESPAWNED = 'NPC_DESPAWNED',
+    NPC_DESPAWNED = 'NPC Despawned',
     WAVE_START = 'Wave Start',
     WAVE_END = 'Wave End',
 }
@@ -49,6 +50,12 @@ export interface PlayerRegionLog extends BaseLog {
 export interface BoostedLevelsLog extends BaseLog {
     type: LogTypes.BOOSTED_LEVELS;
     boostedLevels: BoostedLevels;
+}
+
+export interface PrayerLog extends BaseLog {
+    type: LogTypes.PRAYER;
+    source: Actor;
+    prayers: string[];
 }
 
 export interface PlayerEquipmentLog extends BaseLog {
@@ -115,6 +122,7 @@ export type LogLine =
     | LoggedInPlayerLog
     | PlayerRegionLog
     | BoostedLevelsLog
+    | PrayerLog
     | PlayerEquipmentLog
     | DeathLog
     | TargetChangeLog

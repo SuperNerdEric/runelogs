@@ -5,6 +5,7 @@ import {
     LogTypes,
     PlayerEquipmentLog,
     PositionLog,
+    PrayerLog,
     TargetChangeLog
 } from "../models/LogLine";
 import {DamageMaxMeHitsplats, DamageMeHitsplats} from "../HitsplatNames";
@@ -61,6 +62,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     let player: string = ""; //todo support multiple players
     let lastDamage: { time: number, index: number } | null = null;
     let boostedLevels: BoostedLevels | undefined;
+    let prayerLogs: { [name: string]: PrayerLog } = {};
     let playerEquipmentLogs: { [name: string]: PlayerEquipmentLog } = {};
     let positionLogs: { [name: string]: PositionLog } = {};
     let playerRegion: number | undefined;
@@ -166,6 +168,13 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             boostedLevels = logLine.boostedLevels;
         }
 
+        if (logLine.type === LogTypes.PRAYER) {
+            const prayerLog = logLine as PrayerLog;
+            const playerName = prayerLog.source.name;
+            prayerLogs[playerName] = prayerLog;
+        }
+
+
         if (logLine.type === LogTypes.PLAYER_EQUIPMENT) {
             const playerEquipmentLog = logLine as PlayerEquipmentLog;
             const playerName = playerEquipmentLog.source.name;
@@ -234,6 +243,24 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                     boostedLevels: boostedLevels,
                     fightTimeMs: 0
                 });
+            }
+
+            // Include current prayers at the beginning of the fight
+            if (Object.keys(prayerLogs).length > 0) {
+                const prayerLogValues = Object.values(prayerLogs);
+                for (const prayerLog of prayerLogValues) {
+                    const newPrayerLog: PrayerLog = {
+                        type: LogTypes.PRAYER,
+                        date: logLine.date,
+                        tick: fightStartTick,
+                        time: logLine.time,
+                        timezone: logLine.timezone,
+                        fightTimeMs: 0,
+                        source: prayerLog.source,
+                        prayers: prayerLog.prayers
+                    };
+                    initialData.push(newPrayerLog);
+                }
             }
 
             // Include current player equipment at the beginning of the fight

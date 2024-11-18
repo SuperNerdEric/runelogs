@@ -1,5 +1,5 @@
 import {Fight} from '../../models/Fight';
-import {LogTypes, NPCDespawned, PlayerEquipmentLog, PositionLog} from '../../models/LogLine';
+import {LogTypes, NPCDespawned, PlayerEquipmentLog, PositionLog, PrayerLog} from '../../models/LogLine';
 
 export interface GamePosition {
     x: number;
@@ -9,6 +9,7 @@ export interface GamePosition {
 
 export interface PlayerState {
     position?: GamePosition;
+    prayers?: string[];
     equipment?: string[];
 }
 
@@ -71,6 +72,19 @@ export function createGameStates(fight: Fight): GameState[] {
                     }
                     npcState.position = positionLog.position;
                 }
+                break;
+            }
+
+            case LogTypes.PRAYER: {
+                const prayerLog = log as PrayerLog;
+                const actorName = prayerLog.source.name;
+
+                let playerState = currentState.players[actorName];
+                if (!playerState) {
+                    playerState = {};
+                    currentState.players[actorName] = playerState;
+                }
+                playerState.prayers = prayerLog.prayers;
                 break;
             }
 

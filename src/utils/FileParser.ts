@@ -121,6 +121,22 @@ export const parseLogLine = (logLine: string, player?: string, logVersion?: stri
                 playerEquipment,
             };
         }
+
+        const prayerPattern = new RegExp(`(${ANYTHING_BUT_TAB_PATTERN})\tPRAYERS\t(${ANYTHING_PATTERN})`);
+        match = action.match(prayerPattern);
+        if (match) {
+            const [, source, prayerString] = match;
+            const prayer: string[] = JSON.parse(prayerString).map((prayer: number) => prayer.toString());
+            return {
+                type: LogTypes.PRAYER,
+                date,
+                time,
+                timezone,
+                tick,
+                source: getActor(source),
+                prayers: prayer,
+            };
+        }
     } else {
         const playerEquipmentPattern = new RegExp(`Player equipment is (${ANYTHING_PATTERN})`);
         match = action.match(playerEquipmentPattern);
