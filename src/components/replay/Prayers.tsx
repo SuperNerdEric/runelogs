@@ -1,9 +1,6 @@
-// Prayers.tsx
 import React from 'react';
 import prayersImage from '../../assets/Prayers.png';
 
-// Import all prayer active images
-import untitled from '../../assets/Untitled.png';
 import ThickSkin from '../../assets/prayers/active/ThickSkin.png';
 import BurstOfStrength from '../../assets/prayers/active/BurstOfStrength.png';
 import ClarityOfThought from '../../assets/prayers/active/ClarityOfThought.png';
@@ -39,29 +36,23 @@ interface PrayersProps {
 }
 
 const Prayers: React.FC<PrayersProps> = ({ prayers }) => {
-    // Define the size of each prayer icon and padding
-    const iconWidth = 46;
-    const iconHeight = 43;
-    const padding = 0;
-
-    // Map of prayer IDs to positions (adjust these positions based on your background image)
     const prayerPositions: { [prayerId: number]: { left: string; top: string } } = {
         // First row
-        4104: { left: `0px`, top: `6px` },                                 // THICK_SKIN
-        4105: { left: `48px`, top: `6px` },                // BURST_OF_STRENGTH
-        4106: { left: `96px`, top: `6px` },            // CLARITY_OF_THOUGHT
-        4122: { left: `144px`, top: `6px` },            // SHARP_EYE
-        4123: { left: `192px`, top: `6px` },            // MYSTIC_WILL
+        4104: { left: `0px`, top: `6px` }, // THICK_SKIN
+        4105: { left: `48px`, top: `6px` }, // BURST_OF_STRENGTH
+        4106: { left: `96px`, top: `6px` }, // CLARITY_OF_THOUGHT
+        4122: { left: `144px`, top: `6px` }, // SHARP_EYE
+        4123: { left: `192px`, top: `6px` }, // MYSTIC_WILL
 
         // Second row
-        4107: { left: `0px`, top: `50px` },               // ROCK_SKIN
+        4107: { left: `0px`, top: `50px` }, // ROCK_SKIN
         4108: { left: `48px`, top: `50px` }, // SUPERHUMAN_STRENGTH
         4109: { left: `96px`, top: `50px` }, // IMPROVED_REFLEXES
         4110: { left: `144px`, top: `50px` }, // RAPID_RESTORE
         4111: { left: `192px`, top: `50px` }, // RAPID_HEAL
 
         // Third row
-        4112: { left: `0px`, top: `94px` },               // PROTECT_ITEM
+        4112: { left: `0px`, top: `94px` }, // PROTECT_ITEM
         4124: { left: `48px`, top: `94px` }, // HAWK_EYE
         4125: { left: `96px`, top: `94px` }, // MYSTIC_LORE
         4113: { left: `144px`, top: `94px` }, // STEEL_SKIN
@@ -75,7 +66,7 @@ const Prayers: React.FC<PrayersProps> = ({ prayers }) => {
         4126: { left: `192px`, top: `138px` }, // EAGLE_EYE
 
         // Fifth row
-        4127: { left: `0px`, top: `182px` },               // MYSTIC_MIGHT
+        4127: { left: `0px`, top: `182px` }, // MYSTIC_MIGHT
         4119: { left: `48px`, top: `182px` }, // RETRIBUTION
         4120: { left: `96px`, top: `182px` }, // REDEMPTION
         4121: { left: `144px`, top: `182px` }, // SMITE
@@ -153,8 +144,8 @@ const Prayers: React.FC<PrayersProps> = ({ prayers }) => {
                             position: 'absolute',
                             left: position.left,
                             top: position.top,
-                            width: `${iconWidth}px`,
-                            height: `${iconHeight}px`,
+                            width: `46px`,
+                            height: `43px`,
                         }}
                     />
                 );

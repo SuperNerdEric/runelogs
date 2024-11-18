@@ -29,7 +29,7 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
     // Preprocess fight data into game states for easier playback
     useEffect(() => {
         setGameStates(createGameStates(fight));
-    }, [fight.data]);
+    }, [fight]);
 
     // Extract initial player position
     useEffect(() => {
