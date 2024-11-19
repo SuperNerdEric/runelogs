@@ -161,6 +161,7 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
                                         {log.type === LogTypes.BASE_LEVELS ? renderStatImages(log.baseLevels) : ""}
                                         {log.type === LogTypes.BOOSTED_LEVELS ? renderStatImages(log.boostedLevels) : ""}
                                         {log.type === LogTypes.PRAYER ? renderPrayerImages(log.prayers) : ""}
+                                        {log.type === LogTypes.OVERHEAD ? renderPrayerImages([log.overhead]) : ""}
                                         {log.type === LogTypes.PLAYER_EQUIPMENT && Array.isArray(log.playerEquipment) ? (
                                             <div style={{display: 'flex'}}>
                                                 {log.playerEquipment.map((itemId: string, i: number) => {

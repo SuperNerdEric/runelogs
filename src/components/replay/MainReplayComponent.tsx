@@ -1,4 +1,3 @@
-// MainReplayComponent.tsx
 import React, {useEffect, useState} from 'react';
 import MapComponent from './MapComponent';
 import PlaybackControls from './PlaybackControls';
@@ -137,10 +136,10 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
                                                 equipment={currentGameState.players[selectedPlayerName].equipment}
                                             />
                                         )}
-                                        {currentGameState.players[selectedPlayerName].prayers && (
+                                        {(currentGameState.players[selectedPlayerName].prayers || currentGameState.players[selectedPlayerName].overhead) && (
                                             <Prayers
-                                                // @ts-ignore
                                                 prayers={currentGameState.players[selectedPlayerName].prayers}
+                                                overhead={currentGameState.players[selectedPlayerName].overhead}
                                             />
                                         )}
                                     </div>

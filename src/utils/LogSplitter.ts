@@ -5,6 +5,7 @@ import {
     Encounter,
     LogLine,
     LogTypes,
+    OverheadLog,
     PlayerEquipmentLog,
     PositionLog,
     PrayerLog,
@@ -65,6 +66,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     let baseLevelLogs: { [name: string]: BaseLevelsLog } = {};
     let boostedLevelLogs: { [name: string]: BoostedLevelsLog } = {};
     let prayerLogs: { [name: string]: PrayerLog } = {};
+    let overheadLogs: { [name: string]: OverheadLog } = {};
     let playerEquipmentLogs: { [name: string]: PlayerEquipmentLog } = {};
     let positionLogs: { [name: string]: PositionLog } = {};
     let playerRegion: number | undefined;
@@ -184,6 +186,11 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             prayerLogs[playerName] = prayerLog;
         }
 
+        if (logLine.type === LogTypes.OVERHEAD) {
+            const overheadLog = logLine as OverheadLog;
+            const playerName = overheadLog.source.name;
+            overheadLogs[playerName] = overheadLog;
+        }
 
         if (logLine.type === LogTypes.PLAYER_EQUIPMENT) {
             const playerEquipmentLog = logLine as PlayerEquipmentLog;
@@ -293,6 +300,24 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                         prayers: prayerLog.prayers
                     };
                     initialData.push(newPrayerLog);
+                }
+            }
+
+            // Include current overheads at the beginning of the fight
+            if (Object.keys(overheadLogs).length > 0) {
+                const overheadLogValues = Object.values(overheadLogs);
+                for (const overheadLog of overheadLogValues) {
+                    const newOverheadLog: OverheadLog = {
+                        type: LogTypes.OVERHEAD,
+                        date: logLine.date,
+                        tick: fightStartTick,
+                        time: logLine.time,
+                        timezone: logLine.timezone,
+                        fightTimeMs: 0,
+                        source: overheadLog.source,
+                        overhead: overheadLog.overhead
+                    };
+                    initialData.push(newOverheadLog);
                 }
             }
 

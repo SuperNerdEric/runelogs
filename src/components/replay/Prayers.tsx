@@ -32,51 +32,52 @@ import Rigour from '../../assets/prayers/active/Rigour.png';
 import Augury from '../../assets/prayers/active/Augury.png';
 
 interface PrayersProps {
-    prayers: string[];
+    prayers?: string[];
+    overhead?: string;
 }
 
-const Prayers: React.FC<PrayersProps> = ({ prayers }) => {
+const Prayers: React.FC<PrayersProps> = ({prayers, overhead}) => {
     const prayerPositions: { [prayerId: number]: { left: string; top: string } } = {
         // First row
-        4104: { left: `0px`, top: `6px` }, // THICK_SKIN
-        4105: { left: `48px`, top: `6px` }, // BURST_OF_STRENGTH
-        4106: { left: `96px`, top: `6px` }, // CLARITY_OF_THOUGHT
-        4122: { left: `144px`, top: `6px` }, // SHARP_EYE
-        4123: { left: `192px`, top: `6px` }, // MYSTIC_WILL
+        4104: {left: `0px`, top: `6px`}, // THICK_SKIN
+        4105: {left: `48px`, top: `6px`}, // BURST_OF_STRENGTH
+        4106: {left: `96px`, top: `6px`}, // CLARITY_OF_THOUGHT
+        4122: {left: `144px`, top: `6px`}, // SHARP_EYE
+        4123: {left: `192px`, top: `6px`}, // MYSTIC_WILL
 
         // Second row
-        4107: { left: `0px`, top: `50px` }, // ROCK_SKIN
-        4108: { left: `48px`, top: `50px` }, // SUPERHUMAN_STRENGTH
-        4109: { left: `96px`, top: `50px` }, // IMPROVED_REFLEXES
-        4110: { left: `144px`, top: `50px` }, // RAPID_RESTORE
-        4111: { left: `192px`, top: `50px` }, // RAPID_HEAL
+        4107: {left: `0px`, top: `50px`}, // ROCK_SKIN
+        4108: {left: `48px`, top: `50px`}, // SUPERHUMAN_STRENGTH
+        4109: {left: `96px`, top: `50px`}, // IMPROVED_REFLEXES
+        4110: {left: `144px`, top: `50px`}, // RAPID_RESTORE
+        4111: {left: `192px`, top: `50px`}, // RAPID_HEAL
 
         // Third row
-        4112: { left: `0px`, top: `94px` }, // PROTECT_ITEM
-        4124: { left: `48px`, top: `94px` }, // HAWK_EYE
-        4125: { left: `96px`, top: `94px` }, // MYSTIC_LORE
-        4113: { left: `144px`, top: `94px` }, // STEEL_SKIN
-        4114: { left: `192px`, top: `94px` }, // ULTIMATE_STRENGTH
+        4112: {left: `0px`, top: `94px`}, // PROTECT_ITEM
+        4124: {left: `48px`, top: `94px`}, // HAWK_EYE
+        4125: {left: `96px`, top: `94px`}, // MYSTIC_LORE
+        4113: {left: `144px`, top: `94px`}, // STEEL_SKIN
+        4114: {left: `192px`, top: `94px`}, // ULTIMATE_STRENGTH
 
         // Fourth row
-        4115: { left: `0px`, top: `138px` }, // INCREDIBLE_REFLEXES
-        4116: { left: `48px`, top: `138px` }, // PROTECT_FROM_MAGIC
-        4117: { left: `96px`, top: `138px` }, // PROTECT_FROM_MISSILES
-        4118: { left: `144px`, top: `138px` }, // PROTECT_FROM_MELEE
-        4126: { left: `192px`, top: `138px` }, // EAGLE_EYE
+        4115: {left: `0px`, top: `138px`}, // INCREDIBLE_REFLEXES
+        4116: {left: `48px`, top: `138px`}, // PROTECT_FROM_MAGIC
+        4117: {left: `96px`, top: `138px`}, // PROTECT_FROM_MISSILES
+        4118: {left: `144px`, top: `138px`}, // PROTECT_FROM_MELEE
+        4126: {left: `192px`, top: `138px`}, // EAGLE_EYE
 
         // Fifth row
-        4127: { left: `0px`, top: `182px` }, // MYSTIC_MIGHT
-        4119: { left: `48px`, top: `182px` }, // RETRIBUTION
-        4120: { left: `96px`, top: `182px` }, // REDEMPTION
-        4121: { left: `144px`, top: `182px` }, // SMITE
-        5466: { left: `192px`, top: `182px` }, // PRESERVE
+        4127: {left: `0px`, top: `182px`}, // MYSTIC_MIGHT
+        4119: {left: `48px`, top: `182px`}, // RETRIBUTION
+        4120: {left: `96px`, top: `182px`}, // REDEMPTION
+        4121: {left: `144px`, top: `182px`}, // SMITE
+        5466: {left: `192px`, top: `182px`}, // PRESERVE
 
         // Sixth row
-        4128: { left: `0px`, top: `226px` }, // CHIVALRY
-        4129: { left: `48px`, top: `226px` }, // PIETY
-        5464: { left: `96px`, top: `226px` }, // RIGOUR
-        5465: { left: `144px`, top: `226px` }, // AUGURY
+        4128: {left: `0px`, top: `226px`}, // CHIVALRY
+        4129: {left: `48px`, top: `226px`}, // PIETY
+        5464: {left: `96px`, top: `226px`}, // RIGOUR
+        5465: {left: `144px`, top: `226px`}, // AUGURY
     };
 
     // Map of prayer IDs to their active images
@@ -112,8 +113,26 @@ const Prayers: React.FC<PrayersProps> = ({ prayers }) => {
         5465: Augury,
     };
 
-    // Convert the prayers prop to a Set for quick lookup
-    const activePrayers = new Set(prayers.map(prayerIdStr => parseInt(prayerIdStr, 10)));
+    // Set of overhead prayer IDs
+    const overheadPrayerIds = new Set<number>([
+        4116, // ProtectFromMagic
+        4117, // ProtectFromMissiles
+        4118, // ProtectFromMelee
+        4119, // Retribution
+        4120, // Redemption
+        4121, // Smite
+    ]);
+
+    // Determine active prayers
+    let activePrayers = new Set<number>();
+    if (prayers && prayers.length > 0) {
+        activePrayers = new Set(prayers.map(prayerIdStr => parseInt(prayerIdStr, 10)));
+        console.log(activePrayers);
+    } else if (overhead) {
+        const overheadId = parseInt(overhead, 10);
+        console.log(overheadId);
+        activePrayers.add(overheadId);
+    }
 
     return (
         <div
@@ -132,14 +151,40 @@ const Prayers: React.FC<PrayersProps> = ({ prayers }) => {
                 const prayerId = parseInt(prayerIdStr, 10);
                 const isActive = activePrayers.has(prayerId);
                 const prayerImage = prayerImages[prayerId];
+
+                if (overhead && !overheadPrayerIds.has(prayerId)) {
+                    return (
+                        <div
+                            key={prayerId}
+                            style={{
+                                position: 'absolute',
+                                left: position.left,
+                                top: position.top,
+                                width: `48px`,
+                                height: `44px`,
+                            }}
+                        >
+                            <div
+                                style={{
+                                    position: 'absolute',
+                                    top: '0',
+                                    left: '0',
+                                    width: '100%',
+                                    height: '100%',
+                                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                                }}
+                            />
+                        </div>
+                    );
+                }
+
                 if (!isActive || !prayerImage) {
                     return null;
                 }
+
                 return (
-                    <img
+                    <div
                         key={prayerId}
-                        src={prayerImage}
-                        alt={`Prayer ${prayerId}`}
                         style={{
                             position: 'absolute',
                             left: position.left,
@@ -147,7 +192,16 @@ const Prayers: React.FC<PrayersProps> = ({ prayers }) => {
                             width: `46px`,
                             height: `43px`,
                         }}
-                    />
+                    >
+                        <img
+                            src={prayerImage}
+                            alt={`Prayer ${prayerId}`}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                            }}
+                        />
+                    </div>
                 );
             })}
         </div>

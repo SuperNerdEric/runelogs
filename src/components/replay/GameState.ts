@@ -4,6 +4,7 @@ import {
     BoostedLevelsLog,
     LogTypes,
     NPCDespawned,
+    OverheadLog,
     PlayerEquipmentLog,
     PositionLog,
     PrayerLog
@@ -21,6 +22,7 @@ export interface PlayerState {
     boostedLevels?: Levels;
     position?: GamePosition;
     prayers?: string[];
+    overhead?: string;
     equipment?: string[];
 }
 
@@ -122,6 +124,19 @@ export function createGameStates(fight: Fight): GameState[] {
                     currentState.players[actorName] = playerState;
                 }
                 playerState.prayers = prayerLog.prayers;
+                break;
+            }
+
+            case LogTypes.OVERHEAD: {
+                const overheadLog = log as OverheadLog;
+                const actorName = overheadLog.source.name;
+
+                let playerState = currentState.players[actorName];
+                if (!playerState) {
+                    playerState = {};
+                    currentState.players[actorName] = playerState;
+                }
+                playerState.overhead = overheadLog.overhead;
                 break;
             }
 
