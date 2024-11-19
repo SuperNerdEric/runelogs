@@ -12,6 +12,7 @@ export enum LogTypes {
     BASE_LEVELS = 'Base Levels',
     BOOSTED_LEVELS = 'Boosted Levels',
     PRAYER = 'Prayers',
+    OVERHEAD = 'Overhead Prayer',
     PLAYER_EQUIPMENT = 'Player Equipment',
     DEATH = 'Death',
     TARGET_CHANGE = 'Target Change',
@@ -64,6 +65,12 @@ export interface PrayerLog extends BaseLog {
     type: LogTypes.PRAYER;
     source: Actor;
     prayers: string[];
+}
+
+export interface OverheadLog extends BaseLog {
+    type: LogTypes.OVERHEAD;
+    source: Actor;
+    overhead: string;
 }
 
 export interface PlayerEquipmentLog extends BaseLog {
@@ -132,6 +139,7 @@ export type LogLine =
     | BaseLevelsLog
     | BoostedLevelsLog
     | PrayerLog
+    | OverheadLog
     | PlayerEquipmentLog
     | DeathLog
     | TargetChangeLog

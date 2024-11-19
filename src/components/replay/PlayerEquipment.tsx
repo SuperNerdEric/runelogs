@@ -11,7 +11,6 @@ const getItemImageUrl = (itemId: number): string => {
     return `https://chisel.weirdgloop.org/static/img/osrs-sprite/${itemId}.png`;
 };
 
-// Equipment slot positions (adjust as needed)
 const equipmentSlotPositions = [
     { left: '78px', top: '1px' },   // Head
     { left: '16px', top: '54px' },  // Cape
@@ -46,51 +45,79 @@ const PlayerEquipment: React.FC<PlayerEquipmentProps> = ({ equipment }) => {
         >
             {equipment.map((itemIdStr, index) => {
                 const itemId = parseInt(itemIdStr, 10);
-                if (itemId < 0) {
+                if (itemId < 0 && itemId !== -2) {
                     return null; // Do not display anything if no equipment in this slot
                 }
                 const position = equipmentSlotPositions[index];
-                const itemImageUrl = getItemImageUrl(itemId);
-                const itemName = itemIdMap[itemId] || `Item_${itemId}`;
-                const wikiLink = `https://oldschool.runescape.wiki/w/${encodeURIComponent(itemName.replace(/ /g, '_'))}`;
+                const slotStyle = {
+                    position: 'absolute' as const,
+                    left: position.left,
+                    top: position.top,
+                    width: '32px',
+                    height: '32px',
+                    cursor: 'pointer',
+                };
 
-                return (
-                    <div
-                        key={index}
-                        style={{
-                            position: 'absolute',
-                            left: position.left,
-                            top: position.top,
-                            width: '32px',
-                            height: '32px',
-                            cursor: 'pointer',
-                        }}
-                        onClick={() => window.open(wikiLink, '_blank', 'noopener,noreferrer')}
-                        title={itemName}
-                    >
-                        {/* Background image behind the item */}
-                        <img
-                            src={blankEquipmentBackground}
-                            alt={`Equipment Slot Background ${index}`}
+                if (itemId === -2) {
+                    return (
+                        <div key={index} style={slotStyle} title="Unknown">
+                            <div
+                                style={{
+                                    position: 'absolute',
+                                    userSelect: 'none',
+                                    top: '7px',
+                                    left: '24px',
+                                    width: '38px',
+                                    height: '35px',
+                                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    transform: 'scale(1.35)',
+                                }}
+                            >
+                                <span style={{ color: 'white', fontSize: '8px' }}>Unknown</span>
+                            </div>
+                        </div>
+                    );
+                } else {
+                    const itemImageUrl = getItemImageUrl(itemId);
+                    const itemName = itemIdMap[itemId] || `Item_${itemId}`;
+                    const wikiLink = `https://oldschool.runescape.wiki/w/${encodeURIComponent(itemName.replace(/ /g, '_'))}`;
+
+                    return (
+                        <div
+                            key={index}
                             style={{
-                                position: 'absolute',
-                                width: '54px',
-                                height: '50px',
+                                ...slotStyle,
+                                cursor: 'pointer',
                             }}
-                        />
-                        {/* Item image */}
-                        <img
-                            src={itemImageUrl}
-                            alt={itemName}
-                            style={{
-                                position: 'absolute',
-                                top: '10px',
-                                left: '30px',
-                                scale: '1.35',
-                            }}
-                        />
-                    </div>
-                );
+                            onClick={() => window.open(wikiLink, '_blank', 'noopener,noreferrer')}
+                            title={itemName}
+                        >
+                            <img
+                                src={blankEquipmentBackground}
+                                alt={`Equipment Slot Background ${index}`}
+                                style={{
+                                    position: 'absolute',
+                                    width: '54px',
+                                    height: '50px',
+                                }}
+                            />
+                            {/* Item image */}
+                            <img
+                                src={itemImageUrl}
+                                alt={itemName}
+                                style={{
+                                    position: 'absolute',
+                                    top: '10px',
+                                    left: '30px',
+                                    transform: 'scale(1.35)',
+                                }}
+                            />
+                        </div>
+                    );
+                }
             })}
         </div>
     );

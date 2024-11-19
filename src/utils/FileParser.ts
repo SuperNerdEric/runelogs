@@ -162,6 +162,21 @@ export const parseLogLine = (logLine: string, player?: string, logVersion?: stri
                 prayers: prayer,
             };
         }
+
+        const overheadPattern = new RegExp(`(${ANYTHING_BUT_TAB_PATTERN})\tOVERHEAD\t(${ANYTHING_PATTERN})`);
+        match = action.match(overheadPattern);
+        if (match) {
+            const [, source, overhead] = match;
+            return {
+                type: LogTypes.OVERHEAD,
+                date,
+                time,
+                timezone,
+                tick,
+                source: getActor(source),
+                overhead,
+            };
+        }
     } else {
         const boostedLevelsPattern = new RegExp(`Boosted levels are \\[(\\d+), (\\d+), (\\d+), (\\d+), (\\d+), (\\d+), (\\d+)\\]`);
         match = action.match(boostedLevelsPattern);
