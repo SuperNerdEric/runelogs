@@ -21,6 +21,7 @@ const PlayerSelector: React.FC<PlayerSelectorProps> = ({players, selectedPlayer,
                 backgroundColor: 'transparent',
                 userSelect: 'none',
                 marginBottom: '50px',
+                pointerEvents: 'auto',
             }}
         >
             {displayedPlayers.map((playerName) => (

@@ -7,18 +7,11 @@ import {GamePosition} from "./GameState";
 interface MapMarkersProps {
     playerPositions: { [playerName: string]: GamePosition };
     npcPositions: { [npcKey: string]: GamePosition };
+    selectedPlayerName?: string;
 }
 
-const MapMarkers: React.FC<MapMarkersProps> = ({playerPositions, npcPositions}) => {
+const MapMarkers: React.FC<MapMarkersProps> = ({playerPositions, npcPositions,   selectedPlayerName,}) => {
     const map = useMap();
-
-    const playerRectangleOptions = {
-        color: '#33b5e5',
-        fillColor: '#33b5e5',
-        fillOpacity: 1.0,
-        weight: 1,
-        interactive: true,
-    };
 
     const npcRectangleOptions = {
         color: '#e53333',
@@ -29,8 +22,18 @@ const MapMarkers: React.FC<MapMarkersProps> = ({playerPositions, npcPositions}) 
 
     return (
         <>
+
             {/* Render Player Markers */}
             {Object.entries(playerPositions).map(([playerName, positionData]) => {
+                const isSelected = playerName === selectedPlayerName;
+                const playerRectangleOptions = {
+                    color: 'white',
+                    fillColor: 'white',
+                    fillOpacity: isSelected ? 1.0: 0.0,
+                    weight: 1,
+                    interactive: true,
+                };
+
                 const playerPosition = new Position(positionData.x, positionData.y, positionData.plane);
                 const rectangle = playerPosition.toLeaflet(map, playerRectangleOptions);
 

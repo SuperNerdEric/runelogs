@@ -105,6 +105,7 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
                                 .map(([key, state]) => [key, state.position as GamePosition])
                         )}
                         plane={0}
+                        selectedPlayerName={selectedPlayerName}
                     />
                     {fight.logVersion && semver.gte(fight.logVersion, "1.3.0") &&
                         <div
@@ -115,6 +116,7 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'flex-end',
+                                pointerEvents: 'none', // Or else it blocks clicks on the map, but now we have to add pointerEvents: 'auto', to the children we want to be clickable
                             }}
                         >
                             {selectedPlayerName &&
