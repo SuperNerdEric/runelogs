@@ -27,7 +27,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
             zoom={10}
             minZoom={8}
             maxZoom={11}
-            style={{ height: '75vh' }}
+            style={{ height: '60vh' }}
             attributionControl={false}
         >
             <TileLayer

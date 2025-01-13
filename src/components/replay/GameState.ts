@@ -37,6 +37,20 @@ export interface GameState {
 }
 
 export function createGameStates(fight: Fight): GameState[] {
+    // Collect all players who appear AFTER the first tick
+    // This is kind of hacky, but it's because the LogSplitter brought all the state logs forward into the fight, so that we know what state everyone is in when we started the fight
+    // However, there could be players from previous fights who were brought forward even though they are no longer in the party/fight
+    // https://github.com/SuperNerdEric/runelogs/issues/9
+    const playersWithActivity = new Set<string>();
+    const firstTick = fight.data[0].tick || 0;
+    for (const log of fight.data) {
+        if ((log.tick || 0) > firstTick) {
+            if ('source' in log && !log.source?.id) {
+                playersWithActivity.add(log.source!.name);
+            }
+        }
+    }
+
     const gameStates: GameState[] = [];
     const currentState: GameState = {
         tick: 0,
@@ -173,6 +187,15 @@ export function createGameStates(fight: Fight): GameState[] {
             npcs: JSON.parse(JSON.stringify(currentState.npcs)),
         };
         gameStates.push(stateToPush);
+    }
+
+    // Remove any player not in playersWithActivity from each GameState
+    for (const gs of gameStates) {
+        for (const playerName of Object.keys(gs.players)) {
+            if (!playersWithActivity.has(playerName)) {
+                delete gs.players[playerName];
+            }
+        }
     }
 
     return gameStates;

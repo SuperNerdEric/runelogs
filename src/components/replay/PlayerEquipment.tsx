@@ -7,7 +7,7 @@ interface PlayerEquipmentProps {
     equipment: string[];
 }
 
-const getItemImageUrl = (itemId: number): string => {
+export const getItemImageUrl = (itemId: number): string => {
     return `https://chisel.weirdgloop.org/static/img/osrs-sprite/${itemId}.png`;
 };
 
