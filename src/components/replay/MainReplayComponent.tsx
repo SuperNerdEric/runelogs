@@ -8,6 +8,7 @@ import PlayerEquipment from "./PlayerEquipment";
 import * as semver from "semver";
 import Prayers from './Prayers';
 import CombatLevels from './CombatLevels';
+import TickChart from './TickChart';
 
 interface MainReplayComponentProps {
     fight: Fight;
@@ -90,6 +91,17 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
     // @ts-ignore
     return (
         <div style={{position: 'relative', width: '60vw', border: '3px solid grey'}}>
+            <TickChart
+                fight={fight}
+                currentTime={currentTime}
+                setCurrentTime={(newTime) => {
+                    setCurrentTime(newTime);
+                    setIsPlaying(false);
+                }}
+                initialTick={initialTick}
+                maxTick={maxTick}
+                activePlayers={Object.keys(currentGameState?.players || {})}
+            />
             {currentGameState && initialPlayerPosition && (
                 <>
                     <MapComponent
