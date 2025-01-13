@@ -20,6 +20,7 @@ const PlayerSelector: React.FC<PlayerSelectorProps> = ({players, selectedPlayer,
                 gap: '5px',
                 backgroundColor: 'transparent',
                 userSelect: 'none',
+                marginBottom: '50px',
             }}
         >
             {displayedPlayers.map((playerName) => (
@@ -38,7 +39,8 @@ const PlayerSelector: React.FC<PlayerSelectorProps> = ({players, selectedPlayer,
                         padding: '5px',
                         cursor: 'pointer',
                         textAlign: 'center',
-                        fontSize: '20px',
+                        fontSize: '16px',
+                        minWidth: '140px',
                         border: selectedPlayer === playerName ? '2px solid white' : '2px solid black',
                     }}
                 >
