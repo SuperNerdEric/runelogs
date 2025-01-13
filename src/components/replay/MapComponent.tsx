@@ -11,14 +11,15 @@ interface MapComponentProps {
     initialPlayerPosition: GamePosition;
     npcPositions: { [npcKey: string]: GamePosition };
     plane: number;
+    selectedPlayerName?: string;
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({
                                                        playerPositions,
                                                        initialPlayerPosition,
                                                        npcPositions,
-
                                                        plane,
+                                                       selectedPlayerName,
                                                    }) => {
     return (
         <MapContainer
@@ -37,7 +38,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
                 tms={true}
             />
             <MapCenterSetter initialPlayerPosition={initialPlayerPosition} />
-            <MapMarkers playerPositions={playerPositions} npcPositions={npcPositions} />
+            <MapMarkers playerPositions={playerPositions} npcPositions={npcPositions} selectedPlayerName={selectedPlayerName}/>
             <MouseHover plane={plane} />
         </MapContainer>
     );
