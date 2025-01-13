@@ -37,8 +37,8 @@ const PlaybackControls: React.FC<PlaybackControlsProps> = ({
                         fill="white"
                         xmlns="http://www.w3.org/2000/svg"
                     >
-                        <rect x="6" y="4" width="4" height="16" />
-                        <rect x="14" y="4" width="4" height="16" />
+                        <rect x="6" y="4" width="4" height="16"/>
+                        <rect x="14" y="4" width="4" height="16"/>
                     </svg>
                 ) : (
                     // Play Icon
@@ -49,7 +49,7 @@ const PlaybackControls: React.FC<PlaybackControlsProps> = ({
                         fill="white"
                         xmlns="http://www.w3.org/2000/svg"
                     >
-                        <polygon points="6,4 20,12 6,20" />
+                        <polygon points="6,4 20,12 6,20"/>
                     </svg>
                 )}
             </button>

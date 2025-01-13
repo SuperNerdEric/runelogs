@@ -89,7 +89,7 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
 
     // @ts-ignore
     return (
-        <div style={{position: 'relative'}}>
+        <div style={{position: 'relative', width: '60vw', border: 'white 1px solid'}}>
             {currentGameState && initialPlayerPosition && (
                 <>
                     <MapComponent
