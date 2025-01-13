@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {FightMetaData} from "../../models/Fight";
 
 interface FightSelectorProps {
@@ -8,18 +8,15 @@ interface FightSelectorProps {
 }
 
 const DropdownFightSelector: React.FC<FightSelectorProps> = ({fights, onSelectFight, selectedFightIndex}) => {
-    const [selectedFight, setSelectedFight] = useState(selectedFightIndex);
-
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const value = Number(event.target.value);
-        setSelectedFight(value);
         onSelectFight(value);
     };
 
     return (
         <select
             className="dropdown-fight-selector"
-            value={selectedFight}
+            value={selectedFightIndex}
             onChange={handleChange}
         >
             {fights.map((fight, index) => (
