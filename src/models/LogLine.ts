@@ -21,6 +21,12 @@ export enum LogTypes {
     PLAYER_ATTACK_ANIMATION = 'Attack Animation',
     POSITION = 'Position',
     NPC_DESPAWNED = 'NPC Despawned',
+    GRAPHICS_OBJECT_SPAWNED = 'Graphics Object Spawned',
+    GRAPHICS_OBJECT_DESPAWNED = 'Graphics Object Despawned',
+    GAME_OBJECT_SPAWNED = 'Game Object Spawned',
+    GAME_OBJECT_DESPAWNED = 'Game Object Despawned',
+    GROUND_OBJECT_SPAWNED = 'Ground Object Spawned',
+    GROUND_OBJECT_DESPAWNED = 'Ground Object Despawned',
     WAVE_START = 'Wave Start',
     WAVE_END = 'Wave End',
 }
@@ -124,6 +130,42 @@ export interface NPCDespawned extends BaseLog {
     source: Actor;
 }
 
+export interface GraphicsObjectSpawned extends BaseLog {
+    type: LogTypes.GRAPHICS_OBJECT_SPAWNED;
+    id: number;
+    position: GamePosition;
+}
+
+export interface GraphicsObjectDespawned extends BaseLog {
+    type: LogTypes.GRAPHICS_OBJECT_DESPAWNED;
+    id: number;
+    position: GamePosition;
+}
+
+export interface GameObjectSpawned extends BaseLog {
+    type: LogTypes.GAME_OBJECT_SPAWNED;
+    id: number;
+    position: GamePosition;
+}
+
+export interface GameObjectDespawned extends BaseLog {
+    type: LogTypes.GAME_OBJECT_DESPAWNED;
+    id: number;
+    position: GamePosition;
+}
+
+export interface GroundObjectSpawned extends BaseLog {
+    type: LogTypes.GROUND_OBJECT_SPAWNED;
+    id: number;
+    position: GamePosition;
+}
+
+export interface GroundObjectDespawned extends BaseLog {
+    type: LogTypes.GROUND_OBJECT_DESPAWNED;
+    id: number;
+    position: GamePosition;
+}
+
 export interface WaveStartLog extends BaseLog {
     type: LogTypes.WAVE_START;
     waveNumber: number;
@@ -148,6 +190,12 @@ export type LogLine =
     | AttackAnimationLog
     | PositionLog
     | NPCDespawned
+    | GraphicsObjectSpawned
+    | GraphicsObjectDespawned
+    | GameObjectSpawned
+    | GameObjectDespawned
+    | GroundObjectSpawned
+    | GroundObjectDespawned
     | WaveStartLog
     | WaveEndLog;
 

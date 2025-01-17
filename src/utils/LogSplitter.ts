@@ -3,8 +3,12 @@ import {
     BoostedLevelsLog,
     DamageLog,
     Encounter,
+    GraphicsObjectDespawned,
+    GraphicsObjectSpawned,
     LogLine,
     LogTypes,
+    GameObjectDespawned,
+    GameObjectSpawned,
     OverheadLog,
     PlayerEquipmentLog,
     PositionLog,
@@ -69,6 +73,8 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     let overheadLogs: { [name: string]: OverheadLog } = {};
     let playerEquipmentLogs: { [name: string]: PlayerEquipmentLog } = {};
     let positionLogs: { [name: string]: PositionLog } = {};
+    let graphicObjectLogs: { [position: string]: GraphicsObjectSpawned } = {};
+    let objectLogs: { [position: string]: GameObjectSpawned } = {};
     let playerRegion: number | undefined;
     let fightStartTime: Date;
     let fightStartTick: number = -1;
@@ -221,6 +227,30 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             }
         }
 
+        if (logLine.type === LogTypes.GRAPHICS_OBJECT_SPAWNED) {
+            const graphicObjectLog = logLine as GraphicsObjectSpawned;
+            const key = `${graphicObjectLog.position.x}-${graphicObjectLog.position.y}-${graphicObjectLog.position.plane}`;
+            graphicObjectLogs[key] = graphicObjectLog;
+        }
+
+        if (logLine.type === LogTypes.GRAPHICS_OBJECT_DESPAWNED) {
+            const graphicObjectLog = logLine as GraphicsObjectDespawned;
+            const key = `${graphicObjectLog.position.x}-${graphicObjectLog.position.y}-${graphicObjectLog.position.plane}`;
+            delete graphicObjectLogs[key];
+        }
+
+        if (logLine.type === LogTypes.GAME_OBJECT_SPAWNED) {
+            const objectLog = logLine as GameObjectSpawned;
+            const key = `${objectLog.position.x}-${objectLog.position.y}-${objectLog.position.plane}`;
+            objectLogs[key] = objectLog;
+        }
+
+        if (logLine.type === LogTypes.GAME_OBJECT_DESPAWNED) {
+            const objectLog = logLine as GameObjectDespawned;
+            const key = `${objectLog.position.x}-${objectLog.position.y}-${objectLog.position.plane}`;
+            delete objectLogs[key];
+        }
+
         if (logLine.type === LogTypes.WAVE_END) {
             endWave(logLine, true);
         }
@@ -354,6 +384,42 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                         position: positionLog.position
                     };
                     initialData.push(newPositionLog);
+                }
+            }
+
+            // Include current graphics objects at the beginning of the fight
+            if (Object.keys(graphicObjectLogs).length > 0) {
+                const graphicObjectLogValues = Object.values(graphicObjectLogs);
+                for (const graphicObjectLog of graphicObjectLogValues) {
+                    const newGraphicObjectLog: GraphicsObjectSpawned = {
+                        id: graphicObjectLog.id,
+                        type: LogTypes.GRAPHICS_OBJECT_SPAWNED,
+                        date: logLine.date,
+                        tick: fightStartTick,
+                        time: logLine.time,
+                        timezone: logLine.timezone,
+                        fightTimeMs: 0,
+                        position: graphicObjectLog.position
+                    };
+                    initialData.push(newGraphicObjectLog);
+                }
+            }
+
+            // Include current objects at the beginning of the fight
+            if (Object.keys(objectLogs).length > 0) {
+                const objectLogValues = Object.values(objectLogs);
+                for (const objectLog of objectLogValues) {
+                    const newObjectLog: GameObjectSpawned = {
+                        id: objectLog.id,
+                        type: LogTypes.GAME_OBJECT_SPAWNED,
+                        date: logLine.date,
+                        tick: fightStartTick,
+                        time: logLine.time,
+                        timezone: logLine.timezone,
+                        fightTimeMs: 0,
+                        position: objectLog.position
+                    };
+                    initialData.push(newObjectLog);
                 }
             }
 

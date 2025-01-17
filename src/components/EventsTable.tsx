@@ -202,6 +202,12 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
                                             </>
                                         ) : ""}
                                         {log.type === LogTypes.POSITION ? `(${log.position.x}, ${log.position.y}, ${log.position.plane})` : ""}
+                                        {log.type === LogTypes.GRAPHICS_OBJECT_SPAWNED ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})` : ""}
+                                        {log.type === LogTypes.GRAPHICS_OBJECT_DESPAWNED ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})` : ""}
+                                        {log.type === LogTypes.GAME_OBJECT_SPAWNED ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})` : ""}
+                                        {log.type === LogTypes.GAME_OBJECT_DESPAWNED ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})` : ""}
+                                        {log.type === LogTypes.GROUND_OBJECT_SPAWNED ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})` : ""}
+                                        {log.type === LogTypes.GROUND_OBJECT_DESPAWNED ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})` : ""}
                                     </TableCell>
                                     <TableCell
                                         className={source === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>
