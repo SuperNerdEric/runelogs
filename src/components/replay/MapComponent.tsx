@@ -1,25 +1,33 @@
 import React from 'react';
-import { MapContainer, TileLayer } from 'react-leaflet';
+import {MapContainer, TileLayer} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import MapMarkers from './MapMarkers';
 import MouseHover from './MouseHover';
 import MapCenterSetter from './MapCenterSetter';
-import {GamePosition} from "./GameState";
+import {GameObjectState, GamePosition, GraphicsObjectState} from "./GameState";
 
 interface MapComponentProps {
     playerPositions: { [playerName: string]: GamePosition };
     initialPlayerPosition: GamePosition;
     npcPositions: { [npcKey: string]: GamePosition };
+    graphicsObjectPositions: { [key: string]: GraphicsObjectState };
+    gameObjectPositions: { [key: string]: GameObjectState };
+    groundObjectPositions: { [key: string]: GameObjectState };
     plane: number;
     selectedPlayerName?: string;
+    currentTick: number;
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({
                                                        playerPositions,
                                                        initialPlayerPosition,
                                                        npcPositions,
+                                                       graphicsObjectPositions,
+                                                       gameObjectPositions,
+                                                       groundObjectPositions,
                                                        plane,
                                                        selectedPlayerName,
+                                                       currentTick
                                                    }) => {
     return (
         <MapContainer
@@ -27,7 +35,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
             zoom={10}
             minZoom={8}
             maxZoom={11}
-            style={{ height: '60vh' }}
+            style={{height: '60vh'}}
             attributionControl={false}
         >
             <TileLayer
@@ -37,9 +45,15 @@ const MapComponent: React.FC<MapComponentProps> = ({
                 noWrap={true}
                 tms={true}
             />
-            <MapCenterSetter initialPlayerPosition={initialPlayerPosition} />
-            <MapMarkers playerPositions={playerPositions} npcPositions={npcPositions} selectedPlayerName={selectedPlayerName}/>
-            <MouseHover plane={plane} />
+            <MapCenterSetter initialPlayerPosition={initialPlayerPosition}/>
+            <MapMarkers playerPositions={playerPositions} npcPositions={npcPositions}
+                        graphicsObjectPositions={graphicsObjectPositions}
+                        gameObjectPositions={gameObjectPositions}
+                        groundObjectPositions={groundObjectPositions}
+                        selectedPlayerName={selectedPlayerName}
+                        currentTick={currentTick}
+            />
+            <MouseHover plane={plane}/>
         </MapContainer>
     );
 };

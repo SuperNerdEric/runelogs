@@ -116,8 +116,12 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
                                 .filter(([key, state]) => state.position !== undefined)
                                 .map(([key, state]) => [key, state.position as GamePosition])
                         )}
+                        graphicsObjectPositions={currentGameState.graphicsObjects}
+                        gameObjectPositions={currentGameState.gameObjects}
+                        groundObjectPositions={currentGameState.groundObjects}
                         plane={0}
                         selectedPlayerName={selectedPlayerName}
+                        currentTick={currentGameState.tick}
                     />
                     {fight.logVersion && semver.gte(fight.logVersion, "1.3.0") &&
                         <div

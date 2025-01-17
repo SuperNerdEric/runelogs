@@ -2,6 +2,10 @@ import {Fight} from '../../models/Fight';
 import {
     BaseLevelsLog,
     BoostedLevelsLog,
+    GameObjectDespawned,
+    GameObjectSpawned,
+    GraphicsObjectDespawned,
+    GraphicsObjectSpawned, GroundObjectDespawned, GroundObjectSpawned,
     LogTypes,
     NPCDespawned,
     OverheadLog,
@@ -30,10 +34,29 @@ export interface NPCState {
     position?: GamePosition;
 }
 
+export interface GraphicsObjectState {
+    id: number;
+    position: GamePosition;
+    spawnTick: number;
+}
+
+export interface GameObjectState {
+    id: number;
+    position: GamePosition;
+}
+
+export interface GroundObjectState {
+    id: number;
+    position: GamePosition;
+}
+
 export interface GameState {
     tick: number;
     players: { [playerName: string]: PlayerState };
     npcs: { [npcKey: string]: NPCState };
+    graphicsObjects: { [key: string]: GraphicsObjectState };
+    gameObjects: { [key: string]: GameObjectState };
+    groundObjects: { [key: string]: GameObjectState };
 }
 
 export function createGameStates(fight: Fight): GameState[] {
@@ -56,6 +79,9 @@ export function createGameStates(fight: Fight): GameState[] {
         tick: 0,
         players: {},
         npcs: {},
+        graphicsObjects: {},
+        gameObjects: {},
+        groundObjects: {},
     };
 
     let currentTick: number | undefined = undefined;
@@ -71,6 +97,9 @@ export function createGameStates(fight: Fight): GameState[] {
                     tick: currentTick,
                     players: JSON.parse(JSON.stringify(currentState.players)),
                     npcs: JSON.parse(JSON.stringify(currentState.npcs)),
+                    graphicsObjects: JSON.parse(JSON.stringify(currentState.graphicsObjects)),
+                    gameObjects: JSON.parse(JSON.stringify(currentState.gameObjects)),
+                    groundObjects: JSON.parse(JSON.stringify(currentState.groundObjects)),
                 };
                 gameStates.push(stateToPush);
             }
@@ -174,6 +203,61 @@ export function createGameStates(fight: Fight): GameState[] {
                 break;
             }
 
+            case LogTypes.GRAPHICS_OBJECT_SPAWNED: {
+                const graphicsObjectSpawnedLog = log as GraphicsObjectSpawned;
+                const objectKey = `${graphicsObjectSpawnedLog.id}-${graphicsObjectSpawnedLog.position.x}-${graphicsObjectSpawnedLog.position.y}-${graphicsObjectSpawnedLog.position.plane}`;
+                const objectState = {
+                    id: graphicsObjectSpawnedLog.id,
+                    position: graphicsObjectSpawnedLog.position,
+                    spawnTick: tick,
+                };
+                currentState.graphicsObjects[objectKey] = objectState;
+                break;
+            }
+
+            case LogTypes.GRAPHICS_OBJECT_DESPAWNED: {
+                const graphicsObjectDespawnedLog = log as GraphicsObjectDespawned;
+                const objectKey = `${graphicsObjectDespawnedLog.id}-${graphicsObjectDespawnedLog.position.x}-${graphicsObjectDespawnedLog.position.y}-${graphicsObjectDespawnedLog.position.plane}`;
+                delete currentState.graphicsObjects[objectKey];
+                break;
+            }
+
+            case LogTypes.GAME_OBJECT_SPAWNED: {
+                const gameObjectSpawnedLog = log as GameObjectSpawned;
+                const objectKey = `${gameObjectSpawnedLog.id}-${gameObjectSpawnedLog.position.x}-${gameObjectSpawnedLog.position.y}-${gameObjectSpawnedLog.position.plane}`;
+                const objectState = {
+                    id: gameObjectSpawnedLog.id,
+                    position: gameObjectSpawnedLog.position,
+                };
+                currentState.gameObjects[objectKey] = objectState;
+                break;
+            }
+
+            case LogTypes.GAME_OBJECT_DESPAWNED: {
+                const gameObjectDespawnedLog = log as GameObjectDespawned;
+                const objectKey = `${gameObjectDespawnedLog.id}-${gameObjectDespawnedLog.position.x}-${gameObjectDespawnedLog.position.y}-${gameObjectDespawnedLog.position.plane}`;
+                delete currentState.gameObjects[objectKey];
+                break;
+            }
+
+            case LogTypes.GROUND_OBJECT_SPAWNED: {
+                const groundObjectSpawnedLog = log as GroundObjectSpawned;
+                const objectKey = `${groundObjectSpawnedLog.id}-${groundObjectSpawnedLog.position.x}-${groundObjectSpawnedLog.position.y}-${groundObjectSpawnedLog.position.plane}`;
+                const objectState = {
+                    id: groundObjectSpawnedLog.id,
+                    position: groundObjectSpawnedLog.position,
+                };
+                currentState.groundObjects[objectKey] = objectState;
+                break;
+            }
+
+            case LogTypes.GROUND_OBJECT_DESPAWNED: {
+                const groundObjectDespawnedLog = log as GroundObjectDespawned;
+                const objectKey = `${groundObjectDespawnedLog.id}-${groundObjectDespawnedLog.position.x}-${groundObjectDespawnedLog.position.y}-${groundObjectDespawnedLog.position.plane}`;
+                delete currentState.groundObjects[objectKey];
+                break;
+            }
+
             default:
                 break;
         }
@@ -185,6 +269,9 @@ export function createGameStates(fight: Fight): GameState[] {
             tick: currentTick,
             players: JSON.parse(JSON.stringify(currentState.players)),
             npcs: JSON.parse(JSON.stringify(currentState.npcs)),
+            graphicsObjects: JSON.parse(JSON.stringify(currentState.graphicsObjects)),
+            gameObjects: JSON.parse(JSON.stringify(currentState.gameObjects)),
+            groundObjects: JSON.parse(JSON.stringify(currentState.groundObjects)),
         };
         gameStates.push(stateToPush);
     }
