@@ -48,6 +48,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
             <MapCenterSetter initialPlayerPosition={initialPlayerPosition}/>
             <Pane name="players" style={{ zIndex: 400 }} />
             <Pane name="objects" style={{ zIndex: 500 }} />
+            <Pane name="npcs" style={{ zIndex: 600 }} />
             <MapMarkers playerPositions={playerPositions} npcPositions={npcPositions}
                         graphicsObjectPositions={graphicsObjectPositions}
                         gameObjectPositions={gameObjectPositions}
