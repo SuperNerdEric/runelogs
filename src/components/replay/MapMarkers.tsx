@@ -95,6 +95,7 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
                             bounds={rectangle.getBounds()}
                             opacity={1}
                             interactive={false} // Set to false if you don't want the image to be clickable
+                            pane="npcs"
                         />
 
                         <Rectangle
