@@ -12,21 +12,21 @@ export const getItemImageUrl = (itemId: number): string => {
 };
 
 const equipmentSlotPositions = [
-    { left: '78px', top: '1px' },   // Head
-    { left: '16px', top: '54px' },  // Cape
-    { left: '78px', top: '54px' },  // Neck
-    { left: '-6px', top: '108px' },   // Mainhand
-    { left: '78px', top: '108px' },  // Chest
-    { left: '162px', top: '108px' },  // Offhand
-    { left: '-6px', top: '272px' },   // ??
-    { left: '78px', top: '162px' },  // Legs
-    { left: '78px', top: '272px' },      // ??
-    { left: '-6px', top: '217px' },   // Gloves
-    { left: '78px', top: '217px' },  // Boots
-    { left: '162px', top: '272px' },      // ??
-    { left: '162px', top: '217px' },  // Ring
-    { left: '139px', top: '54px' },  // Ammo
-    { left: '139px', top: '1px' },    // Quiver
+    { left: '94px', top: '1px' },   // Head
+    { left: '32px', top: '54px' },  // Cape
+    { left: '94px', top: '54px' },  // Neck
+    { left: '10px', top: '108px' },   // Mainhand
+    { left: '94px', top: '108px' },  // Chest
+    { left: '178px', top: '108px' },  // Offhand
+    { left: '10px', top: '272px' },   // ??
+    { left: '94px', top: '162px' },  // Legs
+    { left: '94px', top: '272px' },      // ??
+    { left: '10px', top: '217px' },   // Gloves
+    { left: '94px', top: '217px' },  // Boots
+    { left: '178px', top: '272px' },      // ??
+    { left: '178px', top: '217px' },  // Ring
+    { left: '155px', top: '54px' },  // Ammo
+    { left: '155px', top: '1px' },    // Quiver
 ];
 
 const PlayerEquipment: React.FC<PlayerEquipmentProps> = ({ equipment }) => {
@@ -54,9 +54,12 @@ const PlayerEquipment: React.FC<PlayerEquipmentProps> = ({ equipment }) => {
                     position: 'absolute' as const,
                     left: position.left,
                     top: position.top,
-                    width: '32px',
-                    height: '32px',
                     cursor: 'pointer',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '54px',
+                    height: '50px',
                 };
 
                 if (itemId === -2) {
@@ -65,19 +68,16 @@ const PlayerEquipment: React.FC<PlayerEquipmentProps> = ({ equipment }) => {
                             <div
                                 style={{
                                     position: 'absolute',
+                                    width: '100%',
+                                    height: '100%',
                                     userSelect: 'none',
-                                    top: '7px',
-                                    left: '24px',
-                                    width: '38px',
-                                    height: '35px',
                                     backgroundColor: 'rgba(0, 0, 0, 0.5)',
                                     display: 'flex',
                                     justifyContent: 'center',
                                     alignItems: 'center',
-                                    transform: 'scale(1.35)',
                                 }}
                             >
-                                <span style={{ color: 'white', fontSize: '8px' }}>Unknown</span>
+                                <span style={{ color: 'white', fontSize: '12px' }}>Unknown</span>
                             </div>
                         </div>
                     );
@@ -91,7 +91,6 @@ const PlayerEquipment: React.FC<PlayerEquipmentProps> = ({ equipment }) => {
                             key={index}
                             style={{
                                 ...slotStyle,
-                                cursor: 'pointer',
                             }}
                             onClick={() => window.open(wikiLink, '_blank', 'noopener,noreferrer')}
                             title={itemName}
@@ -101,8 +100,9 @@ const PlayerEquipment: React.FC<PlayerEquipmentProps> = ({ equipment }) => {
                                 alt={`Equipment Slot Background ${index}`}
                                 style={{
                                     position: 'absolute',
-                                    width: '54px',
-                                    height: '50px',
+                                    width: '100%',
+                                    height: '100%',
+                                    zIndex: 1
                                 }}
                             />
                             {/* Item image */}
@@ -111,9 +111,8 @@ const PlayerEquipment: React.FC<PlayerEquipmentProps> = ({ equipment }) => {
                                 alt={itemName}
                                 style={{
                                     position: 'absolute',
-                                    top: '10px',
-                                    left: '30px',
-                                    transform: 'scale(1.35)',
+                                    transform: 'scale(1.4)',
+                                    zIndex: 2
                                 }}
                             />
                         </div>
