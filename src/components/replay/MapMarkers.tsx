@@ -37,7 +37,6 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
 
     return (
         <>
-
             {/* Render Player Markers */}
             {Object.entries(playerPositions).map(([playerName, positionData]) => {
                 const isSelected = playerName === selectedPlayerName;
@@ -57,6 +56,7 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
                         key={`player-${playerName}`}
                         bounds={rectangle.getBounds()}
                         pathOptions={playerRectangleOptions}
+                        pane="players"
                     >
                         <Popup>{playerName}</Popup>
                     </Rectangle>
@@ -140,6 +140,7 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
                             bounds={rectangle.getBounds()}
                             opacity={1}
                             interactive={false}
+                            pane="objects"
                         />
                     </React.Fragment>
                 );
@@ -158,6 +159,7 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
                                 bounds={rectangle.getBounds()}
                                 opacity={1}
                                 interactive={false}
+                                pane="objects"
                             />
                         )}
                     </React.Fragment>
@@ -181,6 +183,7 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
                                 bounds={rectangle.getBounds()}
                                 opacity={1}
                                 interactive={false}
+                                pane="objects"
                             />
                         )}
                     </React.Fragment>

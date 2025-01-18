@@ -1,5 +1,5 @@
 import React from 'react';
-import {MapContainer, TileLayer} from 'react-leaflet';
+import {MapContainer, Pane, TileLayer} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import MapMarkers from './MapMarkers';
 import MouseHover from './MouseHover';
@@ -46,6 +46,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
                 tms={true}
             />
             <MapCenterSetter initialPlayerPosition={initialPlayerPosition}/>
+            <Pane name="players" style={{ zIndex: 400 }} />
+            <Pane name="objects" style={{ zIndex: 500 }} />
             <MapMarkers playerPositions={playerPositions} npcPositions={npcPositions}
                         graphicsObjectPositions={graphicsObjectPositions}
                         gameObjectPositions={gameObjectPositions}
