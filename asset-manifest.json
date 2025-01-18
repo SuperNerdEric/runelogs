@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.98d56546.css",
-    "main.js": "/static/js/main.4deea161.js",
+    "main.js": "/static/js/main.22a21028.js",
     "static/js/132.b3896406.chunk.js": "/static/js/132.b3896406.chunk.js",
     "static/js/592.cb0fcaba.chunk.js": "/static/js/592.cb0fcaba.chunk.js",
     "static/js/120.e4125210.chunk.js": "/static/js/120.e4125210.chunk.js",
@@ -31,7 +31,7 @@
     "static/media/1573_27.png": "/static/media/1573_27.9c50429638951e630f9b.png",
     "static/media/45575.png": "/static/media/45575.524e60c31f395a4ef827.png",
     "static/media/45574.png": "/static/media/45574.6159f647b79b4e23b9eb.png",
-    "static/media/1595.png": "/static/media/1595.c6e669cf4e4b13b12758.png",
+    "static/media/1595.png": "/static/media/1595.9c4ac84cc4b4194f9c0f.png",
     "static/media/45570.png": "/static/media/45570.217893af5ea4a0e257b7.png",
     "static/media/45571.png": "/static/media/45571.684a487f1f9f1922a6d1.png",
     "static/media/Ranged.png": "/static/media/Ranged.119fcd28814f44b9c204.png",
@@ -82,13 +82,13 @@
     "static/media/Hitpoints.webp": "/static/media/Hitpoints.4ed77f5a33cc26a85e31.webp",
     "static/media/Defence.webp": "/static/media/Defence.d0c59b568f7c3f0369f2.webp",
     "main.98d56546.css.map": "/static/css/main.98d56546.css.map",
-    "main.4deea161.js.map": "/static/js/main.4deea161.js.map",
+    "main.22a21028.js.map": "/static/js/main.22a21028.js.map",
     "132.b3896406.chunk.js.map": "/static/js/132.b3896406.chunk.js.map",
     "592.cb0fcaba.chunk.js.map": "/static/js/592.cb0fcaba.chunk.js.map",
     "120.e4125210.chunk.js.map": "/static/js/120.e4125210.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.98d56546.css",
-    "static/js/main.4deea161.js"
+    "static/js/main.22a21028.js"
   ]
 }
