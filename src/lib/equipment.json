@@ -1050,7 +1050,7 @@
     "slot": "weapon",
     "category": "Axe",
     "isTwoHanded": true,
-    "speed": 5
+    "speed": 7
   },
   {
     "name": "Adamant fire arrow",
@@ -1870,6 +1870,15 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Adamant staff of collection",
+    "id": 30607,
+    "version": "",
+    "slot": "weapon",
+    "category": "Blunt",
+    "isTwoHanded": false,
+    "speed": 4
   },
   {
     "name": "Adamant sword",
@@ -2898,6 +2907,15 @@
     "speed": 0
   },
   {
+    "name": "Amulet of the monarchs",
+    "id": 30376,
+    "version": "",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Amulet of torture",
     "id": 19553,
     "version": "",
@@ -3573,15 +3591,6 @@
     "speed": 0
   },
   {
-    "name": "Arcane grimoire (Shattered Relics League)",
-    "id": 26551,
-    "version": "",
-    "slot": "shield",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
     "name": "Arcane spirit shield",
     "id": 12825,
     "version": "",
@@ -3678,7 +3687,7 @@
     "slot": "weapon",
     "category": "Slash Sword",
     "isTwoHanded": false,
-    "speed": 4
+    "speed": 5
   },
   {
     "name": "Ardougne cloak 1",
@@ -4107,10 +4116,10 @@
     "name": "Atlatl dart (Last Man Standing)",
     "id": 29852,
     "version": "",
-    "slot": "weapon",
-    "category": "Bow",
-    "isTwoHanded": true,
-    "speed": 3
+    "slot": "ammo",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
   },
   {
     "name": "Attack cape",
@@ -4513,6 +4522,15 @@
     "id": 26719,
     "version": "",
     "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Banker's briefcase",
+    "id": 30361,
+    "version": "",
+    "slot": "cape",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -6372,6 +6390,15 @@
     "speed": 0
   },
   {
+    "name": "Black staff of collection",
+    "id": 30603,
+    "version": "",
+    "slot": "weapon",
+    "category": "Blunt",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Black sword",
     "id": 1283,
     "version": "",
@@ -6777,16 +6804,7 @@
     "speed": 0
   },
   {
-    "name": "Blood'n'tar snelm (pointed)",
-    "id": 3339,
-    "version": "",
-    "slot": "head",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Blood'n'tar snelm (round)",
+    "name": "Blood'n'tar snelm",
     "id": 3329,
     "version": "",
     "slot": "head",
@@ -8466,7 +8484,7 @@
     "slot": "weapon",
     "category": "Axe",
     "isTwoHanded": true,
-    "speed": 5
+    "speed": 7
   },
   {
     "name": "Bronze fire arrow",
@@ -8874,6 +8892,15 @@
     "speed": 0
   },
   {
+    "name": "Bronze staff of collection",
+    "id": 30597,
+    "version": "",
+    "slot": "weapon",
+    "category": "Blunt",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Bronze sword",
     "id": 1277,
     "version": "",
@@ -9243,16 +9270,7 @@
     "speed": 0
   },
   {
-    "name": "Bruise blue snelm (pointed)",
-    "id": 3343,
-    "version": "",
-    "slot": "head",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Bruise blue snelm (round)",
+    "name": "Bruise blue snelm",
     "id": 3333,
     "version": "",
     "slot": "head",
@@ -10494,6 +10512,15 @@
     "speed": 0
   },
   {
+    "name": "Clue compass (item)",
+    "id": 30363,
+    "version": "",
+    "slot": "ammo",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Clue hunter boots",
     "id": 19695,
     "version": "",
@@ -10561,6 +10588,96 @@
     "id": 1169,
     "version": "",
     "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Collection log",
+    "id": 22711,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Collection log (adamant)",
+    "id": 30589,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Collection log (black)",
+    "id": 30585,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Collection log (bronze)",
+    "id": 30579,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Collection log (dragon)",
+    "id": 30593,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Collection log (gilded)",
+    "id": 30595,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Collection log (iron)",
+    "id": 30581,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Collection log (mithril)",
+    "id": 30587,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Collection log (rune)",
+    "id": 30591,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Collection log (steel)",
+    "id": 30583,
+    "version": "",
+    "slot": "shield",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -11421,6 +11538,15 @@
     "speed": 5
   },
   {
+    "name": "Crystal blessing",
+    "id": 30384,
+    "version": "",
+    "slot": "ammo",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Crystal body",
     "id": 23975,
     "version": "Active",
@@ -11905,6 +12031,15 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Crystal dagger (perfected)",
+    "id": 30340,
+    "version": "",
+    "slot": "weapon",
+    "category": "Stab Sword",
+    "isTwoHanded": false,
+    "speed": 4
   },
   {
     "name": "Crystal felling axe",
@@ -13869,6 +14004,15 @@
     "speed": 0
   },
   {
+    "name": "Devil's element",
+    "id": 30371,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Devout boots",
     "id": 22954,
     "version": "",
@@ -14409,6 +14553,24 @@
     "speed": 0
   },
   {
+    "name": "Dog boots",
+    "id": 30491,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Dog disguise",
+    "id": 30487,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Dorgeshuun crossbow",
     "id": 8880,
     "version": "",
@@ -14501,7 +14663,16 @@
   {
     "name": "Dragon axe (or)",
     "id": 25378,
-    "version": "",
+    "version": "Trailblazer",
+    "slot": "weapon",
+    "category": "Axe",
+    "isTwoHanded": false,
+    "speed": 5
+  },
+  {
+    "name": "Dragon axe (or)",
+    "id": 30352,
+    "version": "Trailblazer Reloaded",
     "slot": "weapon",
     "category": "Axe",
     "isTwoHanded": false,
@@ -14942,7 +15113,16 @@
   {
     "name": "Dragon harpoon (or)",
     "id": 25373,
-    "version": "",
+    "version": "Trailblazer",
+    "slot": "weapon",
+    "category": "Stab Sword",
+    "isTwoHanded": false,
+    "speed": 5
+  },
+  {
+    "name": "Dragon harpoon (or)",
+    "id": 30349,
+    "version": "Trailblazer Reloaded",
     "slot": "weapon",
     "category": "Stab Sword",
     "isTwoHanded": false,
@@ -15248,7 +15428,16 @@
   {
     "name": "Dragon pickaxe (or) (Trailblazer)",
     "id": 25376,
-    "version": "",
+    "version": "Trailblazer",
+    "slot": "weapon",
+    "category": "Pickaxe",
+    "isTwoHanded": false,
+    "speed": 5
+  },
+  {
+    "name": "Dragon pickaxe (or) (Trailblazer)",
+    "id": 30351,
+    "version": "Trailblazer Reloaded",
     "slot": "weapon",
     "category": "Pickaxe",
     "isTwoHanded": false,
@@ -15478,6 +15667,15 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Dragon staff of collection",
+    "id": 30611,
+    "version": "",
+    "slot": "weapon",
+    "category": "Blunt",
+    "isTwoHanded": false,
+    "speed": 4
   },
   {
     "name": "Dragon sword",
@@ -15732,6 +15930,24 @@
     "speed": 0
   },
   {
+    "name": "Drygore blowpipe",
+    "id": 30374,
+    "version": "Charged",
+    "slot": "weapon",
+    "category": "Thrown",
+    "isTwoHanded": true,
+    "speed": 2
+  },
+  {
+    "name": "Drygore blowpipe",
+    "id": 30373,
+    "version": "Empty",
+    "slot": "weapon",
+    "category": "Thrown",
+    "isTwoHanded": true,
+    "speed": 2
+  },
+  {
     "name": "Dual macuahuitl",
     "id": 28997,
     "version": "",
@@ -15858,10 +16074,298 @@
     "speed": 0
   },
   {
+    "name": "Echo ahrim's hood",
+    "id": 30543,
+    "version": "0",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo ahrim's hood",
+    "id": 30519,
+    "version": "100",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo ahrim's hood",
+    "id": 30537,
+    "version": "25",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo ahrim's hood",
+    "id": 30531,
+    "version": "50",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo ahrim's hood",
+    "id": 30525,
+    "version": "75",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo ahrim's hood",
+    "id": 30445,
+    "version": "Undamaged",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo ahrim's robeskirt",
+    "id": 30547,
+    "version": "0",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo ahrim's robeskirt",
+    "id": 30523,
+    "version": "100",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo ahrim's robeskirt",
+    "id": 30541,
+    "version": "25",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo ahrim's robeskirt",
+    "id": 30535,
+    "version": "50",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo ahrim's robeskirt",
+    "id": 30529,
+    "version": "75",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo ahrim's robeskirt",
+    "id": 30449,
+    "version": "Undamaged",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo ahrim's robetop",
+    "id": 30545,
+    "version": "0",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo ahrim's robetop",
+    "id": 30521,
+    "version": "100",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo ahrim's robetop",
+    "id": 30539,
+    "version": "25",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo ahrim's robetop",
+    "id": 30533,
+    "version": "50",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo ahrim's robetop",
+    "id": 30527,
+    "version": "75",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo ahrim's robetop",
+    "id": 30447,
+    "version": "Undamaged",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo ahrim's staff",
+    "id": 30574,
+    "version": "0",
+    "slot": "weapon",
+    "category": "Staff",
+    "isTwoHanded": false,
+    "speed": 6
+  },
+  {
+    "name": "Echo ahrim's staff",
+    "id": 30570,
+    "version": "100",
+    "slot": "weapon",
+    "category": "Staff",
+    "isTwoHanded": false,
+    "speed": 6
+  },
+  {
+    "name": "Echo ahrim's staff",
+    "id": 30573,
+    "version": "25",
+    "slot": "weapon",
+    "category": "Staff",
+    "isTwoHanded": false,
+    "speed": 6
+  },
+  {
+    "name": "Echo ahrim's staff",
+    "id": 30572,
+    "version": "50",
+    "slot": "weapon",
+    "category": "Staff",
+    "isTwoHanded": false,
+    "speed": 6
+  },
+  {
+    "name": "Echo ahrim's staff",
+    "id": 30571,
+    "version": "75",
+    "slot": "weapon",
+    "category": "Staff",
+    "isTwoHanded": false,
+    "speed": 6
+  },
+  {
+    "name": "Echo ahrim's staff",
+    "id": 30568,
+    "version": "Undamaged",
+    "slot": "weapon",
+    "category": "Staff",
+    "isTwoHanded": false,
+    "speed": 6
+  },
+  {
+    "name": "Echo axe",
+    "id": 25110,
+    "version": "",
+    "slot": "weapon",
+    "category": "Axe",
+    "isTwoHanded": false,
+    "speed": 5
+  },
+  {
     "name": "Echo boots",
     "id": 28945,
     "version": "",
     "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo harpoon",
+    "id": 25114,
+    "version": "",
+    "slot": "weapon",
+    "category": "Stab Sword",
+    "isTwoHanded": false,
+    "speed": 5
+  },
+  {
+    "name": "Echo pickaxe",
+    "id": 25112,
+    "version": "",
+    "slot": "weapon",
+    "category": "Pickaxe",
+    "isTwoHanded": false,
+    "speed": 5
+  },
+  {
+    "name": "Echo venator bow",
+    "id": 30434,
+    "version": "Charged",
+    "slot": "weapon",
+    "category": "Bow",
+    "isTwoHanded": true,
+    "speed": 4
+  },
+  {
+    "name": "Echo venator bow",
+    "id": 30434,
+    "version": "Uncharged",
+    "slot": "weapon",
+    "category": "Bow",
+    "isTwoHanded": true,
+    "speed": 4
+  },
+  {
+    "name": "Echo virtus mask",
+    "id": 30437,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo virtus robe bottom",
+    "id": 30441,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Echo virtus robe top",
+    "id": 30439,
+    "version": "",
+    "slot": "body",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -16641,6 +17145,15 @@
     "speed": 0
   },
   {
+    "name": "Emperor ring",
+    "id": 30378,
+    "version": "",
+    "slot": "ring",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Empty blaster",
     "id": 13183,
     "version": "",
@@ -17154,6 +17667,15 @@
     "speed": 0
   },
   {
+    "name": "Festive scarf",
+    "id": 30489,
+    "version": "",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Fez",
     "id": 6382,
     "version": "",
@@ -17581,6 +18103,15 @@
     "id": 27145,
     "version": "Transgender",
     "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Forager's pouch",
+    "id": 30357,
+    "version": "",
+    "slot": "shield",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -18441,6 +18972,24 @@
     "speed": 4
   },
   {
+    "name": "Giantsoul amulet",
+    "id": 30638,
+    "version": "Charged",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Giantsoul amulet",
+    "id": 30637,
+    "version": "Uncharged",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Gilded 2h sword",
     "id": 20155,
     "version": "",
@@ -18630,6 +19179,15 @@
     "speed": 0
   },
   {
+    "name": "Gilded staff of collection",
+    "id": 30613,
+    "version": "",
+    "slot": "weapon",
+    "category": "Blunt",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Gingerbread shield",
     "id": 24437,
     "version": "",
@@ -18686,6 +19244,15 @@
   {
     "name": "Gloves of silence",
     "id": 10075,
+    "version": "",
+    "slot": "hands",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Gloves of the damned",
+    "id": 30380,
     "version": "",
     "slot": "hands",
     "category": "",
@@ -22383,6 +22950,24 @@
     "speed": 5
   },
   {
+    "name": "Infernal axe (or) (Trailblazer Reloaded)",
+    "id": 30347,
+    "version": "Charged",
+    "slot": "weapon",
+    "category": "Axe",
+    "isTwoHanded": false,
+    "speed": 5
+  },
+  {
+    "name": "Infernal axe (or) (Trailblazer Reloaded)",
+    "id": 30348,
+    "version": "Uncharged",
+    "slot": "weapon",
+    "category": "Axe",
+    "isTwoHanded": false,
+    "speed": 5
+  },
+  {
     "name": "Infernal cape",
     "id": 21287,
     "version": "Broken",
@@ -22455,6 +23040,24 @@
     "speed": 5
   },
   {
+    "name": "Infernal harpoon (or) (Trailblazer Reloaded)",
+    "id": 30342,
+    "version": "Charged",
+    "slot": "weapon",
+    "category": "Stab Sword",
+    "isTwoHanded": false,
+    "speed": 5
+  },
+  {
+    "name": "Infernal harpoon (or) (Trailblazer Reloaded)",
+    "id": 30343,
+    "version": "Uncharged",
+    "slot": "weapon",
+    "category": "Stab Sword",
+    "isTwoHanded": false,
+    "speed": 5
+  },
+  {
     "name": "Infernal max cape",
     "id": 21289,
     "version": "Broken",
@@ -22520,6 +23123,24 @@
   {
     "name": "Infernal pickaxe (or)",
     "id": 25369,
+    "version": "Uncharged",
+    "slot": "weapon",
+    "category": "Pickaxe",
+    "isTwoHanded": false,
+    "speed": 5
+  },
+  {
+    "name": "Infernal pickaxe (or) (Trailblazer Reloaded)",
+    "id": 30345,
+    "version": "Charged",
+    "slot": "weapon",
+    "category": "Pickaxe",
+    "isTwoHanded": false,
+    "speed": 5
+  },
+  {
+    "name": "Infernal pickaxe (or) (Trailblazer Reloaded)",
+    "id": 30346,
     "version": "Uncharged",
     "slot": "weapon",
     "category": "Pickaxe",
@@ -22983,7 +23604,7 @@
     "slot": "weapon",
     "category": "Axe",
     "isTwoHanded": true,
-    "speed": 5
+    "speed": 7
   },
   {
     "name": "Iron fire arrow",
@@ -23389,6 +24010,15 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Iron staff of collection",
+    "id": 30599,
+    "version": "",
+    "slot": "weapon",
+    "category": "Blunt",
+    "isTwoHanded": false,
+    "speed": 4
   },
   {
     "name": "Iron sword",
@@ -25908,7 +26538,7 @@
     "slot": "weapon",
     "category": "Axe",
     "isTwoHanded": true,
-    "speed": 5
+    "speed": 7
   },
   {
     "name": "Mithril fire arrow",
@@ -26323,6 +26953,15 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Mithril staff of collection",
+    "id": 30605,
+    "version": "",
+    "slot": "weapon",
+    "category": "Blunt",
+    "isTwoHanded": false,
+    "speed": 4
   },
   {
     "name": "Mithril sword",
@@ -26874,16 +27513,7 @@
     "speed": 0
   },
   {
-    "name": "Myre snelm (pointed)",
-    "id": 3337,
-    "version": "",
-    "slot": "head",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Myre snelm (round)",
+    "name": "Myre snelm",
     "id": 3327,
     "version": "",
     "slot": "head",
@@ -27324,6 +27954,24 @@
     "speed": 0
   },
   {
+    "name": "Nature's reprisal",
+    "id": 30390,
+    "version": "Charged",
+    "slot": "weapon",
+    "category": "Multi-Style",
+    "isTwoHanded": true,
+    "speed": 5
+  },
+  {
+    "name": "Nature's reprisal",
+    "id": 30392,
+    "version": "Uncharged",
+    "slot": "weapon",
+    "category": "Multi-Style",
+    "isTwoHanded": true,
+    "speed": 5
+  },
+  {
     "name": "Navy cavalier",
     "id": 12325,
     "version": "",
@@ -27738,16 +28386,7 @@
     "speed": 0
   },
   {
-    "name": "Ochre snelm (pointed)",
-    "id": 3341,
-    "version": "",
-    "slot": "head",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Ochre snelm (round)",
+    "name": "Ochre snelm",
     "id": 3331,
     "version": "",
     "slot": "head",
@@ -28818,6 +29457,42 @@
     "speed": 0
   },
   {
+    "name": "Pointed blood'n'tar snelm",
+    "id": 3339,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Pointed bruise blue snelm",
+    "id": 3343,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Pointed myre snelm",
+    "id": 3337,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Pointed ochre snelm",
+    "id": 3341,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Portable waystone",
     "id": 26549,
     "version": "",
@@ -28965,6 +29640,42 @@
     "name": "Prescription goggles",
     "id": 29974,
     "version": "Unfocused",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Present box hat",
+    "id": 30485,
+    "version": "Anti-santa",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Present box hat",
+    "id": 30479,
+    "version": "Festive",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Present box hat",
+    "id": 30483,
+    "version": "Icy",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Present box hat",
+    "id": 30481,
+    "version": "Simple",
     "slot": "head",
     "category": "",
     "isTwoHanded": false,
@@ -29452,6 +30163,195 @@
     "id": 22947,
     "version": "",
     "slot": "ammo",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Raging echoes adamant trophy",
+    "id": 30469,
+    "version": "",
+    "slot": "weapon",
+    "category": "Blunt",
+    "isTwoHanded": true,
+    "speed": 4
+  },
+  {
+    "name": "Raging echoes banner",
+    "id": 30430,
+    "version": "",
+    "slot": "weapon",
+    "category": "Banner",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
+    "name": "Raging echoes boots (t1)",
+    "id": 30410,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Raging echoes boots (t2)",
+    "id": 30418,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Raging echoes boots (t3)",
+    "id": 30426,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Raging echoes bronze trophy",
+    "id": 30477,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Raging echoes cane",
+    "id": 30428,
+    "version": "",
+    "slot": "weapon",
+    "category": "Spiked",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
+    "name": "Raging echoes dragon trophy",
+    "id": 30465,
+    "version": "",
+    "slot": "weapon",
+    "category": "Blunt",
+    "isTwoHanded": true,
+    "speed": 4
+  },
+  {
+    "name": "Raging echoes hat (t1)",
+    "id": 30404,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Raging echoes hat (t2)",
+    "id": 30412,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Raging echoes hat (t3)",
+    "id": 30420,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Raging echoes iron trophy",
+    "id": 30475,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Raging echoes mithril trophy",
+    "id": 30471,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Raging echoes robeskirt (t1)",
+    "id": 30408,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Raging echoes robeskirt (t2)",
+    "id": 30416,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Raging echoes robeskirt (t3)",
+    "id": 30424,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Raging echoes rune trophy",
+    "id": 30467,
+    "version": "",
+    "slot": "weapon",
+    "category": "Blunt",
+    "isTwoHanded": true,
+    "speed": 4
+  },
+  {
+    "name": "Raging echoes steel trophy",
+    "id": 30473,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Raging echoes top (t1)",
+    "id": 30406,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Raging echoes top (t2)",
+    "id": 30414,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Raging echoes top (t3)",
+    "id": 30422,
+    "version": "",
+    "slot": "body",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -31713,7 +32613,7 @@
     "slot": "weapon",
     "category": "Axe",
     "isTwoHanded": true,
-    "speed": 5
+    "speed": 7
   },
   {
     "name": "Rune fire arrow",
@@ -32589,6 +33489,15 @@
     "speed": 0
   },
   {
+    "name": "Rune staff of collection",
+    "id": 30609,
+    "version": "",
+    "slot": "weapon",
+    "category": "Blunt",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Rune sword",
     "id": 1289,
     "version": "",
@@ -32770,6 +33679,15 @@
   },
   {
     "name": "Sage's greaves",
+    "id": 28771,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Sage's greaves (Trailblazer Reloaded League)",
     "id": 28771,
     "version": "",
     "slot": "feet",
@@ -33552,7 +34470,7 @@
     "speed": 0
   },
   {
-    "name": "Scythe",
+    "name": "Scythe (Halloween event)",
     "id": 1419,
     "version": "",
     "slot": "weapon",
@@ -36240,7 +37158,7 @@
     "slot": "weapon",
     "category": "Axe",
     "isTwoHanded": true,
-    "speed": 5
+    "speed": 7
   },
   {
     "name": "Steel fire arrow",
@@ -36927,6 +37845,15 @@
     "speed": 0
   },
   {
+    "name": "Steel staff of collection",
+    "id": 30601,
+    "version": "",
+    "slot": "weapon",
+    "category": "Blunt",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Steel sword",
     "id": 1281,
     "version": "",
@@ -37138,6 +38065,24 @@
     "id": 28872,
     "version": "",
     "slot": "ammo",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Sunlight spear",
+    "id": 30369,
+    "version": "",
+    "slot": "weapon",
+    "category": "Stab Sword",
+    "isTwoHanded": true,
+    "speed": 5
+  },
+  {
+    "name": "Sunlit bracers",
+    "id": 30386,
+    "version": "",
+    "slot": "hands",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -37899,6 +38844,15 @@
     "speed": 5
   },
   {
+    "name": "The dogsword",
+    "id": 30367,
+    "version": "",
+    "slot": "weapon",
+    "category": "2h Sword",
+    "isTwoHanded": true,
+    "speed": 6
+  },
+  {
     "name": "Thieving bag",
     "id": 23224,
     "version": "",
@@ -37935,6 +38889,15 @@
     "speed": 0
   },
   {
+    "name": "Thousand-dragon ward",
+    "id": 30382,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Three barrels",
     "id": 8862,
     "version": "",
@@ -37942,6 +38905,15 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Thunder khopesh",
+    "id": 30388,
+    "version": "",
+    "slot": "weapon",
+    "category": "Slash Sword",
+    "isTwoHanded": false,
+    "speed": 4
   },
   {
     "name": "Tiara",
@@ -38589,7 +39561,7 @@
     "slot": "weapon",
     "category": "Spiked",
     "isTwoHanded": false,
-    "speed": 5
+    "speed": 4
   },
   {
     "name": "Trailblazer dragon trophy",
@@ -39357,6 +40329,15 @@
     "speed": 0
   },
   {
+    "name": "Twinflame staff",
+    "id": 30634,
+    "version": "",
+    "slot": "weapon",
+    "category": "Staff",
+    "isTwoHanded": false,
+    "speed": 6
+  },
+  {
     "name": "Twisted adamant trophy",
     "id": 24376,
     "version": "",
@@ -39462,7 +40443,7 @@
     "slot": "weapon",
     "category": "Spiked",
     "isTwoHanded": false,
-    "speed": 5
+    "speed": 4
   },
   {
     "name": "Twisted coat (t1)",
@@ -43225,6 +44206,15 @@
     "category": "Blunt",
     "isTwoHanded": false,
     "speed": 6
+  },
+  {
+    "name": "Zombie helmet",
+    "id": 30321,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
   },
   {
     "name": "Zombie mask",
