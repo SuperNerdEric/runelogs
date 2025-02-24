@@ -10,6 +10,7 @@ interface FightProps {
     index: number;
     title: string;
     onSelectFight: (index: number) => void;
+    onSelectFightAggregate?: (indices: number[]) => void;
     isShortest: boolean;
 }
 
@@ -109,15 +110,17 @@ const Wave: React.FC<WaveProps> = ({wave, index, waveIndex, onSelectFight}) => {
 interface FightSelectorProps {
     fights: (EncounterMetaData)[];
     onSelectFight: (index: number, raidIndex?: number) => void;
+    onSelectAggregateFight?: (indices: number[]) => void;
 }
 
 interface BannerProps {
     name: string;
+    onClick?: () => void;
 }
 
-const Banner: React.FC<BannerProps> = ({name}) => {
+const Banner: React.FC<BannerProps> = ({ name, onClick }) => {
     return (
-        <div className="banner">
+        <div className="banner" onClick={onClick}>
             <p>{name}</p>
         </div>
     );
@@ -140,7 +143,7 @@ type FightGroup = {
     }
 }
 
-const FightSelector: React.FC<FightSelectorProps> = ({fights, onSelectFight}) => {
+const FightSelector: React.FC<FightSelectorProps> = ({ fights, onSelectFight, onSelectAggregateFight }) => {
     // Group fights by name and record shortest fight time for each group
     const [groupedFights, setGroupedFights] = useState<FightGroup>({});
 
@@ -216,9 +219,16 @@ const FightSelector: React.FC<FightSelectorProps> = ({fights, onSelectFight}) =>
                         }
                     })
 
+                    const handleBannerClick = () => {
+                        if (onSelectAggregateFight) {
+                            onSelectAggregateFight(fightGroup.fights.map(fight => fight.index));
+                        }
+                    };
+
+
                     return (
                         <div className="damage-done-container" key={name}>
-                            <Banner name={name}/>
+                            <Banner name={name} onClick={handleBannerClick} />
                             <div className="fight-list">
                                 {fightGroup.fights.map((fight, index) => (
                                     <Fight
