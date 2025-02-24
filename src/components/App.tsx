@@ -30,6 +30,7 @@ function App() {
         name: 'myFightData',
     });
 
+    const [loadingAggregate, setLoadingAggregate] = useState<boolean>(false);
     const {enqueueSnackbar} = useSnackbar();
 
     const action = (snackbarId: SnackbarKey | undefined) => (
@@ -62,6 +63,7 @@ function App() {
                 setParseInProgress(false);
             } else if (type === 'item') {
                 setSelectedFight(item);
+                setLoadingAggregate(false);
             }
         };
 
@@ -105,6 +107,12 @@ function App() {
         worker.postMessage({type: 'getItem', index, raidIndex, subIndex});
         setSelectedFightMetadataIndex(index);
         setSelectedRaidIndex(raidIndex);
+    };
+
+    const handleSelectAggregateFight = (indices: number[]) => {
+        worker.postMessage({type: 'getAggregateItems', indices});
+        setLoadingAggregate(true);
+        setSelectedFightMetadataIndex(indices[0]);
     };
 
     const handleRaidSelectFight = (raidIndex: number) => {
@@ -195,9 +203,17 @@ function App() {
                         <Dropzone onParse={handleParse}/>
                     </div>
                 )}
-                {!loadingStorage && !parseInProgress && !selectedFight && fightMetadata && (
+                {loadingAggregate && (
+                    <div className="loading-indicator-container">
+                        <div className="loading-content">
+                            <p>Aggregating fights...</p>
+                            <CircularProgress />
+                        </div>
+                    </div>
+                )}
+                {!loadingStorage && !loadingAggregate && !parseInProgress && !selectedFight && fightMetadata && (
                     <div>
-                        <FightSelector fights={fightMetadata!} onSelectFight={handleSelectFight}/>
+                        <FightSelector fights={fightMetadata!} onSelectFight={handleSelectFight} onSelectAggregateFight={handleSelectAggregateFight}/>
                     </div>
                 )}
                 {!loadingStorage && !parseInProgress && selectedFight && (
