@@ -6,7 +6,7 @@ import {
     GameObjectSpawned,
     GraphicsObjectDespawned,
     GraphicsObjectSpawned, GroundObjectDespawned, GroundObjectSpawned,
-    LogTypes,
+    LogTypes, NpcChangedLog,
     NPCDespawned,
     OverheadLog,
     PlayerEquipmentLog,
@@ -199,6 +199,13 @@ export function createGameStates(fight: Fight): GameState[] {
             case LogTypes.NPC_DESPAWNED: {
                 const npcDespawnLog = log as NPCDespawned;
                 const actorName = `${npcDespawnLog.source.name}-${npcDespawnLog.source.id}-${npcDespawnLog.source.index}`;
+                delete currentState.npcs[actorName];
+                break;
+            }
+
+            case LogTypes.NPC_CHANGED: {
+                const npcChangedLog = log as NpcChangedLog;
+                const actorName = `${npcChangedLog.oldNpc.name}-${npcChangedLog.oldNpc.id}-${npcChangedLog.oldNpc.index}`;
                 delete currentState.npcs[actorName];
                 break;
             }
