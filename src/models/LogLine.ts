@@ -29,6 +29,8 @@ export enum LogTypes {
     GROUND_OBJECT_DESPAWNED = 'Ground Object Despawned',
     WAVE_START = 'Wave Start',
     WAVE_END = 'Wave End',
+    WIPE = 'Wipe',
+    NPC_CHANGED = 'NPC Changed'
 }
 
 export interface BaseLog {
@@ -174,6 +176,18 @@ export interface WaveEndLog extends BaseLog {
     type: LogTypes.WAVE_END;
 }
 
+export interface WipeLog extends BaseLog {
+    type: LogTypes.WIPE;
+    raidName: string;
+}
+
+export interface NpcChangedLog extends BaseLog {
+    type: LogTypes.NPC_CHANGED;
+    source: Actor;
+    oldNpc: Actor;
+    newNpc: Actor;
+}
+
 export type LogLine =
     LogVersionLog
     | LoggedInPlayerLog
@@ -197,7 +211,9 @@ export type LogLine =
     | GroundObjectSpawned
     | GroundObjectDespawned
     | WaveStartLog
-    | WaveEndLog;
+    | WaveEndLog
+    | WipeLog
+    | NpcChangedLog;
 
 export function filterByType<T extends LogLine['type']>(logs: LogLine[], type: T): Extract<LogLine, { type: T }>[] {
     return logs.filter(log => log.type === type) as Extract<LogLine, { type: T }>[];

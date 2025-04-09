@@ -363,6 +363,22 @@ export const parseLogLine = (logLine: string, player?: string, logVersion?: stri
             };
         }
 
+        const npcChangedPattern = new RegExp(`(${ANYTHING_BUT_TAB_PATTERN})\tNPC_CHANGED\t(${ANYTHING_PATTERN})`);
+        match = action.match(npcChangedPattern);
+        if (match) {
+            let [, oldNpc, newNpc] = match;
+            return {
+                type: LogTypes.NPC_CHANGED,
+                date,
+                time,
+                timezone,
+                tick,
+                source: getActor(newNpc),
+                oldNpc: getActor(oldNpc),
+                newNpc: getActor(newNpc),
+            };
+        }
+
         if (logVersion && semver.gte(logVersion, "1.3.1")) {
             const graphicsObjectSpawnedPattern = new RegExp(`(${ANYTHING_BUT_TAB_PATTERN})\tGRAPHICS_OBJECT_SPAWNED\t\\((\\d+), (\\d+), (\\d+)\\)$`);
             match = action.match(graphicsObjectSpawnedPattern);
