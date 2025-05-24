@@ -44,6 +44,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "Update equipment and ID maps"
           branch: auto/update-equipment-and-ids
+          base: main
           title: "Auto-update equipment and ID maps"
           body: |
             This PR updates `equipment.json`, `itemIdMap.ts`, and `npcIdMap.ts` using the latest data.
