@@ -9738,6 +9738,42 @@
     "speed": 0
   },
   {
+    "name": "Carrot costume body",
+    "id": 30722,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Carrot costume gloves",
+    "id": 30726,
+    "version": "",
+    "slot": "hands",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Carrot costume hat",
+    "id": 30720,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Carrot costume tights",
+    "id": 30724,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Carrot sword",
     "id": 24537,
     "version": "",
@@ -9745,6 +9781,24 @@
     "category": "Blunt",
     "isTwoHanded": false,
     "speed": 4
+  },
+  {
+    "name": "Castle wars arrow",
+    "id": 30694,
+    "version": "",
+    "slot": "ammo",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Castle wars bolts",
+    "id": 30696,
+    "version": "",
+    "slot": "ammo",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
   },
   {
     "name": "Castle wars bracelet",
@@ -10411,6 +10465,24 @@
     "category": "Banner",
     "isTwoHanded": true,
     "speed": 4
+  },
+  {
+    "name": "Classic imp hood",
+    "id": 30648,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Classic imp tail",
+    "id": 30646,
+    "version": "",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
   },
   {
     "name": "Clean necklace",
@@ -22266,24 +22338,6 @@
     "speed": 0
   },
   {
-    "name": "Hooded cloak",
-    "id": 4041,
-    "version": "Saradomin",
-    "slot": "cape",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Hooded cloak",
-    "id": 4042,
-    "version": "Zamorak",
-    "slot": "cape",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
     "name": "Hornwood helm",
     "id": 19699,
     "version": "",
@@ -28314,6 +28368,33 @@
     "speed": 3
   },
   {
+    "name": "Oathplate chest",
+    "id": 30753,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Oathplate helm",
+    "id": 30750,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Oathplate legs",
+    "id": 30756,
+    "version": "",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Obsidian cape",
     "id": 6568,
     "version": "",
@@ -30163,6 +30244,33 @@
     "id": 22947,
     "version": "",
     "slot": "ammo",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Radiant oathplate chest",
+    "id": 30779,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Radiant oathplate helm",
+    "id": 30777,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Radiant oathplate legs",
+    "id": 30781,
+    "version": "",
+    "slot": "legs",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -34191,6 +34299,15 @@
     "speed": 0
   },
   {
+    "name": "Saradomin cloak (Castle Wars)",
+    "id": 4041,
+    "version": "",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Saradomin coif",
     "id": 10390,
     "version": "",
@@ -35889,7 +36006,7 @@
     "slot": "weapon",
     "category": "Staff",
     "isTwoHanded": false,
-    "speed": 5
+    "speed": 4
   },
   {
     "name": "Sled",
@@ -36259,6 +36376,15 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Soulflame horn",
+    "id": 30759,
+    "version": "",
+    "slot": "weapon",
+    "category": "Spiked",
+    "isTwoHanded": false,
+    "speed": 5
   },
   {
     "name": "Soulreaper axe",
@@ -43796,6 +43922,15 @@
   {
     "name": "Zamorak cloak",
     "id": 10450,
+    "version": "",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Zamorak cloak (Castle Wars)",
+    "id": 4042,
     "version": "",
     "slot": "cape",
     "category": "",
