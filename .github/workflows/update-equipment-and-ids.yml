@@ -1,0 +1,49 @@
+name: Update Equipment and ID Maps
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *' # Runs every hour at minute 0
+
+jobs:
+  generate-and-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Python dependencies
+        run: pip install requests
+
+      - name: Run generateEquipment
+        run: python3 scripts/generateEquipment.py
+
+      - name: Run createIdMaps
+        run: python3 scripts/createIdMaps.py
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git switch -C auto/update-equipment-and-ids
+          git add src/lib/equipment.json src/lib/itemIdMap.ts src/lib/npcIdMap.ts
+          git commit -m "Update equipment and ID maps" || echo "No changes to commit"
+          git push -f origin auto/update-equipment-and-ids
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update equipment and ID maps"
+          branch: auto/update-equipment-and-ids
+          title: "Auto-update equipment and ID maps"
+          body: |
+            This PR updates `equipment.json`, `itemIdMap.ts`, and `npcIdMap.ts` using the latest data.
