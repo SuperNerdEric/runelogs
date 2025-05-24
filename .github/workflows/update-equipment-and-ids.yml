@@ -33,7 +33,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git switch -C auto/update-equipment-and-ids
+          git checkout -B auto/update-equipment-and-ids origin/main
           git add src/lib/equipment.json src/lib/itemIdMap.ts src/lib/npcIdMap.ts
           git commit -m "Update equipment and ID maps" || echo "No changes to commit"
           git push -f origin auto/update-equipment-and-ids
