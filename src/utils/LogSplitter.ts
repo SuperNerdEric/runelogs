@@ -380,7 +380,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                 }
             }
 
-            if (logLine.type == LogTypes.WAVE_START) {
+            if (logLine.type === LogTypes.WAVE_START) {
                 // @ts-ignore
                 currentFight = {
                     name: `Wave ${logLine.waveNumber}`,

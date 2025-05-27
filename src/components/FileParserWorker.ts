@@ -16,7 +16,7 @@ export function parseFileWithProgress(fileContent: string) {
     const fightMetadata = parseResults?.map(fight => {
         if (isFight(fight)) {
             return fight.metaData;
-        } else if (isFightGroup(fight)) {
+        } else {
             return getFightGroupMetadata(fight);
         }
     }) || [];

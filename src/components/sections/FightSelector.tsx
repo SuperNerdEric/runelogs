@@ -99,7 +99,7 @@ const Banner: React.FC<BannerProps> = ({ name, onClick }) => {
     );
 };
 
-type FightGroup = {
+type FightGroupMap = {
     [name: string]: {
         isRaid: boolean;
         fights: {
@@ -112,10 +112,10 @@ type FightGroup = {
 
 const FightSelector: React.FC<FightSelectorProps> = ({ fights, onSelectFight, onSelectAggregateFight }) => {
     // Group fights by name and record shortest fight time for each group
-    const [groupedFights, setGroupedFights] = useState<FightGroup>({});
+    const [groupedFights, setGroupedFights] = useState<FightGroupMap>({});
 
     useEffect(() => {
-        const tempGroupedFights: FightGroup = {};
+        const tempGroupedFights: FightGroupMap = {};
 
         fights.forEach((fight, index) => {
             if (isFightGroupMetadata(fight)) {
