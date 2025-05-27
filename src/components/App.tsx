@@ -12,8 +12,7 @@ import FightSelector from './sections/FightSelector';
 import {Icon} from '@iconify/react';
 import TickActivity from './performance/TickActivity';
 import {BOSS_NAMES} from '../utils/constants';
-import {getRaidMetadata, isRaidMetaData, RaidMetaData} from "../models/Raid";
-import { getWavesMetaData, isWaves } from '../models/Waves';
+import {getFightGroupMetadata, isFightGroupMetadata, FightGroupMetaData} from "../models/FightGroup";
 import DropdownFightSelector from './sections/DropdownFightSelector';
 import { Encounter, EncounterMetaData } from '../models/LogLine';
 
@@ -72,7 +71,7 @@ function App() {
 
     const [fightMetadata, setFightMetadata] = useState<EncounterMetaData[] | null>(null);
     const [selectedFightMetadataIndex, setSelectedFightMetadataIndex] = useState<number | null>(null);
-    const [selectedRaidIndex, setSelectedRaidIndex] = useState<number | undefined>(undefined);
+    const [selectedFightGroupIndex, setSelectedFightGroupIndex] = useState<number | undefined>(undefined);
     const [selectedFight, setSelectedFight] = useState<Fight | null>(null);
     const [selectedTab, setSelectedTab] = useState<TabsEnum>(TabsEnum.DAMAGE_DONE);
 
@@ -103,10 +102,10 @@ function App() {
             });
     };
 
-    const handleSelectFight = (index: number, raidIndex?: number, subIndex?: number) => {
-        worker.postMessage({type: 'getItem', index, raidIndex, subIndex});
+    const handleSelectFight = (index: number, fightGroupIndex?: number) => {
+        worker.postMessage({type: 'getItem', index, fightGroupIndex: fightGroupIndex});
         setSelectedFightMetadataIndex(index);
-        setSelectedRaidIndex(raidIndex);
+        setSelectedFightGroupIndex(fightGroupIndex);
     };
 
     const handleSelectAggregateFight = (indices: number[]) => {
@@ -115,24 +114,24 @@ function App() {
         setSelectedFightMetadataIndex(indices[0]);
     };
 
-    const handleRaidSelectFight = (raidIndex: number) => {
-        worker.postMessage({type: 'getItem', index: selectedFightMetadataIndex, raidIndex});
-        setSelectedRaidIndex(raidIndex);
+    const handleFightGroupSelectFight = (fightGroupIndex: number) => {
+        worker.postMessage({type: 'getItem', index: selectedFightMetadataIndex, fightGroupIndex: fightGroupIndex});
+        setSelectedFightGroupIndex(fightGroupIndex);
     };
 
     const renderDropdownFightSelector = () => {
         if (
             selectedFightMetadataIndex !== null &&
             fightMetadata &&
-            isRaidMetaData(fightMetadata[selectedFightMetadataIndex])
+            isFightGroupMetadata(fightMetadata[selectedFightMetadataIndex])
         ) {
-            const raidMetaData = fightMetadata[selectedFightMetadataIndex] as RaidMetaData;
+            const fightGroupMetaData = fightMetadata[selectedFightMetadataIndex] as FightGroupMetaData;
             return (
                 <div>
                     <DropdownFightSelector
-                        fights={raidMetaData.fights}
-                        onSelectFight={handleRaidSelectFight}
-                        selectedFightIndex={selectedRaidIndex}
+                        fights={fightGroupMetaData.fights}
+                        onSelectFight={handleFightGroupSelectFight}
+                        selectedFightIndex={selectedFightGroupIndex}
                     />
                 </div>
             );
@@ -157,10 +156,8 @@ function App() {
                         data.map((fight) => {
                             if (isFight(fight)) {
                                 return fight.metaData;
-                            } else if (isWaves(fight)) {
-                                return getWavesMetaData(fight);
                             } else {
-                                return getRaidMetadata(fight);
+                                return getFightGroupMetadata(fight);
                             }
                         })
                     );
@@ -224,7 +221,7 @@ function App() {
                             </div>
                             {selectedFightMetadataIndex !== null &&
                             fightMetadata &&
-                            isRaidMetaData(fightMetadata[selectedFightMetadataIndex]) ? (
+                            isFightGroupMetadata(fightMetadata[selectedFightMetadataIndex]) ? (
                                 <label>{fightMetadata[selectedFightMetadataIndex].name}</label>
                             ) : selectedFight.isNpc ? (
                                 <a

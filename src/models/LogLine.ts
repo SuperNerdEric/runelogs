@@ -1,8 +1,7 @@
 import {Actor} from "./Actor";
 import {Levels} from "./Levels";
 import {Fight, FightMetaData} from "./Fight";
-import {Raid, RaidMetaData} from "./Raid";
-import {Waves, WavesMetaData} from "./Waves";
+import {FightGroup, FightGroupMetaData} from "./FightGroup";
 import {GamePosition} from "../components/replay/GameState";
 
 export enum LogTypes {
@@ -220,5 +219,5 @@ export function filterByType<T extends LogLine['type']>(logs: LogLine[], type: T
 }
 
 
-export type Encounter = Fight | Raid | Waves;
-export type EncounterMetaData = FightMetaData | RaidMetaData | WavesMetaData;
+export type Encounter = Fight | FightGroup;
+export type EncounterMetaData = FightMetaData | FightGroupMetaData;

@@ -209,6 +209,8 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
                                         {log.type === LogTypes.GROUND_OBJECT_SPAWNED ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})` : ""}
                                         {log.type === LogTypes.GROUND_OBJECT_DESPAWNED ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})` : ""}
                                         {log.type === LogTypes.NPC_CHANGED ? `Changed ID: ${log.oldNpc.id} -> ${log.newNpc.id}` : ""}
+                                        {log.type === LogTypes.WAVE_START}
+                                        {log.type === LogTypes.WAVE_END}
                                     </TableCell>
                                     <TableCell
                                         className={source === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>
