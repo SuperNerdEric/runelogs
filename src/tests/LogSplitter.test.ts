@@ -1,7 +1,5 @@
 import {Encounter, LogLine, LogTypes} from "../models/LogLine";
 import {logSplitter} from "../utils/LogSplitter";
-import {Fight} from "../models/Fight";
-import {Raid} from "../models/Raid";
 
 
 describe("logSplitter", () => {

@@ -1,9 +1,8 @@
 import {Fight, isFight} from "../models/Fight";
 import {parseFileContent} from "../utils/FileParser";
 import localforage from 'localforage';
-import {getRaidMetadata, isRaid} from "../models/Raid";
+import {getFightGroupMetadata, isFightGroup} from "../models/FightGroup";
 import {Encounter, LogLine} from "../models/LogLine";
-import {getWavesMetaData} from "../models/Waves";
 
 const fightsStorage = localforage.createInstance({
     name: 'myFightData'
@@ -17,10 +16,8 @@ export function parseFileWithProgress(fileContent: string) {
     const fightMetadata = parseResults?.map(fight => {
         if (isFight(fight)) {
             return fight.metaData;
-        } else if (isRaid(fight)) {
-            return getRaidMetadata(fight);
-        } else {
-            return getWavesMetaData(fight);
+        } else if (isFightGroup(fight)) {
+            return getFightGroupMetadata(fight);
         }
     }) || [];
     const parseResultMessage = {
@@ -32,17 +29,14 @@ export function parseFileWithProgress(fileContent: string) {
     fightsStorage.setItem('fightData', parseResults);
 }
 
-// subIndex may be the wave number within a waves list
-function getSpecificItem(fightIndex: number, raidIndex?: number, subIndex?: number) {
+function getSpecificItem(fightIndex: number, fightGroupIndex?: number) {
     fightsStorage.getItem<Fight[]>('fightData').then((parseResults: (Encounter)[] | null) => {
         if (parseResults && fightIndex >= 0 && fightIndex < parseResults.length) {
             const result = parseResults[fightIndex];
             if (isFight(result)) {
                 return result;
-            } else if (isRaid(result)) {
-                return result.fights[raidIndex!];
-            } else {
-                return result.waves[raidIndex!].fights[subIndex!];
+            } else if (isFightGroup(result)) {
+                return result.fights[fightGroupIndex!];
             }
         }
         return null;
@@ -84,11 +78,11 @@ function getAggregateItems(fightIndices: number[]) {
 }
 
 onmessage = (event) => {
-    const {type, fileContent, index, raidIndex, subIndex, indices} = event.data;
+    const {type, fileContent, index, fightGroupIndex, indices} = event.data;
     if (type === 'parse') {
         parseFileWithProgress(fileContent);
     } else if (type === 'getItem') {
-        getSpecificItem(index, raidIndex, subIndex);
+        getSpecificItem(index, fightGroupIndex);
     } else if (type === 'getAggregateItems') {
         getAggregateItems(indices);
     }
@@ -130,6 +124,7 @@ function createAggregateFight(fights: Fight[]): Fight {
         name: `${first.mainEnemyName} - Aggregate of ${fights.length} fights`,
         mainEnemyName: first.mainEnemyName,
         isNpc: first.isNpc,
+        isWave: first.isWave,
         metaData: {
             ...first.metaData,
             name: `${first.mainEnemyName} - Aggregate of ${fights.length} fights`,

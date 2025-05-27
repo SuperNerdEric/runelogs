@@ -73,6 +73,7 @@ export const BOSS_NAMES = [
     "Blue Moon",
     "Eclipse Moon",
     "Sol Heredit",
+    "TzKal-Zuk"
 ];
 
 // todo: fix this
@@ -163,6 +164,13 @@ export const WAVE_BASED_REGION_MAPPING: {[region: string]: string} = {
     7216: "Fortis Colosseum",
 };
 
+/**
+ * A fight group is a collection of fights that belong to a single piece of content such as a Raid (CoX, ToB, ToA) or a Wave based fight (Inferno, Colosseum).
+ */
+export const FIGHT_GROUP_REGION_MAPPING: { [region: string]: string } = {
+    ...RAID_NAME_REGION_MAPPING,
+    ...WAVE_BASED_REGION_MAPPING,
+};
 
 export const PLAYER_HOUSE_REGION_1 = 7769;
 export const PLAYER_HOUSE_REGION_2 = 7770;
