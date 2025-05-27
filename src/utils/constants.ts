@@ -160,6 +160,7 @@ TOA_REGIONS.forEach(region => RAID_NAME_REGION_MAPPING[region] = 'Tombs of Amasc
 
 export const WAVE_BASED_REGION_MAPPING: {[region: string]: string} = {
     9043: "The Inferno",
+    7216: "Fortis Colosseum",
 };
 
 

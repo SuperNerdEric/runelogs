@@ -248,8 +248,8 @@ export const parseLogLine = (logLine: string, player?: string, logVersion?: stri
             };
         }
 
-        const infernoWaveStartedPattern = new RegExp(`<col=${ANYTHING_PATTERN}>Wave: (${ANYTHING_PATTERN})</col>`);
-        match = action.match(infernoWaveStartedPattern);
+        const waveStartedPattern = new RegExp(`<col=${ANYTHING_PATTERN}>Wave: (${ANYTHING_PATTERN})</col>`);
+        match = action.match(waveStartedPattern);
         if (match) {
             let [, wave] = match;
             return {
@@ -264,6 +264,18 @@ export const parseLogLine = (logLine: string, player?: string, logVersion?: stri
 
         const infernoWaveEndedPattern = new RegExp(`Wave completed!`);
         match = action.match(infernoWaveEndedPattern);
+        if (match) {
+            return {
+                type: LogTypes.WAVE_END,
+                date,
+                time,
+                timezone,
+                tick,
+            };
+        }
+
+        const colosseumWaveEndedPattern = /Wave \d+ completed! Wave duration: <col=[^>]+>\d+:\d{2}\.\d{2}<\/col>/;
+        match = action.match(colosseumWaveEndedPattern);
         if (match) {
             return {
                 type: LogTypes.WAVE_END,
