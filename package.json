@@ -4,6 +4,7 @@
   "homepage": "https://runelogs.com",
   "private": true,
   "dependencies": {
+    "@auth0/auth0-spa-js": "^2.2.0",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@iconify/react": "^4.1.1",
