@@ -12,58 +12,40 @@ import FightSelector from './sections/FightSelector';
 import {Icon} from '@iconify/react';
 import TickActivity from './performance/TickActivity';
 import {BOSS_NAMES} from '../utils/constants';
-import {getFightGroupMetadata, isFightGroupMetadata, FightGroupMetaData} from "../models/FightGroup";
+import {FightGroupMetaData, getFightGroupMetadata, isFightGroupMetadata} from "../models/FightGroup";
 import DropdownFightSelector from './sections/DropdownFightSelector';
-import { Encounter, EncounterMetaData } from '../models/LogLine';
-import { createAuth0Client, Auth0Client } from '@auth0/auth0-spa-js';
+import {Encounter, EncounterMetaData} from '../models/LogLine';
+import {useAuth0} from "@auth0/auth0-react";
+import {useLocation} from "react-router-dom";
 
 
 import ReactGA from 'react-ga4';
 import * as semver from "semver";
 
 function App() {
-    const [auth0, setAuth0] = useState<Auth0Client | null>(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [user, setUser] = useState<any>(null);
+    const {isAuthenticated, user, loginWithRedirect, logout, getAccessTokenSilently} = useAuth0();
+
+    const location = useLocation();
 
     useEffect(() => {
-        (async () => {
-            const auth0Client = await createAuth0Client({
-                domain: 'auth.runelogs.com',
-                clientId: 'vNPXVhAvOj2ES9kqi5WPs80SnX8FPKqv',
-                authorizationParams: {
-                    redirect_uri: window.location.origin + '/callback',
-                },
+        if (isAuthenticated) {
+            getAccessTokenSilently().then(token => {
+                console.log("User authenticated:", user);
+                console.log("Access token:", token);
+            }).catch((err) => {
+                console.warn("Token fetch failed:", err.message);
             });
+        }
+    }, [isAuthenticated, getAccessTokenSilently]);
 
-            setAuth0(auth0Client);
 
-            try {
-                await auth0Client.handleRedirectCallback();
-            } catch (err) {
-                console.error('Error handling redirect callback:', err);
-            }
+    if (location.pathname === "/login") {
+        loginWithRedirect();
+    }
 
-            if (window.location.pathname === '/login') {
-                await auth0Client.loginWithRedirect();
-            }
-
-            if (window.location.pathname === '/logout') {
-                await auth0Client.logout();
-            }
-
-            const isAuth = await auth0Client.isAuthenticated();
-            setIsAuthenticated(isAuth);
-
-            if (isAuth) {
-                const userData = await auth0Client.getUser();
-                setUser(userData);
-                const token = await auth0Client.getTokenSilently();
-                console.log('Access token:', token);
-            }
-        })();
-    }, []);
-
+    if (location.pathname === "/logout") {
+        logout();
+    }
 
     useEffect(() => {
         ReactGA.initialize('G-XL7FZPRS36');
@@ -249,13 +231,14 @@ function App() {
                     <div className="loading-indicator-container">
                         <div className="loading-content">
                             <p>Aggregating fights...</p>
-                            <CircularProgress />
+                            <CircularProgress/>
                         </div>
                     </div>
                 )}
                 {!loadingStorage && !loadingAggregate && !parseInProgress && !selectedFight && fightMetadata && (
                     <div>
-                        <FightSelector fights={fightMetadata!} onSelectFight={handleSelectFight} onSelectAggregateFight={handleSelectAggregateFight}/>
+                        <FightSelector fights={fightMetadata!} onSelectFight={handleSelectFight}
+                                       onSelectAggregateFight={handleSelectAggregateFight}/>
                     </div>
                 )}
                 {!loadingStorage && !parseInProgress && selectedFight && (

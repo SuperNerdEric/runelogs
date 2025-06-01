@@ -4,6 +4,11 @@ import './index.css';
 import App from './components/App';
 import {SnackbarProvider} from 'notistack';
 import reportWebVitals from './reportWebVitals';
+import {Auth0Provider} from "@auth0/auth0-react";
+import {BrowserRouter} from "react-router-dom";
+
+const domain = "auth.runelogs.com";
+const clientId = "vNPXVhAvOj2ES9kqi5WPs80SnX8FPKqv";
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -11,7 +16,21 @@ const root = ReactDOM.createRoot(
 root.render(
     <React.StrictMode>
         <SnackbarProvider anchorOrigin={{vertical: 'top', horizontal: 'center'}}>
-            <App/>
+            <Auth0Provider
+                domain={domain}
+                clientId={clientId}
+                authorizationParams={{
+                    redirect_uri: window.location.origin,
+                    audience: "https://auth.runelogs.com/api",
+                    scope: "openid profile email offline_access"
+                }}
+                cacheLocation="localstorage"
+                useRefreshTokens={true}
+            >
+                <BrowserRouter>
+                    <App />
+                </BrowserRouter>
+            </Auth0Provider>
         </SnackbarProvider>
     </React.StrictMode>
 );

@@ -4,7 +4,7 @@
   "homepage": "https://runelogs.com",
   "private": true,
   "dependencies": {
-    "@auth0/auth0-spa-js": "^2.2.0",
+    "@auth0/auth0-react": "^2.3.0",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@iconify/react": "^4.1.1",
@@ -28,6 +28,7 @@
     "react-dropzone": "^14.2.3",
     "react-ga4": "^2.1.0",
     "react-leaflet": "^4.2.1",
+    "react-router-dom": "^7.6.1",
     "react-scripts": "5.0.1",
     "react-virtuoso": "^4.6.3",
     "recharts": "^2.11.0",
