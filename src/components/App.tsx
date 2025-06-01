@@ -39,13 +39,14 @@ function App() {
     }, [isAuthenticated, getAccessTokenSilently, user]);
 
 
-    if (location.pathname === "/login") {
-        loginWithRedirect();
-    }
+    useEffect(() => {
+        if (location.pathname === "/login") {
+            loginWithRedirect();
+        } else if (location.pathname === "/logout") {
+            logout({ logoutParams: { returnTo: window.location.origin } });
+        }
+    }, [location, loginWithRedirect, logout]);
 
-    if (location.pathname === "/logout") {
-        logout();
-    }
 
     useEffect(() => {
         ReactGA.initialize('G-XL7FZPRS36');

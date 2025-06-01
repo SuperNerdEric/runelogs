@@ -5,7 +5,7 @@ import App from './components/App';
 import {SnackbarProvider} from 'notistack';
 import reportWebVitals from './reportWebVitals';
 import {Auth0Provider} from "@auth0/auth0-react";
-import {BrowserRouter} from "react-router-dom";
+import {HashRouter} from 'react-router-dom';
 
 const domain = "auth.runelogs.com";
 const clientId = "vNPXVhAvOj2ES9kqi5WPs80SnX8FPKqv";
@@ -27,9 +27,9 @@ root.render(
                 cacheLocation="localstorage"
                 useRefreshTokens={true}
             >
-                <BrowserRouter>
+                <HashRouter>
                     <App />
-                </BrowserRouter>
+                </HashRouter>
             </Auth0Provider>
         </SnackbarProvider>
     </React.StrictMode>
