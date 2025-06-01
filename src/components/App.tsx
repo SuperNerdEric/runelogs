@@ -36,7 +36,7 @@ function App() {
                 console.warn("Token fetch failed:", err.message);
             });
         }
-    }, [isAuthenticated, getAccessTokenSilently]);
+    }, [isAuthenticated, getAccessTokenSilently, user]);
 
 
     if (location.pathname === "/login") {
