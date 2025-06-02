@@ -22,7 +22,8 @@ import {
     BLOOD_MOON_REGION,
     BLUE_MOON_REGION,
     BOSS_NAMES,
-    ECLIPSE_MOON_REGION, FIGHT_GROUP_REGION_MAPPING,
+    ECLIPSE_MOON_REGION,
+    FIGHT_GROUP_REGION_MAPPING,
     MINION_TO_BOSS,
     MY_BOSS_NAMES,
     NEYPOTZLI_REGION_1,
@@ -226,7 +227,8 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             (logLine.type === LogTypes.TARGET_CHANGE && bossTargetsMe(player, logLine)) ||
             (logLine.type === LogTypes.TARGET_CHANGE && MY_BOSS_NAMES.includes(logLine.source.name)) ||
             (logLine.type === LogTypes.DAMAGE && MY_BOSS_NAMES.includes(logLine.target.name)) ||
-            (logLine.type === LogTypes.WAVE_START)
+            (logLine.type === LogTypes.WAVE_START) ||
+            (logLine.type === LogTypes.PATH_START)
         )) {
             fightStartTime = moment(`${logLine.date} ${logLine.time}`, 'MM-DD-YYYY HH:mm:ss.SSS').toDate();
             if (logLine.tick !== undefined && logLine.tick !== -1) {
@@ -397,6 +399,23 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                     firstLine: logLine,
                     lastLine: logLine
                 }
+            } else if(logLine.type === LogTypes.PATH_START) {
+                // @ts-ignore
+                currentFight = {
+                    name: logLine.pathName,
+                    mainEnemyName: logLine.pathName,
+                    isNpc: true,
+                    isWave: true,
+                    enemyNames: [],
+                    data: [
+                        ...initialData,
+                        logLine
+                    ],
+                    loggedInPlayer: player,
+                    logVersion: logVersion,
+                    firstLine: logLine,
+                    lastLine: logLine
+                }
             } else {
                 // @ts-ignore
                 currentFight = {
@@ -465,6 +484,13 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
         if (logLine.type === LogTypes.WAVE_END) {
             // If the wave ends, end the current fight
+            if (currentFight) {
+                endFight(logLine, true);
+            }
+        }
+
+        if (logLine.type === LogTypes.PATH_COMPLETE) {
+            // If the path ends, end the current fight
             if (currentFight) {
                 endFight(logLine, true);
             }
