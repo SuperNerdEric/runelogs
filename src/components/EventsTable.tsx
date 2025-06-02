@@ -211,6 +211,8 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
                                         {log.type === LogTypes.NPC_CHANGED ? `Changed ID: ${log.oldNpc.id} -> ${log.newNpc.id}` : ""}
                                         {log.type === LogTypes.WAVE_START}
                                         {log.type === LogTypes.WAVE_END}
+                                        {log.type === LogTypes.PATH_START ? `${log.pathName}` : ""}
+                                        {log.type === LogTypes.PATH_COMPLETE ? `${log.pathName}` : ""}
                                     </TableCell>
                                     <TableCell
                                         className={source === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>

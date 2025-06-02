@@ -391,6 +391,36 @@ export const parseLogLine = (logLine: string, player?: string, logVersion?: stri
             };
         }
 
+        if (action.startsWith("Challenge started: Path of")) {
+            const pathName = action.replace("Challenge started: ", "").trim().replace(/\.$/, "");
+            return {
+                type: LogTypes.PATH_START,
+                date,
+                time,
+                timezone,
+                tick,
+                pathName,
+            };
+        }
+
+        if (action.startsWith("Challenge complete: Path of")) {
+            const pathCompleteRegex = /^Challenge complete: Path of ([^.]+)\. Duration: <col=[^>]+>([^<]+)<\/col>\. Total: <col=[^>]+>([^<]+)<\/col>/;
+            const match = action.match(pathCompleteRegex);
+            if (match) {
+                const [, pathName, duration, total] = match;
+                return {
+                    type: LogTypes.PATH_COMPLETE,
+                    date,
+                    time,
+                    timezone,
+                    tick,
+                    pathName,
+                    duration,
+                    total,
+                };
+            }
+        }
+
         if (logVersion && semver.gte(logVersion, "1.3.1")) {
             const graphicsObjectSpawnedPattern = new RegExp(`(${ANYTHING_BUT_TAB_PATTERN})\tGRAPHICS_OBJECT_SPAWNED\t\\((\\d+), (\\d+), (\\d+)\\)$`);
             match = action.match(graphicsObjectSpawnedPattern);
