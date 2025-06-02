@@ -1,6 +1,7 @@
 import os
 import requests
 import json
+import re
 
 # URLs for the data files
 NPCS_URL = "https://chisel.weirdgloop.org/moid/data_files/npcsmin.js"
@@ -9,6 +10,8 @@ ITEMS_URL = "https://chisel.weirdgloop.org/moid/data_files/itemsmin.js"
 # File paths for the TypeScript maps
 NPC_TS_FILE_PATH = "src/lib/npcIdMap.ts"
 ITEM_TS_FILE_PATH = "src/lib/itemIdMap.ts"
+
+TAG_REGEX = re.compile(r"<[^>]*>")
 
 # Function to convert NPC data to TypeScript map format
 def convert_npcs_to_ts_map(npcs, ts_file_path):
@@ -25,6 +28,9 @@ def convert_npcs_to_ts_map(npcs, ts_file_path):
         npc_id = npc.get("id")
         name = npc.get("name", "").replace('"', '\\"')  # Escape double quotes
         size = npc.get("size", 1)  # Default size to 1 if not specified
+
+        # Remove tags
+        name = TAG_REGEX.sub("", name)
 
         # Skip entries without an ID or name
         if npc_id is None or not name:
