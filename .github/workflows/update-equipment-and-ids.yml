@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: main
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -29,14 +29,15 @@ jobs:
       - name: Run createIdMaps
         run: python3 scripts/createIdMaps.py
 
-      - name: Commit changes
+      - name: Configure git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -B auto/update-equipment-and-ids origin/main
+
+      - name: Commit changes if any
+        run: |
           git add src/lib/equipment.json src/lib/itemIdMap.ts src/lib/npcIdMap.ts
-          git commit -m "Update equipment and ID maps" || echo "No changes to commit"
-          git push -f origin auto/update-equipment-and-ids
+          git diff-index --quiet HEAD || git commit -m "Update equipment and ID maps"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
@@ -48,3 +49,4 @@ jobs:
           title: "Auto-update equipment and ID maps"
           body: |
             This PR updates `equipment.json`, `itemIdMap.ts`, and `npcIdMap.ts` using the latest data.
+          delete-branch: true
