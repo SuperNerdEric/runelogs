@@ -2,6 +2,7 @@ import React, {CSSProperties, useEffect, useMemo, useRef} from 'react';
 import {Fight} from '../../models/Fight';
 import {LogLine, LogTypes} from '../../models/LogLine';
 import {getItemImageUrl} from "./PlayerEquipment";
+import undeadGraspImg from '../../assets/animations/Undead_Grasp_8972.png';
 
 interface TickChartProps {
     fight: Fight;
@@ -14,8 +15,24 @@ interface TickChartProps {
 
 type AttackAnimationsByTick = {
     [tickNumber: number]: {
-        [playerName: string]: string;
+        [playerName: string]: {
+            weaponId: string;
+            animationId?: number;
+        };
     };
+};
+
+const animationIdToImage: Record<number, string> = {
+    8972: undeadGraspImg,
+};
+
+const getAnimationOrItemImageUrl = (
+    animationId: number | undefined,
+    weaponId: string
+): string => {
+    return (animationId && animationIdToImage[animationId])
+        ? animationIdToImage[animationId]
+        : getItemImageUrl(weaponId as unknown as number);
 };
 
 const TickChart: React.FC<TickChartProps> = ({
@@ -69,10 +86,15 @@ const TickChart: React.FC<TickChartProps> = ({
                     if (logLine.type === LogTypes.PLAYER_ATTACK_ANIMATION && playerName) {
                         const eq = lastKnownEquipment[playerName];
                         const weapon = eq?.[3] || '???';
+                        const animationId = logLine.animationId;
+
                         if (!attackAnimationsByTick[tick]) {
                             attackAnimationsByTick[tick] = {};
                         }
-                        attackAnimationsByTick[tick][playerName] = weapon;
+                        attackAnimationsByTick[tick][playerName] = {
+                            weaponId: weapon,
+                            animationId,
+                        };
                     }
                 }
             }
@@ -203,7 +225,7 @@ const TickChart: React.FC<TickChartProps> = ({
                                     };
 
                                     // If we have an attack animation for this player at this tick...
-                                    const weaponId = attackAnimations[tick]?.[playerName];
+                                    const attack = attackAnimations[tick]?.[playerName];
                                     return (
                                         <td
                                             key={`${playerName}-${tick}`}
@@ -220,14 +242,14 @@ const TickChart: React.FC<TickChartProps> = ({
                                                     justifyContent: 'center',
                                                 }}
                                             >
-                                                {weaponId ? (
+                                                {attack ? (
                                                     <img
-                                                        src={getItemImageUrl(weaponId as unknown as number)}
-                                                        alt={`Weapon ID ${weaponId}`}
-                                                        title={`Weapon ID ${weaponId}`}
+                                                        src={getAnimationOrItemImageUrl(attack.animationId, attack.weaponId)}
+                                                        alt={`Animation ID ${attack.animationId}`}
+                                                        title={`Animation ID ${attack.animationId}`}
                                                         style={{width: '30px', height: '30px'}}
                                                     />
-                                                ) : weaponId}
+                                                ) : null}
                                             </div>
                                         </td>
                                     );
