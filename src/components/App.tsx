@@ -286,7 +286,7 @@ function App() {
                                 />
                             ))}
                         </Tabs>
-                        {selectedFight.isBoss || selectedFight.metaData.fightLengthMs >= 15000 &&
+                        {(selectedFight.isBoss || selectedFight.metaData.fightLengthMs >= 15000) &&
                             selectedTab !== TabsEnum.REPLAY && <TickActivity selectedLogs={selectedFight}/>}
                         {selectedTab === TabsEnum.DAMAGE_DONE && <DamageDoneTab selectedLogs={selectedFight}/>}
                         {selectedTab === TabsEnum.DAMAGE_TAKEN && <DamageTakenTab selectedLogs={selectedFight}/>}
