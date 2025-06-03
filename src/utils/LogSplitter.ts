@@ -20,12 +20,10 @@ import {Fight} from "../models/Fight";
 import moment from 'moment';
 import {
     BLOOD_MOON_REGION,
-    BLUE_MOON_REGION,
-    BOSS_NAMES,
+    BLUE_MOON_REGION, BOSS_IDS,
     ECLIPSE_MOON_REGION,
     FIGHT_GROUP_REGION_MAPPING,
     MINION_TO_BOSS,
-    MY_BOSS_NAMES,
     NEYPOTZLI_REGION_1,
     NEYPOTZLI_REGION_2,
     NEYPOTZLI_REGION_3,
@@ -54,7 +52,7 @@ function playerAttemptsDamage(log: DamageLog) {
  * If a boss targets the logged in player
  */
 function bossTargetsMe(player: string, log: TargetChangeLog) {
-    return log.target.name === player && BOSS_NAMES.includes(log.source.name);
+    return log.target.name === player && BOSS_IDS.includes(log.source.id!);
 }
 
 export function logSplitter(fightData: LogLine[], progressCallback?: (progress: number) => void): (Encounter)[] {
@@ -225,8 +223,8 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             (logLine.type === LogTypes.PLAYER_ATTACK_ANIMATION && logLine.source?.name === player) ||
             (logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine) && logLine.target.name !== player) ||
             (logLine.type === LogTypes.TARGET_CHANGE && bossTargetsMe(player, logLine)) ||
-            (logLine.type === LogTypes.TARGET_CHANGE && MY_BOSS_NAMES.includes(logLine.source.name)) ||
-            (logLine.type === LogTypes.DAMAGE && MY_BOSS_NAMES.includes(logLine.target.name)) ||
+            (logLine.type === LogTypes.TARGET_CHANGE && BOSS_IDS.includes(logLine.source.id!)) ||
+            (logLine.type === LogTypes.DAMAGE && BOSS_IDS.includes(logLine.target.id!)) ||
             (logLine.type === LogTypes.WAVE_START) ||
             (logLine.type === LogTypes.PATH_START)
         )) {
@@ -434,16 +432,21 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
                     lastLine: logLine
                 };
 
+                if(logLine.target.id && BOSS_IDS.includes(logLine.target.id)) {
+                    currentFight!.isBoss = true;
+                }
+
                 const boss = MINION_TO_BOSS[logLine.target.name];
                 if (boss) {
                     currentFight!.name = boss;
                     currentFight!.mainEnemyName = boss;
+                    currentFight!.isBoss = true;
                 }
             }
 
         } else if (currentFight) {
             // Rename the fight if we encounter a boss in the middle of it
-            if ("target" in logLine && BOSS_NAMES.includes(logLine.target.name!) && currentFight.name !== logLine.target.name) {
+            if ("target" in logLine && BOSS_IDS.includes(logLine.target.id!) && currentFight.name !== logLine.target.name) {
                 currentFight.name = logLine.target!.name;
                 currentFight.mainEnemyName = logLine.target!.name;
                 currentFight.isNpc = !!logLine.target.id;

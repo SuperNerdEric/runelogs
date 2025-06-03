@@ -1,143 +1,264 @@
-export const BOSS_NAMES = [
-    "Scurrius",
-    "Kree'arra",
-    "Commander Zilyana",
-    "General Graardor",
-    "K'ril Tsutsaroth",
-    "Nex",
-    "Kalphite Queen",
-    "Sarachnis",
-    "Scorpia",
-    "Abyssal Sire",
-    "Kraken",
-    "Dagannoth Rex",
-    "Dagannoth Supreme",
-    "Dagannoth Prime",
-    "The Leviathan",
-    "The Whisperer",
-    "Vardorvis",
-    "Duke Sucellus",
-    "Tekton",
-    "Ice demon",
-    "Vanguard",
-    "Vespula",
-    "Vasa Nistirio",
-    "Muttadile",
-    "Great Olm",
-    "The Maiden of Sugadinti",
-    "Pestilent Bloat",
-    "Nylocas Vasilias",
-    "Sotetseg",
-    "Xarpus",
-    "Verzik Vitur",
-    "Ba-Ba",
-    "Akkha",
-    "Akkha's Shadow",
-    "Kephri",
-    "Zebak",
-    "Obelisk",
-    "Tumeken's Warden",
-    "Ahrim the Blighted",
-    "Dharok the Wretched",
-    "Guthan the Infested",
-    "Karil the Tainted",
-    "Torag the Corrupted",
-    "Verac the Defiled",
-    "Corporeal Beast",
-    "King Black Dragon",
-    "Vorkath",
-    "Zulrah",
-    "Fragment of Seren",
-    "Alchemical Hydra",
-    "Bryophyta",
-    "Callisto",
-    "Cerberus",
-    "Chaos Elemental",
-    "Chaos Fanatic",
-    "Crazy Archaeologist",
-    "Crystalline Hunllef",
-    "Corrupted Hunllef",
-    "Deranged Archaeologist",
-    "Giant Mole",
-    "Hespori",
-    "The Mimic",
-    "The Nightmare",
-    "Obor",
-    "Phantom Muspah",
-    "Skotizo",
-    "Thermonuclear Smoke Devil",
-    "TzTok-Jad",
-    "Venenatis",
-    "Vet'ion",
-    "Blood Moon",
-    "Blue Moon",
-    "Eclipse Moon",
-    "Sol Heredit",
-    "TzKal-Zuk"
-];
-
-// todo: fix this
-// I really need to handle this better, but bosses that are unlikely to be an unrelated person's fight
-// so we can assume that if we see these names, it's a fight
-export const MY_BOSS_NAMES = [
-    "Scurrius",
-    "Kree'arra",
-    "Commander Zilyana",
-    "General Graardor",
-    "K'ril Tsutsaroth",
-    "Nex",
-    "Kalphite Queen",
-    "Sarachnis",
-    "Scorpia",
-    "Abyssal Sire",
-    // "Kraken", // Removed for now, as the pet is also named Kraken
-    "The Leviathan",
-    "The Whisperer",
-    "Vardorvis",
-    "Duke Sucellus",
-    "Tekton",
-    "Ice demon",
-    "Vanguard",
-    "Vespula",
-    "Vasa Nistirio",
-    "Muttadile",
-    "Great Olm",
-    "The Maiden of Sugadinti",
-    "Pestilent Bloat",
-    "Nylocas Vasilias",
-    "Sotetseg",
-    "Xarpus",
-    "Verzik Vitur",
-    "Ba-Ba",
-    "Akkha",
-    "Akkha's Shadow",
-    "Kephri",
-    "Zebak",
-    "Obelisk",
-    "Tumeken's Warden",
-    "Corporeal Beast",
-    "King Black Dragon",
-    "Vorkath",
-    "Zulrah",
-    "Fragment of Seren",
-    "Alchemical Hydra",
-    "Bryophyta",
-    "Callisto",
-    "Cerberus",
-    "Crystalline Hunllef",
-    "Corrupted Hunllef",
-    "Giant Mole",
-    "Hespori",
-    "The Mimic",
-    "The Nightmare",
-    "Obor",
-    "Phantom Muspah",
-    "Skotizo",
-    "TzTok-Jad",
-    "Venenatis",
-    "Vet'ion",
-    "Sol Heredit",
-];
+export const BOSS_IDS: number[] = [
+    7222, // Scurrius solo
+    7221, // Scurrius group
+    3162, // Kree'arra
+    2205, // Commander Zilyana
+    2215, // General Graardor
+    3129, // K'ril Tsutsaroth
+    11278, // NEX
+    11279, // NEX_SPAWNING
+    11280, // NEX_SOULSPLIT
+    11281, // NEX_DEFLECT
+    11282, // NEX_DYING
+    963, // KALPHITE_QUEEN
+    965, // KALPHITE_FLYINGQUEEN
+    4303, // Kalphite Queen
+    4304, // Kalphite Queen
+    8713, // SARACHNIS
+    6615, // SCORPIA
+    5886, // ABYSSALSIRE_SIRE_STASIS_SLEEPING
+    5887, // ABYSSALSIRE_SIRE_STASIS_AWAKE
+    5888, // ABYSSALSIRE_SIRE_STASIS_STUNNED
+    5889, // ABYSSALSIRE_SIRE_PUPPET
+    5890, // ABYSSALSIRE_SIRE_WANDERING
+    5891, // ABYSSALSIRE_SIRE_PANICKING
+    5908, // ABYSSALSIRE_SIRE_APOCALYPSE
+    12214, // LEVIATHAN
+    12215, // LEVIATHAN_QUEST
+    12219, // LEVIATHAN_CUTSCENE
+    12221, // LEVIATHAN_CUTSCENE_FAKE
+    12204, // WHISPERER
+    12205, // WHISPERER_MELEE
+    12206, // WHISPERER_QUEST
+    12207, // WHISPERER_MELEE_QUEST
+    12213, // WHISPERER_CUTSCENE
+    12223, // VARDORVIS
+    12224, // VARDORVIS_QUEST
+    12228, // VARDORVIS_CUTSCENE
+    12425, // VARDORVIS_BASE_QUEST
+    12426, // VARDORVIS_BASE_POSTQUEST
+    12427, // VARDORVIS_BASE
+    12166, // DUKE_SUCELLUS_INACTIVE
+    12167, // DUKE_SUCELLUS_ASLEEP
+    12191, // DUKE_SUCELLUS_AWAKE
+    12192, // DUKE_SUCELLUS_DEAD
+    12193, // DUKE_SUCELLUS_INACTIVE_QUEST
+    12194, // DUKE_SUCELLUS_ASLEEP_QUEST
+    12195, // DUKE_SUCELLUS_AWAKE_QUEST
+    12196, // DUKE_SUCELLUS_DEAD_QUEST
+    7540, // RAIDS_TEKTON_WAITING
+    7541, // RAIDS_TEKTON_WALKING_STANDARD
+    7542, // RAIDS_TEKTON_FIGHTING_STANDARD
+    7543, // RAIDS_TEKTON_WALKING_ENRAGED
+    7544, // RAIDS_TEKTON_FIGHTING_ENRAGED
+    7545, // RAIDS_TEKTON_HAMMERING
+    7584, // RAIDS_ICEDEMON_NONCOMBAT
+    7585, // RAIDS_ICEDEMON_COMBAT
+    7525, // RAIDS_VANGUARD_DORMANT
+    7526, // RAIDS_VANGUARD_WALKING
+    7527, // RAIDS_VANGUARD_MELEE
+    7528, // RAIDS_VANGUARD_RANGED
+    7529, // RAIDS_VANGUARD_MAGIC
+    7530, // RAIDS_VESPULA_FLYING
+    7531, // RAIDS_VESPULA_ENRAGED
+    7532, // RAIDS_VESPULA_WALKING
+    7533, // RAIDS_VESPULA_PORTAL
+    7566, // RAIDS_VASANISTIRIO_WALKING
+    7567, // RAIDS_VASANISTIRIO_HEALING
+    7561, // RAIDS_DOGODILE_SUBMERGED
+    7562, // RAIDS_DOGODILE_JUNIOR
+    7563, // RAIDS_DOGODILE
+    7554, // OLM_HEAD
+    8360, // TOB_MAIDEN_100
+    8361, // TOB_MAIDEN_70
+    8362, // TOB_MAIDEN_50
+    8363, // TOB_MAIDEN_30
+    8364, // TOB_MAIDEN_DYING_A
+    8365, // TOB_MAIDEN_DYING_B
+    8359, // TOB_BLOAT
+    10812, // TOB_BLOAT_STORY
+    10813, // TOB_BLOAT_HARD
+    11184, // TOBQUEST_BLOAT
+    8354, // NYLOCAS_BOSS_SPAWNING
+    8355, // NYLOCAS_BOSS_MELEE
+    8356, // NYLOCAS_BOSS_MAGIC
+    8357, // NYLOCAS_BOSS_RANGED
+    10786, // NYLOCAS_BOSS_SPAWNING_STORY
+    10787, // NYLOCAS_BOSS_MELEE_STORY
+    10788, // NYLOCAS_BOSS_MAGIC_STORY
+    10789, // NYLOCAS_BOSS_RANGED_STORY
+    10807, // NYLOCAS_BOSS_SPAWNING_HARD
+    10808, // NYLOCAS_BOSS_MELEE_HARD
+    10809, // NYLOCAS_BOSS_MAGIC_HARD
+    10810, // NYLOCAS_BOSS_RANGED_HARD
+    11185, // TOBQUEST_NYLOBOSS
+    8387, // TOB_SOTETSEG_NONCOMBAT
+    8388, // TOB_SOTETSEG_COMBAT
+    10864, // TOB_SOTETSEG_NONCOMBAT_STORY
+    10865, // TOB_SOTETSEG_COMBAT_STORY
+    10867, // TOB_SOTETSEG_NONCOMBAT_HARD
+    10868, // TOB_SOTETSEG_COMBAT_HARD
+    8338, // TOB_XARPUS_STATIC
+    8339, // TOB_XARPUS_FEEDING
+    8340, // TOB_XARPUS_COMBAT
+    8341, // XARPUS_DEATH
+    10766, // TOB_XARPUS_STATIC_STORY
+    10767, // TOB_XARPUS_FEEDING_STORY
+    10768, // TOB_XARPUS_COMBAT_STORY
+    10769, // XARPUS_DEATH_STORY
+    10770, // TOB_XARPUS_STATIC_HARD
+    10771, // TOB_XARPUS_FEEDING_HARD
+    10772, // TOB_XARPUS_COMBAT_HARD
+    10773, // XARPUS_DEATH_HARD
+    11187, // TOBQUEST_XARPUS
+    8369, // VERZIK_INITIAL
+    8370, // VERZIK_PHASE1
+    8371, // VERZIK_PHASE1_TO2_TRANSITION
+    8372, // VERZIK_PHASE2
+    8373, // VERZIK_PHASE2_TO3_TRANSITION
+    8374, // VERZIK_PHASE3
+    8375, // VERZIK_DEATH_BAT
+    10830, // VERZIK_INITIAL_STORY
+    10831, // VERZIK_PHASE1_STORY
+    10832, // VERZIK_PHASE1_TO2_TRANSITION_STORY
+    10833, // VERZIK_PHASE2_STORY
+    10834, // VERZIK_PHASE2_TO3_TRANSITION_STORY
+    10835, // VERZIK_PHASE3_STORY
+    10836, // VERZIK_DEATH_BAT_STORY
+    10847, // VERZIK_INITIAL_HARD
+    10848, // VERZIK_PHASE1_HARD
+    10849, // VERZIK_PHASE1_TO2_TRANSITION_HARD
+    10850, // VERZIK_PHASE2_HARD
+    10851, // VERZIK_PHASE2_TO3_TRANSITION_HARD
+    10852, // VERZIK_PHASE3_HARD
+    10853, // VERZIK_DEATH_BAT_HARD
+    11178, // TOBQUEST_VERZIK
+    11778, // TOA_BABA
+    11779, // TOA_BABA_COFFIN
+    11780, // TOA_BABA_DIGGING
+    11789, // AKKHA_SPAWN
+    11790, // AKKHA_MELEE
+    11791, // AKKHA_RANGE
+    11792, // AKKHA_MAGE
+    11793, // AKKHA_ENRAGE_SPAWN
+    11794, // AKKHA_ENRAGE_INITIAL
+    11795, // AKKHA_ENRAGE
+    11796, // AKKHA_ENRAGE_DUMMY
+    11719, // TOA_KEPHRI_BOSS_SHIELDED
+    11720, // TOA_KEPHRI_BOSS_WEAK
+    11721, // TOA_KEPHRI_BOSS_ENRAGE
+    11722, // TOA_KEPHRI_BOSS_DEAD
+    11730, // TOA_ZEBAK
+    11731, // TOA_ZEBAK_TAIL
+    11732, // TOA_ZEBAK_ENRAGED
+    11733, // TOA_ZEBAK_DEAD
+    11734, // TOA_ZEBAK_TAIL_DEAD
+    11750, // TOA_WARDENS_P1_OBELISK_NPC_INACTIVE
+    11751, // TOA_WARDENS_P1_OBELISK_NPC
+    11753, // TOA_WARDEN_ELIDINIS_PHASE2_MAGE
+    11754, // TOA_WARDEN_ELIDINIS_PHASE2_RANGE
+    11755, // TOA_WARDEN_ELIDINIS_PHASE2_EXPOSED
+    11756, // TOA_WARDEN_TUMEKEN_PHASE2_MAGE
+    11757, // TOA_WARDEN_TUMEKEN_PHASE2_RANGE
+    11758, // TOA_WARDEN_TUMEKEN_PHASE2_EXPOSED
+    11770, // TOA_WARDEN_TUMEKEN_CORE
+    11771, // TOA_WARDEN_ELIDINIS_CORE
+    11761, // TOA_WARDEN_ELIDINIS_PHASE3
+    11762, // TOA_WARDEN_TUMEKEN_PHASE3
+    11763, // TOA_WARDEN_ELIDINIS_PHASE3_CHARGING
+    11764, // TOA_WARDEN_TUMEKEN_PHASE3_CHARGING
+    319, // CORP_BEAST
+    239, // King Black Dragon
+    8058, // VORKATH_SLEEPING_NOOP
+    8059, // VORKATH_SLEEPING
+    8060, // VORKATH_QUEST
+    8061, // VORKATH
+    11959, // VORKATH_TRANSMOG
+    2042, // Zulrah
+    2043, // Zulrah
+    2044, // Zulrah
+    8917, // DARK_SEREN
+    8918, // DARK_SEREN_PHANTOM
+    8919, // DARK_SEREN_CUTSCENE
+    8920, // DARK_SEREN_CUTSCENE_TRAPPED
+    8615, // HYDRABOSS
+    8616, // HYDRABOSS_P1_TRANSITION
+    8617, // HYDRABOSS_P2_TRANSITION
+    8618, // HYDRABOSS_P3_TRANSITION
+    8619, // HYDRABOSS_4
+    8620, // HYDRABOSS_3
+    8621, // HYDRABOSS_2
+    8622, // HYDRABOSS_FINALDEATH
+    11962, // HYDRABOSS_TRANSMOG
+    8195, // Bryophyta
+    6609, // CALLISTO
+    11992, // Artio
+    5862, // CERBERUS_ATTACKING
+    5863, // CERBERUS_SITTING
+    5866, // CERBERUS_RESETTING
+    9021, // CRYSTAL_HUNLLEF_MELEE
+    9022, // CRYSTAL_HUNLLEF_RANGED
+    9023, // CRYSTAL_HUNLLEF_MAGIC
+    9024, // CRYSTAL_HUNLLEF_DEATH
+    9035, // Corrupted Hunllef
+    9036, // Corrupted Hunllef
+    9037, // Corrupted Hunllef
+    9038, // Corrupted Hunllef
+    5779, // Giant Mole
+    6499, // Giant Mole
+    8583, // HESPORI
+    11192, // TOBQUEST_HESPORI
+    7979, // The Mimic
+    8633, // The Mimic
+    9425, // NIGHTMARE_PHASE_01
+    9426, // NIGHTMARE_PHASE_02
+    9427, // NIGHTMARE_PHASE_03
+    9428, // NIGHTMARE_WEAK_PHASE_01
+    9429, // NIGHTMARE_WEAK_PHASE_02
+    9430, // NIGHTMARE_WEAK_PHASE_03
+    9431, // NIGHTMARE_BLAST
+    9432, // NIGHTMARE_INITIAL
+    9433, // NIGHTMARE_DYING
+    9460, // NIGHTMARE_ENTRY_READY
+    9461, // NIGHTMARE_ENTRY_OPEN
+    9462, // NIGHTMARE_ENTRY_CLOSED_01
+    9463, // NIGHTMARE_ENTRY_CLOSED_02
+    9464, // NIGHTMARE_ENTRY_CLOSED_03
+    9416, // NIGHTMARE_CHALLENGE_PHASE_01
+    9417, // NIGHTMARE_CHALLENGE_PHASE_02
+    9418, // NIGHTMARE_CHALLENGE_PHASE_03
+    9419, // NIGHTMARE_CHALLENGE_WEAK_PHASE_01
+    9420, // NIGHTMARE_CHALLENGE_WEAK_PHASE_02
+    9421, // NIGHTMARE_CHALLENGE_WEAK_PHASE_03
+    9422, // NIGHTMARE_CHALLENGE_BLAST
+    9423, // NIGHTMARE_CHALLENGE_INITIAL
+    9424, // NIGHTMARE_CHALLENGE_DYING
+    7416, // Obor
+    12077, // MUSPAH
+    12078, // MUSPAH_MELEE
+    12079, // MUSPAH_SOULSPLIT
+    12080, // MUSPAH_FINAL
+    7286, // Skotizo
+    3127, // TzTok-Jad
+    7700, // INFERNO_JAD
+    7706, // TzKal-Zuk
+    10623, // JAD_CHALLENGE_JAD
+    6506, // CLANCUP_TZHAAR_FIGHTCAVE_SWARM_BOSS
+    6610, // VENENATIS
+    11998, // Spindel
+    6504, // CLANCUP_VENENATIS
+    6611, // VETION
+    6612, // VETION_2
+    12002, // VETION_TRANS
+    11993, // Calvar'ion
+    11994, // Calvar'ion
+    11995, // VETION_TRANS_SINGLE
+    11996, // VETION_TRANS_2_SINGLE
+    12821, // COLOSSEUM_SOL_P1
+    12827, // COLOSSEUM_BOSS_SEATED
+    494, // SLAYER_KRAKEN_BOSS
+    496, // SLAYER_KRAKEN_BOSS_WHIRLPOOL
+]
 
 export const BOSS_TO_MINIONS = {
     "Nylocas Vasilias": ["Nylocas Hagios", "Nylocas Ischyros", "Nylocas Toxobolos"],

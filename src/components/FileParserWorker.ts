@@ -124,6 +124,7 @@ function createAggregateFight(fights: Fight[]): Fight {
         name: `${first.mainEnemyName} - Aggregate of ${fights.length} fights`,
         mainEnemyName: first.mainEnemyName,
         isNpc: first.isNpc,
+        isBoss: first.isBoss,
         isWave: first.isWave,
         metaData: {
             ...first.metaData,

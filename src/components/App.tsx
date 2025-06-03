@@ -11,7 +11,6 @@ import {closeSnackbar, SnackbarKey, useSnackbar} from 'notistack';
 import FightSelector from './sections/FightSelector';
 import {Icon} from '@iconify/react';
 import TickActivity from './performance/TickActivity';
-import {BOSS_NAMES} from '../utils/constants';
 import {FightGroupMetaData, getFightGroupMetadata, isFightGroupMetadata} from "../models/FightGroup";
 import DropdownFightSelector from './sections/DropdownFightSelector';
 import {Encounter, EncounterMetaData} from '../models/LogLine';
@@ -287,8 +286,7 @@ function App() {
                                 />
                             ))}
                         </Tabs>
-                        {(BOSS_NAMES.includes(selectedFight.metaData.name) ||
-                                selectedFight.metaData.fightLengthMs >= 15000) &&
+                        {selectedFight.isBoss || selectedFight.metaData.fightLengthMs >= 15000 &&
                             selectedTab !== TabsEnum.REPLAY && <TickActivity selectedLogs={selectedFight}/>}
                         {selectedTab === TabsEnum.DAMAGE_DONE && <DamageDoneTab selectedLogs={selectedFight}/>}
                         {selectedTab === TabsEnum.DAMAGE_TAKEN && <DamageTakenTab selectedLogs={selectedFight}/>}
