@@ -79,7 +79,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
     let fightStartTick: number = -1;
     let currentFightGroup: FightGroup | null = null;
 
-    function endFight(lastLine: LogLine, success: boolean, nullFight: boolean = true) {
+    function endFight(lastLine: LogLine, success: boolean) {
         currentFight!.lastLine = lastLine;
 
         const startFightTimeMs = currentFight!.firstLine.fightTimeMs!;
@@ -99,7 +99,9 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             logLine.type === LogTypes.DAMAGE && playerAttemptsDamage(logLine)
         );
 
-        if (!hasPlayerDamage) {
+        if (!hasPlayerDamage && !currentFight!.name.includes("Path of")) {
+            currentFight = null;
+            lastDamage = null;
             return;
         }
 
@@ -115,9 +117,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
             fights.push(currentFight as Fight);
         }
 
-        if (nullFight) {
-            currentFight = null;
-        }
+        currentFight = null;
         lastDamage = null;
 
         // I think Supporting Pillars aren't despawning at the end of Verzik P1, but instead being set to invisible
@@ -541,7 +541,7 @@ export function logSplitter(fightData: LogLine[], progressCallback?: (progress: 
 
     // If we reach the end of the logs, end the current fight
     if (currentFight) {
-        endFight(currentFight.data[currentFight.data.length - 1], false, false);
+        endFight(currentFight.data[currentFight.data.length - 1], false);
     }
 
     const fightNameCounts: Map<string, number> = new Map(); // Map to store counts of each fight name
