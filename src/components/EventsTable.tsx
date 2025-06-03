@@ -11,7 +11,7 @@ import magicImage from '../assets/Magic.webp';
 import rangedImage from '../assets/Ranged.webp';
 import prayerImage from '../assets/Prayer.webp';
 import {formatHHmmss} from "../utils/utils";
-import {BOSS_NAMES} from "../utils/constants";
+import {BOSS_IDS} from "../utils/constants";
 import {Actor} from "../models/Actor";
 import ThickSkin from "../assets/prayers/inactive/ThickSkin.png";
 import BurstOfStrength from "../assets/prayers/inactive/BurstOfStrength.png";
@@ -67,7 +67,7 @@ const getActorName = (log: LogLine, key: 'source' | 'target'): string => {
     if (key in log) {
         // @ts-ignore https://github.com/microsoft/TypeScript/issues/56389
         const actor: Actor = log[key];
-        if (actor && "index" in actor && !BOSS_NAMES.includes(actor.name)) {
+        if (actor && "index" in actor && !BOSS_IDS.includes(actor.id!)) {
             return `${actor.name} - ${actor.index}`;
         } else if (actor) {
             return actor.name;
