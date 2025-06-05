@@ -12,6 +12,7 @@ interface LogsSelectionProps {
 }
 
 const DamageDone: React.FC<LogsSelectionProps> = ({selectedLogs, actor}) => {
+    console.log("Rendering DamageDone component with selectedLogs:", selectedLogs);
     return (
         <div>
             {selectedLogs && (

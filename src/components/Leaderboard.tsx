@@ -25,6 +25,7 @@ type ContentOption = {
 
 const contentOptions: ContentOption[] = [
     { label: 'Theatre of Blood', value: 'Theatre of Blood', playerCounts: [4] },
+    { label: 'Tombs of Amascut', value: 'Tombs of Amascut', playerCounts: [4] },
 ];
 
 type Order = 'asc' | 'desc';
@@ -158,11 +159,7 @@ const Leaderboard: React.FC = () => {
                                     <TableCell sx={{ color: 'white' }}>
                                         <Link
                                             component={RouterLink}
-                                            to={
-                                                leaderType === 'fight'
-                                                    ? `/fight/${row.id}`
-                                                    : `/fightGroup/${row.id}`
-                                            }
+                                            to={`/encounter/${row.id}`}
                                             underline="hover"
                                         >
                                             {row.id}

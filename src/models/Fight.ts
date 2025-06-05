@@ -1,6 +1,7 @@
 import {Encounter, LogLine} from "./LogLine";
 
 export interface Fight {
+    id: string;
     name: string; // Unique fight name with a number appended to it
     mainEnemyName: string; // The name of the main enemy in the fight to be used for wiki link
     isNpc: boolean;
@@ -21,7 +22,7 @@ export interface FightMetaData {
     name: string;
     date: string;
     time: string;
-    fightLengthMs: number;
+    fightDurationTicks: number;
     success: boolean;
 }
 

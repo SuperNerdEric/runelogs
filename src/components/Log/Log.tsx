@@ -126,9 +126,9 @@ const Log: React.FC = () => {
 
                                 return {
                                     name: f.name,
-                                    date: 'N/A',            // stubbed (no actual timestamp available)
+                                    date: 'N/A',
                                     time: HHmmss,
-                                    fightLengthMs: lengthMs,
+                                    fightDurationTicks: f.fightDurationTicks,
                                     success: f.success
                                 };
                             });
@@ -150,7 +150,7 @@ const Log: React.FC = () => {
                             name: enc.name,
                             date: 'N/A',
                             time: HHmmss,
-                            fightLengthMs: lengthMs,
+                            fightDurationTicks: enc.fightDurationTicks,
                             success: enc.success
                         };
 
