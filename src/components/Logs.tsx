@@ -19,6 +19,8 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import { format } from 'date-fns';
 import { useAuth0 } from '@auth0/auth0-react';
+import {closeSnackbar, SnackbarKey, useSnackbar} from "notistack";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface LogItem {
     id: string;
@@ -43,6 +45,7 @@ type Order = 'asc' | 'desc';
 const Logs: React.FC = () => {
     const { uploaderId } = useParams<{ uploaderId: string }>();
     const { user, getAccessTokenSilently } = useAuth0();
+    const {enqueueSnackbar} = useSnackbar();
     const [logs, setLogs] = useState<LogItem[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -50,6 +53,17 @@ const Logs: React.FC = () => {
     // Sorting state
     const [orderBy, setOrderBy] = useState<SortKey>('uploadedAt');
     const [order, setOrder] = useState<Order>('desc');
+
+    const action = (snackbarId: SnackbarKey) => (
+        <IconButton
+            aria-label="close"
+            size="small"
+            onClick={() => closeSnackbar(snackbarId)}
+            sx={{ color: 'inherit' }}     // keeps the icon the same colour as the toast
+        >
+            <CloseIcon fontSize="small" />
+        </IconButton>
+    );
 
     useEffect(() => {
         if (!uploaderId) {
@@ -96,6 +110,7 @@ const Logs: React.FC = () => {
                 throw new Error(`Delete failed with status ${resp.status}`);
             }
             // Remove deleted log from state
+            enqueueSnackbar('Log Deleted', {variant: 'success', autoHideDuration: 1000, action});
             setLogs((prev) => prev?.filter((log) => log.id !== logId) ?? null);
         } catch (err: any) {
             console.error('Failed to delete log:', err);
