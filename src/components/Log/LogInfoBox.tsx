@@ -3,7 +3,7 @@ import {
     Box,
     Link,
     Typography,
-    IconButton, Button
+    IconButton
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useAuth0 } from '@auth0/auth0-react';
