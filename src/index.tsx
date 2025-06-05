@@ -8,7 +8,7 @@ import {Auth0Provider} from "@auth0/auth0-react";
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import TopBar from "./components/TopBar";
 import Upload from "./components/Upload";
-import Log from "./components/Log";
+import Log from "./components/Log/Log";
 import Logs from "./components/Logs";
 import theme from './theme';
 import {ThemeProvider} from "@mui/material";

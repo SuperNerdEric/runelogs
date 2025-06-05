@@ -455,3 +455,23 @@
     z-index: 1000;
 }
 
+.log-info-box {
+    background: #141414;
+    border: 3px solid grey;
+    border-radius: 1px;
+    padding: 15px;
+    margin-bottom: 10px;
+    color: white;
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    column-gap: 10px;
+    row-gap: 6px;
+    width: 1000px;
+}
+
+@media (max-width: 1050px) {
+    .log-info-box { width: 90vw; }
+}
+
+.log-info-label  { color: #b4bdff; }
+.log-info-value  { color: #e5cc80; }
