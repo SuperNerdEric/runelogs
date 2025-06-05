@@ -28,24 +28,13 @@ function App() {
 
     useEffect(() => {
         if (isAuthenticated) {
-            getAccessTokenSilently().then(token => {
+            getAccessTokenSilently().then(() => {
                 console.log("User authenticated:", user);
-                console.log("Access token:", token);
             }).catch((err) => {
                 console.warn("Token fetch failed:", err.message);
             });
         }
     }, [isAuthenticated, getAccessTokenSilently, user]);
-
-
-    useEffect(() => {
-        if (location.pathname === "/login") {
-            loginWithRedirect();
-        } else if (location.pathname === "/logout") {
-            logout({ logoutParams: { returnTo: window.location.origin } });
-        }
-    }, [location, loginWithRedirect, logout]);
-
 
     useEffect(() => {
         ReactGA.initialize('G-XL7FZPRS36');
@@ -197,6 +186,16 @@ function App() {
             });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    if (location.pathname === '/login') {
+        loginWithRedirect();
+        return null;
+    }
+
+    if (location.pathname === '/logout') {
+        logout({logoutParams: {returnTo: window.location.origin}});
+        return null;
+    }
 
     return (
         <div className="App">
