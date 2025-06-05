@@ -1,5 +1,6 @@
-import { Link as RouterLink } from 'react-router-dom';
-import { Box, Typography, Link } from '@mui/material';
+import {Link as RouterLink} from 'react-router-dom';
+import {Box, Link, Typography} from '@mui/material';
+import {format} from "date-fns";
 
 interface Props {
     uploaderId: string;
@@ -21,11 +22,7 @@ const LogInfoBox: React.FC<Props> = ({uploaderId, uploadedAt, logId}) => (
 
         <Typography className="log-info-label">Uploaded</Typography>
         <Typography className="log-info-value">
-            {new Date(uploadedAt).toLocaleDateString('en-US', {
-                month: '2-digit',
-                day: '2-digit',
-                year: 'numeric'
-            })}
+            {format(new Date(uploadedAt), 'PPpp')}
         </Typography>
 
         <Typography className="log-info-label">Log ID</Typography>
