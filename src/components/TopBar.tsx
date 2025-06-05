@@ -1,18 +1,12 @@
 import React from 'react';
-import {AppBar, Button, Menu, MenuItem, Toolbar, Typography} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import {AppBar, Box, Button, Menu, MenuItem, Toolbar, Typography} from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import {Icon} from '@iconify/react';
 import {useAuth0} from '@auth0/auth0-react';
 import logo from '../assets/Logo.png';
 import {Link} from "react-router-dom";
 
-interface TopBarProps {
-    onDeleteData?: () => void;
-    showDeleteButton: boolean;
-}
-
-const TopBar: React.FC<TopBarProps> = ({onDeleteData, showDeleteButton}) => {
+const TopBar: React.FC = () => {
     const {isAuthenticated, user, loginWithRedirect, logout} = useAuth0();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
@@ -32,38 +26,41 @@ const TopBar: React.FC<TopBarProps> = ({onDeleteData, showDeleteButton}) => {
                     justifyContent: 'space-between'
                 }}
             >
-                <div style={{display: 'flex', alignItems: 'center'}}>
-                    <img
-                        src={logo}
-                        alt="Runelogs.com"
-                        style={{
-                            marginRight: '5px',
-                            height: '25px',
-                            verticalAlign: 'middle'
+                    <Box
+                        component={Link}
+                        to="/"
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            textDecoration: 'none',
+                            color: 'inherit'
                         }}
-                    />
-                    <Typography
-                        variant="h6"
-                        style={{margin: 0, color: 'white', fontSize: '25px'}}
                     >
-                        Runelogs
-                    </Typography>
-                    <Icon
-                        icon="clarity:beta-solid"
-                        style={{
-                            width: '35px',
-                            height: '35px',
-                            marginLeft: '10px'
-                        }}
-                    />
-                </div>
-                <div style={{display: 'flex', alignItems: 'center'}}>
-                    {showDeleteButton && (
-                        <DeleteIcon
-                            onClick={onDeleteData}
-                            style={{fontSize: 35, cursor: 'pointer', color: 'white', marginRight: '30px'}}
+                        <img
+                            src={logo}
+                            alt="Runelogs.com"
+                            style={{
+                                marginRight: '5px',
+                                height: '25px',
+                                verticalAlign: 'middle'
+                            }}
                         />
-                    )}
+                        <Typography
+                            variant="h6"
+                            sx={{ margin: 0, color: 'white', fontSize: '25px' }}
+                        >
+                            Runelogs
+                        </Typography>
+                        <Icon
+                            icon="clarity:beta-solid"
+                            style={{
+                                width: '35px',
+                                height: '35px',
+                                marginLeft: '10px'
+                            }}
+                        />
+                    </Box>
+                <div style={{display: 'flex', alignItems: 'center'}}>
                     <a href="https://discord.gg/ZydwX7AJEd" target="_blank" rel="noopener noreferrer" style={{
                         textDecoration: 'none',
                         color: 'inherit',
@@ -164,6 +161,14 @@ const TopBar: React.FC<TopBarProps> = ({onDeleteData, showDeleteButton}) => {
                                     }
                                 }}
                             >
+                                <MenuItem
+                                    component={Link}
+                                    to={`/logs/${user?.sub}`}
+                                    onClick={handleMenuClose}
+                                >
+                                    My Logs
+                                </MenuItem>
+
                                 <MenuItem
                                     component={Link}
                                     to="/upload"

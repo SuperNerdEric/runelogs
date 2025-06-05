@@ -5,7 +5,13 @@ import App from './components/App';
 import {SnackbarProvider} from 'notistack';
 import reportWebVitals from './reportWebVitals';
 import {Auth0Provider} from "@auth0/auth0-react";
-import {BrowserRouter} from 'react-router-dom';
+import {BrowserRouter, Route, Routes} from 'react-router-dom';
+import TopBar from "./components/TopBar";
+import Upload from "./components/Upload";
+import Log from "./components/Log";
+import Logs from "./components/Logs";
+import theme from './theme';
+import {ThemeProvider} from "@mui/material";
 
 const domain = "auth.runelogs.com";
 const clientId = "vNPXVhAvOj2ES9kqi5WPs80SnX8FPKqv";
@@ -27,9 +33,19 @@ root.render(
                 cacheLocation="localstorage"
                 useRefreshTokens={true}
             >
-                <BrowserRouter>
-                    <App/>
-                </BrowserRouter>
+                <ThemeProvider theme={theme}>
+                    <BrowserRouter>
+                        <div className="app-layout">
+                            <TopBar/>
+                            <Routes>
+                                <Route path="/" element={<App/>}/>
+                                <Route path="/upload" element={<Upload/>}/>
+                                <Route path="/log/:logId" element={<Log/>}/>
+                                <Route path="/logs/:uploaderId" element={<Logs/>}/>
+                            </Routes>
+                        </div>
+                    </BrowserRouter>
+                </ThemeProvider>
             </Auth0Provider>
         </SnackbarProvider>
     </React.StrictMode>
