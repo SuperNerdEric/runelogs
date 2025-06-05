@@ -57,7 +57,6 @@ const Leaderboard: React.FC = () => {
             if (!res.ok) throw new Error(`Server returned ${res.status}`);
             const data = await res.json();
             setEntries(data.leaderboard);
-            setLeaderType(data.type === 'fightGroup' ? 'fightGroup' : 'fight');
         } catch (e: any) {
             setError(e.message || 'Unknown error');
         } finally {
