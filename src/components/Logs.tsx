@@ -192,7 +192,7 @@ const Logs: React.FC = () => {
     return (
         <Box m={2}>
             <Typography variant="h4" gutterBottom sx={{ color: 'white' }}>
-                Logs for Uploader: {uploaderId}
+                Logs: {uploaderId}
             </Typography>
 
             <TableContainer component={Paper} sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
