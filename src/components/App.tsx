@@ -6,7 +6,6 @@ import Instructions from './Instructions';
 import {BoostsTab, DamageDoneTab, DamageTakenTab, EventsTab, ReplayTab, TabsEnum} from './Tabs';
 import {Fight, isFight} from '../models/Fight';
 import localforage from 'localforage';
-import TopBar from './TopBar';
 import {closeSnackbar, SnackbarKey, useSnackbar} from 'notistack';
 import FightSelector from './sections/FightSelector';
 import {Icon} from '@iconify/react';
@@ -104,20 +103,6 @@ function App() {
         setSelectedTab(newValue);
     };
 
-    const handleDelete = () => {
-        // Delete data from localforage and reset states
-        fightsStorage
-            .removeItem('fightData')
-            .then(() => {
-                setSelectedFight(null);
-                setFightMetadata(null);
-                setLoadingStorage(false);
-            })
-            .catch((error) => {
-                console.error('Error deleting fight data from localforage:', error);
-            });
-    };
-
     const handleSelectFight = (index: number, fightGroupIndex?: number) => {
         worker.postMessage({type: 'getItem', index, fightGroupIndex: fightGroupIndex});
         setSelectedFightMetadataIndex(index);
@@ -199,11 +184,7 @@ function App() {
 
     return (
         <div className="App">
-            <div className="App-body">
-                <TopBar
-                    onDeleteData={handleDelete}
-                    showDeleteButton={!loadingStorage && !parseInProgress && (!!selectedFight || !!fightMetadata)}
-                />
+            <div>
                 {loadingStorage && (
                     <div className="loading-indicator-container">
                         <div className="loading-content">
