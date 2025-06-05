@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
     Box,
     CircularProgress,
     Alert,
     Typography,
-    Paper
 } from '@mui/material';
 import FightSelector from '../sections/FightSelector';
 import {

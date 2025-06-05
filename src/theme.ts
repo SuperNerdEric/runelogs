@@ -13,7 +13,6 @@ const theme = createTheme({
                     borderRadius: '1px',
                     width: '1000px',
                     margin: '0 auto 15px',
-                    ['@media (max-width:1050px)']: { width: '90vw' },
                 },
             },
         },
@@ -52,6 +51,7 @@ const theme = createTheme({
         },
 
         MuiLink: {
+            defaultProps: { variant: 'body1' },
             styleOverrides: {
                 root: {
                     textDecoration: 'none',
