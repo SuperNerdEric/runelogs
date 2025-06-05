@@ -27,7 +27,8 @@ const Fight: React.FC<FightProps> = ({fight, index, title, onSelectFight, isShor
     const handleClick = () => {
         onSelectFight(index);
     };
-    const formattedDuration = formatHHmmss(fight.fightLengthMs, false);
+    const fightLengthMs = (fight.fightDurationTicks ?? 0) * 600;
+    const formattedDuration = formatHHmmss(fightLengthMs, false);
 
     return (
         <div className="fight-container" onClick={handleClick}>
@@ -68,7 +69,8 @@ const FightGroup: React.FC<FightGroupProps> = ({fight, index, fightGroupIndex, f
     const handleClick = () => {
         onSelectFight(index, fightGroupIndex);
     };
-    const formattedDuration = formatHHmmss(fight.fightLengthMs, false);
+    const fightLengthMs = (fight.fightDurationTicks ?? 0) * 600;
+    const formattedDuration = formatHHmmss(fightLengthMs, false);
 
     return (
         <div className="fight-group-container" onClick={handleClick}>
@@ -160,8 +162,8 @@ const FightSelector: React.FC<FightSelectorProps> = ({ fights, onSelectFight, on
 
                     fightGroup.fights.forEach(fight => {
                         if (fight.fight.success) {
-                            if (!shortestTime || fight.fight.fightLengthMs < shortestTime) {
-                                shortestTime = fight.fight.fightLengthMs;
+                            if (!shortestTime || fight.fight.fightDurationTicks < shortestTime) {
+                                shortestTime = fight.fight.fightDurationTicks;
                             }
                         }
                     })
@@ -184,7 +186,7 @@ const FightSelector: React.FC<FightSelectorProps> = ({ fights, onSelectFight, on
                                         index={fight.index}
                                         title={(index + 1).toString()}
                                         onSelectFight={onSelectFight}
-                                        isShortest={fight.fight.fightLengthMs === shortestTime}
+                                        isShortest={fight.fight.fightDurationTicks === shortestTime}
                                     />
                                 ))}
                             </div>

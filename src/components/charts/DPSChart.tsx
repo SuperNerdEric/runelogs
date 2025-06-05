@@ -71,7 +71,8 @@ export const calculateDPSByInterval = (data: DamageLog[], interval: number) => {
 const DPSChart: React.FC<DPSChartProps> = ({fight}) => {
     const filteredLogs = filterByType(fight.data, LogTypes.DAMAGE);
 
-    const interval = Math.min(Math.max(fight.metaData.fightLengthMs / 4, 600), 6000);
+    const fightLengthMs = (fight.metaData.fightDurationTicks ?? 0) * 600;
+    const interval = Math.min(Math.max(fightLengthMs / 4, 600), 6000);
 
     const dpsData = calculateDPSByInterval(filteredLogs, interval);
 

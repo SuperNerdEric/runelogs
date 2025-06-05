@@ -16,7 +16,8 @@ const Results: React.FC<ResultsProps> = ({fight}) => {
     const [accuracy, setAccuracy] = useState<number>(0);
 
     useEffect(() => {
-        setFightDuration(formatHHmmss(fight.metaData.fightLengthMs, true));
+        const fightLengthMs = (fight.metaData.fightDurationTicks ?? 0) * 600;
+        setFightDuration(formatHHmmss(fightLengthMs, true));
 
         const totalDamage = fight.data
             .filter(log => log.type === LogTypes.DAMAGE)

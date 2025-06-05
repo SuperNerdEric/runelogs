@@ -181,9 +181,10 @@ function getPercentColor(percentage: number) {
 
 const Performance: React.FC<PerformanceProps> = ({metricName, fight, performance}) => {
     let percentage: number = 0;
+    const fightLengthMs = (fight.metaData.fightDurationTicks ?? 0) * 600;
 
     if (metricName === "Activity") {
-        percentage = (performance.activeTime / (fight.metaData.fightLengthMs / 1000)) * 100;
+        percentage = (performance.activeTime / (fightLengthMs / 1000)) * 100;
     } else if (metricName === "Boosted Hits") {
         percentage = performance.boostedHits / performance.actualWeaponHits * 100;
     }
