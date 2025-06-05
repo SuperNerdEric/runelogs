@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
     Box,
@@ -45,7 +45,7 @@ const Leaderboard: React.FC = () => {
     const [orderBy] = useState<'duration'>('duration');
     const [order, setOrder] = useState<Order>('asc');
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
@@ -62,11 +62,12 @@ const Leaderboard: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [content, playerCount]);
+
 
     useEffect(() => {
         fetchData();
-    }, [fetchData(), content, playerCount]);
+    }, [fetchData]);
 
     const sorted = useMemo(() => {
         if (!entries) return null;
