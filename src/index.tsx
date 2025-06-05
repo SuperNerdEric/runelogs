@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './components/App';
+import './App.css';
 import {SnackbarProvider} from 'notistack';
 import reportWebVitals from './reportWebVitals';
 import {Auth0Provider} from "@auth0/auth0-react";
@@ -12,6 +12,7 @@ import Log from "./components/Log/Log";
 import Logs from "./components/Logs";
 import theme from './theme';
 import {ThemeProvider} from "@mui/material";
+import Leaderboard from "./components/Leaderboard";
 
 const domain = "auth.runelogs.com";
 const clientId = "vNPXVhAvOj2ES9kqi5WPs80SnX8FPKqv";
@@ -38,7 +39,7 @@ root.render(
                         <div className="app-layout">
                             <TopBar/>
                             <Routes>
-                                <Route path="/" element={<App/>}/>
+                                <Route path="/" element={<Leaderboard/>}/>
                                 <Route path="/upload" element={<Upload/>}/>
                                 <Route path="/log/:logId" element={<Log/>}/>
                                 <Route path="/logs/:uploaderId" element={<Logs/>}/>
