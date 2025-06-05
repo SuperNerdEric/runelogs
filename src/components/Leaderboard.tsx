@@ -42,7 +42,7 @@ const Leaderboard: React.FC = () => {
     const [leaderType, setLeaderType] = useState<'fight' | 'fightGroup'>('fight');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [orderBy, setOrderBy] = useState<'duration'>('duration');
+    const [orderBy] = useState<'duration'>('duration');
     const [order, setOrder] = useState<Order>('asc');
 
     const fetchData = async () => {
@@ -66,7 +66,7 @@ const Leaderboard: React.FC = () => {
 
     useEffect(() => {
         fetchData();
-    }, [content, playerCount]);
+    }, [fetchData(), content, playerCount]);
 
     const sorted = useMemo(() => {
         if (!entries) return null;
