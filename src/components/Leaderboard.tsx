@@ -40,7 +40,6 @@ const Leaderboard: React.FC = () => {
     const [content, setContent] = useState(contentOptions[0]);
     const [playerCount, setPlayerCount] = useState(contentOptions[0].playerCounts[0]);
     const [entries, setEntries] = useState<Entry[] | null>(null);
-    const [setLeaderType] = useState<'fight' | 'fightGroup'>('fight');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [orderBy] = useState<'duration'>('duration');
