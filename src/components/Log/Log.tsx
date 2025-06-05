@@ -1,5 +1,3 @@
-// src/components/Log.tsx
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
@@ -9,14 +7,15 @@ import {
     Typography,
     Paper
 } from '@mui/material';
-import FightSelector from './sections/FightSelector';
+import FightSelector from '../sections/FightSelector';
 import {
     FightMetaData
-} from '../models/Fight';
+} from '../../models/Fight';
 import {
     EncounterMetaData
-} from '../models/LogLine';
-import { formatHHmmss } from '../utils/utils';
+} from '../../models/LogLine';
+import { formatHHmmss } from '../../utils/utils';
+import LogInfoBox from "./LogInfoBox";
 
 interface ApiFight {
     id: string;
@@ -67,6 +66,8 @@ type ApiEncounter = ApiFightOnly | ApiFightGroup;
 
 interface ApiResponse {
     logId: string;
+    uploaderId: string;
+    uploadedAt: string;
     encounters: ApiEncounter[];
 }
 
@@ -76,6 +77,8 @@ const Log: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [metadata, setMetadata] = useState<EncounterMetaData[] | null>(null);
+    const [uploaderId, setUploaderId] = useState<string>('');
+    const [uploadedAt, setUploadedAt] = useState<string>('');
 
     useEffect(() => {
         if (!logId) {
@@ -101,6 +104,10 @@ const Log: React.FC = () => {
                 }
 
                 const body: ApiResponse = await res.json();
+
+                const {uploaderId: up, uploadedAt: ua} = body;
+                setUploaderId(up);
+                setUploadedAt(ua);
 
                 const out: EncounterMetaData[] = [];
 
@@ -198,27 +205,7 @@ const Log: React.FC = () => {
 
     return (
         <Box p={2}>
-            <Paper
-                elevation={2}
-                sx={{
-                    p: 3,
-                    mb: 2,
-                    maxWidth: 900,
-                    mx: 'auto',
-                    backgroundColor: '#1e1e1e'
-                }}
-            >
-                <Typography variant="h4" gutterBottom sx={{ color: 'white' }}>
-                    Log:&nbsp;
-                    <Typography
-                        component="span"
-                        variant="h4"
-                        sx={{ color: 'primary.light' }}
-                    >
-                        {logId}
-                    </Typography>
-                </Typography>
-            </Paper>
+            <LogInfoBox uploaderId={uploaderId} uploadedAt={uploadedAt} logId={logId!} />
 
             <FightSelector
                 fights={metadata}
