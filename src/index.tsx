@@ -21,7 +21,7 @@ root.render(
                 clientId={clientId}
                 authorizationParams={{
                     redirect_uri: window.location.origin,
-                    audience: "https://auth.runelogs.com/api",
+                    audience: "https://api.runelogs.com",
                     scope: "openid profile email offline_access"
                 }}
                 cacheLocation="localstorage"
