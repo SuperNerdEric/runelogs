@@ -59,7 +59,7 @@ const Logs: React.FC = () => {
             aria-label="close"
             size="small"
             onClick={() => closeSnackbar(snackbarId)}
-            sx={{ color: 'inherit' }}     // keeps the icon the same colour as the toast
+            sx={{ color: 'inherit' }}
         >
             <CloseIcon fontSize="small" />
         </IconButton>
