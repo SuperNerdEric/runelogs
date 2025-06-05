@@ -4,19 +4,32 @@ const theme = createTheme({
     palette: { mode: 'dark' },
 
     components: {
-        // Dark panel + grey frame (≈ .damage-done-container)
+        // ------ additions start here ------
+        MuiOutlinedInput: {
+            styleOverrides: {
+                root: {
+                    backgroundColor: '#141414',
+                },
+            },
+        },
+        MuiMenu: {
+            styleOverrides: {
+                paper: {
+                    backgroundColor: '#141414',
+                },
+            },
+        },
         MuiTableContainer: {
             styleOverrides: {
                 root: {
                     backgroundColor: '#141414',
                     border: '3px solid grey',
                     borderRadius: '1px',
-                    width: '1000px',
+                    maxWidth: '1000px',
                     margin: '0 auto 15px',
                 },
             },
         },
-
         MuiTableRow: {
             styleOverrides: {
                 root: {
@@ -26,7 +39,6 @@ const theme = createTheme({
                 },
             },
         },
-
         MuiTableCell: {
             styleOverrides: {
                 root: {
@@ -39,7 +51,6 @@ const theme = createTheme({
                 head: { fontWeight: 600 },
             },
         },
-
         MuiTableSortLabel: {
             styleOverrides: {
                 root: {
@@ -49,7 +60,6 @@ const theme = createTheme({
                 icon: { color: '#ffffff !important' },
             },
         },
-
         MuiLink: {
             defaultProps: { variant: 'body1' },
             styleOverrides: {
@@ -59,8 +69,11 @@ const theme = createTheme({
                 },
             },
         },
-
-        MuiPaper: { styleOverrides: { root: { backgroundColor: 'transparent', boxShadow: 'none' } } },
+        MuiPaper: {
+            styleOverrides: {
+                    root: { backgroundColor: 'transparent', boxShadow: 'none' },
+            },
+        },
         MuiCircularProgress: { styleOverrides: { root: { color: '#ffffff' } } },
     },
 });
