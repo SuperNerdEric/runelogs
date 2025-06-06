@@ -65,9 +65,10 @@ const theme = createTheme({
                     padding: '8px 6px',
                     '@media (max-width: 768px)': {
                         padding: '8px 2px',
+                        fontSize: '14px',
                     },
                     fontFamily: 'Avenir, Arial, sans-serif',
-                    fontSize: '13px',
+                    fontSize: '16px',
                 },
                 head: {
                     backgroundColor: '#494949',
@@ -85,7 +86,7 @@ const theme = createTheme({
             },
         },
         MuiLink: {
-            defaultProps: { variant: 'body1' },
+            defaultProps: { variant: undefined },
             styleOverrides: {
                 root: {
                     textDecoration: 'none',

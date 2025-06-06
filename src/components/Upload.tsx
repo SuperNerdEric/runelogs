@@ -9,7 +9,7 @@ import {
     CircularProgress,
     Alert,
     Paper,
-    Link as MuiLink,
+    Link,
     LinearProgress
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -144,33 +144,32 @@ const Upload: React.FC = () => {
                     Upload a Combat Log
                 </Typography>
 
-                <Typography variant="body1" gutterBottom sx={{ color: 'white' }}>
+                <Typography variant="h5" gutterBottom sx={{ color: 'white' }}>
                     <ol style={{ paddingLeft: '24px', margin: 0 }}>
                         <li>
-                            <Typography component="span" sx={{ fontSize: '24px', display: 'inline' }}>
+                            <Typography variant="h5" component="span">
                                 Install the{' '}
-                                <MuiLink
+                                <Link
                                     href="https://runelite.net/plugin-hub/show/combat-logger"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    sx={{ color: 'primary.main', textDecoration: 'underline' }}
                                 >
                                     Combat Logger
-                                </MuiLink>{' '}
+                                </Link>{' '}
                                 plugin from the RuneLite plugin hub.
                             </Typography>
                         </li>
                         <li>
-                            <Typography component="span" sx={{ fontSize: '24px', display: 'inline' }}>
+                            <Typography variant="h5"  component="span">
                                 Locate your combat logs stored in{' '}
-                                <Typography component="span" sx={{ color: 'yellow', fontFamily: 'monospace', fontSize: '24px' }}>
+                                <Typography variant="h5" component="span" sx={{ color: 'yellow', fontFamily: 'monospace' }}>
                                     .runelite/combat_log
                                 </Typography>
                                 .
                             </Typography>
                         </li>
                         <li>
-                            <Typography component="span" sx={{ fontSize: '24px', display: 'inline' }}>
+                            <Typography variant="h5" component="span">
                                 Upload and analyze!
                             </Typography>
                         </li>
