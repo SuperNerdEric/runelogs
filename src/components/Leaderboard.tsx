@@ -99,7 +99,7 @@ const Leaderboard: React.FC = () => {
         );
 
     return (
-        <Box m={2}>
+        <Box m={2} style={{ maxWidth: 1030, width: '100%', margin: '0 auto' }}>
             <Typography variant="h4" gutterBottom color="white">
                 Leaderboard
             </Typography>
@@ -131,7 +131,14 @@ const Leaderboard: React.FC = () => {
             </Box>
 
             {entries && entries.length > 0 ? (
-                <TableContainer component={Paper}>
+                <TableContainer
+                    className="logs-box"
+                    sx={{
+                        maxWidth: 1030,
+                        width: '100%',
+                        mx: 'auto',
+                    }}
+                >
                     <Table>
                         <TableHead>
                             <TableRow>
