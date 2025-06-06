@@ -124,14 +124,6 @@
     font-family: Avenir, Arial, sans-serif !important;
 }
 
-
-.MuiTableCell-root {
-    padding-left: 6px !important;
-    padding-right: 6px !important;
-    padding-top: 2px !important;
-    padding-bottom: 2px !important;
-}
-
 .logs-text {
     color: #e5cc80 !important;
 }
