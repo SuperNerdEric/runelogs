@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useState,} from 'react';
-import {useParams} from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 import {Box, CircularProgress, Tab, Tabs, Typography,} from '@mui/material';
 import {BoostsTab, DamageDoneTab, DamageTakenTab, EventsTab, ReplayTab, TabsEnum,} from './Tabs';
 import TickActivity from './performance/TickActivity';
@@ -7,6 +7,7 @@ import {Fight, FightMetaData, isFight} from '../models/Fight';
 import * as semver from 'semver';
 import '../App.css';
 import DropdownFightSelector from './sections/DropdownFightSelector';
+import {Icon} from "@iconify/react";
 
 type EncounterApiFG = {
     type: 'fightGroup';
@@ -19,7 +20,10 @@ type EncounterApiFight = {
     type: 'fight';
     fightGroup?: string;
     fight: Fight;
-    meta: { fightGroup?: { id: string; name: string } };
+    meta: {
+        fightGroup?: { id: string; name: string };
+        log: { id: string };
+    };
 };
 
 type EncounterApi = EncounterApiFG | EncounterApiFight;
@@ -34,6 +38,7 @@ const Encounter: React.FC = () => {
 
     const [fight, setFight] = useState<Fight | null>(null);
     const [group, setGroup] = useState<EncounterApiFG | null>(null);
+    const [logId, setLogId] = useState<string | null>(null);
     const [selectedTab, setSelectedTab] = useState<TabsEnum>(TabsEnum.DAMAGE_DONE);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -64,6 +69,7 @@ const Encounter: React.FC = () => {
                 if (data.type === 'fight') {
                     if (!isFight(data.fight)) throw new Error('Malformed fight payload');
                     setFight(data.fight);
+                    setLogId(data.meta.log.id);
 
                     /* on first load, if the fight belongs to a group, fetch that group too */
                     if (asInitial && data.meta.fightGroup?.id) {
@@ -139,6 +145,12 @@ const Encounter: React.FC = () => {
         <div className="App">
             <div className="App-main">
                 <div style={{display: 'flex', alignItems: 'center'}}>
+
+                    {logId && (
+                        <Link to={`/log/${logId}`} className="back-icon-wrapper">
+                            <Icon icon="ic:round-arrow-back" style={{color: 'white'}}/>
+                        </Link>
+                    )}
                     {group ? (
                         <label>{group.name}</label>
                     ) : fight.isNpc ? (
