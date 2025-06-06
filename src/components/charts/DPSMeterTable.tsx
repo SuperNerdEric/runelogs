@@ -89,57 +89,66 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({fight, actor}) => {
     const sortedDPSData = Object.entries(dpsData).sort((a, b) => b[1].totalDamage - a[1].totalDamage);
 
     return (
-        <div className="logs-box" style={{maxHeight: 500, overflowY: 'auto', marginBottom: '10px'}}>
-            <TableContainer>
-                <Table style={{tableLayout: 'auto'}}>
-                    <TableHead style={{backgroundColor: '#494949'}}>
-                        <TableRow>
-                            <TableCell style={{width: '100px', textAlign: 'center'}}>Name</TableCell>
-                            <TableCell style={{textAlign: 'center', paddingBottom: '2px'}}>Amount</TableCell>
-                            <TableCell style={{width: '100px', textAlign: 'center'}}>Accuracy</TableCell>
-                            <TableCell style={{width: '70px', textAlign: 'center'}}>DPS</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {sortedDPSData.map(([source, data]: [string, DPSData], index: number) => {
-                            const damagePercentage = Number(((data.totalDamage / totalDamage) * 100).toFixed(2));
+        <TableContainer
+            className="logs-box"
+            sx={{
+                maxWidth: 1030,
+                width: '100%',
+                mx: 'auto',
+            }}
+        >
+            <Table style={{ tableLayout: 'auto', width: '100%' }}>
+                <TableHead>
+                    <TableRow>
+                        <TableCell style={{width: '100px', textAlign: 'center'}}>Name</TableCell>
+                        <TableCell style={{textAlign: 'center', paddingBottom: '2px'}}>Amount</TableCell>
+                        <TableCell style={{width: '100px', textAlign: 'center'}}>Accuracy</TableCell>
+                        <TableCell style={{width: '70px', textAlign: 'center'}}>DPS</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {sortedDPSData.map(([source, data]: [string, DPSData], index: number) => {
+                        const damagePercentage = Number(((data.totalDamage / totalDamage) * 100).toFixed(2));
 
-                            return (
-                                <TableRow key={index} className={index % 2 === 0 ? 'even-row' : 'odd-row'}
-                                          style={{cursor: 'default'}}
-                                          onMouseEnter={(e) => e.currentTarget.classList.add('highlighted-row')}
-                                          onMouseLeave={(e) => e.currentTarget.classList.remove('highlighted-row')}>
-                                    <TableCell
-                                        style={{width: '100px', textAlign: 'left'}}
-                                        className={source === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}
-                                    >
-                                        {source}
-                                    </TableCell>
-                                    <TableCell style={{textAlign: 'center'}}>
-                                        <div style={{display: 'flex', alignItems: 'center'}}>
+                        return (
+                            <TableRow key={index} className={index % 2 === 0 ? 'even-row' : 'odd-row'}
+                                      style={{cursor: 'default'}}
+                                      onMouseEnter={(e) => e.currentTarget.classList.add('highlighted-row')}
+                                      onMouseLeave={(e) => e.currentTarget.classList.remove('highlighted-row')}>
+                                <TableCell
+                                    style={{width: '100px', textAlign: 'left'}}
+                                    className={source === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}
+                                >
+                                    {source}
+                                </TableCell>
+                                <TableCell style={{textAlign: 'center'}}>
+                                    <div style={{display: 'flex', alignItems: 'center'}}>
                                             <span
-                                                style={{textAlign: 'left', minWidth: '50px', marginRight: '5px'}}>{damagePercentage ? `${damagePercentage}%` : ``}</span>
-                                            <div style={{
-                                                backgroundColor: source === loggedInPlayer ? '#abd473' : '#007bff',
-                                                height: '14px',
-                                                marginRight: '10px',
-                                                marginTop: '3px',
-                                                marginBottom: '3px',
-                                                width: calculateBarWidth(data.totalDamage)
-                                            }}/>
-                                            {data.totalDamage}
-                                        </div>
-                                    </TableCell>
-                                    <TableCell style={{width: '70px', textAlign: 'right'}}>{data.accuracy}%</TableCell>
-                                    <TableCell style={{width: '70px', textAlign: 'right'}}
-                                               className={'dps-text'}>{data.dps}</TableCell>
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </div>
+                                                style={{
+                                                    textAlign: 'left',
+                                                    minWidth: '50px',
+                                                    marginRight: '5px'
+                                                }}>{damagePercentage ? `${damagePercentage}%` : ``}</span>
+                                        <div style={{
+                                            backgroundColor: source === loggedInPlayer ? '#abd473' : '#007bff',
+                                            height: '14px',
+                                            marginRight: '10px',
+                                            marginTop: '3px',
+                                            marginBottom: '3px',
+                                            width: calculateBarWidth(data.totalDamage)
+                                        }}/>
+                                        {data.totalDamage}
+                                    </div>
+                                </TableCell>
+                                <TableCell style={{width: '70px', textAlign: 'right'}}>{data.accuracy}%</TableCell>
+                                <TableCell style={{width: '70px', textAlign: 'right'}}
+                                           className={'dps-text'}>{data.dps}</TableCell>
+                            </TableRow>
+                        );
+                    })}
+                </TableBody>
+            </Table>
+        </TableContainer>
     );
 }
 

@@ -34,9 +34,7 @@ const DamageDone: React.FC<LogsSelectionProps> = ({selectedLogs, actor}) => {
                             )}
                         </div>
                     </div>
-                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%'}}>
-                        <DPSMeterTable fight={selectedLogs} actor={actor}/>
-                    </div>
+                    <DPSMeterTable fight={selectedLogs} actor={actor}/>
                     <EventsTable fight={selectedLogs}/>
                 </div>
             )}

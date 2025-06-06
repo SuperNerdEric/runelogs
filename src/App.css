@@ -99,14 +99,12 @@
 
 .logs-box {
     color: #e1f2f5;
-    width: 1036px;
-    background: black;
     margin-bottom: 80px;
 }
 
 @media (max-width: 1050px) {
     .logs-box {
-        max-width: 95vw;
+        max-width: 1050px;
     }
 }
 

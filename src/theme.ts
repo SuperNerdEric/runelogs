@@ -48,7 +48,10 @@ const theme = createTheme({
                     fontFamily: 'Avenir, Arial, sans-serif',
                     fontSize: '13px',
                 },
-                head: { fontWeight: 600 },
+                head: {
+                    backgroundColor: '#494949',
+                    fontWeight: 600,
+                },
             },
         },
         MuiTableSortLabel: {
