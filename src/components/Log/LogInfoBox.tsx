@@ -26,7 +26,7 @@ const LogInfoBox: React.FC<Props> = ({
                                      }) => {
     const { user, getAccessTokenSilently } = useAuth0();
     const navigate = useNavigate();
-    const showDelete = user?.sub === uploaderId;
+    const showDelete = user?.username === uploaderId;
     const {enqueueSnackbar} = useSnackbar();
 
     const action = (snackbarId: SnackbarKey) => (
@@ -88,6 +88,7 @@ const LogInfoBox: React.FC<Props> = ({
             <Typography className="log-info-label">Uploader</Typography>
             <Link
                 component={RouterLink}
+                style={{textTransform: 'capitalize'}}
                 to={`/logs/${uploaderId}`}
                 className="log-info-value"
                 underline="hover"

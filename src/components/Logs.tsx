@@ -191,7 +191,7 @@ const Logs: React.FC = () => {
 
     return (
         <Box m={2}>
-            <Typography variant="h4" gutterBottom sx={{ color: 'white' }}>
+            <Typography variant="h4" gutterBottom sx={{ color: 'white' }} style={{textTransform: 'capitalize'}}>
                 Logs: {uploaderId}
             </Typography>
 
@@ -276,7 +276,7 @@ const Logs: React.FC = () => {
                                 </TableCell>
 
                                 <TableCell align="center" sx={{ color: 'white', paddingY: 1 }}>
-                                    {user?.sub === uploaderId && (
+                                    {user?.username === uploaderId && (
                                         <IconButton
                                             aria-label="delete"
                                             onClick={() => handleDelete(log.id)}

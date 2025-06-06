@@ -163,7 +163,7 @@ const TopBar: React.FC = () => {
                             >
                                 <MenuItem
                                     component={Link}
-                                    to={`/logs/${user?.sub}`}
+                                    to={`/logs/${user?.username}`}
                                     onClick={handleMenuClose}
                                 >
                                     My Logs
