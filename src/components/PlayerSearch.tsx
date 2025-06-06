@@ -65,7 +65,7 @@ const PlayerSearch: React.FC<PlayerSearchProps> = ({ onSelect }) => {
     };
 
     return (
-        <Box position="relative">
+        <Box position="relative" sx={{ height: '40px' }}>
             <TextField
                 inputRef={anchorRef}
                 value={input}

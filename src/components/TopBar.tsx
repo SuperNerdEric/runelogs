@@ -76,7 +76,7 @@ const TopBar: React.FC = () => {
                             />
                         </>
                     ) : (
-                        <Box sx={{ display: 'flex', alignItems: 'center', marginTop: '8px' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', height: '40px' }}>
                             <PlayerSearch />
                         </Box>
                     )}

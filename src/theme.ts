@@ -13,7 +13,16 @@ const theme = createTheme({
     palette: { mode: 'dark' },
 
     components: {
-        // ------ additions start here ------
+        MuiToolbar: {
+            styleOverrides: {
+                root: {
+                    minHeight: '50px',
+                    '@media (min-width:600px)': {
+                        minHeight: '50px', // Adjusted for larger screens
+                    },
+                },
+            },
+        },
         MuiOutlinedInput: {
             styleOverrides: {
                 root: {
