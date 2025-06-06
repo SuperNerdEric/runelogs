@@ -253,12 +253,6 @@
     font-family: Avenir, Arial, sans-serif !important;
 }
 
-
-.MuiAppBar-root .MuiToolbar-root {
-    min-height: auto !important;
-    height: 50px;
-}
-
 .dismiss-button {
     color: white !important;
     font-family: Avenir, Arial, sans-serif !important;
