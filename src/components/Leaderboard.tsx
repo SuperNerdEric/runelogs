@@ -5,7 +5,6 @@ import {
     CircularProgress,
     Link,
     MenuItem,
-    Paper,
     Select,
     Table,
     TableBody,
