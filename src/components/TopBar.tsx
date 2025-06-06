@@ -72,7 +72,7 @@ const TopBar: React.FC = () => {
                             <Icon
                                 icon="ic:baseline-search"
                                 onClick={() => setSearchOpen((prev) => !prev)}
-                                style={{ fontSize: 28, color: 'white', cursor: 'pointer', marginTop: '8px' }}
+                                style={{ fontSize: 28, color: 'white', cursor: 'pointer' }}
                             />
                         </>
                     ) : (
