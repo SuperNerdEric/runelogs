@@ -130,9 +130,19 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
     };
 
     return (
-        <div className="logs-box" style={{maxHeight: height, overflowY: 'auto'}}>
-            <TableContainer>
-                <Table style={{tableLayout: 'auto'}}>
+        <div style={{maxHeight: height, overflowY: 'auto'}}>
+            <TableContainer
+                sx={{
+                    '& .MuiTableCell-root': {
+                        fontSize: '13px',
+                        '@media (max-width: 768px)': {
+                            fontSize: '12px',
+                            padding: '2px 3px',
+                        },
+                    },
+                }}
+            >
+            <Table style={{tableLayout: 'auto'}}>
                     <TableHead style={{backgroundColor: '#494949'}}>
                         <TableRow>
                             <TableCell style={{width: '50px', textAlign: 'center'}}>Time</TableCell>

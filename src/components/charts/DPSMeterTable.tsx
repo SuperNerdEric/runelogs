@@ -90,14 +90,17 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({fight, actor}) => {
 
     return (
         <TableContainer
-            className="logs-box"
             sx={{
-                maxWidth: 1000,
-                width: '100%',
-                mx: 'auto',
+                '& .MuiTableCell-root': {
+                    fontSize: '13px',
+                    '@media (max-width: 768px)': {
+                        fontSize: '12px',
+                        padding: '2px 3px',
+                    },
+                },
             }}
         >
-            <Table style={{ tableLayout: 'auto', width: '100%' }}>
+            <Table style={{tableLayout: 'auto', width: '100%'}}>
                 <TableHead>
                     <TableRow>
                         <TableCell style={{width: '100px', textAlign: 'center'}}>Name</TableCell>
