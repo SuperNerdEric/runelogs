@@ -5,6 +5,7 @@ import DPSChart from "../charts/DPSChart";
 import {Fight} from "../../models/Fight";
 import EventsTable from "../EventsTable";
 import DPSMeterTable from "../charts/DPSMeterTable";
+import SectionBox from "../SectionBox";
 
 interface LogsSelectionProps {
     selectedLogs: Fight;
@@ -17,14 +18,14 @@ const DamageDone: React.FC<LogsSelectionProps> = ({selectedLogs, actor}) => {
         <div>
             {selectedLogs && (
                 <div>
-                    <div className="damage-done-container">
+                    <SectionBox>
                         <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400'}}>
                             {selectedLogs && selectedLogs.data && selectedLogs.data.length > 1 && (
                                 <DPSChart fight={selectedLogs}/>
                             )}
                         </div>
-                    </div>
-                    <div className="damage-done-container" style={{display: 'flex', alignItems: 'center'}}>
+                    </SectionBox>
+                    <SectionBox>
                         <div style={{flex: '30%', marginRight: '20px'}}>
                             <Results fight={selectedLogs}/>
                         </div>
@@ -33,7 +34,7 @@ const DamageDone: React.FC<LogsSelectionProps> = ({selectedLogs, actor}) => {
                                 <HitDistributionChart fight={selectedLogs}/>
                             )}
                         </div>
-                    </div>
+                    </SectionBox>
                     <DPSMeterTable fight={selectedLogs} actor={actor}/>
                     <EventsTable fight={selectedLogs}/>
                 </div>

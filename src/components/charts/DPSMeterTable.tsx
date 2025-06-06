@@ -92,7 +92,7 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({fight, actor}) => {
         <TableContainer
             className="logs-box"
             sx={{
-                maxWidth: 1030,
+                maxWidth: 1000,
                 width: '100%',
                 mx: 'auto',
             }}

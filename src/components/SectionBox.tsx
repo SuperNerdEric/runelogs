@@ -10,7 +10,9 @@ const SectionBox = (props: BoxProps) => (
             bgcolor: '#141414',
             border: '3px solid grey',
             boxSizing: 'border-box',
+            marginBottom: '10px',
             borderRadius: 1,
+            overflowX: 'auto',
             ...props.sx,
         }}
     />
