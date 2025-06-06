@@ -24,6 +24,7 @@ type ContentOption = {
 
 const contentOptions: ContentOption[] = [
     { label: 'Theatre of Blood', value: 'Theatre of Blood', playerCounts: [1,2,3,4,5] },
+    { label: 'Theatre of Blood: Hard Mode', value: 'Theatre of Blood: Hard Mode', playerCounts: [1,2,3,4,5] },
     { label: 'Tombs of Amascut', value: 'Tombs of Amascut', playerCounts: [1,2,3,4,5,6,7,8] },
     { label: 'Tombs of Amascut: Expert Mode', value: 'Tombs of Amascut: Expert Mode', playerCounts: [1,2,3,4,5,6,7,8] },
 ];
@@ -38,7 +39,7 @@ interface Entry {
 
 const Leaderboard: React.FC = () => {
     const [content, setContent] = useState(contentOptions[0]);
-    const [playerCount, setPlayerCount] = useState(contentOptions[0].playerCounts[0]);
+    const [playerCount, setPlayerCount] = useState(contentOptions[0].playerCounts[3]);
     const [entries, setEntries] = useState<Entry[] | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
