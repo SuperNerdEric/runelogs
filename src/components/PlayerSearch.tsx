@@ -2,7 +2,11 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Box, List, ListItem, Paper, Popper, TextField} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 
-const PlayerSearch: React.FC = () => {
+interface PlayerSearchProps {
+    onSelect?: () => void;
+}
+
+const PlayerSearch: React.FC<PlayerSearchProps> = ({ onSelect }) => {
     const [input, setInput] = useState('');
     const [results, setResults] = useState<string[]>([]);
     const [open, setOpen] = useState(false);
@@ -34,6 +38,7 @@ const PlayerSearch: React.FC = () => {
         setInput('');
         setResults([]);
         setOpen(false);
+        onSelect?.();
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

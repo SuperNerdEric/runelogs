@@ -1,5 +1,5 @@
-import React from 'react';
-import {AppBar, Box, Button, Menu, MenuItem, Toolbar, Typography} from '@mui/material';
+import React, {useState} from 'react';
+import {AppBar, Box, Button, Menu, MenuItem, Toolbar, Typography, useMediaQuery, useTheme} from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import {Icon} from '@iconify/react';
 import {useAuth0} from '@auth0/auth0-react';
@@ -10,6 +10,10 @@ import PlayerSearch from "./PlayerSearch";
 const TopBar: React.FC = () => {
     const {isAuthenticated, user, loginWithRedirect, logout} = useAuth0();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [searchOpen, setSearchOpen] = useState(false);
+
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -63,45 +67,61 @@ const TopBar: React.FC = () => {
                             }}
                         />
                     </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', marginTop: '8px' }}>
-                        <PlayerSearch />
-                    </Box>
+                    {isMobile ? (
+                        <>
+                            <Icon
+                                icon="ic:baseline-search"
+                                onClick={() => setSearchOpen((prev) => !prev)}
+                                style={{ fontSize: 28, color: 'white', cursor: 'pointer', marginTop: '8px' }}
+                            />
+                        </>
+                    ) : (
+                        <Box sx={{ display: 'flex', alignItems: 'center', marginTop: '8px' }}>
+                            <PlayerSearch />
+                        </Box>
+                    )}
                 </Box>
 
                 <div style={{display: 'flex', alignItems: 'center'}}>
-                    <a href="https://discord.gg/ZydwX7AJEd" target="_blank" rel="noopener noreferrer" style={{
-                        textDecoration: 'none',
-                        color: 'inherit',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginRight: '15px'
-                    }}>
-                        <Icon
-                            icon="logos:discord-icon"
-                            style={{
-                                width: '35px',
-                                height: '35px',
-                            }}
-                        />
-                    </a>
-                    <a href="https://github.com/SuperNerdEric/runelogs" target="_blank" rel="noopener noreferrer"
-                       style={{
-                           textDecoration: 'none',
-                           color: 'inherit',
-                           display: 'flex',
-                           alignItems: 'center',
-                           justifyContent: 'center'
-                       }}>
-                        <Icon
-                            icon="bi:github"
-                            style={{
-                                width: '35px',
-                                height: '33px',
-                            }}
-                        />
-                    </a>
-
+                    {!isMobile && (
+                        <>
+                            <a
+                                href="https://discord.gg/ZydwX7AJEd"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                    textDecoration: 'none',
+                                    color: 'inherit',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    marginRight: '15px'
+                                }}
+                            >
+                                <Icon
+                                    icon="logos:discord-icon"
+                                    style={{ width: '35px', height: '35px' }}
+                                />
+                            </a>
+                            <a
+                                href="https://github.com/SuperNerdEric/runelogs"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                    textDecoration: 'none',
+                                    color: 'inherit',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                            >
+                                <Icon
+                                    icon="bi:github"
+                                    style={{ width: '35px', height: '33px' }}
+                                />
+                            </a>
+                        </>
+                    )}
                     {!isAuthenticated && (
                         <Button
                             color="inherit"
@@ -123,15 +143,21 @@ const TopBar: React.FC = () => {
                                 onClick={handleMenuOpen}
                                 style={{
                                     textTransform: 'none',
-                                    marginLeft: '20px',
+                                    marginLeft: '10px',
                                     display: 'flex',
                                     alignItems: 'center'
                                 }}
                             >
-                                <Typography variant="body1" style={{color: 'white', textTransform: 'capitalize'}}>
-                                    {user?.username || 'User'}
-                                </Typography>
-                                <ArrowDropDownIcon style={{color: 'white'}}/>
+                                {isMobile ? (
+                                    <Icon icon="mdi:account-circle" style={{ width: 35, height: 35, color: 'white' }} />
+                                ) : (
+                                    <>
+                                        <Typography variant="body1" style={{ color: 'white', textTransform: 'capitalize' }}>
+                                            {user?.username || 'User'}
+                                        </Typography>
+                                        <ArrowDropDownIcon style={{ color: 'white' }} />
+                                    </>
+                                )}
                             </Button>
 
                             <Menu
@@ -197,6 +223,11 @@ const TopBar: React.FC = () => {
                     )}
                 </div>
             </Toolbar>
+            {isMobile && searchOpen && (
+                <Box sx={{ px: 2, pb: 1 }}>
+                    <PlayerSearch onSelect={() => setSearchOpen(false)} />
+                </Box>
+            )}
         </AppBar>
     );
 };
