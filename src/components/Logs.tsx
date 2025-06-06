@@ -14,13 +14,14 @@ import {
     TableHead,
     TableRow,
     TableSortLabel,
-    Typography,
+    Typography, useMediaQuery,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { format } from 'date-fns';
 import { useAuth0 } from '@auth0/auth0-react';
 import {closeSnackbar, SnackbarKey, useSnackbar} from "notistack";
 import CloseIcon from "@mui/icons-material/Close";
+import theme from "../theme";
 
 interface LogItem {
     id: string;
@@ -53,6 +54,7 @@ const Logs: React.FC = () => {
     // Sorting state
     const [orderBy, setOrderBy] = useState<SortKey>('uploadedAt');
     const [order, setOrder] = useState<Order>('desc');
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const action = (snackbarId: SnackbarKey) => (
         <IconButton
@@ -259,7 +261,7 @@ const Logs: React.FC = () => {
                             <TableRow key={log.id} hover>
                                 <TableCell sx={{ color: 'white', paddingY: 1 }}>
                                     <Link component={RouterLink} to={`/log/${log.id}`} underline="hover">
-                                        {log.id}
+                                        {isMobile ? `${log.id.slice(0, 8)}...` : log.id}
                                     </Link>
                                 </TableCell>
 
