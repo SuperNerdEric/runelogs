@@ -14,7 +14,9 @@ import {
     TableRow,
     TableSortLabel,
     Typography,
+    useMediaQuery,
 } from '@mui/material';
+import theme from "../theme";
 
 type ContentOption = {
     label: string;
@@ -45,6 +47,7 @@ const Leaderboard: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [orderBy] = useState<'duration'>('duration');
     const [order, setOrder] = useState<Order>('asc');
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -167,8 +170,9 @@ const Leaderboard: React.FC = () => {
                                             component={RouterLink}
                                             to={`/encounter/${row.id}`}
                                             underline="hover"
+                                            title={row.id}
                                         >
-                                            {row.id}
+                                            {isMobile ? `${row.id.slice(0, 8)}...` : row.id}
                                         </Link>
                                     </TableCell>
                                     <TableCell sx={{ color: 'white' }}>{ticksToTime(row.duration)}</TableCell>
