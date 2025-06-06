@@ -1,5 +1,5 @@
 import React from 'react';
-import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
+import {Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 import {Fight} from "../models/Fight";
 import {LogLine, LogTypes} from "../models/LogLine";
 import {Levels} from "../models/Levels";
@@ -130,7 +130,15 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
     };
 
     return (
-        <div style={{maxHeight: height, overflowY: 'auto'}}>
+        <Box
+            sx={{
+                maxHeight: height,
+                overflowY: {
+                    xs: 'unset',   // No vertical scroll container on mobile, just use browser scrolling
+                    sm: 'auto'     // Enable scrolling for larger screens
+                },
+            }}
+        >
             <TableContainer
                 sx={{
                     '& .MuiTableCell-root': {
@@ -239,7 +247,7 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
 
                 </Table>
             </TableContainer>
-        </div>
+        </Box>
     );
 };
 
