@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { flushSync } from 'react-dom';
+import SectionBox from "./SectionBox";
 
 const Upload: React.FC = () => {
     const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
@@ -139,7 +140,7 @@ const Upload: React.FC = () => {
 
     return (
         <Box display="flex" flexDirection="column" alignItems="center" mt={4} px={2}>
-            <Paper elevation={2} sx={{ p: 4, maxWidth: 800, width: '100%', bgcolor: 'transparent', boxShadow: 'none' }}>
+            <SectionBox>
                 <Typography variant="h3" gutterBottom sx={{ color: 'white' }}>
                     Upload a Combat Log
                 </Typography>
@@ -229,7 +230,7 @@ const Upload: React.FC = () => {
                         </Button>
                     </Box>
                 </Box>
-            </Paper>
+            </SectionBox>
         </Box>
     );
 };

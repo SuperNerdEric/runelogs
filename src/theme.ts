@@ -62,9 +62,9 @@ const theme = createTheme({
                 root: {
                     color: '#ffffff',
                     borderBottom: '1px solid rgba(255,255,255,0.12)',
-                    padding: '8px 6px',
+                    padding: '2px 6px',
                     '@media (max-width: 768px)': {
-                        padding: '8px 3px',
+                        padding: '2px 3px',
                         fontSize: '14px',
                     },
                     fontFamily: 'Avenir, Arial, sans-serif',
@@ -99,6 +99,7 @@ const theme = createTheme({
                     root: { backgroundColor: 'transparent', boxShadow: 'none' },
             },
         },
+
         MuiCircularProgress: { styleOverrides: { root: { color: '#ffffff' } } },
     },
 });
