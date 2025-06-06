@@ -135,14 +135,7 @@ const Leaderboard: React.FC = () => {
             </Box>
 
             {entries && entries.length > 0 ? (
-                <TableContainer
-                    className="logs-box"
-                    sx={{
-                        maxWidth: 1030,
-                        width: '100%',
-                        mx: 'auto',
-                    }}
-                >
+                <TableContainer>
                     <Table>
                         <TableHead>
                             <TableRow>

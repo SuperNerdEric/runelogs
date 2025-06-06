@@ -26,13 +26,15 @@ const DamageDone: React.FC<LogsSelectionProps> = ({selectedLogs, actor}) => {
                         </div>
                     </SectionBox>
                     <SectionBox>
-                        <div style={{flex: '30%', marginRight: '20px'}}>
-                            <Results fight={selectedLogs}/>
-                        </div>
-                        <div style={{flex: '70%'}}>
-                            {selectedLogs && selectedLogs.data && selectedLogs.data.length > 0 && (
-                                <HitDistributionChart fight={selectedLogs}/>
-                            )}
+                        <div style={{display: 'flex'}}>
+                            <div style={{flex: '30%', marginRight: '20px'}}>
+                                <Results fight={selectedLogs}/>
+                            </div>
+                            <div style={{flex: '70%'}}>
+                                {selectedLogs && selectedLogs.data && selectedLogs.data.length > 0 && (
+                                    <HitDistributionChart fight={selectedLogs}/>
+                                )}
+                            </div>
                         </div>
                     </SectionBox>
                     <DPSMeterTable fight={selectedLogs} actor={actor}/>

@@ -92,33 +92,6 @@
     }
 }
 
-.logs-box {
-    color: #e1f2f5;
-    margin-bottom: 80px;
-}
-
-@media (max-width: 1050px) {
-    .logs-box {
-        max-width: 1050px;
-    }
-}
-
-.logs-box table {
-    border-collapse: collapse;
-}
-
-.logs-box th,
-.logs-box td {
-    border: 1px solid grey;
-    color: white;
-    font-size: calc(13px);
-    text-align: left;
-    line-height: 20px;
-    whiteSpace: 'normal';
-    wordWrap: 'break-word';
-    font-family: Avenir, Arial, sans-serif !important;
-}
-
 .logs-text {
     color: #e5cc80 !important;
 }
