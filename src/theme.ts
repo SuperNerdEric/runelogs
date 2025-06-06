@@ -45,6 +45,7 @@ const theme = createTheme({
                     borderRadius: '1px',
                     maxWidth: '1000px',
                     margin: '0 auto 15px',
+                    boxSizing: 'border-box',
                 },
             },
         },
