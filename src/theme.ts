@@ -64,7 +64,7 @@ const theme = createTheme({
                     borderBottom: '1px solid rgba(255,255,255,0.12)',
                     padding: '8px 6px',
                     '@media (max-width: 768px)': {
-                        padding: '8px 2px',
+                        padding: '8px 3px',
                         fontSize: '14px',
                     },
                     fontFamily: 'Avenir, Arial, sans-serif',
