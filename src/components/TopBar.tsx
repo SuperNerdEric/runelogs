@@ -5,6 +5,7 @@ import {Icon} from '@iconify/react';
 import {useAuth0} from '@auth0/auth0-react';
 import logo from '../assets/Logo.png';
 import {Link} from "react-router-dom";
+import PlayerSearch from "./PlayerSearch";
 
 const TopBar: React.FC = () => {
     const {isAuthenticated, user, loginWithRedirect, logout} = useAuth0();
@@ -26,6 +27,7 @@ const TopBar: React.FC = () => {
                     justifyContent: 'space-between'
                 }}
             >
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Box
                         component={Link}
                         to="/"
@@ -33,7 +35,8 @@ const TopBar: React.FC = () => {
                             display: 'flex',
                             alignItems: 'center',
                             textDecoration: 'none',
-                            color: 'inherit'
+                            color: 'inherit',
+                            marginRight: 2
                         }}
                     >
                         <img
@@ -60,6 +63,11 @@ const TopBar: React.FC = () => {
                             }}
                         />
                     </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', marginTop: '8px' }}>
+                        <PlayerSearch />
+                    </Box>
+                </Box>
+
                 <div style={{display: 'flex', alignItems: 'center'}}>
                     <a href="https://discord.gg/ZydwX7AJEd" target="_blank" rel="noopener noreferrer" style={{
                         textDecoration: 'none',

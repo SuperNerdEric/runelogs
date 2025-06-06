@@ -14,6 +14,7 @@ import theme from './theme';
 import {ThemeProvider} from "@mui/material";
 import Leaderboard from "./components/Leaderboard";
 import Encounter from "./components/Encounter";
+import Player from "./components/Player";
 
 const domain = "auth.runelogs.com";
 const clientId = "vNPXVhAvOj2ES9kqi5WPs80SnX8FPKqv";
@@ -41,6 +42,7 @@ root.render(
                             <TopBar/>
                             <Routes>
                                 <Route path="/" element={<Leaderboard/>}/>
+                                <Route path="/player/:playerName" element={<Player/>}/>
                                 <Route path="/encounter/:id" element={<Encounter />} />
                                 <Route path="/upload" element={<Upload/>}/>
                                 <Route path="/log/:logId" element={<Log/>}/>

@@ -23,8 +23,9 @@ type ContentOption = {
 };
 
 const contentOptions: ContentOption[] = [
-    { label: 'Theatre of Blood', value: 'Theatre of Blood', playerCounts: [4] },
-    { label: 'Tombs of Amascut', value: 'Tombs of Amascut', playerCounts: [4] },
+    { label: 'Theatre of Blood', value: 'Theatre of Blood', playerCounts: [1,2,3,4,5] },
+    { label: 'Tombs of Amascut', value: 'Tombs of Amascut', playerCounts: [1,2,3,4,5,6,7,8] },
+    { label: 'Tombs of Amascut: Expert Mode', value: 'Tombs of Amascut: Expert Mode', playerCounts: [1,2,3,4,5,6,7,8] },
 ];
 
 type Order = 'asc' | 'desc';
@@ -170,7 +171,16 @@ const Leaderboard: React.FC = () => {
                                         </Link>
                                     </TableCell>
                                     <TableCell sx={{ color: 'white' }}>{ticksToTime(row.duration)}</TableCell>
-                                    <TableCell sx={{ color: 'white' }}>{row.players.join(', ')}</TableCell>
+                                    <TableCell sx={{ color: 'white' }}>
+                                        {row.players.map((player, i) => (
+                                            <React.Fragment key={player}>
+                                                <Link component={RouterLink} to={`/player/${player}`} underline="hover">
+                                                    {player}
+                                                </Link>
+                                                {i < row.players.length - 1 ? ', ' : ''}
+                                            </React.Fragment>
+                                        ))}
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
