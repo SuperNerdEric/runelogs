@@ -12,7 +12,6 @@ import Log from "./components/Log/Log";
 import Logs from "./components/Logs";
 import theme from './theme';
 import {ThemeProvider} from "@mui/material";
-import Leaderboard from "./components/Leaderboard";
 import Encounter from "./components/Encounter";
 import Player from "./components/Player";
 import Home from "./components/Home";
