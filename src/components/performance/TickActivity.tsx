@@ -212,7 +212,7 @@ const Performance: React.FC<PerformanceProps> = ({metricName, fight, performance
 
     return (
         <div className="performance-container">
-            <div className="fight-title">
+            <div className="performance-title">
                 <div>{metricName}</div>
             </div>
             {tooltipContent && (
