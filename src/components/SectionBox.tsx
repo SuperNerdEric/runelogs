@@ -7,6 +7,11 @@ const SectionBox = (props: BoxProps) => (
             p: 4,
             maxWidth: 1000,
             width: '100%',
+            '@media (max-width: 768px)': {
+                maxWidth: '98vw',
+                width: '100%',
+                overflowX: 'auto',
+            },
             bgcolor: '#141414',
             border: '3px solid grey',
             boxSizing: 'border-box',

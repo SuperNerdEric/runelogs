@@ -103,7 +103,7 @@ const Leaderboard: React.FC = () => {
         );
 
     return (
-        <Box m={2} style={{ maxWidth: 1030, width: '100%', margin: '0 auto' }}>
+        <Box m={2}>
             <Typography variant="h4" gutterBottom color="white">
                 Leaderboard
             </Typography>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Box,
     CircularProgress,
@@ -11,7 +11,7 @@ import {
     TableRow,
     Typography
 } from '@mui/material';
-import { Link as RouterLink, useParams } from 'react-router-dom';
+import {Link as RouterLink, useParams} from 'react-router-dom';
 
 type ContentOption = {
     label: string;
@@ -20,9 +20,13 @@ type ContentOption = {
 };
 
 const contentOptions: ContentOption[] = [
-    { label: 'Theatre of Blood', value: 'Theatre of Blood', playerCounts: [1,2,3,4,5] },
-    { label: 'Tombs of Amascut', value: 'Tombs of Amascut', playerCounts: [1,2,3,4,5,6,7,8] },
-    { label: 'Tombs of Amascut: Expert Mode', value: 'Tombs of Amascut: Expert Mode', playerCounts: [1,2,3,4,5,6,7,8] },
+    {label: 'Theatre of Blood', value: 'Theatre of Blood', playerCounts: [1, 2, 3, 4, 5]},
+    {label: 'Tombs of Amascut', value: 'Tombs of Amascut', playerCounts: [1, 2, 3, 4, 5, 6, 7, 8]},
+    {
+        label: 'Tombs of Amascut: Expert Mode',
+        value: 'Tombs of Amascut: Expert Mode',
+        playerCounts: [1, 2, 3, 4, 5, 6, 7, 8]
+    },
 ];
 
 interface FightGroup {
@@ -51,7 +55,7 @@ const ticksToTime = (ticks: number) => {
 };
 
 const PersonalBests: React.FC = () => {
-    const { playerName } = useParams<{ playerName: string }>();
+    const {playerName} = useParams<{ playerName: string }>();
     const [data, setData] = useState<PersonalBestsResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -77,7 +81,7 @@ const PersonalBests: React.FC = () => {
     if (loading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" height="50vh">
-                <CircularProgress color="inherit" />
+                <CircularProgress color="inherit"/>
             </Box>
         );
     }
@@ -93,7 +97,15 @@ const PersonalBests: React.FC = () => {
     const fightGroups = data?.personalBests.fightGroups || [];
 
     return (
-        <Box m={2} sx={{ maxWidth: 1030, width: '100%', mx: 'auto' }}>
+        <Box m={2} sx={{
+            maxWidth: 1000,
+            width: '100%',
+            '@media (max-width: 768px)': {
+                maxWidth: '98vw',
+                width: '100%',
+                overflowX: 'auto',
+            },
+        }}>
             <Typography variant="h5" gutterBottom color="white">
                 Personal Bests
             </Typography>
@@ -111,13 +123,13 @@ const PersonalBests: React.FC = () => {
                             {content.label}
                         </Typography>
 
-                        <TableContainer sx={{ backgroundColor: '#141414', border: '1px solid grey', borderRadius: 1 }}>
+                        <TableContainer sx={{backgroundColor: '#141414', border: '1px solid grey', borderRadius: 1}}>
                             <Table>
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell sx={{ color: 'white' }}>Players</TableCell>
-                                        <TableCell sx={{ color: 'white' }}>Duration</TableCell>
-                                        <TableCell sx={{ color: 'white' }}>Id</TableCell>
+                                        <TableCell sx={{color: 'white'}}>Players</TableCell>
+                                        <TableCell sx={{color: 'white'}}>Duration</TableCell>
+                                        <TableCell sx={{color: 'white'}}>Id</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -126,11 +138,11 @@ const PersonalBests: React.FC = () => {
 
                                         return (
                                             <TableRow key={count}>
-                                                <TableCell sx={{ color: 'white' }}>{count}</TableCell>
-                                                <TableCell sx={{ color: 'white' }}>
+                                                <TableCell sx={{color: 'white'}}>{count}</TableCell>
+                                                <TableCell sx={{color: 'white'}}>
                                                     {match ? ticksToTime(match.officialDurationTicks) : '-'}
                                                 </TableCell>
-                                                <TableCell sx={{ color: 'white' }}>
+                                                <TableCell sx={{color: 'white'}}>
                                                     {match ? (
                                                         <Link
                                                             component={RouterLink}
