@@ -40455,15 +40455,6 @@
     "speed": 0
   },
   {
-    "name": "Twinflame staff",
-    "id": 30634,
-    "version": "",
-    "slot": "weapon",
-    "category": "Staff",
-    "isTwoHanded": false,
-    "speed": 6
-  },
-  {
     "name": "Twisted adamant trophy",
     "id": 24376,
     "version": "",
