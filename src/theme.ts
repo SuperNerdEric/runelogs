@@ -47,7 +47,7 @@ const theme = createTheme({
                     margin: '0 auto 15px',
                     boxSizing: 'border-box',
                     '@media (max-width: 768px)': {
-                        maxWidth: '100vw',
+                        maxWidth: '98vw',
                         width: '100%',
                         overflowX: 'auto',
                     },
