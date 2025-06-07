@@ -201,18 +201,6 @@
     color: white;
 }
 
-.results-container th,
-.results-container td {
-    border: 1px solid grey;
-    color: white;
-    font-size: calc(20px);
-    text-align: left;
-    line-height: 30px;
-    whiteSpace: 'normal';
-    wordWrap: 'break-word';
-    font-family: Avenir, Arial, sans-serif !important;
-}
-
 .dismiss-button {
     color: white !important;
     font-family: Avenir, Arial, sans-serif !important;

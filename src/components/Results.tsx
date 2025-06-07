@@ -29,46 +29,44 @@ const Results: React.FC<ResultsProps> = ({fight}) => {
     }, [fight]);
 
     return (
-        <div className="results-container">
-            <TableContainer>
-                <Table>
-                    <TableBody>
-                        <TableRow>
-                            <TableCell>
-                                <strong>Duration</strong>
-                            </TableCell>
-                            <TableCell>
-                                {fightDuration}
-                            </TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>
-                                <strong>Damage</strong>
-                            </TableCell>
-                            <TableCell>
-                                {damage}
-                            </TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>
-                                <strong>DPS</strong>
-                            </TableCell>
-                            <TableCell>
-                                {isNaN(dps) || !isFinite(dps) ? 'N/A' : dps.toFixed(3)}
-                            </TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>
-                                <strong>Accuracy</strong>
-                            </TableCell>
-                            <TableCell>
-                                {accuracy.toFixed(2)}%
-                            </TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </div>
+        <TableContainer>
+            <Table>
+                <TableBody>
+                    <TableRow>
+                        <TableCell>
+                            <strong>Duration</strong>
+                        </TableCell>
+                        <TableCell>
+                            {fightDuration}
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>
+                            <strong>Damage</strong>
+                        </TableCell>
+                        <TableCell>
+                            {damage}
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>
+                            <strong>DPS</strong>
+                        </TableCell>
+                        <TableCell>
+                            {isNaN(dps) || !isFinite(dps) ? 'N/A' : dps.toFixed(3)}
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>
+                            <strong>Accuracy</strong>
+                        </TableCell>
+                        <TableCell>
+                            {accuracy.toFixed(2)}%
+                        </TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </TableContainer>
     );
 };
 
