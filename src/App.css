@@ -312,17 +312,19 @@
     background-color: #141414;
     border: 3px solid grey;
     border-radius: 1px;
-    padding: 15px;
+    padding: 18px 25px;
     margin-bottom: 10px;
-    width: 160px;
-    height: 100px;
     margin-left: 5px;
     margin-right: 5px;
     font-size: 14px;
 }
 
+.performance-title {
+    font-size: calc(12px + 0.5vmin);
+}
+
 .performance-percent {
-    font-size: 45px;
+    font-size: calc(18px + 2vmin);
 }
 
 .tan-switch .MuiSwitch-thumb {
