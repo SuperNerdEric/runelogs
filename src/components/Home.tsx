@@ -1,6 +1,6 @@
 import React from 'react';
 import Leaderboard from './Leaderboard';
-import { Box, Typography, Link } from '@mui/material';
+import {Box, Link, Typography} from '@mui/material';
 
 export default function Home() {
     return (
@@ -15,7 +15,10 @@ export default function Home() {
                     We appreciate your patience.
                 </Typography>
                 <Typography paragraph>
-                    Runelogs is a combat log analysis tool for Old School RuneScape that helps players review fights, track performance, and improve strategy.
+                    Runelogs is a combat log analysis tool for Old School RuneScape that works with the{' '}
+                    <Link href="https://runelite.net/plugin-hub/show/combat-logger" target="_blank" rel="noopener">
+                        Combat Logger
+                    </Link>{' '} plugin to help players review fights, track performance, and improve strategy.
                     It offers leaderboards, detailed breakdowns, and visualizations powered by parsed in-game data.
                 </Typography>
                 <Typography paragraph>
@@ -31,7 +34,7 @@ export default function Home() {
                 </Typography>
             </Box>
             <Box mt={4}>
-                <Leaderboard />
+                <Leaderboard/>
             </Box>
         </Box>
     );
