@@ -117,6 +117,10 @@ const Encounter: React.FC = () => {
         );
     }, [fight]);
 
+    const TAB_COUNT = availableTabs.length;
+    const widthPerTab = 95 / TAB_COUNT;
+    const fontSize = `${widthPerTab * 0.14}vw`;
+
     if (loading)
         return (
             <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -183,7 +187,14 @@ const Encounter: React.FC = () => {
                             key={tab}
                             label={tab}
                             value={tab}
-                            sx={{color: selectedTab === tab ? 'lightblue' : 'white'}}
+                            sx={{
+                                color: selectedTab === tab ? 'lightblue' : 'white',
+                                minWidth: 0, // prevent MUI from enforcing a default min width
+                                '@media (max-width:500px)': {
+                                    padding: '6px 6px',
+                                    fontSize: fontSize,
+                                },
+                            }}
                         />
                     ))}
                 </Tabs>

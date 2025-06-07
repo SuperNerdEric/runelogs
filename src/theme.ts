@@ -106,7 +106,6 @@ const theme = createTheme({
                     root: { backgroundColor: 'transparent', boxShadow: 'none' },
             },
         },
-
         MuiCircularProgress: { styleOverrides: { root: { color: '#ffffff' } } },
     },
 });
