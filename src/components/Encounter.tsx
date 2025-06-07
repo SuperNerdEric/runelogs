@@ -117,6 +117,8 @@ const Encounter: React.FC = () => {
         );
     }, [fight]);
 
+    // Dynamically calculate font size based on the number of tabs
+    // So that for smaller screens all tabs together equal 95% of the width
     const TAB_COUNT = availableTabs.length;
     const widthPerTab = 95 / TAB_COUNT;
     const fontSize = `${widthPerTab * 0.14}vw`;
