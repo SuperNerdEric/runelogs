@@ -51,7 +51,7 @@ export const BoostsTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}) => 
 };
 
 export const EventsTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}) => {
-    return <EventsTable fight={selectedLogs} height={'80vh'} showSource={true}/>;
+    return <EventsTable fight={selectedLogs} maxHeight={'80vh'} showSource={true}/>;
 };
 
 export const ReplayTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}) => {

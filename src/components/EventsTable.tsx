@@ -45,7 +45,7 @@ import Augury from "../assets/prayers/inactive/Augury.png";
 
 interface EventsTableProps {
     fight: Fight;
-    height?: string;
+    maxHeight: string;
     showSource?: boolean;
 }
 
@@ -76,7 +76,7 @@ const getActorName = (log: LogLine, key: 'source' | 'target'): string => {
     return "";
 }
 
-const EventsTable: React.FC<EventsTableProps> = ({fight, showSource = false}) => {
+const EventsTable: React.FC<EventsTableProps> = ({fight, maxHeight, showSource = false}) => {
 
     const logs = fight.data;
     const loggedInPlayer = fight.loggedInPlayer;
@@ -132,8 +132,11 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, showSource = false}) =>
     return (
         <Box
             sx={{
-                maxHeight: '500px',
-                height: '60vh',
+                maxHeight: {
+                    xs: '70vh',
+                    sm: '70vh',
+                    md: maxHeight,
+                },
                 overflowY: 'auto',
             }}
         >
