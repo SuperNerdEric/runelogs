@@ -151,26 +151,40 @@ const Encounter: React.FC = () => {
         <div className="App">
             <div className="App-main">
                 <div style={{display: 'flex', alignItems: 'center'}}>
-
-                    {logId && (
-                        <Link to={`/log/${logId}`} className="back-icon-wrapper">
-                            <Icon icon="ic:round-arrow-back" style={{color: 'white'}}/>
-                        </Link>
-                    )}
-                    {group ? (
-                        <label>{group.name}</label>
-                    ) : fight.isNpc ? (
-                        <a
-                            href={`https://oldschool.runescape.wiki/w/${fight.mainEnemyName}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="link"
-                        >
-                            {fight.name}
-                        </a>
-                    ) : (
-                        <label>{fight.name}</label>
-                    )}
+                    <Typography
+                        variant="h4"
+                        color="white"
+                        sx={{display: 'flex', alignItems: 'center'}}
+                    >
+                        {logId && (
+                            <Link to={`/log/${logId}`} className="back-icon-wrapper">
+                                <Box
+                                    component={Icon}
+                                    icon="ic:round-arrow-back"
+                                    sx={{
+                                        fontSize: (theme) => theme.typography.h4.fontSize,
+                                        color: 'white',
+                                        verticalAlign: 'middle',
+                                    }}
+                                />
+                            </Link>
+                        )}
+                        {group ? (
+                            group.name
+                        ) : fight.isNpc ? (
+                            <a
+                                href={`https://oldschool.runescape.wiki/w/${fight.mainEnemyName}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="link"
+                                style={{color: 'inherit'}}
+                            >
+                                {fight.name}
+                            </a>
+                        ) : (
+                            fight.name
+                        )}
+                    </Typography>
                 </div>
                 {dropdown}
 
