@@ -76,7 +76,7 @@ const getActorName = (log: LogLine, key: 'source' | 'target'): string => {
     return "";
 }
 
-const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showSource = false}) => {
+const EventsTable: React.FC<EventsTableProps> = ({fight, showSource = false}) => {
 
     const logs = fight.data;
     const loggedInPlayer = fight.loggedInPlayer;
@@ -132,7 +132,8 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
     return (
         <Box
             sx={{
-                maxHeight: height,
+                maxHeight: '500px',
+                height: '60vh',
                 overflowY: 'auto',
             }}
         >
