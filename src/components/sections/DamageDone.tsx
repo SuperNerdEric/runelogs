@@ -33,7 +33,7 @@ const DamageDone: React.FC<LogsSelectionProps> = ({selectedLogs, actor}) => {
                         </div>
                     </SectionBox>
                     <DPSMeterTable fight={selectedLogs} actor={actor}/>
-                    <EventsTable fight={selectedLogs}/>
+                    <EventsTable fight={selectedLogs} maxHeight={'60vh'}/>
                 </div>
             )}
         </div>
