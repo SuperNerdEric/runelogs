@@ -205,7 +205,7 @@ const Leaderboard: React.FC = () => {
                     </TableContainer>
                 </Box>
             ) : (
-                <Typography color="white">No records yet.</Typography>
+                <Typography p={2} color="white">No records yet.</Typography>
             )}
         </Box>
     );
