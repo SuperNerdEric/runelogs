@@ -12,6 +12,28 @@ const theme = createTheme({
     },
     palette: { mode: 'dark' },
 
+    // The max value is the original default, scaling down to 60% of the original size on smaller screens
+    typography: {
+        h1: {
+            fontSize: 'clamp(3.6rem, 10vw, 6rem)',
+        },
+        h2: {
+            fontSize: 'clamp(2.25rem, 6.25vw, 3.75rem)',
+        },
+        h3: {
+            fontSize: 'clamp(1.8rem, 5vw, 3rem)',
+        },
+        h4: {
+            fontSize: 'clamp(1.275rem, 3.5vw, 2.125rem)',
+        },
+        h5: {
+            fontSize: 'clamp(0.9rem, 2.5vw, 1.5rem)',
+        },
+        h6: {
+            fontSize: 'clamp(0.75rem, 2vw, 1.25rem)',
+        },
+    },
+
     components: {
         MuiToolbar: {
             styleOverrides: {
