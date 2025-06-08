@@ -75,6 +75,34 @@
     color: yellow;
 }
 
+.results-chart-container {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+}
+
+.results-chart-container > div:first-child {
+    flex: 30%;
+}
+
+.results-chart-container > div:last-child {
+    flex: 70%;
+}
+
+@media (max-width: 768px) {
+    .results-chart-container {
+        flex-direction: column;
+    }
+
+    .results-chart-container > div:first-child,
+    .results-chart-container > div:last-child {
+        flex: none;
+        width: 100%;
+        margin-right: 0;
+    }
+}
+
 .damage-done-container {
     text-align: center;
     width: 100%;
