@@ -138,7 +138,7 @@ const Upload: React.FC = () => {
 
     return (
         <Box display="flex" flexDirection="column" alignItems="center" mt={4} px={2}>
-            <SectionBox>
+            <SectionBox sx={{ p: 4 }}>
                 <Typography variant="h3" gutterBottom sx={{ color: 'white' }}>
                     Upload a Combat Log
                 </Typography>
