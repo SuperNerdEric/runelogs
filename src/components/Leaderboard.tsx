@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import {Link as RouterLink} from 'react-router-dom';
 import {
     Box,
     CircularProgress,
@@ -25,10 +25,14 @@ type ContentOption = {
 };
 
 const contentOptions: ContentOption[] = [
-    { label: 'Theatre of Blood', value: 'Theatre of Blood', playerCounts: [1,2,3,4,5] },
-    { label: 'Theatre of Blood: Hard Mode', value: 'Theatre of Blood: Hard Mode', playerCounts: [1,2,3,4,5] },
-    { label: 'Tombs of Amascut', value: 'Tombs of Amascut', playerCounts: [1,2,3,4,5,6,7,8] },
-    { label: 'Tombs of Amascut: Expert Mode', value: 'Tombs of Amascut: Expert Mode', playerCounts: [1,2,3,4,5,6,7,8] },
+    {label: 'Theatre of Blood', value: 'Theatre of Blood', playerCounts: [1, 2, 3, 4, 5]},
+    {label: 'Theatre of Blood: Hard Mode', value: 'Theatre of Blood: Hard Mode', playerCounts: [1, 2, 3, 4, 5]},
+    {label: 'Tombs of Amascut', value: 'Tombs of Amascut', playerCounts: [1, 2, 3, 4, 5, 6, 7, 8]},
+    {
+        label: 'Tombs of Amascut: Expert Mode',
+        value: 'Tombs of Amascut: Expert Mode',
+        playerCounts: [1, 2, 3, 4, 5, 6, 7, 8]
+    },
 ];
 
 type Order = 'asc' | 'desc';
@@ -91,7 +95,7 @@ const Leaderboard: React.FC = () => {
     if (loading)
         return (
             <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-                <CircularProgress color="inherit" />
+                <CircularProgress color="inherit"/>
             </Box>
         );
 
@@ -103,12 +107,14 @@ const Leaderboard: React.FC = () => {
         );
 
     return (
-        <Box m={2}>
-            <Typography variant="h4" gutterBottom color="white">
-                Leaderboard
-            </Typography>
+        <Box m={0}>
+            <Box p={2} pb={0} pt={0}>
+                <Typography variant="h4" gutterBottom color="white">
+                    Leaderboard
+                </Typography>
+            </Box>
 
-            <Box display="flex" gap={2} mb={2}>
+            <Box display="flex" p={2} pt={0}>
                 <Select
                     value={content.value}
                     onChange={(e) => setContent(contentOptions.find((o) => o.value === e.target.value)!)}
@@ -135,55 +141,69 @@ const Leaderboard: React.FC = () => {
             </Box>
 
             {entries && entries.length > 0 ? (
-                <TableContainer>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell sx={{ color: 'white' }}>Rank</TableCell>
-                                <TableCell sx={{ color: 'white' }}>Id</TableCell>
-                                <TableCell sx={{ color: 'white' }}>
-                                    <TableSortLabel
-                                        active={orderBy === 'duration'}
-                                        direction={order}
-                                        onClick={() => setOrder(order === 'asc' ? 'desc' : 'asc')}
-                                        sx={{ color: 'white', '& .MuiTableSortLabel-icon': { color: 'white !important' } }}
-                                    >
-                                        Duration
-                                    </TableSortLabel>
-                                </TableCell>
-                                <TableCell sx={{ color: 'white' }}>Players</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {sorted!.map((row, idx) => (
-                                <TableRow key={row.id} hover>
-                                    <TableCell sx={{ color: 'white' }}>{idx + 1}</TableCell>
-                                    <TableCell sx={{ color: 'white' }}>
-                                        <Link
-                                            component={RouterLink}
-                                            to={`/encounter/${row.id}`}
-                                            underline="hover"
-                                            title={row.id}
+                <Box p={2}>
+                    <TableContainer
+                        sx={{
+                            '@media (max-width: 768px)': {
+                                maxWidth: '95vw',
+                                width: '100%',
+                                overflowX: 'auto',
+                            },
+                        }}
+                    >
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell sx={{color: 'white'}}>Rank</TableCell>
+                                    <TableCell sx={{color: 'white'}}>Id</TableCell>
+                                    <TableCell sx={{color: 'white'}}>
+                                        <TableSortLabel
+                                            active={orderBy === 'duration'}
+                                            direction={order}
+                                            onClick={() => setOrder(order === 'asc' ? 'desc' : 'asc')}
+                                            sx={{
+                                                color: 'white',
+                                                '& .MuiTableSortLabel-icon': {color: 'white !important'}
+                                            }}
                                         >
-                                            {isMobile ? `${row.id.slice(0, 8)}...` : row.id}
-                                        </Link>
+                                            Duration
+                                        </TableSortLabel>
                                     </TableCell>
-                                    <TableCell sx={{ color: 'white' }}>{ticksToTime(row.duration)}</TableCell>
-                                    <TableCell sx={{ color: 'white' }}>
-                                        {row.players.map((player, i) => (
-                                            <React.Fragment key={player}>
-                                                <Link component={RouterLink} to={`/player/${player}`} underline="hover">
-                                                    {player}
-                                                </Link>
-                                                {i < row.players.length - 1 ? ', ' : ''}
-                                            </React.Fragment>
-                                        ))}
-                                    </TableCell>
+                                    <TableCell sx={{color: 'white'}}>Players</TableCell>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                            </TableHead>
+                            <TableBody>
+                                {sorted!.map((row, idx) => (
+                                    <TableRow key={row.id} hover>
+                                        <TableCell sx={{color: 'white'}}>{idx + 1}</TableCell>
+                                        <TableCell sx={{color: 'white'}}>
+                                            <Link
+                                                component={RouterLink}
+                                                to={`/encounter/${row.id}`}
+                                                underline="hover"
+                                                title={row.id}
+                                            >
+                                                {isMobile ? `${row.id.slice(0, 8)}...` : row.id}
+                                            </Link>
+                                        </TableCell>
+                                        <TableCell sx={{color: 'white'}}>{ticksToTime(row.duration)}</TableCell>
+                                        <TableCell sx={{color: 'white'}}>
+                                            {row.players.map((player, i) => (
+                                                <React.Fragment key={player}>
+                                                    <Link component={RouterLink} to={`/player/${player}`}
+                                                          underline="hover">
+                                                        {player}
+                                                    </Link>
+                                                    {i < row.players.length - 1 ? ', ' : ''}
+                                                </React.Fragment>
+                                            ))}
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Box>
             ) : (
                 <Typography color="white">No records yet.</Typography>
             )}
