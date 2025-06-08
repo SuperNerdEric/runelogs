@@ -133,10 +133,7 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, height = '500px', showS
         <Box
             sx={{
                 maxHeight: height,
-                overflowY: {
-                    xs: 'unset',   // No vertical scroll container on mobile, just use browser scrolling
-                    sm: 'auto'     // Enable scrolling for larger screens
-                },
+                overflowY: 'auto',
             }}
         >
             <TableContainer
