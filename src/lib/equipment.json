@@ -28197,15 +28197,6 @@
     "speed": 0
   },
   {
-    "name": "Noxious halberd",
-    "id": 29796,
-    "version": "",
-    "slot": "weapon",
-    "category": "Polearm",
-    "isTwoHanded": true,
-    "speed": 5
-  },
-  {
     "name": "Nunchaku",
     "id": 19918,
     "version": "",
