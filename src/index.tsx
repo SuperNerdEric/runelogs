@@ -31,7 +31,7 @@ root.render(
                 authorizationParams={{
                     redirect_uri: window.location.origin,
                     audience: "https://api.runelogs.com",
-                    scope: "openid profile email offline_access"
+                    scope: "openid profile email offline_access create:logs"
                 }}
                 cacheLocation="localstorage"
                 useRefreshTokens={true}
