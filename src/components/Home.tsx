@@ -4,8 +4,8 @@ import {Box, Link, Typography} from '@mui/material';
 
 export default function Home() {
     return (
-        <Box p={3}>
-            <Box maxWidth={1000} mx="auto">
+        <Box mt={1}>
+            <Box p={2} pb={0} maxWidth={1000} mx="auto">
                 <Typography variant="h4" gutterBottom>
                     Welcome to the new Runelogs experience
                 </Typography>
