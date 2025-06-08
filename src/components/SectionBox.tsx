@@ -5,19 +5,20 @@ const SectionBox = (props: BoxProps) => (
         {...props}
         sx={{
             p: 2,
-            maxWidth: 1000,
-            width: '100%',
-            '@media (max-width: 768px)': {
-                maxWidth: '98vw',
-                width: '100%',
-                overflowX: 'auto',
-            },
             bgcolor: '#141414',
             border: '3px solid grey',
             boxSizing: 'border-box',
             marginBottom: '10px',
             borderRadius: 1,
             overflowX: 'auto',
+            maxWidth: 1000,
+            width: '100%',
+            '@media (max-width: 768px)': {
+                border: '1px solid grey',
+                maxWidth: '98vw',
+                width: '100%',
+                overflowX: 'auto',
+            },
             ...props.sx,
         }}
     />

@@ -69,6 +69,7 @@ const theme = createTheme({
                     margin: '0 auto 15px',
                     boxSizing: 'border-box',
                     '@media (max-width: 768px)': {
+                        border: '1px solid grey',
                         maxWidth: '98vw',
                         width: '100%',
                         overflowX: 'auto',
