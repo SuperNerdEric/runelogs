@@ -4,7 +4,7 @@ const SectionBox = (props: BoxProps) => (
     <Box
         {...props}
         sx={{
-            p: 4,
+            p: 2,
             maxWidth: 1000,
             width: '100%',
             '@media (max-width: 768px)': {

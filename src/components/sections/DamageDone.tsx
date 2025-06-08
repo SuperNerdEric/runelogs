@@ -13,7 +13,6 @@ interface LogsSelectionProps {
 }
 
 const DamageDone: React.FC<LogsSelectionProps> = ({selectedLogs, actor}) => {
-    console.log("Rendering DamageDone component with selectedLogs:", selectedLogs);
     return (
         <div>
             {selectedLogs && (
@@ -26,15 +25,11 @@ const DamageDone: React.FC<LogsSelectionProps> = ({selectedLogs, actor}) => {
                         </div>
                     </SectionBox>
                     <SectionBox>
-                        <div style={{display: 'flex'}}>
-                            <div style={{flex: '30%', marginRight: '20px'}}>
+                        <div className="results-chart-container">
                                 <Results fight={selectedLogs}/>
-                            </div>
-                            <div style={{flex: '70%'}}>
                                 {selectedLogs && selectedLogs.data && selectedLogs.data.length > 0 && (
                                     <HitDistributionChart fight={selectedLogs}/>
                                 )}
-                            </div>
                         </div>
                     </SectionBox>
                     <DPSMeterTable fight={selectedLogs} actor={actor}/>
