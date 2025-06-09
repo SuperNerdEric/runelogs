@@ -90,7 +90,7 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
 
     // @ts-ignore
     return (
-        <div style={{position: 'relative', width: '60vw', border: '3px solid grey'}}>
+        <div style={{position: 'relative', maxWidth: '1500px', width: '98vw', border: '3px solid grey'}}>
             <TickChart
                 fight={fight}
                 currentTime={currentTime}
