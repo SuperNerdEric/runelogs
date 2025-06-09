@@ -95,7 +95,7 @@ const Encounter: React.FC = () => {
                 setLoading(false);
             }
         },
-        [],
+        [isAggregate],
     );
 
     /** user clicks another fight in the dropdown */
