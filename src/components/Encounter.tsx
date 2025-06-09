@@ -1,13 +1,13 @@
-import React, {useCallback, useEffect, useMemo, useState,} from 'react';
-import {Link, useParams} from 'react-router-dom';
-import {Box, CircularProgress, Tab, Tabs, Typography,} from '@mui/material';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {Link, useNavigate, useParams, useSearchParams} from 'react-router-dom';
+import {Box, CircularProgress, Tab, Tabs, Typography} from '@mui/material';
 import {BoostsTab, DamageDoneTab, DamageTakenTab, EventsTab, ReplayTab, TabsEnum,} from './Tabs';
 import TickActivity from './performance/TickActivity';
 import {Fight, FightMetaData, isFight} from '../models/Fight';
 import * as semver from 'semver';
 import '../App.css';
 import DropdownFightSelector from './sections/DropdownFightSelector';
-import {Icon} from "@iconify/react";
+import {Icon} from '@iconify/react';
 
 type EncounterApiFG = {
     type: 'fightGroup';
@@ -28,22 +28,46 @@ type EncounterApiFight = {
 
 type EncounterApi = EncounterApiFG | EncounterApiFight;
 
-
 interface SelectorItem extends FightMetaData {
     id: string;
 }
 
 const Encounter: React.FC = () => {
     const {id} = useParams<{ id: string }>();
-
     const [fight, setFight] = useState<Fight | null>(null);
     const [group, setGroup] = useState<EncounterApiFG | null>(null);
     const [logId, setLogId] = useState<string | null>(null);
-    const [selectedTab, setSelectedTab] = useState<TabsEnum>(TabsEnum.DAMAGE_DONE);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+
     const isAggregate = window.location.pathname.startsWith('/encounter/aggregate/');
+
+    const tabParam = searchParams.get('tab') as TabsEnum | null;
+    const isValidTab = Object.values(TabsEnum).includes(tabParam as TabsEnum);
+    const [selectedTab, setSelectedTab] = useState<TabsEnum>(
+        isValidTab ? (tabParam as TabsEnum) : TabsEnum.DAMAGE_DONE
+    );
+
+    // Sync tab state with URL (back/forward buttons)
+    useEffect(() => {
+        const currentTab = searchParams.get('tab') as TabsEnum | null;
+        const isValid = Object.values(TabsEnum).includes(currentTab as TabsEnum);
+        if (isValid && currentTab !== selectedTab) {
+            setSelectedTab(currentTab as TabsEnum);
+        }
+    }, [searchParams, selectedTab]);
+
+    // Ensure ?tab= is always present
+    useEffect(() => {
+        if (!tabParam) {
+            const newParams = new URLSearchParams(searchParams);
+            newParams.set('tab', TabsEnum.DAMAGE_DONE);
+            navigate(`${window.location.pathname}?${newParams.toString()}`, {replace: true});
+        }
+    }, [tabParam, navigate, searchParams]);
 
     const selectorMeta: SelectorItem[] = useMemo(() => {
         if (!group) return [];
@@ -58,7 +82,7 @@ const Encounter: React.FC = () => {
                 success: true,
             }));
     }, [group]);
-    /** fetches either a fight or fight-group in one go */
+
     const fetchEncounter = useCallback(
         async (encounterId: string, asInitial = false) => {
             setLoading(true);
@@ -77,14 +101,11 @@ const Encounter: React.FC = () => {
                     setFight(data.fight);
                     setLogId(data.meta.log.id);
 
-                    /* on first load, if the fight belongs to a group, fetch that group too */
                     if (asInitial && data.meta.fightGroup?.id) {
-                        await fetchEncounter(data.meta.fightGroup.id); // recursive fetch for the group
+                        await fetchEncounter(data.meta.fightGroup.id);
                     }
                 } else {
                     setGroup(data);
-
-                    // ← NEW: immediately fetch the first fight so `fight` is ready to render
                     if (asInitial && data.fights.length) {
                         await fetchEncounter(data.fights[0].id);
                     }
@@ -95,17 +116,23 @@ const Encounter: React.FC = () => {
                 setLoading(false);
             }
         },
-        [isAggregate],
+        [isAggregate]
     );
 
-    /** user clicks another fight in the dropdown */
     const handleSelectFight = useCallback(
         (index: number) => {
             if (!group) return;
             const f = group.fights[index];
-            if (f) fetchEncounter(f.id);
+            if (!f) return;
+
+            const newParams = new URLSearchParams(searchParams);
+            const tabValue = newParams.get('tab') ?? TabsEnum.DAMAGE_DONE;
+
+            // Push new fight ID and preserve tab query
+            const basePath = isAggregate ? '/encounter/aggregate' : '/encounter';
+            navigate(`${basePath}/${f.id}?tab=${encodeURIComponent(tabValue)}`);
         },
-        [group, fetchEncounter],
+        [group, navigate, searchParams, isAggregate]
     );
 
     useEffect(() => {
@@ -119,7 +146,7 @@ const Encounter: React.FC = () => {
     const availableTabs = useMemo(() => {
         if (!fight) return [];
         return Object.values(TabsEnum).filter((t) =>
-            t === TabsEnum.REPLAY ? fight.logVersion && semver.gte(fight.logVersion, '1.2.0') : true,
+            t === TabsEnum.REPLAY ? fight.logVersion && semver.gte(fight.logVersion, '1.2.0') : true
         );
     }, [fight]);
 
@@ -151,7 +178,6 @@ const Encounter: React.FC = () => {
                 selectedFightIndex={selectorMeta.findIndex((m) => m.id === fight.id)}
             />
         );
-
 
     return (
         <div className="App">
@@ -196,13 +222,15 @@ const Encounter: React.FC = () => {
 
                 <Tabs
                     value={selectedTab}
-                    onChange={(_, v) => setSelectedTab(v)}
+                    onChange={(_, newTab: TabsEnum) => {
+                        const newParams = new URLSearchParams(searchParams);
+                        newParams.set('tab', newTab);
+                        navigate(`${window.location.pathname}?${newParams.toString()}`);
+                    }}
                     indicatorColor="primary"
                     textColor="primary"
                     variant="fullWidth"
-                    style={{
-                        marginBottom: '20px',
-                    }}
+                    style={{marginBottom: '20px'}}
                 >
                     {availableTabs.map((tab) => (
                         <Tab
