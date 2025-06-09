@@ -9,6 +9,11 @@ import * as semver from "semver";
 import Prayers from './Prayers';
 import CombatLevels from './CombatLevels';
 import TickChart from './TickChart';
+import {useMediaQuery} from "@mui/material";
+import theme from "../../theme";
+import EquipmentIcon from "../../assets/replay-icons/equipment.png";
+import PrayerIcon from "../../assets/replay-icons/prayer.png";
+import StatsIcon from "../../assets/replay-icons/stats.png";
 
 interface MainReplayComponentProps {
     fight: Fight;
@@ -21,6 +26,8 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
     const [currentGameState, setCurrentGameState] = useState<GameState | undefined>(undefined);
     const [isPlaying, setIsPlaying] = useState(false);
     const [selectedPlayerName, setSelectedPlayerName] = useState<string | undefined>(undefined);
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const [activeTab, setActiveTab] = useState<'levels' | 'equipment' | 'prayers'>('levels');
 
     // Calculate max time based on fight length
     const maxTick = Math.max(...fight.data.map((log) => log.tick || 0));
@@ -88,6 +95,17 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
         };
     }, []);
 
+    const getTabButtonStyle = (tab: 'levels' | 'equipment' | 'prayers'): React.CSSProperties => ({
+        backgroundColor: activeTab === tab ? 'rgb(183, 157, 126)' : 'rgb(115, 101, 89)',
+        border: '1px solid black',
+        padding: '6px',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        pointerEvents: 'auto',
+        transition: 'background-color 0.2s ease',
+    });
+
+
     // @ts-ignore
     return (
         <div style={{position: 'relative', maxWidth: '1500px', width: '98vw', border: '3px solid grey'}}>
@@ -137,36 +155,89 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
                         >
                             {selectedPlayerName &&
                                 currentGameState &&
-                                currentGameState.players[selectedPlayerName] && (
-                                    <div style={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'flex-end',
-                                        zIndex: 10
-                                    }}>
-                                        {currentGameState.players[selectedPlayerName].baseLevels && currentGameState.players[selectedPlayerName].boostedLevels &&
-                                            (
-                                                <CombatLevels
-                                                    // @ts-ignore
-                                                    baseLevels={currentGameState.players[selectedPlayerName].baseLevels}
-                                                    // @ts-ignore
-                                                    boostedLevels={currentGameState.players[selectedPlayerName].boostedLevels}
-                                                />
-                                            )}
-                                        {currentGameState.players[selectedPlayerName].equipment && (
-                                            <PlayerEquipment
-                                                // @ts-ignore
-                                                equipment={currentGameState.players[selectedPlayerName].equipment}
-                                            />
-                                        )}
-                                        {(currentGameState.players[selectedPlayerName].prayers || currentGameState.players[selectedPlayerName].overhead) && (
-                                            <Prayers
-                                                prayers={currentGameState.players[selectedPlayerName].prayers}
-                                                overhead={currentGameState.players[selectedPlayerName].overhead}
-                                            />
-                                        )}
-                                    </div>
-                                )}
+                                currentGameState.players[selectedPlayerName] && (() => {
+                                    const selectedPlayer = currentGameState.players[selectedPlayerName];
+
+                                    return (
+                                        isMobile ? (
+                                            <div style={{zIndex: 10, marginBottom: '15px',}}>
+                                                {/* Tab buttons for mobile view */}
+                                                <div style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'flex-end',
+                                                    gap: '4px',
+                                                    marginRight: '10px',
+                                                    marginBottom: '4px'
+                                                }}>
+                                                    <button onClick={() => setActiveTab('levels')}
+                                                            style={getTabButtonStyle('levels')}>
+                                                        <img src={StatsIcon} alt="Stats" width={24} height={24}/>
+                                                    </button>
+                                                    <button onClick={() => setActiveTab('equipment')}
+                                                            style={getTabButtonStyle('equipment')}>
+                                                        <img src={EquipmentIcon} alt="Equipment" width={24}
+                                                             height={24}/>
+                                                    </button>
+                                                    <button onClick={() => setActiveTab('prayers')}
+                                                            style={getTabButtonStyle('prayers')}>
+                                                        <img src={PrayerIcon} alt="Prayers" width={24} height={24}/>
+                                                    </button>
+                                                </div>
+
+                                                {activeTab === 'levels' &&
+                                                    selectedPlayer.baseLevels &&
+                                                    selectedPlayer.boostedLevels && (
+                                                        <CombatLevels
+                                                            baseLevels={selectedPlayer.baseLevels}
+                                                            boostedLevels={selectedPlayer.boostedLevels}
+                                                        />
+                                                    )}
+
+                                                {activeTab === 'equipment' &&
+                                                    selectedPlayer.equipment && (
+                                                        <PlayerEquipment
+                                                            equipment={selectedPlayer.equipment}
+                                                        />
+                                                    )}
+
+                                                {activeTab === 'prayers' && (
+                                                    <Prayers
+                                                        prayers={selectedPlayer.prayers}
+                                                        overhead={selectedPlayer.overhead}
+                                                    />
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div style={{
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'flex-end',
+                                                zIndex: 10,
+                                                marginBottom: '45px',
+                                            }}>
+                                                {/* Stacked for desktop view */}
+                                                {selectedPlayer.baseLevels && selectedPlayer.boostedLevels && (
+                                                    <CombatLevels
+                                                        baseLevels={selectedPlayer.baseLevels}
+                                                        boostedLevels={selectedPlayer.boostedLevels}
+                                                        height={'120px'}
+                                                    />
+                                                )}
+                                                {selectedPlayer.equipment && (
+                                                    <PlayerEquipment
+                                                        equipment={selectedPlayer.equipment}
+                                                    />
+                                                )}
+                                                {(selectedPlayer.prayers || selectedPlayer.overhead) && (
+                                                    <Prayers
+                                                        prayers={selectedPlayer.prayers}
+                                                        overhead={selectedPlayer.overhead}
+                                                    />
+                                                )}
+                                            </div>
+                                        )
+                                    );
+                                })()}
                             <PlayerSelector
                                 players={Object.keys(currentGameState.players)}
                                 selectedPlayer={selectedPlayerName}
@@ -188,3 +259,4 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
 };
 
 export default MainReplayComponent;
+

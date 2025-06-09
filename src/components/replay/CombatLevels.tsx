@@ -7,11 +7,15 @@ import RangedImage from '../../assets/levels/Ranged.png';
 import MagicImage from '../../assets/levels/Magic.png';
 import HitpointsImage from '../../assets/levels/Hitpoints.png';
 import PrayerImage from '../../assets/levels/Prayer.png';
-import { Levels } from '../../models/Levels';
+import {Levels} from '../../models/Levels';
 
 interface CombatLevelsProps {
     baseLevels: Levels;
     boostedLevels: Levels;
+    height?: string;
+    skillLayout?: (keyof Levels)[][];
+    imageWidth?: number;
+    imageHeight?: number;
 }
 
 const skillImages: { [key in keyof Levels]: string } = {
@@ -24,57 +28,52 @@ const skillImages: { [key in keyof Levels]: string } = {
     prayer: PrayerImage,
 };
 
-const skillRows: (keyof Levels)[][] = [
-    ['hitpoints', 'prayer'],            // First row
-    ['attack', 'strength', 'defence'],  // Second row
-    ['ranged', 'magic'],                // Third row
+const defaultLayout: (keyof Levels)[][] = [
+    ['hitpoints', 'prayer'],
+    ['attack', 'strength', 'defence'],
+    ['ranged', 'magic'],
 ];
 
+const CombatLevels: React.FC<CombatLevelsProps> = ({
+                                                       baseLevels,
+                                                       boostedLevels,
+                                                       height = '270px',
+                                                       skillLayout = defaultLayout,
+                                                       imageWidth = 80,
+                                                       imageHeight = 40,
+                                                   }) => {
 
-const CombatLevels: React.FC<CombatLevelsProps> = ({ baseLevels, boostedLevels }) => {
     return (
         <div
             style={{
                 display: 'flex',
                 flexDirection: 'column',
-                backgroundColor: 'grey',
+                backgroundColor: 'rgb(115, 101, 89)',
                 width: '239px',
-                border: '4px solid grey',
+                height: height,
+                border: '3px solid grey',
                 marginRight: '10px',
                 marginBottom: '5px',
             }}
         >
-            {skillRows.map((row, rowIndex) => (
-                <div
-                    key={rowIndex}
-                    style={{
-                        display: 'flex',
-                    }}
-                >
+            {skillLayout.map((row, rowIndex) => (
+                <div key={rowIndex} style={{display: 'flex'}}>
                     {row.map((skill) => (
-                        <div
-                            key={skill}
-                            style={{
-                                position: 'relative',
-                            }}
-                        >
-                            {/* Skill Image */}
+                        <div key={skill} style={{position: 'relative'}}>
                             <img
                                 src={skillImages[skill]}
                                 alt={skill}
                                 style={{
-                                    width: '80px',
-                                    height: '40px',
+                                    width: `${imageWidth}px`,
+                                    height: `${imageHeight}px`,
                                     display: 'block',
-                                    margin: '0px',
+                                    margin: 0,
                                 }}
                             />
-                            {/* Boosted/Base Level Text */}
                             <div
                                 style={{
                                     position: 'absolute',
-                                    bottom: '20px',
-                                    left: '0',
+                                    bottom: `${imageHeight / 2}px`,
                                     right: '19px',
                                     textAlign: 'right',
                                     color: 'yellow',
@@ -87,7 +86,6 @@ const CombatLevels: React.FC<CombatLevelsProps> = ({ baseLevels, boostedLevels }
                                 style={{
                                     position: 'absolute',
                                     bottom: '4px',
-                                    left: '0',
                                     right: '5px',
                                     textAlign: 'right',
                                     color: 'yellow',

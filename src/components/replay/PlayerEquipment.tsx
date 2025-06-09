@@ -38,7 +38,7 @@ const PlayerEquipment: React.FC<PlayerEquipmentProps> = ({ equipment }) => {
                 height: '270px',
                 backgroundImage: `url(${backgroundImageUrl})`,
                 backgroundSize: 'cover',
-                border: '4px solid grey',
+                border: '3px solid grey',
                 marginRight: '10px',
                 marginBottom: '5px',
                 pointerEvents: 'auto',
