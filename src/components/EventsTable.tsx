@@ -133,6 +133,7 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, maxHeight, showSource =
         <Box
             sx={{
                 width: '100%',
+                maxWidth: '1000px',
                 maxHeight: {
                     xs: '70vh',
                     sm: '70vh',
