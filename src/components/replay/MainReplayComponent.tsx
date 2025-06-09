@@ -146,10 +146,11 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
                             style={{
                                 position: 'absolute',
                                 bottom: '10px',
-                                right: '10px',
+                                right: 'clamp(6px, 1vw, 10px)',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'flex-end',
+                                width: '100%',
                                 pointerEvents: 'none', // Or else it blocks clicks on the map, but now we have to add pointerEvents: 'auto', to the children we want to be clickable
                             }}
                         >
@@ -213,7 +214,7 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
                                                 flexDirection: 'column',
                                                 alignItems: 'flex-end',
                                                 zIndex: 10,
-                                                marginBottom: '45px',
+                                                marginBottom: '30px',
                                             }}>
                                                 {/* Stacked for desktop view */}
                                                 {selectedPlayer.baseLevels && selectedPlayer.boostedLevels && (
