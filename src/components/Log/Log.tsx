@@ -218,8 +218,37 @@ const Log: React.FC = () => {
                         navigate(`/encounter/${fightId}`);
                     }
                 }}
-                onSelectAggregateFight={indices => {
-                    console.log('Selected aggregate indices', indices);
+                onSelectAggregateFight={async (indices) => {
+                    const selectedFights: string[] = [];
+
+                    for (const i of indices) {
+                        const encounter = encounters[i];
+                        if (encounter?.type === 'fight') {
+                            selectedFights.push(encounter.id);
+                        }
+                    }
+
+                    if (selectedFights.length === 0) return;
+
+                    try {
+                        const res = await fetch('https://api.runelogs.com/fight/aggregate', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ fightIds: selectedFights })
+                        });
+
+                        if (!res.ok) {
+                            console.error(`Failed to create aggregate fight: ${res.status}`);
+                            return;
+                        }
+
+                        const { aggregateId } = await res.json();
+                        navigate(`/encounter/aggregate/${aggregateId}`);
+                    } catch (err) {
+                        console.error('Error aggregating fights:', err);
+                    }
                 }}
             />
         </Box>

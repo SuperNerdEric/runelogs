@@ -43,6 +43,8 @@ const Encounter: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    const isAggregate = window.location.pathname.startsWith('/encounter/aggregate/');
+
     const selectorMeta: SelectorItem[] = useMemo(() => {
         if (!group) return [];
         return group.fights
@@ -62,7 +64,11 @@ const Encounter: React.FC = () => {
             setLoading(true);
             setError(null);
             try {
-                const res = await fetch(`https://api.runelogs.com/encounter/${encounterId}`);
+                const res = await fetch(
+                    isAggregate
+                        ? `https://api.runelogs.com/fight/aggregate/${encounterId}`
+                        : `https://api.runelogs.com/encounter/${encounterId}`
+                );
                 if (!res.ok) throw new Error(`Server returned ${res.status}`);
                 const data: EncounterApi = await res.json();
 
