@@ -112,7 +112,7 @@ const PersonalBests: React.FC = () => {
 
             {contentOptions.map((content) => {
                 const relevantFights = fightGroups
-                    .filter(f => f.leaderboardName.startsWith(content.value))
+                    .filter(f => f.leaderboardName === content.value)
                     .sort((a, b) => a.playerCount - b.playerCount);
 
                 if (relevantFights.length === 0) return null;
