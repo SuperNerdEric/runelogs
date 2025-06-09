@@ -22,6 +22,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import {closeSnackbar, SnackbarKey, useSnackbar} from "notistack";
 import CloseIcon from "@mui/icons-material/Close";
 import theme from "../theme";
+import {displayUsername} from "../utils/utils";
 
 interface LogItem {
     id: string;
@@ -194,7 +195,7 @@ const Logs: React.FC = () => {
     return (
         <Box m={2}>
             <Typography variant="h4" gutterBottom sx={{ color: 'white' }} style={{textTransform: 'capitalize'}}>
-                Logs: {uploaderId}
+                Logs: {displayUsername(uploaderId || 'Unknown User')}
             </Typography>
 
             <TableContainer component={Paper} sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>

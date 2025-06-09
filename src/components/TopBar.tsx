@@ -6,6 +6,7 @@ import {useAuth0} from '@auth0/auth0-react';
 import logo from '../assets/Logo.png';
 import {Link} from "react-router-dom";
 import PlayerSearch from "./PlayerSearch";
+import {displayUsername} from "../utils/utils";
 
 const TopBar: React.FC = () => {
     const {isAuthenticated, user, loginWithRedirect, logout} = useAuth0();
@@ -153,7 +154,7 @@ const TopBar: React.FC = () => {
                                 ) : (
                                     <>
                                         <Typography variant="body1" style={{ color: 'white', textTransform: 'capitalize' }}>
-                                            {user?.username || 'User'}
+                                            {displayUsername(user?.username) || 'User'}
                                         </Typography>
                                         <ArrowDropDownIcon style={{ color: 'white' }} />
                                     </>

@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import {closeSnackbar, SnackbarKey, useSnackbar} from "notistack";
 import CloseIcon from '@mui/icons-material/Close';
 import React from "react";
+import {displayUsername} from "../../utils/utils";
 
 interface Props {
     uploaderId: string;
@@ -94,7 +95,7 @@ const LogInfoBox: React.FC<Props> = ({
                 underline="hover"
                 variant="body1"
             >
-                {uploaderId}
+                {displayUsername(uploaderId)}
             </Link>
 
             <Typography className="log-info-label">Uploaded</Typography>
