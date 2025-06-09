@@ -141,7 +141,7 @@ const Log: React.FC = () => {
                         const HHmmss = formatHHmmss(lengthMs, false);
 
                         const fMeta: FightMetaData = {
-                            name: enc.name,
+                            name: enc.mainEnemyName,
                             date: 'N/A',
                             time: HHmmss,
                             fightDurationTicks: enc.fightDurationTicks,
