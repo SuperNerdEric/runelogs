@@ -182,7 +182,7 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
     return (
         <div>
             <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={boostedLevelsData} margin={{top: 11, left: 60, bottom: 10}}>
+                <LineChart data={boostedLevelsData} margin={{top: 11, left: 60, bottom: 20}}>
                     <XAxis
                         dataKey="timestamp" // Use the actual timestamp as the dataKey
                         type="number" // Specify the type as "number" for numerical values
