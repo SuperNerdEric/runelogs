@@ -134,7 +134,7 @@ const TickChart: React.FC<TickChartProps> = ({
         position: 'sticky',
         left: 0,
         backgroundColor: '#262a2e',
-        zIndex: 1,
+        zIndex: 2,
         userSelect: 'text',
     };
 
