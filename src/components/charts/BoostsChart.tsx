@@ -181,8 +181,8 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
 
     return (
         <div>
-            <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={boostedLevelsData} margin={{top: 11, left: 60, bottom: 20}}>
+            <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={boostedLevelsData} margin={{top: 11, left: 60, bottom: 10}}>
                     <XAxis
                         dataKey="timestamp" // Use the actual timestamp as the dataKey
                         type="number" // Specify the type as "number" for numerical values
@@ -195,45 +195,27 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
                             value: 'Level',
                             position: 'insideLeft',
                             angle: -90,
-                            offset: -40,
+                            offset: -50,
                             style: {textAnchor: 'middle'},
                         }}
-                        width={35}
+                        width={1}
                         tickFormatter={(tick) => (tick !== 0 ? tick : '')}
                         domain={[0, 125]}
                     />
-                    <Legend
-                        content={() => (
-                            <div style={{marginTop: '20px', fontSize: '20px', color: 'white', textAlign: 'center'}}>
-                                <div style={{display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '10px'}}>
-                                    <span style={{gridRow: 'span 2', alignSelf: 'end'}}>Averages</span>
-                                    {Object.entries(averages)
-                                        .filter(([stat]) => stat === 'attack' || stat === 'strength' || stat === 'defence' || stat === 'ranged' || stat === 'magic')
-                                        .map(([stat, average]) => (
-                                            <div key={stat} style={{
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                alignItems: 'center'
-                                            }}>
-                                                <span style={{
-                                                    color: getStatColor(stat as keyof Levels),
-                                                    marginBottom: '5px'
-                                                }}>{stat}</span>
-                                                <span>{average.toFixed(3)}</span>
-                                            </div>
-                                        ))}
-                                </div>
-                                <div style={{position: 'absolute', top: 0, right: 0}}>
-                                    <FormControlLabel
-                                        control={<TanToggle checked={showAttackAnimations}
-                                                         onChange={() => setShowAttackAnimations(!showAttackAnimations)}
-                                                         color="default"/>}
-                                        label="Attacks"
+                    <Legend content={() => (
+                        <div style={{position: 'absolute', top: 0, right: 0}}>
+                            <FormControlLabel
+                                control={
+                                    <TanToggle
+                                        checked={showAttackAnimations}
+                                        onChange={() => setShowAttackAnimations(!showAttackAnimations)}
+                                        color="default"
                                     />
-                                </div>
-                            </div>
-                        )}
-                    />
+                                }
+                                label="Attacks"
+                            />
+                        </div>
+                    )}/>
                     {attackAnimationData.map((line, index) => (
                         showAttackAnimations && (
                             <ReferenceLine key={index} x={line.timestamp} stroke={line.color} strokeDasharray="10 2"
@@ -249,8 +231,14 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
                              cursor={{fill: '#3c3226'}}/>
                 </LineChart>
             </ResponsiveContainer>
-            <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={boostedLevelsData} margin={{top: 11, left: 60, bottom: 20}}>
+            <div style={{marginBottom: '20px', fontSize: '20px', color: 'white', textAlign: 'center'}}>
+                <ResponsiveAveragesGrid
+                    averages={averages}
+                    stats={['attack', 'strength', 'defence', 'ranged', 'magic']}
+                />
+            </div>
+            <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={boostedLevelsData} margin={{top: 11, left: 60, bottom: 10}}>
                     <XAxis
                         dataKey="timestamp" // Use the actual timestamp as the dataKey
                         type="number" // Specify the type as "number" for numerical values
@@ -263,42 +251,24 @@ const BoostsChart: React.FC<DPSChartProps> = ({fight}) => {
                             value: 'Level',
                             position: 'insideLeft',
                             angle: -90,
-                            offset: -40,
+                            offset: -50,
                             style: {textAnchor: 'middle'},
                         }}
-                        width={35}
+                        width={1}
                         tickFormatter={(tick) => (tick !== 0 ? tick : '')}
                         domain={[0, 125]}
-                    />
-                    <Legend
-                        content={() => (
-                            <div style={{marginTop: '20px', fontSize: '20px', color: 'white', textAlign: 'center'}}>
-                                <div style={{display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '10px'}}>
-                                    <span style={{gridRow: 'span 2', alignSelf: 'end'}}>Averages</span>
-                                    {Object.entries(averages)
-                                        .filter(([stat]) => stat === 'hitpoints' || stat === 'prayer')
-                                        .map(([stat, average]) => (
-                                            <div key={stat} style={{
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                alignItems: 'center'
-                                            }}>
-                                                <span style={{
-                                                    color: getStatColor(stat as keyof Levels),
-                                                    marginBottom: '5px'
-                                                }}>{stat}</span>
-                                                <span>{average.toFixed(3)}</span>
-                                            </div>
-                                        ))}
-                                </div>
-                            </div>
-                        )}
                     />
                     <Line type="stepAfter" dataKey="hitpoints" stroke="red" dot={false} animationDuration={0}/>
                     <Line type="stepAfter" dataKey="prayer" stroke="yellow" dot={false} animationDuration={0}/>
                     <Tooltip content={(props) => <CustomTooltip {...props} />} cursor={{fill: '#3c3226'}}/>
                 </LineChart>
             </ResponsiveContainer>
+            <div style={{marginTop: '20px', fontSize: '20px', color: 'white', textAlign: 'center'}}>
+                <ResponsiveAveragesGrid
+                    averages={averages}
+                    stats={['hitpoints', 'prayer']}
+                />
+            </div>
         </div>
 
     );
@@ -327,7 +297,7 @@ function getStatColor(stat: keyof Levels) {
 
 export default BoostsChart;
 
-const TanToggle = styled(Switch)(({ theme }) => ({
+const TanToggle = styled(Switch)(({theme}) => ({
     '& .MuiSwitch-switchBase.Mui-checked': {
         color: "#D2B48C",
         '&:hover': {
@@ -341,3 +311,56 @@ const TanToggle = styled(Switch)(({ theme }) => ({
         backgroundColor: theme.palette.grey[400],
     },
 }));
+
+const ResponsiveAveragesGrid: React.FC<{ averages: Partial<Levels>; stats: (keyof Levels)[] }> = ({
+                                                                                                      averages,
+                                                                                                      stats
+                                                                                                  }) => {
+    return (
+        <div
+            className="averages-grid"
+            style={{
+                display: 'inline-grid',
+                gridTemplateColumns: `auto repeat(${stats.length}, auto)`,
+                gap: '10px',
+                justifyItems: 'center',
+                alignItems: 'center',
+                fontSize: 'clamp(10px, 4vw, 20px)',
+            }}
+        >
+            <div style={{gridColumn: 1, gridRow: 1}}/>
+            <div
+                className="averages-label"
+                style={{
+                    gridColumn: 1,
+                    gridRow: 2,
+                    whiteSpace: 'nowrap',
+                }}
+            >
+                Averages
+            </div>
+            {stats.map((stat, i) => (
+                <React.Fragment key={stat}>
+                    <div
+                        style={{
+                            gridColumn: i + 2,
+                            gridRow: 1,
+                            color: getStatColor(stat),
+                            whiteSpace: 'nowrap',
+                        }}
+                    >
+                        {stat}
+                    </div>
+                    <div
+                        style={{
+                            gridColumn: i + 2,
+                            gridRow: 2,
+                        }}
+                    >
+                        {averages[stat]?.toFixed(3)}
+                    </div>
+                </React.Fragment>
+            ))}
+        </div>
+    );
+};
