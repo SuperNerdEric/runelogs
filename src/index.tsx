@@ -44,6 +44,7 @@ root.render(
                                 <Route path="/" element={<Home/>}/>
                                 <Route path="/player/:playerName" element={<Player/>}/>
                                 <Route path="/encounter/:id" element={<Encounter />} />
+                                <Route path="/encounter/aggregate/:id" element={<Encounter />} />
                                 <Route path="/upload" element={<Upload/>}/>
                                 <Route path="/log/:logId" element={<Log/>}/>
                                 <Route path="/logs/:uploaderId" element={<Logs/>}/>
