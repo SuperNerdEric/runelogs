@@ -138,16 +138,21 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
                             {selectedPlayerName &&
                                 currentGameState &&
                                 currentGameState.players[selectedPlayerName] && (
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                                    <div style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-end',
+                                        zIndex: 10
+                                    }}>
                                         {currentGameState.players[selectedPlayerName].baseLevels && currentGameState.players[selectedPlayerName].boostedLevels &&
                                             (
-                                            <CombatLevels
-                                                // @ts-ignore
-                                                baseLevels={currentGameState.players[selectedPlayerName].baseLevels}
-                                                // @ts-ignore
-                                                boostedLevels={currentGameState.players[selectedPlayerName].boostedLevels}
-                                            />
-                                        )}
+                                                <CombatLevels
+                                                    // @ts-ignore
+                                                    baseLevels={currentGameState.players[selectedPlayerName].baseLevels}
+                                                    // @ts-ignore
+                                                    boostedLevels={currentGameState.players[selectedPlayerName].boostedLevels}
+                                                />
+                                            )}
                                         {currentGameState.players[selectedPlayerName].equipment && (
                                             <PlayerEquipment
                                                 // @ts-ignore
