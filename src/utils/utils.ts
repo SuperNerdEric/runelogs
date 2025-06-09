@@ -69,3 +69,7 @@ export const getActor = (actorString: string): Actor => {
         name: actorString,
     }
 }
+
+export const displayUsername = (username: string): string => {
+    return username.replace(/_/g, ' ');
+};
