@@ -142,9 +142,9 @@ const Prayers: React.FC<PrayersProps> = ({prayers, overhead}) => {
                 height: '270px',
                 backgroundImage: `url(${prayersImage})`,
                 backgroundSize: 'cover',
-                border: '4px solid grey',
+                border: '3px solid grey',
                 marginRight: '10px',
-                marginBottom: '50px',
+                marginBottom: '5px',
             }}
         >
             {Object.entries(prayerPositions).map(([prayerIdStr, position]) => {
