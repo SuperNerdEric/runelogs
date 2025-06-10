@@ -27,10 +27,10 @@ const theme = createTheme({
             fontSize: 'clamp(1.275rem, 3.5vw, 2.125rem)',
         },
         h5: {
-            fontSize: 'clamp(0.9rem, 2.5vw, 1.5rem)',
+            fontSize: 'clamp(1rem, 2.5vw, 1.5rem)',
         },
         h6: {
-            fontSize: 'clamp(0.75rem, 2vw, 1.25rem)',
+            fontSize: 'clamp(1rem, 2vw, 1.25rem)',
         },
     },
 
