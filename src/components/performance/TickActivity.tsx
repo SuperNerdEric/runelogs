@@ -217,11 +217,15 @@ const Performance: React.FC<PerformanceProps> = ({metricName, fight, performance
             </div>
             {tooltipContent && (
                 <Tooltip title={tooltipContent} arrow>
-                    <div className="performance-percent" style={{color: percentColor}}>{formattedPercentage}%</div>
+                    <div className="performance-percent" style={{color: percentColor}}>
+                        {isNaN(roundedPercentage) ? "N/A" : `${formattedPercentage}%`}
+                    </div>
                 </Tooltip>
             )}
             {!tooltipContent && (
-                <div className="performance-percent" style={{color: percentColor}}>{formattedPercentage}%</div>
+                <div className="performance-percent" style={{color: percentColor}}>
+                    {isNaN(roundedPercentage) ? "N/A" : `${formattedPercentage}%`}
+                </div>
             )}
         </div>
     );
