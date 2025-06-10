@@ -212,6 +212,13 @@ const TopBar: React.FC = () => {
                                     Upload Log
                                 </MenuItem>
                                 <MenuItem
+                                    component={Link}
+                                    to="/help"
+                                    onClick={handleMenuClose}
+                                >
+                                    Help
+                                </MenuItem>
+                                <MenuItem
                                     onClick={() => {
                                         handleMenuClose();
                                         logout({logoutParams: {returnTo: window.location.origin}});
