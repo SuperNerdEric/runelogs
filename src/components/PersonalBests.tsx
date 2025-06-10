@@ -9,9 +9,11 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    Typography
+    Typography,
+    useMediaQuery
 } from '@mui/material';
 import {Link as RouterLink, useParams} from 'react-router-dom';
+import theme from "../theme";
 
 type ContentOption = {
     label: string;
@@ -59,6 +61,7 @@ const PersonalBests: React.FC = () => {
     const [data, setData] = useState<PersonalBestsResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     useEffect(() => {
         const fetchData = async () => {
@@ -96,8 +99,24 @@ const PersonalBests: React.FC = () => {
 
     const fightGroups = data?.personalBests.fightGroups || [];
 
+
+    if (fightGroups.length === 0) {
+        return (
+            <Box>
+                <Typography variant="h5" gutterBottom color="white">
+                    Personal Bests
+                </Typography>
+                <Box m={2}>
+                    <Typography variant="body1" color="white">
+                        No personal bests found.
+                    </Typography>
+                </Box>
+            </Box>
+        );
+    }
+
     return (
-        <Box m={2} sx={{
+        <Box sx={{
             maxWidth: 1000,
             width: '100%',
             '@media (max-width: 768px)': {
@@ -118,7 +137,7 @@ const PersonalBests: React.FC = () => {
                 if (relevantFights.length === 0) return null;
 
                 return (
-                    <Box key={content.value} mt={4}>
+                    <Box key={content.value} m={2}>
                         <Typography variant="h6" gutterBottom color="white">
                             {content.label}
                         </Typography>
@@ -149,7 +168,7 @@ const PersonalBests: React.FC = () => {
                                                             to={`/encounter/${match.id}`}
                                                             underline="hover"
                                                         >
-                                                            {match.id}
+                                                            {isMobile ? `${match.id.slice(0, 8)}...` : match.id}
                                                         </Link>
                                                     ) : (
                                                         '-'
