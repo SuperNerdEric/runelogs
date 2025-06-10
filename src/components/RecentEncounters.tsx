@@ -30,14 +30,6 @@ interface RecentEncountersResponse {
     recentEncounters: RecentEncounter[];
 }
 
-const ticksToTime = (ticks: number | null) => {
-    if (ticks == null) return '-';
-    const secs = ticks * 0.6;
-    const m = Math.floor(secs / 60);
-    const s = Math.round(secs % 60).toString().padStart(2, '0');
-    return `${m}:${s}`;
-};
-
 const RecentEncounters: React.FC = () => {
     const {playerName} = useParams<{ playerName: string }>();
     const [data, setData] = useState<RecentEncountersResponse | null>(null);
