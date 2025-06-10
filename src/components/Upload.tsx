@@ -21,6 +21,7 @@ const Upload: React.FC = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorText, setErrorText] = useState<string | null>(null);
+    const [uploadPhase, setUploadPhase] = useState<'upload' | 'parse' | null>(null);
     const [progress, setProgress] = useState<number | null>(null);
 
     useEffect(() => {
@@ -45,39 +46,49 @@ const Upload: React.FC = () => {
         setIsSubmitting(true);
         setErrorText(null);
         setProgress(0);
+        setUploadPhase('upload');
 
         try {
             const token = await getAccessTokenSilently();
             const formData = new FormData();
             formData.append('logFile', selectedFile);
 
-            // Kick off the POST / SSE stream
-            const response = await fetch('https://api.runelogs.com/log', {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-                body: formData
-            });
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'https://api.runelogs.com/log', true);
+            xhr.setRequestHeader('Authorization', `Bearer ${token}`);
 
-            if (!response.ok || !response.body) {
-                const errText = await response.text();
-                throw new Error(errText || 'Upload failed');
-            }
+            xhr.upload.onprogress = (e) => {
+                if (e.lengthComputable) {
+                    const percent = (e.loaded / e.total) * 100;
+                    flushSync(() => setProgress(percent));
+                }
+            };
 
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder('utf-8');
-            let buffer = '';
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === XMLHttpRequest.HEADERS_RECEIVED) {
+                    // Switch phase once upload is done
+                    setUploadPhase('parse');
+                    setProgress(0);
+                }
+            };
 
-            while (true) {
-                const { value, done } = await reader.read();
-                if (done) break;
-                buffer += decoder.decode(value, { stream: true });
-                const parts = buffer.split('\n\n');
-                buffer = parts.pop()!; // leftover partial block, if any
+            xhr.onerror = () => {
+                setErrorText('Upload failed due to a network error.');
+                setIsSubmitting(false);
+            };
 
-                // Process each complete SSE block
-                for (const part of parts) {
+            xhr.onabort = () => {
+                setErrorText('Upload was aborted.');
+                setIsSubmitting(false);
+            };
+
+            xhr.onprogress = (e) => {
+                // Track streamed response from server
+                const newText = xhr.responseText.substring(lastResponseLength);
+                lastResponseLength = xhr.responseText.length;
+
+                const events = newText.split('\n\n');
+                for (const part of events) {
                     const lines = part.split('\n').map((l) => l.trim());
                     let eventType: string | null = null;
                     let dataText: string | null = null;
@@ -90,9 +101,7 @@ const Upload: React.FC = () => {
                         }
                     }
 
-                    if (!eventType || !dataText) {
-                        continue;
-                    }
+                    if (!eventType || !dataText) continue;
 
                     let payload: { progress?: number; logId?: string };
                     try {
@@ -102,31 +111,27 @@ const Upload: React.FC = () => {
                     }
 
                     if (eventType === 'progress' && typeof payload.progress === 'number') {
-                        // Force React to commit this update immediately,
-                        // then yield so the browser can repaint.
-                        flushSync(() => {
-                            // @ts-ignore
-                            setProgress(payload.progress);
-                        });
-                        // Yield control to the browser for a repaint
-                        await new Promise(requestAnimationFrame);
+                        // @ts-ignore
+                        flushSync(() => setProgress(payload.progress));
                     }
 
                     if (eventType === 'complete' && payload.logId) {
-                        reader.cancel();
                         navigate(`/log/${payload.logId}`);
                         return;
                     }
                 }
-            }
+            };
+
+            let lastResponseLength = 0;
+            xhr.send(formData);
         } catch (err: any) {
             console.error(err);
             setErrorText(err.message || 'An unexpected error occurred.');
             setProgress(null);
-        } finally {
             setIsSubmitting(false);
         }
     };
+
 
     if (isLoading || !isAuthenticated) {
         return (
@@ -196,6 +201,7 @@ const Upload: React.FC = () => {
                     {progress !== null && (
                         <Box width="100%" sx={{ my: 2 }}>
                             <LinearProgress
+                                key={uploadPhase}
                                 variant="determinate"
                                 value={Math.min(Math.max(progress, 0), 100)}
                                 sx={{
@@ -206,7 +212,7 @@ const Upload: React.FC = () => {
                                 }}
                             />
                             <Typography variant="body2" align="center" sx={{ color: 'white', mt: 1 }}>
-                                Uploading: {progress.toFixed(0)}%
+                                {uploadPhase === 'parse' ? 'Parsing' : 'Uploading'}: {progress.toFixed(0)}%
                             </Typography>
                         </Box>
                     )}
