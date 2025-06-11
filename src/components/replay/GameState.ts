@@ -120,7 +120,7 @@ export function createGameStates(fight: Fight): GameState[] {
                     playerState.position = positionLog.position;
                 } else {
                     // Update NPC position
-                    const actorName = `${positionLog.source.name}-${positionLog.source.id}-${positionLog.source.index}`;
+                    const actorName = `${positionLog.source.name}|${positionLog.source.id}|${positionLog.source.index}`;
                     let npcState = currentState.npcs[actorName];
                     if (!npcState) {
                         npcState = {};
@@ -198,14 +198,14 @@ export function createGameStates(fight: Fight): GameState[] {
 
             case LogTypes.NPC_DESPAWNED: {
                 const npcDespawnLog = log as NPCDespawned;
-                const actorName = `${npcDespawnLog.source.name}-${npcDespawnLog.source.id}-${npcDespawnLog.source.index}`;
+                const actorName = `${npcDespawnLog.source.name}|${npcDespawnLog.source.id}|${npcDespawnLog.source.index}`;
                 delete currentState.npcs[actorName];
                 break;
             }
 
             case LogTypes.NPC_CHANGED: {
                 const npcChangedLog = log as NpcChangedLog;
-                const actorName = `${npcChangedLog.oldNpc.name}-${npcChangedLog.oldNpc.id}-${npcChangedLog.oldNpc.index}`;
+                const actorName = `${npcChangedLog.oldNpc.name}|${npcChangedLog.oldNpc.id}|${npcChangedLog.oldNpc.index}`;
                 delete currentState.npcs[actorName];
                 break;
             }
