@@ -66,7 +66,7 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
             {/* Render NPC Markers */}
             {Object.entries(npcPositions).map(([npcKey, positionData]) => {
                 // Extract NPC ID from npcKey (format: 'name-id-index')
-                const parts = npcKey.split('-');
+                const parts = npcKey.split('|');
                 if (parts.length < 3) {
                     console.error(`Invalid npcKey format: ${npcKey}`);
                     return null;
@@ -102,7 +102,7 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
                             bounds={rectangle.getBounds()}
                             pathOptions={npcRectangleOptions}
                         >
-                            <Popup>{npcKey}</Popup>
+                            <Popup>{formatActorKey(npcKey)}</Popup>
                         </Rectangle>
                     </React.Fragment>
                 );
@@ -194,5 +194,14 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
         </>
     );
 };
+
+export function formatActorKey(key: string): string {
+    const parts = key.split('|');
+    if (parts.length < 3) return key;
+
+    const [name, id, index] = parts;
+    return `${name} ${id}-${index}`;
+}
+
 
 export default MapMarkers;
