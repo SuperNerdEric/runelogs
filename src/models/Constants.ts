@@ -64,6 +64,7 @@ export const MELEE_ANIMATIONS = [
     2080, // Guthan's warspear stab
     2081, // Guthan's warspear slash
     2082, // Guthan's warspear crush
+    4198, // Bone dagger spec
     8056, // Scythe
     8010, // Blisterwood flail
     3852, // Leaf-bladed battleaxe crush
@@ -114,10 +115,13 @@ export const RANGED_ANIMATIONS = [
     7552, // Crossbow
     9168, // Zaryte crossbow
     9206, // Rune crossbow (or)
+    7557, // Dorgeshuun crossbow spec
     7555, // Ballista
     9858, // Venator bow
     11057, // Eclipse atlatl
     11060, // Eclipse atlatl spec
+    10916, // Tonalztics of ralos (Uncharged)
+    10922, // Tonalztics of ralos
     10923, // Tonalztics of ralos
     10914 // Tonalztics of ralos spec
 ]
