@@ -16,6 +16,8 @@ import Encounter from "./components/Encounter";
 import Player from "./components/Player";
 import Home from "./components/Home";
 import Help from "./components/Help";
+import Login from "./components/Login";
+import Logout from "./components/Logout";
 
 const domain = "auth.runelogs.com";
 const clientId = "vNPXVhAvOj2ES9kqi5WPs80SnX8FPKqv";
@@ -43,6 +45,8 @@ root.render(
                             <TopBar/>
                             <Routes>
                                 <Route path="/" element={<Home/>}/>
+                                <Route path="/login" element={<Login />} />
+                                <Route path="/logout" element={<Logout />} />
                                 <Route path="/help" element={<Help/>}/>
                                 <Route path="/player/:playerName" element={<Player/>}/>
                                 <Route path="/encounter/:id" element={<Encounter />} />
