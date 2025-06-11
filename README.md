@@ -1,6 +1,7 @@
 # Runelogs
 
-Combat analysis for Oldschool RuneScape
+Runelogs is a combat log analysis tool for Old School RuneScape that works with the [Combat Logger](https://runelite.net/plugin-hub/show/combat-logger) plugin to help players review fights, track performance, and improve strategy.
+It offers leaderboards, detailed breakdowns, and visualizations powered by parsed in-game data.
 
 Hosted on https://www.runelogs.com/
 
@@ -24,22 +25,27 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 ### `npm run build`
 
 Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The build is minified and the filenames include the hashes.
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+## Data Sync Scripts
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+This project relies on regularly updated data files from the [OSRS Wiki](https://oldschool.runescape.wiki/) for equipment and NPC/item ID mappings:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### `npm run generateEquipment`
+  Fetches item equipment data from the OSRS Wiki via its [SMW API](https://www.semantic-mediawiki.org/wiki/Help:API) and generates `src/lib/equipment.json`, including item stats and metadata. It also downloads icons for display in the UI.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### `npm run createIdMaps`
+  Fetches item and NPC ID mappings from [chisel.weirdgloop.org](https://chisel.weirdgloop.org) and generates:
+  - `src/lib/itemIdMap.ts` – maps item IDs to item names
+  - `src/lib/npcIdMap.ts` – maps NPC IDs to names and sizes
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+These scripts run automatically via GitHub Actions:
+- Every hour on a scheduled cron job
+- On manual dispatch (via the Actions tab)
+
+If any data changes, a pull request is automatically opened with the updated files. You can review and merge these PRs to keep the data fresh without manual intervention.
 
 ## Contribute
 
