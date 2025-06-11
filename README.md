@@ -2,7 +2,7 @@
 
 Combat analysis for Oldschool RuneScape
 
-Hosted on https://supernerderic.github.io/runelogs/
+Hosted on https://www.runelogs.com/
 
 ## Available Scripts
 
