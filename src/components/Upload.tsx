@@ -11,6 +11,7 @@ import {
     LinearProgress
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { flushSync } from 'react-dom';
 import SectionBox from "./SectionBox";
 
@@ -232,6 +233,16 @@ const Upload: React.FC = () => {
                         >
                             {isSubmitting ? <CircularProgress size={24} color="inherit" /> : <><CloudUploadIcon sx={{ mr: 1 }} />Upload</>}
                         </Button>
+                    </Box>
+                    <Box display="flex" alignItems="center" gap={1} sx={{ mt: 2 }}>
+                        <InfoOutlinedIcon sx={{ color: 'white' }} />
+                        <Typography variant="body1" sx={{ color: 'white' }}>
+                            You can start a new combat log with the{' '}
+                            <Box component="span" sx={{ color: 'yellow', fontFamily: 'monospace' }}>
+                                ::newlog
+                            </Box>{' '}
+                            command in-game.
+                        </Typography>
                     </Box>
                 </Box>
             </SectionBox>
