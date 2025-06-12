@@ -9,25 +9,27 @@ Hosted on https://www.runelogs.com/
 
 In the project directory, you can run:
 
-### `npm start`
+### `npm run dev`
 
-Runs the app in the development mode.\
+Starts the app in development mode using the [Vite](https://vitejs.dev/) dev server.  
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+The page reloads automatically on changes.  
+You’ll also see any build or lint errors in the console.
 
 ### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Runs the test suite using [Vitest](https://vitest.dev/).
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-The build is minified and the filenames include the hashes.
+Builds the app for production into the `build` folder.  
+The build is optimized and minified for best performance.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### `npm run preview`
+
+Locally serves the production build using Vite.  
+Useful for verifying the output before deploying.
 
 ## Data Sync Scripts
 
