@@ -41,7 +41,7 @@ const RecentEncounters: React.FC = () => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const res = await fetch(`https://api.runelogs.com/player/${playerName}/recent-encounters`);
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/player/${playerName}/recent-encounters`);
                 if (!res.ok) throw new Error(`Server returned ${res.status}`);
                 const json = await res.json();
                 setData(json);

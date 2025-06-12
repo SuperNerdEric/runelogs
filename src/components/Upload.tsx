@@ -55,7 +55,7 @@ const Upload: React.FC = () => {
             formData.append('logFile', selectedFile);
 
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'https://api.runelogs.com/log', true);
+            xhr.open('POST', `${import.meta.env.VITE_API_URL}/log`, true);
             xhr.setRequestHeader('Authorization', `Bearer ${token}`);
 
             xhr.upload.onprogress = (e) => {

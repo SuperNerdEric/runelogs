@@ -24,7 +24,7 @@ const PlayerSearch: React.FC<PlayerSearchProps> = ({ onSelect }) => {
         }
 
         timeoutRef.current = setTimeout(() => {
-            fetch(`https://api.runelogs.com/player-search/${encodeURIComponent(input)}`)
+            fetch(`${import.meta.env.VITE_API_URL}/player-search/${encodeURIComponent(input)}`)
                 .then(res => res.json())
                 .then(data => {
                     setResults(data.matches.slice(0, 6) || []); // Limit to 6 results
