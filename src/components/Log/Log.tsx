@@ -85,7 +85,7 @@ const Log: React.FC = () => {
 
             try {
                 const token = await (window as any).auth0?.getAccessTokenSilently?.();
-                const res = await fetch(`https://api.runelogs.com/log/${logId}`, {
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/log/${logId}`, {
                     headers: {
                         Authorization: token ? `Bearer ${token}` : ''
                     }
@@ -231,7 +231,7 @@ const Log: React.FC = () => {
                     if (selectedFights.length === 0) return;
 
                     try {
-                        const res = await fetch('https://api.runelogs.com/fight/aggregate', {
+                        const res = await fetch(`${import.meta.env.VITE_API_URL}/fight/aggregate`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'

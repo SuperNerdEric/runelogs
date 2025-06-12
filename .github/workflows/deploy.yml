@@ -20,7 +20,7 @@ jobs:
         run: npm install #should be ci, but eslintrc is failing
 
       - name: Build
-        run: npm run build
+        run: npm run build -- --mode production
 
       - name: Upload to S3
         uses: jakejarvis/s3-sync-action@master

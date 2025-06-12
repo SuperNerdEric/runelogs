@@ -47,7 +47,7 @@ const LogInfoBox: React.FC<Props> = ({
 
         try {
             const token = await getAccessTokenSilently();
-            const resp = await fetch(`https://api.runelogs.com/log/${logId}`, {
+            const resp = await fetch(`${import.meta.env.VITE_API_URL}/log/${logId}`, {
                 method: 'DELETE',
                 headers: {
                     Authorization: `Bearer ${token}`,

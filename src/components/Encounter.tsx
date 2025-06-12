@@ -90,8 +90,8 @@ const Encounter: React.FC = () => {
             try {
                 const res = await fetch(
                     isAggregate
-                        ? `https://api.runelogs.com/fight/aggregate/${encounterId}`
-                        : `https://api.runelogs.com/encounter/${encounterId}`
+                        ? `${import.meta.env.VITE_API_URL}/fight/aggregate/${encounterId}`
+                        : `${import.meta.env.VITE_API_URL}/encounter/${encounterId}`
                 );
                 if (!res.ok) throw new Error(`Server returned ${res.status}`);
                 const data: EncounterApi = await res.json();

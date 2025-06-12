@@ -57,7 +57,7 @@ const Leaderboard: React.FC = () => {
         setLoading(true);
         setError(null);
         try {
-            const url = `https://api.runelogs.com/leaderboard?content=${encodeURIComponent(
+            const url = `${import.meta.env.VITE_API_URL}/leaderboard?content=${encodeURIComponent(
                 content.value,
             )}&playerCount=${playerCount}`;
             const res = await fetch(url);
