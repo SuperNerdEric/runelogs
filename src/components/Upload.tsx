@@ -12,6 +12,9 @@ import {
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { Link as RouterLink } from 'react-router-dom';
 import { flushSync } from 'react-dom';
 import SectionBox from "./SectionBox";
 
@@ -172,6 +175,16 @@ const Upload: React.FC = () => {
                                 </Typography>
                                 .
                             </Typography>
+                            <Link
+                                component={RouterLink}
+                                to="/help#find-combat-log"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.25 }}
+                            >
+                                <HelpOutlineIcon fontSize="small" />
+                                <OpenInNewIcon fontSize="inherit" />
+                            </Link>
                         </li>
                         <li>
                             <Typography variant="h5" component="span">
