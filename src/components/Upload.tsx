@@ -1,25 +1,16 @@
-import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
-import {
-    Box,
-    Button,
-    Typography,
-    CircularProgress,
-    Alert,
-    Link,
-    LinearProgress,
-    Tooltip
-} from '@mui/material';
+import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
+import {Link as RouterLink, useNavigate} from 'react-router-dom';
+import {useAuth0} from '@auth0/auth0-react';
+import {Alert, Box, Button, CircularProgress, LinearProgress, Link, Tooltip, Typography} from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import { Link as RouterLink } from 'react-router-dom';
-import { flushSync } from 'react-dom';
+import {flushSync} from 'react-dom';
 import SectionBox from "./SectionBox";
+import {useStableDropzone} from "../hooks/useStableDropzone";
 
 const Upload: React.FC = () => {
-    const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
+    const {isAuthenticated, isLoading, getAccessTokenSilently} = useAuth0();
     const navigate = useNavigate();
 
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -33,6 +24,28 @@ const Upload: React.FC = () => {
             navigate('/');
         }
     }, [isLoading, isAuthenticated, navigate]);
+
+    const onDrop = React.useCallback((files: File[]) => {
+        if (files.length > 1) {
+            setErrorText('Only one file can be uploaded at a time.');
+        }
+        if (files.length) {
+            setProgress(null);
+            setSelectedFile(files[0]);
+        }
+    }, []);
+
+    const {
+        getRootProps,
+        getInputProps,
+        isDragActive
+    } = useStableDropzone({
+        onDrop,
+        multiple: true,
+        accept: {'text/plain': ['.txt']},
+        noClick: true,
+        noKeyboard: true,
+    });
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         setErrorText(null);
@@ -140,20 +153,32 @@ const Upload: React.FC = () => {
     if (isLoading || !isAuthenticated) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-                <CircularProgress />
+                <CircularProgress/>
             </Box>
         );
     }
 
     return (
         <Box display="flex" flexDirection="column" alignItems="center" mt={4} px={2}>
-            <SectionBox sx={{ p: 4 }}>
-                <Typography variant="h3" gutterBottom sx={{ color: 'white' }}>
+            <SectionBox
+                {...getRootProps()}
+                sx={{
+                    p: 4,
+                    borderColor: isDragActive ? '#1e88e5' : 'grey',
+                    borderStyle: isDragActive ? 'dashed' : 'solid',
+                }}
+            >
+                <input {...getInputProps({
+                    onDragEnter: (e) => e.stopPropagation(),
+                    onDragOver: (e) => e.stopPropagation(),
+                    onDragLeave: (e) => e.stopPropagation()
+                })} />
+                <Typography variant="h3" gutterBottom sx={{color: 'white'}}>
                     Upload a Combat Log
                 </Typography>
 
-                <Typography variant="h5" gutterBottom sx={{ color: 'white' }}>
-                    <ol style={{ paddingLeft: '24px', margin: 0 }}>
+                <Typography variant="h5" gutterBottom sx={{color: 'white'}}>
+                    <ol style={{paddingLeft: '24px', margin: 0}}>
                         <li>
                             <Typography variant="h5" component="span">
                                 Install the{' '}
@@ -168,9 +193,10 @@ const Upload: React.FC = () => {
                             </Typography>
                         </li>
                         <li>
-                            <Typography variant="h5"  component="span">
+                            <Typography variant="h5" component="span">
                                 Locate your combat logs stored in{' '}
-                                <Typography variant="h5" component="span" sx={{ color: 'yellow', fontFamily: 'monospace' }}>
+                                <Typography variant="h5" component="span"
+                                            sx={{color: 'yellow', fontFamily: 'monospace'}}>
                                     .runelite/combat_log
                                 </Typography>
                                 .
@@ -181,9 +207,9 @@ const Upload: React.FC = () => {
                                     to="/help#find-combat-log"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.25 }}
+                                    sx={{display: 'inline-flex', alignItems: 'center', gap: 0.25}}
                                 >
-                                    <HelpOutlineIcon fontSize="inherit" />
+                                    <HelpOutlineIcon fontSize="inherit"/>
                                 </Link>
                             </Tooltip>
                         </li>
@@ -195,7 +221,8 @@ const Upload: React.FC = () => {
                     </ol>
                 </Typography>
 
-                <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box component="form" onSubmit={handleSubmit}
+                     sx={{mt: 3, display: 'flex', flexDirection: 'column', gap: 2}}>
                     <Button
                         variant="contained"
                         component="label"
@@ -204,17 +231,17 @@ const Upload: React.FC = () => {
                             textTransform: 'none',
                             backgroundColor: 'white',
                             color: 'black',
-                            '&:hover': { backgroundColor: '#f0f0f0' }
+                            '&:hover': {backgroundColor: '#f0f0f0'}
                         }}
                     >
                         {selectedFile ? selectedFile.name : 'Choose Log File...'}
-                        <input type="file" accept=".txt" hidden onChange={handleFileChange} />
+                        <input type="file" accept=".txt" hidden onChange={handleFileChange}/>
                     </Button>
 
                     {errorText && <Alert severity="error">{errorText}</Alert>}
 
                     {progress !== null && (
-                        <Box width="100%" sx={{ my: 2 }}>
+                        <Box width="100%" sx={{my: 2}}>
                             <LinearProgress
                                 key={uploadPhase}
                                 variant="determinate"
@@ -223,10 +250,10 @@ const Upload: React.FC = () => {
                                     height: 10,
                                     borderRadius: 5,
                                     backgroundColor: '#444',
-                                    '& .MuiLinearProgress-bar': { backgroundColor: '#1e88e5' }
+                                    '& .MuiLinearProgress-bar': {backgroundColor: '#1e88e5'}
                                 }}
                             />
-                            <Typography variant="body2" align="center" sx={{ color: 'white', mt: 1 }}>
+                            <Typography variant="body2" align="center" sx={{color: 'white', mt: 1}}>
                                 {uploadPhase === 'parse' ? 'Parsing' : 'Uploading'}: {progress.toFixed(0)}%
                             </Typography>
                         </Box>
@@ -242,17 +269,18 @@ const Upload: React.FC = () => {
                                 minWidth: 120,
                                 backgroundColor: 'white',
                                 color: 'black',
-                                '&:hover': { backgroundColor: '#f0f0f0' }
+                                '&:hover': {backgroundColor: '#f0f0f0'}
                             }}
                         >
-                            {isSubmitting ? <CircularProgress size={24} color="inherit" /> : <><CloudUploadIcon sx={{ mr: 1 }} />Upload</>}
+                            {isSubmitting ? <CircularProgress size={24} color="inherit"/> : <><CloudUploadIcon
+                                sx={{mr: 1}}/>Upload</>}
                         </Button>
                     </Box>
-                    <Box display="flex" alignItems="center" gap={1} sx={{ mt: 2 }}>
-                        <InfoOutlinedIcon sx={{ color: 'white' }} />
-                        <Typography variant="body1" sx={{ color: 'white' }}>
+                    <Box display="flex" alignItems="center" gap={1} sx={{mt: 2}}>
+                        <InfoOutlinedIcon sx={{color: 'white'}}/>
+                        <Typography variant="body1" sx={{color: 'white'}}>
                             You can start a new combat log with the{' '}
-                            <Box component="span" sx={{ color: 'yellow', fontFamily: 'monospace' }}>
+                            <Box component="span" sx={{color: 'yellow', fontFamily: 'monospace'}}>
                                 ::newlog
                             </Box>{' '}
                             command in-game.
