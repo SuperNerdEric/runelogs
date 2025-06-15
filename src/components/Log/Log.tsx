@@ -131,6 +131,7 @@ const Log: React.FC = () => {
                         // because your model probably only expects `{ name: string; fights: FightMetaData[] }`.
                         const fgMeta = {
                             name: enc.name,
+                            officialDurationTicks: enc.officialDurationTicks,
                             fights: childFights
                         };
 

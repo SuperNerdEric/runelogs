@@ -28,6 +28,15 @@ export function formatHHmmss(milliseconds: number, includeMs: boolean): string {
     return duration.format(formatString);
 }
 
+export const ticksToTime = (ticks: number) => {
+    const secs = ticks * 0.6;
+    const m = Math.floor(secs / 60);
+    const s = Math.round(secs % 60)
+        .toString()
+        .padStart(2, '0');
+    return `${m}:${s}`;
+};
+
 export function calculateAccuracy(fight: Fight) {
     const hitsplatsCount = fight.data.filter(log => log.type === LogTypes.DAMAGE).length;
     const successfulHitsplatsCount = fight.data.filter(log => log.type === LogTypes.DAMAGE && (log as LogLine & {

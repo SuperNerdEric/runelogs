@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {FightMetaData} from "../../models/Fight";
-import {formatHHmmss} from "../../utils/utils";
+import {formatHHmmss, ticksToTime} from "../../utils/utils";
 import {isFightGroupMetadata} from "../../models/FightGroup";
-import { EncounterMetaData } from '../../models/LogLine';
+import {EncounterMetaData} from '../../models/LogLine';
+import {Typography} from "@mui/material";
 
 interface FightProps {
     fight: FightMetaData;
@@ -90,13 +91,25 @@ interface FightSelectorProps {
 
 interface BannerProps {
     name: string;
+    officialDurationTicks?: number;
     onClick?: () => void;
 }
 
-const Banner: React.FC<BannerProps> = ({ name, onClick }) => {
+const Banner: React.FC<BannerProps> = ({name, officialDurationTicks, onClick}) => {
     return (
         <div className="banner" onClick={onClick}>
-            <p>{name}</p>
+            <p>
+                {name}
+                {officialDurationTicks != null && (
+                    <>
+                        <br/>
+                        <Typography component="span" variant="body2" color='rgb(128, 230, 102)'>
+                            Overall - ({ticksToTime(officialDurationTicks)})
+                        </Typography>
+                    </>
+                )}
+            </p>
+
         </div>
     );
 };
@@ -104,6 +117,7 @@ const Banner: React.FC<BannerProps> = ({ name, onClick }) => {
 type FightGroupMap = {
     [name: string]: {
         isRaid: boolean;
+        officialDurationTicks?: number;
         fights: {
             fight: FightMetaData,
             index: number,
@@ -112,7 +126,7 @@ type FightGroupMap = {
     }
 }
 
-const FightSelector: React.FC<FightSelectorProps> = ({ fights, onSelectFight, onSelectAggregateFight }) => {
+const FightSelector: React.FC<FightSelectorProps> = ({fights, onSelectFight, onSelectAggregateFight}) => {
     // Group fights by name and record shortest fight time for each group
     const [groupedFights, setGroupedFights] = useState<FightGroupMap>({});
 
@@ -121,7 +135,11 @@ const FightSelector: React.FC<FightSelectorProps> = ({ fights, onSelectFight, on
 
         fights.forEach((fight, index) => {
             if (isFightGroupMetadata(fight)) {
-                tempGroupedFights[fight.name] = {isRaid: true, fights: fight.fights.map((f, i) => ({fight: f, index: index, fightGroupIndex: i}))};
+                tempGroupedFights[fight.name] = {
+                    isRaid: true,
+                    officialDurationTicks: fight.officialDurationTicks,
+                    fights: fight.fights.map((f, i) => ({fight: f, index: index, fightGroupIndex: i}))
+                };
             } else {
                 if (!tempGroupedFights[fight.name]) {
                     tempGroupedFights[fight.name] = {isRaid: false, fights: []};
@@ -141,7 +159,7 @@ const FightSelector: React.FC<FightSelectorProps> = ({ fights, onSelectFight, on
                 if (fightGroup.isRaid) {
                     return (
                         <div className="damage-done-container" key={name}>
-                            <Banner name={name}/>
+                            <Banner name={name} officialDurationTicks={fightGroup.officialDurationTicks}/>
                             <div className="fight-list">
                                 {fightGroup.fights.map((fight, index) => (
                                     <FightGroup
@@ -177,7 +195,7 @@ const FightSelector: React.FC<FightSelectorProps> = ({ fights, onSelectFight, on
 
                     return (
                         <div className="damage-done-container" key={name}>
-                            <Banner name={name} onClick={handleBannerClick} />
+                            <Banner name={name} onClick={handleBannerClick}/>
                             <div className="fight-list">
                                 {fightGroup.fights.map((fight, index) => (
                                     <Fight
