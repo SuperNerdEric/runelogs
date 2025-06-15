@@ -76,8 +76,6 @@ const Encounter: React.FC = () => {
             .map((f) => ({
                 id: f.id,
                 name: f.name,
-                date: '',
-                time: '',
                 fightDurationTicks: 0,
                 success: true,
             }));

@@ -15,14 +15,26 @@ interface FightProps {
 }
 
 const Fight: React.FC<FightProps> = ({fight, index, title, onSelectFight, isShortest}) => {
-    const time = new Date(`2000-01-01T${fight.time}`);
+    let formattedTime: string;
 
-    const formattedTime = time.toLocaleString('en-US', {
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true,
-    });
-
+    if (fight.startTime) {
+        const date = new Date(fight.startTime);
+        formattedTime = date.toLocaleString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true,
+        });
+    } else {
+        // Legacy, this is completely wrong, but it looks weird not to have something
+        const lengthMs = Math.round((fight.fightDurationTicks || 0) * 600);
+        const HHmmss = formatHHmmss(lengthMs, false);
+        const time = new Date(`2000-01-01T${HHmmss}`);
+        formattedTime = time.toLocaleString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true,
+        });
+    }
     const nameColor = fight.success ? 'rgb(128, 230, 102)' : 'rgb(230, 128, 102)';
 
     const handleClick = () => {
@@ -57,13 +69,26 @@ interface FightGroupProps {
  * A fight group is a collection of fights such as a Raid (CoX, ToB, ToA) or a Wave based fight (Inferno, Colosseum).
  */
 const FightGroup: React.FC<FightGroupProps> = ({fight, index, fightGroupIndex, fightName, onSelectFight}) => {
-    const time = new Date(`2000-01-01T${fight.time}`);
+    let formattedTime: string;
 
-    const formattedTime = time.toLocaleString('en-US', {
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true,
-    });
+    if (fight.startTime) {
+        const date = new Date(fight.startTime);
+        formattedTime = date.toLocaleString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true,
+        });
+    } else {
+        // Legacy, this is completely wrong, but it looks weird not to have something
+        const lengthMs = Math.round((fight.fightDurationTicks || 0) * 600);
+        const HHmmss = formatHHmmss(lengthMs, false);
+        const time = new Date(`2000-01-01T${HHmmss}`);
+        formattedTime = time.toLocaleString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true,
+        });
+    }
 
     const nameColor = fight.success ? 'rgb(128, 230, 102)' : 'rgb(230, 128, 102)';
 
