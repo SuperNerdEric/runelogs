@@ -4,13 +4,13 @@ import {Alert, Box, CircularProgress, Typography,} from '@mui/material';
 import FightSelector from '../sections/FightSelector';
 import {FightMetaData} from '../../models/Fight';
 import {EncounterMetaData} from '../../models/LogLine';
-import {formatHHmmss} from '../../utils/utils';
 import LogInfoBox from "./LogInfoBox";
 
 interface ApiFight {
     id: string;
     name: string;
     mainEnemyName: string;
+    startTime?: string; // Added on 6/15/2025, so old logs may not have this
     isNpc: boolean;
     isBoss: boolean;
     isWave: boolean;
@@ -39,6 +39,7 @@ interface ApiFightOnly {
     id: string;
     name: string;
     mainEnemyName: string;
+    startTime?: string; // Added on 6/15/2025, so old logs may not have this
     isNpc: boolean;
     isBoss: boolean;
     isWave: boolean;
@@ -114,21 +115,14 @@ const Log: React.FC = () => {
                             .slice()
                             .sort((a, b) => a.order - b.order)
                             .map((f) => {
-                                // Convert ticks → milliseconds (1 tick = 600 ms)
-                                const lengthMs = Math.round((f.fightDurationTicks || 0) * 600);
-                                const HHmmss = formatHHmmss(lengthMs, false);
-
                                 return {
                                     name: f.name,
-                                    date: 'N/A',
-                                    time: HHmmss,
+                                    startTime: f.startTime,
                                     fightDurationTicks: f.fightDurationTicks,
                                     success: f.success
                                 };
                             });
 
-                        // Create a FightGroupMetaData — note: we do NOT supply date/time here,
-                        // because your model probably only expects `{ name: string; fights: FightMetaData[] }`.
                         const fgMeta = {
                             name: enc.name,
                             officialDurationTicks: enc.officialDurationTicks,
@@ -138,13 +132,9 @@ const Log: React.FC = () => {
                         out.push(fgMeta);
                     } else {
                         // Standalone fight → FightMetaData
-                        const lengthMs = Math.round((enc.fightDurationTicks || 0) * 600);
-                        const HHmmss = formatHHmmss(lengthMs, false);
-
                         const fMeta: FightMetaData = {
                             name: enc.mainEnemyName,
-                            date: 'N/A',
-                            time: HHmmss,
+                            startTime: enc.startTime,
                             fightDurationTicks: enc.fightDurationTicks,
                             success: enc.success
                         };
