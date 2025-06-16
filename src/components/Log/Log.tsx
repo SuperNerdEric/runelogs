@@ -10,7 +10,7 @@ interface ApiFight {
     id: string;
     name: string;
     mainEnemyName: string;
-    startTime?: string; // Added on 6/15/2025, so old logs may not have this
+    startTime: string;
     isNpc: boolean;
     isBoss: boolean;
     isWave: boolean;
@@ -39,7 +39,7 @@ interface ApiFightOnly {
     id: string;
     name: string;
     mainEnemyName: string;
-    startTime?: string; // Added on 6/15/2025, so old logs may not have this
+    startTime: string;
     isNpc: boolean;
     isBoss: boolean;
     isWave: boolean;
