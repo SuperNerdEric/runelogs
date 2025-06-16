@@ -17,6 +17,8 @@ import Home from "./components/Home";
 import Help from "./components/Help";
 import Login from "./components/Login";
 import Logout from "./components/Logout";
+import {initGA} from "./Analytics";
+import usePageTracking from "./hooks/usePageTracking";
 
 const domain = "auth.runelogs.com";
 const clientId = "vNPXVhAvOj2ES9kqi5WPs80SnX8FPKqv";
@@ -24,6 +26,31 @@ const clientId = "vNPXVhAvOj2ES9kqi5WPs80SnX8FPKqv";
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
 );
+
+initGA();
+
+function AppRoutes() {
+    usePageTracking();
+
+    return (
+        <div className="app-layout">
+            <TopBar/>
+            <Routes>
+                <Route path="/" element={<Home/>}/>
+                <Route path="/login" element={<Login />} />
+                <Route path="/logout" element={<Logout />} />
+                <Route path="/help" element={<Help/>}/>
+                <Route path="/player/:playerName" element={<Player/>}/>
+                <Route path="/encounter/:id" element={<Encounter />} />
+                <Route path="/encounter/aggregate/:id" element={<Encounter />} />
+                <Route path="/upload" element={<Upload/>}/>
+                <Route path="/log/:logId" element={<Log/>}/>
+                <Route path="/logs/:uploaderId" element={<Logs/>}/>
+            </Routes>
+        </div>
+    );
+}
+
 root.render(
     <React.StrictMode>
         <SnackbarProvider anchorOrigin={{vertical: 'top', horizontal: 'center'}}>
@@ -40,21 +67,7 @@ root.render(
             >
                 <ThemeProvider theme={theme}>
                     <BrowserRouter>
-                        <div className="app-layout">
-                            <TopBar/>
-                            <Routes>
-                                <Route path="/" element={<Home/>}/>
-                                <Route path="/login" element={<Login />} />
-                                <Route path="/logout" element={<Logout />} />
-                                <Route path="/help" element={<Help/>}/>
-                                <Route path="/player/:playerName" element={<Player/>}/>
-                                <Route path="/encounter/:id" element={<Encounter />} />
-                                <Route path="/encounter/aggregate/:id" element={<Encounter />} />
-                                <Route path="/upload" element={<Upload/>}/>
-                                <Route path="/log/:logId" element={<Log/>}/>
-                                <Route path="/logs/:uploaderId" element={<Logs/>}/>
-                            </Routes>
-                        </div>
+                        <AppRoutes />
                     </BrowserRouter>
                 </ThemeProvider>
             </Auth0Provider>
