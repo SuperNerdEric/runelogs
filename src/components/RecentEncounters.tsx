@@ -19,6 +19,7 @@ interface RecentEncounter {
     id: string;
     name: string;
     mainEnemyName?: string;
+    startTime: string;
     leaderboardName?: string;
     success?: boolean;
     officialDurationTicks: number | null;
@@ -70,7 +71,9 @@ const RecentEncounters: React.FC = () => {
         );
     }
 
-    const encounters = data?.recentEncounters || [];
+    const encounters = (data?.recentEncounters || []).sort(
+        (a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+    );
 
     if (encounters.length === 0) {
         return (
@@ -92,7 +95,7 @@ const RecentEncounters: React.FC = () => {
                             <TableRow>
                                 <TableCell sx={{color: 'white'}}>Name</TableCell>
                                 <TableCell sx={{color: 'white'}}>Id</TableCell>
-                                <TableCell sx={{color: 'white'}}>Uploaded</TableCell>
+                                <TableCell sx={{color: 'white'}}>Date</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -105,7 +108,7 @@ const RecentEncounters: React.FC = () => {
                                         </Link>
                                     </TableCell>
                                     <TableCell sx={{color: 'white'}}>
-                                        {new Date(enc.uploadedAt).toLocaleString()}
+                                        {new Date(enc.startTime).toLocaleString()}
                                     </TableCell>
                                 </TableRow>
                             ))}
