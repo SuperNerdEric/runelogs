@@ -12,6 +12,7 @@ export interface Fight {
     data: LogLine[];
     enemyNames: string[];
     loggedInPlayer: string;
+    players: string[];
     logVersion: string;
 
     // Just for easy reference later

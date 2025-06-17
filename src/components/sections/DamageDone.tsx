@@ -6,34 +6,50 @@ import {Fight} from "../../models/Fight";
 import EventsTable from "../EventsTable";
 import DPSMeterTable from "../charts/DPSMeterTable";
 import SectionBox from "../SectionBox";
+import {filterByType, LogTypes} from "../../models/LogLine";
 
 interface LogsSelectionProps {
-    selectedLogs: Fight;
-    actor: "source" | "target";
+    fight: Fight;
+    type: "damage-done" | "damage-taken";
 }
 
-const DamageDone: React.FC<LogsSelectionProps> = ({selectedLogs, actor}) => {
+const DamageDone: React.FC<LogsSelectionProps> = ({fight, type}) => {
+    const filteredLogs = filterByType(fight.data, LogTypes.DAMAGE);
+
+    let fightWithFilteredLogs;
+    if (type === "damage-done") {
+        fightWithFilteredLogs = {
+            ...fight,
+            data: filteredLogs.filter(log => log.target.index), // Filters for logs where target is a monster
+        };
+    } else {
+        fightWithFilteredLogs = {
+            ...fight,
+            data: filteredLogs.filter(log => !log.target.index), // Filters for logs where target is a player
+        };
+    }
+
     return (
         <div>
-            {selectedLogs && (
+            {fight && (
                 <div>
                     <SectionBox>
                         <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400'}}>
-                            {selectedLogs && selectedLogs.data && selectedLogs.data.length > 1 && (
-                                <DPSChart fight={selectedLogs}/>
+                            {fight && fight.data && fight.data.length > 1 && (
+                                <DPSChart fight={fightWithFilteredLogs}/>
                             )}
                         </div>
                     </SectionBox>
                     <SectionBox>
                         <div className="results-chart-container">
-                                <Results fight={selectedLogs}/>
-                                {selectedLogs && selectedLogs.data && selectedLogs.data.length > 0 && (
-                                    <HitDistributionChart fight={selectedLogs}/>
+                                <Results fight={fightWithFilteredLogs}/>
+                                {fightWithFilteredLogs && fightWithFilteredLogs.data && fightWithFilteredLogs.data.length > 0 && (
+                                    <HitDistributionChart fight={fightWithFilteredLogs}/>
                                 )}
                         </div>
                     </SectionBox>
-                    <DPSMeterTable fight={selectedLogs} actor={actor}/>
-                    <EventsTable fight={selectedLogs} maxHeight={'60vh'}/>
+                    <DPSMeterTable fight={fight} filteredFight={fightWithFilteredLogs} type={type}/>
+                    <EventsTable fight={fightWithFilteredLogs} maxHeight={'60vh'}/>
                 </div>
             )}
         </div>

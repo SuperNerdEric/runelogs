@@ -76,31 +76,41 @@ const getActorName = (log: LogLine, key: 'source' | 'target'): string => {
     return "";
 }
 
+export const renderStatImages = (levels: Levels, widthPer: number) => {
+    return (
+        <div style={{display: 'flex', alignItems: 'center'}}>
+            {Object.entries(levels).map(([stat, value], index) => (
+                <div key={index} style={{display: 'inline-block', marginRight: '10px'}}>
+                    <img
+                        src={statImages[stat as keyof Levels]}
+                        alt={stat}
+                        style={{
+                            marginRight: '5px',
+                            height: '18px',
+                            verticalAlign: 'middle',
+                        }}
+                    />
+                    <span
+                        style={{
+                            verticalAlign: "middle",
+                            width: `${widthPer}px`,
+                            display: "inline-block",
+                            textAlign: "left",
+                            marginRight: '5px'
+                        }}
+                    >
+                        {Number.isInteger(value) ? value.toFixed(0) : value.toFixed(2)}
+                    </span>
+                </div>
+            ))}
+        </div>
+    );
+};
+
 const EventsTable: React.FC<EventsTableProps> = ({fight, maxHeight, showSource = false}) => {
 
     const logs = fight.data;
     const loggedInPlayer = fight.loggedInPlayer;
-
-    const renderStatImages = (levels: Levels) => {
-        return (
-            <div style={{display: 'flex', alignItems: 'center'}}>
-                {Object.entries(levels).map(([stat, value], index) => (
-                    <div key={index} style={{display: 'inline-block', marginRight: '10px'}}>
-                        <img
-                            src={statImages[stat as keyof Levels]}
-                            alt={stat}
-                            style={{
-                                marginRight: '5px',
-                                height: '18px',
-                                verticalAlign: 'middle',
-                            }}
-                        />
-                        <span style={{verticalAlign: 'middle'}}>{value}</span>
-                    </div>
-                ))}
-            </div>
-        );
-    };
 
     const renderPrayerImages = (prayers: string[]) => {
         return (
@@ -179,8 +189,8 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, maxHeight, showSource =
                                         {log.type === LogTypes.LOG_VERSION ? `Log version ${log.logVersion}` : ""}
                                         {log.type === LogTypes.LOGGED_IN_PLAYER ? `Logged in player ${log.loggedInPlayer}` : ""}
                                         {log.type === LogTypes.PLAYER_REGION ? `${log.playerRegion}` : ""}
-                                        {log.type === LogTypes.BASE_LEVELS ? renderStatImages(log.baseLevels) : ""}
-                                        {log.type === LogTypes.BOOSTED_LEVELS ? renderStatImages(log.boostedLevels) : ""}
+                                        {log.type === LogTypes.BASE_LEVELS ? renderStatImages(log.baseLevels, 20) : ""}
+                                        {log.type === LogTypes.BOOSTED_LEVELS ? renderStatImages(log.boostedLevels, 20) : ""}
                                         {log.type === LogTypes.PRAYER ? renderPrayerImages(log.prayers) : ""}
                                         {log.type === LogTypes.OVERHEAD ? renderPrayerImages([log.overhead]) : ""}
                                         {log.type === LogTypes.PLAYER_EQUIPMENT && Array.isArray(log.playerEquipment) ? (

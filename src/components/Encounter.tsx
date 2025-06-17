@@ -2,7 +2,6 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Link, useNavigate, useParams, useSearchParams} from 'react-router-dom';
 import {Box, CircularProgress, Tab, Tabs, Typography} from '@mui/material';
 import {BoostsTab, DamageDoneTab, DamageTakenTab, EventsTab, ReplayTab, TabsEnum,} from './Tabs';
-import TickActivity from './performance/TickActivity';
 import {Fight, FightMetaData, isFight} from '../models/Fight';
 import * as semver from 'semver';
 import '../App.css';
@@ -246,9 +245,6 @@ const Encounter: React.FC = () => {
                         />
                     ))}
                 </Tabs>
-
-                {(fight.isBoss || fight.metaData.fightDurationTicks >= 25) &&
-                    selectedTab !== TabsEnum.REPLAY && <TickActivity selectedLogs={fight}/>}
 
                 {selectedTab === TabsEnum.DAMAGE_DONE && <DamageDoneTab selectedLogs={fight}/>}
                 {selectedTab === TabsEnum.DAMAGE_TAKEN && <DamageTakenTab selectedLogs={fight}/>}
