@@ -3,6 +3,7 @@ import {Fight} from '../../models/Fight';
 import {LogLine, LogTypes} from '../../models/LogLine';
 import {getItemImageUrl} from "./PlayerEquipment";
 import undeadGraspImg from '../../assets/animations/Undead_Grasp_8972.png';
+import nullImg from '../../assets/animations/Null.png';
 
 interface TickChartProps {
     fight: Fight;
@@ -30,10 +31,18 @@ const getAnimationOrItemImageUrl = (
     animationId: number | undefined,
     weaponId: string
 ): string => {
-    return (animationId && animationIdToImage[animationId])
-        ? animationIdToImage[animationId]
-        : getItemImageUrl(weaponId as unknown as number);
+    if (animationId && animationIdToImage[animationId]) {
+        return animationIdToImage[animationId];
+    }
+
+    const parsedWeaponId = parseInt(weaponId, 10);
+    if (!isNaN(parsedWeaponId) && parsedWeaponId > 0) {
+        return getItemImageUrl(parsedWeaponId);
+    }
+
+    return nullImg;
 };
+
 
 const TickChart: React.FC<TickChartProps> = ({
                                                  fight,
