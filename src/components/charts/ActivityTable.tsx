@@ -1,10 +1,11 @@
 import {Fight} from "../../models/Fight";
 import React from "react";
-import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow,} from "@mui/material";
+import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, useMediaQuery,} from "@mui/material";
 import {FightPerformance, getFightPerformanceByPlayer, getPercentColor} from "../../utils/TickActivity";
 import {calculateWeightedAveragesByPlayer} from "./Boosts";
 import {Levels} from "../../models/Levels";
 import {statImages} from "../EventsTable";
+import theme from "../../theme";
 
 interface ActivityTableProps {
     fight: Fight;
@@ -13,6 +14,7 @@ interface ActivityTableProps {
 const ActivityTable: React.FC<ActivityTableProps> = ({fight}) => {
     const performanceByPlayer = getFightPerformanceByPlayer(fight);
     const averageLevelsByPlayer = calculateWeightedAveragesByPlayer(fight);
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const fightLengthMs = (fight.metaData.fightDurationTicks ?? 0) * 600;
 
@@ -92,11 +94,18 @@ const ActivityTable: React.FC<ActivityTableProps> = ({fight}) => {
                                                     borderLeft: 'none',
                                                     borderRight: 'none',
                                                     verticalAlign: 'middle',
-                                                    width: isLast ? 'auto' : '50px', // allow last stat to take slack
+                                                    width: isLast ? 'auto' : '50px',
                                                 }}
                                             >
                                                 {value != null && !isNaN(value) ? (
-                                                    <>
+                                                    <div
+                                                        style={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            flexDirection: isMobile ? 'column' : 'row',
+                                                            gap: isMobile ? '2px' : '5px',
+                                                        }}
+                                                    >
                                                         <img
                                                             src={statImages[stat as keyof Levels]}
                                                             alt={stat}
@@ -104,13 +113,12 @@ const ActivityTable: React.FC<ActivityTableProps> = ({fight}) => {
                                                                 height: '18px',
                                                                 verticalAlign: 'middle',
                                                                 marginLeft: '0px',
-                                                                marginRight: '4px',
                                                             }}
                                                         />
                                                         <span style={{verticalAlign: 'middle'}}>
                                                             {Number.isInteger(value) ? value.toFixed(0) : value.toFixed(2)}
                                                         </span>
-                                                    </>
+                                                    </div>
                                                 ) : (
                                                     '-'
                                                 )}
