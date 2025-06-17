@@ -1,6 +1,7 @@
 import React from 'react';
 import Leaderboard from './Leaderboard';
 import {Box, Link, Typography} from '@mui/material';
+import OverallRecentEncounters from "./OverallRecentEncounters";
 
 export default function Home() {
     return (
@@ -35,6 +36,9 @@ export default function Home() {
             </Box>
             <Box mt={4}>
                 <Leaderboard/>
+            </Box>
+            <Box mt={4}>
+                <OverallRecentEncounters/>
             </Box>
         </Box>
     );
