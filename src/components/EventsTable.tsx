@@ -49,14 +49,14 @@ interface EventsTableProps {
     showSource?: boolean;
 }
 
-const statImages: Record<keyof Levels, string> = {
+export const statImages: Record<keyof Levels, string> = {
     attack: attackImage,
+    strength: strengthImage,
     defence: defenceImage,
-    hitpoints: hitpointsImage,
-    magic: magicImage,
-    prayer: prayerImage,
     ranged: rangedImage,
-    strength: strengthImage
+    magic: magicImage,
+    hitpoints: hitpointsImage,
+    prayer: prayerImage,
 };
 
 const getItemImageUrl = (itemId: number): string => {
@@ -76,7 +76,7 @@ const getActorName = (log: LogLine, key: 'source' | 'target'): string => {
     return "";
 }
 
-export const renderStatImages = (levels: Levels, widthPer: number) => {
+export const renderStatImages = (levels: Levels) => {
     return (
         <div style={{display: 'flex', alignItems: 'center'}}>
             {Object.entries(levels).map(([stat, value], index) => (
@@ -90,17 +90,7 @@ export const renderStatImages = (levels: Levels, widthPer: number) => {
                             verticalAlign: 'middle',
                         }}
                     />
-                    <span
-                        style={{
-                            verticalAlign: "middle",
-                            width: `${widthPer}px`,
-                            display: "inline-block",
-                            textAlign: "left",
-                            marginRight: '5px'
-                        }}
-                    >
-                        {Number.isInteger(value) ? value.toFixed(0) : value.toFixed(2)}
-                    </span>
+                    <span style={{verticalAlign: 'middle'}}>{value}</span>
                 </div>
             ))}
         </div>
@@ -189,8 +179,8 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, maxHeight, showSource =
                                         {log.type === LogTypes.LOG_VERSION ? `Log version ${log.logVersion}` : ""}
                                         {log.type === LogTypes.LOGGED_IN_PLAYER ? `Logged in player ${log.loggedInPlayer}` : ""}
                                         {log.type === LogTypes.PLAYER_REGION ? `${log.playerRegion}` : ""}
-                                        {log.type === LogTypes.BASE_LEVELS ? renderStatImages(log.baseLevels, 20) : ""}
-                                        {log.type === LogTypes.BOOSTED_LEVELS ? renderStatImages(log.boostedLevels, 20) : ""}
+                                        {log.type === LogTypes.BASE_LEVELS ? renderStatImages(log.baseLevels) : ""}
+                                        {log.type === LogTypes.BOOSTED_LEVELS ? renderStatImages(log.boostedLevels) : ""}
                                         {log.type === LogTypes.PRAYER ? renderPrayerImages(log.prayers) : ""}
                                         {log.type === LogTypes.OVERHEAD ? renderPrayerImages([log.overhead]) : ""}
                                         {log.type === LogTypes.PLAYER_EQUIPMENT && Array.isArray(log.playerEquipment) ? (

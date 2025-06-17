@@ -3,7 +3,8 @@ import React from "react";
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow,} from "@mui/material";
 import {FightPerformance, getFightPerformanceByPlayer, getPercentColor} from "../../utils/TickActivity";
 import {calculateWeightedAveragesByPlayer} from "./Boosts";
-import {renderStatImages} from "../EventsTable";
+import {Levels} from "../../models/Levels";
+import {statImages} from "../EventsTable";
 
 interface ActivityTableProps {
     fight: Fight;
@@ -45,7 +46,9 @@ const ActivityTable: React.FC<ActivityTableProps> = ({fight}) => {
                         <TableCell style={{width: '100px', textAlign: 'center'}}>Name</TableCell>
                         <TableCell style={{width: '100px', textAlign: 'center'}}>Activity</TableCell>
                         <TableCell style={{width: '100px', textAlign: 'center'}}>Boosted Hits</TableCell>
-                        <TableCell style={{textAlign: "center"}}>Averages</TableCell>
+                        <TableCell colSpan={Object.keys(statImages).length} style={{textAlign: 'center'}}>
+                            Averages
+                        </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -75,9 +78,46 @@ const ActivityTable: React.FC<ActivityTableProps> = ({fight}) => {
                                     }}>
                                         {!perf.hasBoostedLevels ? "-" : formatPercent(boosted)}
                                     </TableCell>
-                                    <TableCell style={{textAlign: 'center'}}>
-                                        {avgLevels ? renderStatImages(avgLevels, 35) : "-"}
-                                    </TableCell>
+                                    {Object.keys(statImages).map((stat, index, array) => {
+                                        const value = avgLevels?.[stat as keyof Levels];
+                                        const isLast = index === array.length - 1;
+
+                                        return (
+                                            <TableCell
+                                                key={stat}
+                                                sx={{
+                                                    textAlign: 'left',
+                                                    whiteSpace: 'nowrap',
+                                                    padding: '2px 8px',
+                                                    borderLeft: 'none',
+                                                    borderRight: 'none',
+                                                    verticalAlign: 'middle',
+                                                    width: isLast ? 'auto' : '50px', // allow last stat to take slack
+                                                }}
+                                            >
+                                                {value != null && !isNaN(value) ? (
+                                                    <>
+                                                        <img
+                                                            src={statImages[stat as keyof Levels]}
+                                                            alt={stat}
+                                                            style={{
+                                                                height: '18px',
+                                                                verticalAlign: 'middle',
+                                                                marginLeft: '0px',
+                                                                marginRight: '4px',
+                                                            }}
+                                                        />
+                                                        <span style={{verticalAlign: 'middle'}}>
+                                                            {Number.isInteger(value) ? value.toFixed(0) : value.toFixed(2)}
+                                                        </span>
+                                                    </>
+                                                ) : (
+                                                    '-'
+                                                )}
+                                            </TableCell>
+                                        );
+                                    })}
+
                                 </TableRow>
                             );
                         })}
