@@ -1,9 +1,8 @@
 import React from "react";
 import DamageDone from "./sections/DamageDone";
-import BoostsChart from "./charts/BoostsChart";
+import Boosts from "./charts/Boosts";
 import EventsTable from "./EventsTable";
 import {Fight} from "../models/Fight";
-import {filterByType, LogTypes} from "../models/LogLine";
 import MainReplayComponent from "./replay/MainReplayComponent";
 
 export enum TabsEnum {
@@ -15,39 +14,21 @@ export enum TabsEnum {
 }
 
 export const DamageDoneTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}) => {
-    const filteredLogs = filterByType(selectedLogs.data, LogTypes.DAMAGE);
     return <DamageDone
-        selectedLogs={{
-            ...selectedLogs!,
-            data: filteredLogs.filter(
-                (log) =>
-                    log.target.index
-            )!,
-        }}
-        actor={"source"}
+        fight={selectedLogs}
+        type={"damage-done"}
     />;
 };
 
 export const DamageTakenTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}) => {
-    const filteredLogs = filterByType(selectedLogs.data, LogTypes.DAMAGE);
     return <DamageDone
-        selectedLogs={{
-            ...selectedLogs!,
-            data: filteredLogs.filter(
-                (log) =>
-                    !log.target.index
-            )!,
-        }}
-        actor={"target"}
+        fight={selectedLogs}
+        type={"damage-taken"}
     />;
 };
 
 export const BoostsTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}) => {
-    return (
-        <div className="damage-done-container">
-            <BoostsChart fight={selectedLogs}/>
-        </div>
-    );
+    return <Boosts fight={selectedLogs}/>;
 };
 
 export const EventsTab: React.FC<{ selectedLogs: Fight }> = ({selectedLogs}) => {

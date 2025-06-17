@@ -2,27 +2,30 @@ import {Fight} from "../../models/Fight";
 import React, {useEffect, useState} from "react";
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
 import {DamageLog, LogTypes} from "../../models/LogLine";
+import {getFightPerformanceByPlayer, getPercentColor} from "../../utils/TickActivity";
 
 interface DPSMeterBarChartProps {
     fight: Fight;
-    actor: "source" | "target";
+    filteredFight: Fight;
+    type: "damage-done" | "damage-taken";
 }
 
 interface DPSData {
     totalDamage: number;
     totalHits: number;
     successfulHits: number;
+    activity: number;
     accuracy: number;
     dps: number;
 }
 
-const getDPSData = (fight: Fight, actor: "source" | "target"): Record<string, DPSData> => {
+const getDPSData = (fight: Fight, filteredFight: Fight, type: "damage-done" | "damage-taken"): Record<string, DPSData> => {
     const dpsData: Record<string, DPSData> = {};
 
-    for (const logLine of fight.data) {
+    for (const logLine of filteredFight.data) {
         if (logLine.type === LogTypes.DAMAGE) {
             const damageLog = logLine as DamageLog;
-            const actorName = actor === "source" ? damageLog.source.name : damageLog.target.name;
+            const actorName = type === "damage-done" ? damageLog.source.name : damageLog.target.name;
 
             if (!dpsData[actorName]) {
                 dpsData[actorName] = {accuracy: 0, dps: 0, totalDamage: 0, totalHits: 0, successfulHits: 0};
@@ -32,6 +35,19 @@ const getDPSData = (fight: Fight, actor: "source" | "target"): Record<string, DP
             dpsData[actorName].totalHits += 1;
             if (damageLog.damageAmount > 0) {
                 dpsData[actorName].successfulHits += 1;
+            }
+        }
+    }
+
+    if (type === "damage-done") {
+        const performanceMap = getFightPerformanceByPlayer(fight);
+
+        for (const [player, playerPerformance] of performanceMap.entries()) {
+            const percentage = playerPerformance.activeTicks / fight.metaData.fightDurationTicks;
+            console.log(`Player: ${player}, Active Ticks: ${playerPerformance.activeTicks}, Percentage: ${percentage}`);
+
+            if (dpsData[player]) {
+                dpsData[player].activity = Number((percentage * 100).toFixed(2));
             }
         }
     }
@@ -56,10 +72,10 @@ const getDPSData = (fight: Fight, actor: "source" | "target"): Record<string, DP
     return dpsData;
 }
 
-const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({fight, actor}) => {
+const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({fight, filteredFight,  type}) => {
     const loggedInPlayer = fight.loggedInPlayer;
 
-    const dpsData = getDPSData(fight, actor);
+    const dpsData = getDPSData(fight, filteredFight, type);
     const totalDamage = Object.values(dpsData).reduce((acc, cur) => acc + cur.totalDamage, 0);
 
     const [maxWidth, setMaxWidth] = useState<number>(0);
@@ -68,8 +84,8 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({fight, actor}) => {
         const handleResize = () => {
             // Handle this better
             let vwWidth = window.innerWidth * 0.7 - 300;
-            if (vwWidth > 600) {
-                vwWidth = 600;
+            if (vwWidth > 540) {
+                vwWidth = 540;
             }
             setMaxWidth(vwWidth);
         };
@@ -105,6 +121,9 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({fight, actor}) => {
                     <TableRow>
                         <TableCell style={{width: '100px', textAlign: 'center'}}>Name</TableCell>
                         <TableCell style={{textAlign: 'center', paddingBottom: '2px'}}>Amount</TableCell>
+                        {type === "damage-done" && (
+                            <TableCell style={{width: '100px', textAlign: 'center'}}>Activity</TableCell>
+                        )}
                         <TableCell style={{width: '100px', textAlign: 'center'}}>Accuracy</TableCell>
                         <TableCell style={{width: '70px', textAlign: 'center'}}>DPS</TableCell>
                     </TableRow>
@@ -143,6 +162,11 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({fight, actor}) => {
                                         {data.totalDamage}
                                     </div>
                                 </TableCell>
+                                {type === "damage-done" && (
+                                    <TableCell style={{width: '60px', textAlign: 'right', color: source === "Unknown" ? undefined : getPercentColor(data.activity)}}>
+                                        {source === "Unknown" ? "-" : `${data.activity}%`}
+                                    </TableCell>
+                                )}
                                 <TableCell style={{width: '70px', textAlign: 'right'}}>{data.accuracy}%</TableCell>
                                 <TableCell style={{width: '70px', textAlign: 'right'}}
                                            className={'dps-text'}>{data.dps}</TableCell>

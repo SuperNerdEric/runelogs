@@ -9,7 +9,7 @@ export enum Raid {
 
 // todo these should really be monster ids
 export const COX_MONSTERS = ["Abyssal portal", "Deathly mage", "Deathly ranger", "Glowing crystal", "Great Olm", "Guardian", "Ice demon", "Lizardman shaman", "Muttadile", "Scavenger beast", "Skeletal mystic", "Tekton", "Vanguard", "Vasa Nistirio", "Vespine soldier", "Vespula"];
-export const TOA_MONSTERS = ["Ba-Ba", "Akkha", "Akkha's Shadow", "Kephri", "Zebak", "Obelisk", "Tumeken's Warden"];
+export const TOA_MONSTERS = ["Baboon Brawler", "Baboon Thrower", "Baboon Shaman", "Baboon Mage", "Baboon Thrall", "Ba-Ba", "Akkha", "Akkha's Shadow", "Kephri", "Zebak", "Obelisk", "Elidinis' Warden", "Tumeken's Warden"];
 
 export const MELEE_ANIMATIONS = [
     390, // Slash, swift blade, Osmumten's fang

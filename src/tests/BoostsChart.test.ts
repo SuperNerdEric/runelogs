@@ -1,4 +1,4 @@
-import {calculateWeightedAverages} from "../components/charts/BoostsChart";
+import {calculateWeightedAverages} from "../components/charts/Boosts";
 import {LogLine, LogTypes} from "../models/LogLine";
 import {Fight} from "../models/Fight";
 import {convertTimeToMillis} from "../utils/utils";
