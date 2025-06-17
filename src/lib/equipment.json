@@ -7821,24 +7821,6 @@
     "speed": 0
   },
   {
-    "name": "Bow of faerdhinen",
-    "id": 25865,
-    "version": "Charged",
-    "slot": "weapon",
-    "category": "Bow",
-    "isTwoHanded": true,
-    "speed": 4
-  },
-  {
-    "name": "Bow of faerdhinen",
-    "id": 25862,
-    "version": "Inactive",
-    "slot": "weapon",
-    "category": "Bow",
-    "isTwoHanded": true,
-    "speed": 4
-  },
-  {
     "name": "Bow of faerdhinen (c)",
     "id": 25867,
     "version": "",
