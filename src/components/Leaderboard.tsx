@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Link as RouterLink} from 'react-router-dom';
 import {
     Box,
@@ -12,7 +12,6 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    TableSortLabel,
     Typography,
     useMediaQuery,
 } from '@mui/material';
@@ -75,13 +74,6 @@ const Leaderboard: React.FC = () => {
     useEffect(() => {
         fetchData();
     }, [fetchData]);
-
-    const sorted = useMemo(() => {
-        if (!entries) return null;
-        return [...entries].sort((a, b) =>
-            order === 'asc' ? a.duration - b.duration : b.duration - a.duration,
-        );
-    }, [entries, order]);
 
     const ticksToTime = (ticks: number) => {
         const secs = ticks * 0.6;
@@ -148,24 +140,12 @@ const Leaderboard: React.FC = () => {
                                 <TableRow>
                                     <TableCell sx={{color: 'white'}}>Rank</TableCell>
                                     <TableCell sx={{color: 'white'}}>Id</TableCell>
-                                    <TableCell sx={{color: 'white'}}>
-                                        <TableSortLabel
-                                            active={orderBy === 'duration'}
-                                            direction={order}
-                                            onClick={() => setOrder(order === 'asc' ? 'desc' : 'asc')}
-                                            sx={{
-                                                color: 'white',
-                                                '& .MuiTableSortLabel-icon': {color: 'white !important'}
-                                            }}
-                                        >
-                                            Duration
-                                        </TableSortLabel>
-                                    </TableCell>
+                                    <TableCell sx={{color: 'white'}}>Duration</TableCell>
                                     <TableCell sx={{color: 'white'}}>Players</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {sorted!.map((row, idx) => (
+                                {entries!.map((row, idx) => (
                                     <TableRow key={row.id} hover>
                                         <TableCell sx={{color: 'white'}}>{idx + 1}</TableCell>
                                         <TableCell sx={{color: 'white'}}>
