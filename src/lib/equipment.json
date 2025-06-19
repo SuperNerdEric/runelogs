@@ -39528,15 +39528,6 @@
     "speed": 0
   },
   {
-    "name": "Torva full helm",
-    "id": 26382,
-    "version": "Restored",
-    "slot": "head",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
     "name": "Torva full helm (unobtainable item)",
     "id": 30302,
     "version": "",
