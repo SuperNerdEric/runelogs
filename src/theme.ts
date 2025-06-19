@@ -64,7 +64,7 @@ const theme = createTheme({
                 root: {
                     backgroundColor: '#141414',
                     border: '3px solid grey',
-                    borderRadius: '1px',
+                    borderRadius: '5px',
                     maxWidth: '1000px',
                     margin: '0 auto 15px',
                     boxSizing: 'border-box',
