@@ -9,7 +9,7 @@ const SectionBox = (props: BoxProps) => (
             border: '3px solid grey',
             boxSizing: 'border-box',
             marginBottom: '10px',
-            borderRadius: 1,
+            borderRadius: '5px',
             overflowX: 'auto',
             maxWidth: 1000,
             width: '100%',
