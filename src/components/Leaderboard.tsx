@@ -16,6 +16,7 @@ import {
     useMediaQuery,
 } from '@mui/material';
 import theme from "../theme";
+import {ticksToTime} from "../utils/utils";
 
 type ContentOption = {
     label: string;
@@ -31,6 +32,11 @@ const contentOptions: ContentOption[] = [
         label: 'Tombs of Amascut: Expert Mode',
         value: 'Tombs of Amascut: Expert Mode',
         playerCounts: [1, 2, 3, 4, 5, 6, 7, 8]
+    },
+    {
+        label: 'The Inferno',
+        value: 'The Inferno',
+        playerCounts: [1]
     },
 ];
 
@@ -75,15 +81,6 @@ const Leaderboard: React.FC = () => {
         fetchData();
     }, [fetchData]);
 
-    const ticksToTime = (ticks: number) => {
-        const secs = ticks * 0.6;
-        const m = Math.floor(secs / 60);
-        const s = Math.round(secs % 60)
-            .toString()
-            .padStart(2, '0');
-        return `${m}:${s}`;
-    };
-
     if (loading)
         return (
             <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -109,7 +106,16 @@ const Leaderboard: React.FC = () => {
             <Box display="flex" p={2} pt={0}>
                 <Select
                     value={content.value}
-                    onChange={(e) => setContent(contentOptions.find((o) => o.value === e.target.value)!)}
+                    onChange={(e) => {
+                        const selectedContent = contentOptions.find((o) => o.value === e.target.value)!;
+                        setContent(selectedContent);
+
+                        // If current playerCount is too high, clamp it
+                        const maxAvailable = Math.max(...selectedContent.playerCounts);
+                        if (!selectedContent.playerCounts.includes(playerCount)) {
+                            setPlayerCount(maxAvailable);
+                        }
+                    }}
                     size="small"
                 >
                     {contentOptions.map((o) => (
