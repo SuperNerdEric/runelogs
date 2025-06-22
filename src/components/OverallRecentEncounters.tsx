@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import theme from '../theme';
+import {ticksToTime} from "../utils/utils";
 
 type Encounter = {
     type: 'fight' | 'fightGroup';
@@ -49,15 +50,6 @@ const OverallRecentEncounters: React.FC = () => {
         };
         fetchData();
     }, []);
-
-    const ticksToTime = (ticks: number) => {
-        const secs = ticks * 0.6;
-        const m = Math.floor(secs / 60);
-        const s = Math.round(secs % 60)
-            .toString()
-            .padStart(2, '0');
-        return `${m}:${s}`;
-    };
 
     if (loading)
         return (

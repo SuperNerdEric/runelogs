@@ -32,6 +32,8 @@ export enum LogTypes {
     NPC_CHANGED = 'NPC Changed',
     PATH_START = 'ToA Path Start',
     PATH_COMPLETE = 'ToA Path Complete',
+    RAID_COMPLETE = 'Raids Completion',
+    DURATION = 'Duration',
 }
 
 export interface BaseLog {
@@ -173,6 +175,7 @@ export interface WaveStartLog extends BaseLog {
     type: LogTypes.WAVE_START;
     waveNumber: number;
 }
+
 export interface WaveEndLog extends BaseLog {
     type: LogTypes.WAVE_END;
 }
@@ -199,6 +202,17 @@ export interface ToAPathCompleteLog extends BaseLog {
     pathName: string;
     duration: string;
     total: string;
+}
+
+export interface RaidCompleteLog extends BaseLog {
+    type: LogTypes.RAID_COMPLETE;
+    raidName: string;
+    duration: string;
+}
+
+export interface DurationLog extends BaseLog {
+    type: LogTypes.DURATION;
+    duration: string;
 }
 
 export type LogLine =
@@ -228,7 +242,9 @@ export type LogLine =
     | WipeLog
     | NpcChangedLog
     | ToAPathStartLog
-    | ToAPathCompleteLog;
+    | ToAPathCompleteLog
+    | RaidCompleteLog
+    | DurationLog;
 
 export function filterByType<T extends LogLine['type']>(logs: LogLine[], type: T): Extract<LogLine, { type: T }>[] {
     return logs.filter(log => log.type === type) as Extract<LogLine, { type: T }>[];

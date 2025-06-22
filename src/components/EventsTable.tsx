@@ -234,6 +234,7 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, maxHeight, showSource =
                                         {log.type === LogTypes.WAVE_END}
                                         {log.type === LogTypes.PATH_START ? `${log.pathName}` : ""}
                                         {log.type === LogTypes.PATH_COMPLETE ? `${log.pathName}` : ""}
+                                        {log.type === LogTypes.DURATION ? `${log.duration}` : ""}
                                     </TableCell>
                                     <TableCell
                                         className={source === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>
