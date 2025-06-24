@@ -7,6 +7,9 @@ import * as semver from 'semver';
 import '../App.css';
 import DropdownFightSelector from './sections/DropdownFightSelector';
 import {Icon} from '@iconify/react';
+import {getRankColor} from "../utils/utils";
+import {CrownIcon} from "./CrownIcon";
+import MedalIcon from "./MedalIcon";
 
 type EncounterApiFG = {
     type: 'fightGroup';
@@ -215,6 +218,26 @@ const Encounter: React.FC = () => {
                         )}
                     </Typography>
                 </div>
+                {(fight as any)?.rank != null || (group as any)?.rank != null ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                color: getRankColor((fight as any)?.rank ?? (group as any)?.rank),
+                                fontWeight: 'bold',
+                            }}
+                        >
+                            #{(fight as any)?.rank ?? (group as any)?.rank}
+                        </Typography>
+                        {(() => {
+                            const rank = (fight as any)?.rank ?? (group as any)?.rank;
+                            if (rank === 1) return <CrownIcon />;
+                            if (rank === 2) return <MedalIcon color="#C0C0C0" />;
+                            if (rank === 3) return <MedalIcon color="#CD7F32" />;
+                            return null;
+                        })()}
+                    </Box>
+                ) : null}
                 {dropdown}
 
                 <Tabs
