@@ -25,32 +25,17 @@ type ContentOption = {
     label: string;
     value: string;
     playerCounts: number[];
+    defaultPlayerCount: number;
 };
 
 const contentOptions: ContentOption[] = [
-    {label: 'Theatre of Blood', value: 'Theatre of Blood', playerCounts: [1, 2, 3, 4, 5]},
-    {label: 'Theatre of Blood: Hard Mode', value: 'Theatre of Blood: Hard Mode', playerCounts: [1, 2, 3, 4, 5]},
-    {label: 'Tombs of Amascut', value: 'Tombs of Amascut', playerCounts: [1, 2, 3, 4, 5, 6, 7, 8]},
-    {
-        label: 'Tombs of Amascut: Expert Mode',
-        value: 'Tombs of Amascut: Expert Mode',
-        playerCounts: [1, 2, 3, 4, 5, 6, 7, 8]
-    },
-    {
-        label: 'Fight Caves',
-        value: 'Fight Caves',
-        playerCounts: [1]
-    },
-    {
-        label: 'The Inferno',
-        value: 'The Inferno',
-        playerCounts: [1]
-    },
-    {
-        label: 'Fortis Colosseum',
-        value: 'Fortis Colosseum',
-        playerCounts: [1]
-    },
+    {label: 'Theatre of Blood', value: 'Theatre of Blood', playerCounts: [1, 2, 3, 4, 5], defaultPlayerCount: 4},
+    {label: 'Theatre of Blood: Hard Mode', value: 'Theatre of Blood: Hard Mode', playerCounts: [1, 2, 3, 4, 5], defaultPlayerCount: 5},
+    {label: 'Tombs of Amascut', value: 'Tombs of Amascut', playerCounts: [1, 2, 3, 4, 5, 6, 7, 8], defaultPlayerCount: 1},
+    {label: 'Tombs of Amascut: Expert Mode', value: 'Tombs of Amascut: Expert Mode', playerCounts: [1, 2, 3, 4, 5, 6, 7, 8], defaultPlayerCount: 1},
+    {label: 'Fight Caves', value: 'Fight Caves', playerCounts: [1], defaultPlayerCount: 1},
+    {label: 'The Inferno', value: 'The Inferno', playerCounts: [1], defaultPlayerCount: 1},
+    {label: 'Fortis Colosseum', value: 'Fortis Colosseum', playerCounts: [1], defaultPlayerCount: 1},
 ];
 
 type Order = 'asc' | 'desc';
@@ -70,7 +55,7 @@ const Leaderboard: React.FC = () => {
     const initialContent = contentOptions.find(o => o.value === contentParam) ?? contentOptions[5];
     const initialPlayerCount = initialContent.playerCounts.includes(playerCountParam)
         ? playerCountParam
-        : Math.max(...initialContent.playerCounts);
+        : initialContent.defaultPlayerCount;
 
     const [content, setContent] = useState(initialContent);
     const [playerCount, setPlayerCount] = useState(initialPlayerCount);
@@ -134,14 +119,12 @@ const Leaderboard: React.FC = () => {
                         const selectedContent = contentOptions.find((o) => o.value === e.target.value)!;
                         setContent(selectedContent);
 
-                        const clamped = selectedContent.playerCounts.includes(playerCount)
-                            ? playerCount
-                            : Math.max(...selectedContent.playerCounts);
-                        setPlayerCount(clamped);
+                        const newDefault = selectedContent.defaultPlayerCount;
+                        setPlayerCount(newDefault);
 
                         setSearchParams({
                             leaderboard: selectedContent.value,
-                            playerCount: clamped.toString(),
+                            playerCount: newDefault.toString(),
                         });
                     }}
                     size="small"
