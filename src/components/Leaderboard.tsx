@@ -54,8 +54,8 @@ interface Entry {
 }
 
 const Leaderboard: React.FC = () => {
-    const [content, setContent] = useState(contentOptions[5]);
-    const [playerCount, setPlayerCount] = useState(contentOptions[5].playerCounts[0]);
+    const [content, setContent] = useState(contentOptions[4]);
+    const [playerCount, setPlayerCount] = useState(contentOptions[4].playerCounts[0]);
     const [entries, setEntries] = useState<Entry[] | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
