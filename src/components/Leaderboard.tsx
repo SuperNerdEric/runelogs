@@ -34,6 +34,11 @@ const contentOptions: ContentOption[] = [
         playerCounts: [1, 2, 3, 4, 5, 6, 7, 8]
     },
     {
+        label: 'Fight Caves',
+        value: 'Fight Caves',
+        playerCounts: [1]
+    },
+    {
         label: 'The Inferno',
         value: 'The Inferno',
         playerCounts: [1]
@@ -54,8 +59,8 @@ interface Entry {
 }
 
 const Leaderboard: React.FC = () => {
-    const [content, setContent] = useState(contentOptions[4]);
-    const [playerCount, setPlayerCount] = useState(contentOptions[4].playerCounts[0]);
+    const [content, setContent] = useState(contentOptions[5]);
+    const [playerCount, setPlayerCount] = useState(contentOptions[5].playerCounts[0]);
     const [entries, setEntries] = useState<Entry[] | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
