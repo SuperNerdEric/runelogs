@@ -30,6 +30,7 @@ const contentOptions: ContentOption[] = [
         value: 'Tombs of Amascut: Expert Mode',
         playerCounts: [1, 2, 3, 4, 5, 6, 7, 8]
     },
+    {label: 'Fight Caves', value: 'Fight Caves', playerCounts: [1]},
     {label: 'The Inferno', value: 'The Inferno', playerCounts: [1]},
     {label: 'Fortis Colosseum', value: 'Fortis Colosseum', playerCounts: [1]},
 ];
