@@ -16408,7 +16408,7 @@
   },
   {
     "name": "Echo venator bow",
-    "id": 30434,
+    "id": 30436,
     "version": "Uncharged",
     "slot": "weapon",
     "category": "Bow",
@@ -23335,15 +23335,6 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
-  },
-  {
-    "name": "Inquisitor's mace",
-    "id": 24417,
-    "version": "",
-    "slot": "weapon",
-    "category": "Spiked",
-    "isTwoHanded": false,
-    "speed": 4
   },
   {
     "name": "Inquisitor's mace (Last Man Standing)",
