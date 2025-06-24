@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react';
 
-import {Link as RouterLink} from 'react-router-dom';
+import {Link as RouterLink, useSearchParams} from 'react-router-dom';
 import {
     Box,
     CircularProgress,
@@ -62,8 +62,19 @@ interface Entry {
 }
 
 const Leaderboard: React.FC = () => {
-    const [content, setContent] = useState(contentOptions[5]);
-    const [playerCount, setPlayerCount] = useState(contentOptions[5].playerCounts[0]);
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const contentParam = searchParams.get('leaderboard');
+    const playerCountParam = parseInt(searchParams.get('playerCount') || '', 10);
+
+    const initialContent = contentOptions.find(o => o.value === contentParam) ?? contentOptions[5];
+    const initialPlayerCount = initialContent.playerCounts.includes(playerCountParam)
+        ? playerCountParam
+        : Math.max(...initialContent.playerCounts);
+
+    const [content, setContent] = useState(initialContent);
+    const [playerCount, setPlayerCount] = useState(initialPlayerCount);
+
     const [entries, setEntries] = useState<Entry[] | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -123,11 +134,15 @@ const Leaderboard: React.FC = () => {
                         const selectedContent = contentOptions.find((o) => o.value === e.target.value)!;
                         setContent(selectedContent);
 
-                        // If current playerCount is too high, clamp it
-                        const maxAvailable = Math.max(...selectedContent.playerCounts);
-                        if (!selectedContent.playerCounts.includes(playerCount)) {
-                            setPlayerCount(maxAvailable);
-                        }
+                        const clamped = selectedContent.playerCounts.includes(playerCount)
+                            ? playerCount
+                            : Math.max(...selectedContent.playerCounts);
+                        setPlayerCount(clamped);
+
+                        setSearchParams({
+                            leaderboard: selectedContent.value,
+                            playerCount: clamped.toString(),
+                        });
                     }}
                     size="small"
                 >
@@ -140,7 +155,14 @@ const Leaderboard: React.FC = () => {
 
                 <Select
                     value={playerCount}
-                    onChange={(e) => setPlayerCount(Number(e.target.value))}
+                    onChange={(e) => {
+                        const count = Number(e.target.value);
+                        setPlayerCount(count);
+                        setSearchParams({
+                            leaderboard: content.value,
+                            playerCount: count.toString(),
+                        });
+                    }}
                     size="small"
                 >
                     {content.playerCounts.map((pc) => (
