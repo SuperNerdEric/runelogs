@@ -14,7 +14,9 @@ import {
 } from '@mui/material';
 import {Link as RouterLink, useParams} from 'react-router-dom';
 import theme from "../theme";
-import {ticksToTime} from "../utils/utils";
+import {getRankColor, ticksToTime} from "../utils/utils";
+import {CrownIcon} from "./CrownIcon";
+import MedalIcon from "./MedalIcon";
 
 type ContentOption = {
     label: string;
@@ -24,6 +26,7 @@ type ContentOption = {
 
 const contentOptions: ContentOption[] = [
     {label: 'Theatre of Blood', value: 'Theatre of Blood', playerCounts: [1, 2, 3, 4, 5]},
+    {label: 'Theatre of Blood: Hard Mode', value: 'Theatre of Blood: Hard Mode', playerCounts: [1, 2, 3, 4, 5]},
     {label: 'Tombs of Amascut', value: 'Tombs of Amascut', playerCounts: [1, 2, 3, 4, 5, 6, 7, 8]},
     {
         label: 'Tombs of Amascut: Expert Mode',
@@ -143,6 +146,7 @@ const PersonalBests: React.FC = () => {
                                     <TableRow>
                                         <TableCell sx={{color: 'white'}}>Players</TableCell>
                                         <TableCell sx={{color: 'white'}}>Duration</TableCell>
+                                        <TableCell sx={{color: 'white'}}>Rank</TableCell>
                                         <TableCell sx={{color: 'white'}}>Id</TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -155,6 +159,23 @@ const PersonalBests: React.FC = () => {
                                                 <TableCell sx={{color: 'white'}}>{count}</TableCell>
                                                 <TableCell sx={{color: 'white'}}>
                                                     {match ? ticksToTime(match.officialDurationTicks) : '-'}
+                                                </TableCell>
+                                                <TableCell sx={{color: 'white'}}>
+                                                    {match?.rank ? (
+                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                            <Typography
+                                                                sx={{
+                                                                    color: getRankColor(match.rank),
+                                                                    fontWeight: 'bold',
+                                                                }}
+                                                            >
+                                                                {match.rank}
+                                                            </Typography>
+                                                            {match.rank === 1 && <CrownIcon />}
+                                                            {match.rank === 2 && <MedalIcon color="#C0C0C0" />}
+                                                            {match.rank === 3 && <MedalIcon color="#CD7F32" />}
+                                                        </Box>
+                                                    ) : '-'}
                                                 </TableCell>
                                                 <TableCell sx={{color: 'white'}}>
                                                     {match ? (
