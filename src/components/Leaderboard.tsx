@@ -1,4 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
+
 import {Link as RouterLink} from 'react-router-dom';
 import {
     Box,
@@ -16,7 +17,9 @@ import {
     useMediaQuery,
 } from '@mui/material';
 import theme from "../theme";
-import {ticksToTime} from "../utils/utils";
+import {getRankColor, ticksToTime} from "../utils/utils";
+import {CrownIcon} from "./CrownIcon";
+import MedalIcon from "./MedalIcon";
 
 type ContentOption = {
     label: string;
@@ -163,7 +166,19 @@ const Leaderboard: React.FC = () => {
                             <TableBody>
                                 {entries!.map((row, idx) => (
                                     <TableRow key={row.id} hover>
-                                        <TableCell sx={{color: 'white'}}>{idx + 1}</TableCell>
+                                        <TableCell
+                                            sx={{
+                                                color: getRankColor(idx + 1),
+                                                fontWeight: 'bold',
+                                            }}
+                                        >
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                {idx + 1}
+                                                {idx === 0 && <CrownIcon />}
+                                                {idx === 1 && <MedalIcon color="#C0C0C0" />}
+                                                {idx === 2 && <MedalIcon color="#CD7F32" />}
+                                            </Box>
+                                        </TableCell>
                                         <TableCell sx={{color: 'white'}}>
                                             <Link
                                                 component={RouterLink}

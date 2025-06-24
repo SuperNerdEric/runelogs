@@ -88,3 +88,24 @@ export const getActor = (actorString: string): Actor => {
 export const displayUsername = (username: string): string => {
     return username.replace(/_/g, ' ');
 };
+
+export const getRankColor = (rank: number): string => {
+    let rankColor = "#9d9d9d"; // Default color for ranks below 60
+
+    if (rank <= 3) {
+        rankColor = "#e5cc80";
+    } else if (rank <= 10 && rank > 3) {
+        rankColor = "#f48cba";
+    } else if (rank <= 20 && rank > 10) {
+        rankColor = "#ff8000";
+    } else if (rank <= 100 && rank > 20) {
+        rankColor = "#a335ee";
+    } else if (rank <= 200 && rank > 100) {
+        rankColor = "#0070dd";
+    } else if (rank <= 500 && rank > 200) {
+        rankColor = "#1eff00";
+    } else if (rank > 500) {
+        rankColor = "#9d9d9d";
+    }
+    return rankColor;
+}
