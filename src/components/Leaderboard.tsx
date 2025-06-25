@@ -67,6 +67,20 @@ const Leaderboard: React.FC = () => {
     const [order, setOrder] = useState<Order>('asc');
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+    useEffect(() => {
+        const contentParam = searchParams.get('leaderboard');
+        const playerCountParam = parseInt(searchParams.get('playerCount') || '', 10);
+
+        const newContent = contentOptions.find(o => o.value === contentParam) ?? contentOptions[5];
+        const newPlayerCount = newContent.playerCounts.includes(playerCountParam)
+            ? playerCountParam
+            : newContent.defaultPlayerCount;
+
+        setContent(newContent);
+        setPlayerCount(newPlayerCount);
+    }, [searchParams]);
+
+
     const fetchData = useCallback(async () => {
         setLoading(true);
         setError(null);
