@@ -52,7 +52,7 @@ const Leaderboard: React.FC = () => {
     const contentParam = searchParams.get('leaderboard');
     const playerCountParam = parseInt(searchParams.get('playerCount') || '', 10);
 
-    const initialContent = contentOptions.find(o => o.value === contentParam) ?? contentOptions[5];
+    const initialContent = contentOptions.find(o => o.value === contentParam) ?? contentOptions[0];
     const initialPlayerCount = initialContent.playerCounts.includes(playerCountParam)
         ? playerCountParam
         : initialContent.defaultPlayerCount;
@@ -71,7 +71,7 @@ const Leaderboard: React.FC = () => {
         const contentParam = searchParams.get('leaderboard');
         const playerCountParam = parseInt(searchParams.get('playerCount') || '', 10);
 
-        const newContent = contentOptions.find(o => o.value === contentParam) ?? contentOptions[5];
+        const newContent = contentOptions.find(o => o.value === contentParam) ?? contentOptions[0];
         const newPlayerCount = newContent.playerCounts.includes(playerCountParam)
             ? playerCountParam
             : newContent.defaultPlayerCount;
