@@ -23337,6 +23337,15 @@
     "speed": 0
   },
   {
+    "name": "Inquisitor's mace",
+    "id": 24417,
+    "version": "",
+    "slot": "weapon",
+    "category": "Spiked",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Inquisitor's mace (Last Man Standing)",
     "id": 27198,
     "version": "",
@@ -24698,6 +24707,15 @@
   {
     "name": "Keris partisan",
     "id": 25979,
+    "version": "",
+    "slot": "weapon",
+    "category": "Partisan",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
+    "name": "Keris partisan of amascut",
+    "id": 30891,
     "version": "",
     "slot": "weapon",
     "category": "Partisan",
@@ -37894,6 +37912,15 @@
     "id": 20190,
     "version": "",
     "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Steel ring",
+    "id": 30895,
+    "version": "",
+    "slot": "ring",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
