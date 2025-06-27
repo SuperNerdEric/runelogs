@@ -24723,6 +24723,15 @@
     "speed": 4
   },
   {
+    "name": "Keris partisan of amascut",
+    "id": 30891,
+    "version": "",
+    "slot": "weapon",
+    "category": "Partisan",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Keris partisan of breaching",
     "id": 25981,
     "version": "",
