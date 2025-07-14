@@ -108,7 +108,7 @@ const RecentEncounters: React.FC = () => {
                                         </Link>
                                     </TableCell>
                                     <TableCell sx={{color: 'white'}}>
-                                        {new Date(enc.startTime.replace(/Z$/, '')).toLocaleString()}
+                                        {new Date(enc.startTime).toLocaleString()}
                                     </TableCell>
                                 </TableRow>
                             ))}

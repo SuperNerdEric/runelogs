@@ -111,7 +111,7 @@ const OverallRecentEncounters: React.FC = () => {
                                         ))}
                                     </TableCell>
                                     <TableCell sx={{ color: 'white' }}>
-                                        {getRelativeTime(new Date(row.startTime.replace(/Z$/, '')))}
+                                        {getRelativeTime(new Date(row.startTime))}
                                     </TableCell>
                                 </TableRow>
                             ))}

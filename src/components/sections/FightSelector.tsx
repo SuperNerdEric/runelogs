@@ -15,7 +15,7 @@ interface FightProps {
 }
 
 const Fight: React.FC<FightProps> = ({fight, index, title, onSelectFight, isShortest}) => {
-    const date = new Date(fight.startTime.replace(/Z$/, ''));
+    const date = new Date(fight.startTime);
     const formattedTime = date.toLocaleString('en-US', {
         hour: 'numeric',
         minute: 'numeric',
@@ -56,7 +56,7 @@ interface FightGroupProps {
  * A fight group is a collection of fights such as a Raid (CoX, ToB, ToA) or a Wave based fight (Inferno, Colosseum).
  */
 const FightGroup: React.FC<FightGroupProps> = ({fight, index, fightGroupIndex, fightName, onSelectFight}) => {
-    const date = new Date(fight.startTime.replace(/Z$/, ''));
+    const date = new Date(fight.startTime);
     const formattedTime = date.toLocaleString('en-US', {
         hour: 'numeric',
         minute: 'numeric',
