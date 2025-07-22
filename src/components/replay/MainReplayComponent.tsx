@@ -137,7 +137,7 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
                         graphicsObjectPositions={currentGameState.graphicsObjects}
                         gameObjectPositions={currentGameState.gameObjects}
                         groundObjectPositions={currentGameState.groundObjects}
-                        plane={0}
+                        plane={initialPlayerPosition?.plane ?? 0}
                         selectedPlayerName={selectedPlayerName}
                         currentTick={currentGameState.tick}
                     />
