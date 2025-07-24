@@ -3528,6 +3528,15 @@
     "speed": 0
   },
   {
+    "name": "Antler guard",
+    "id": 31081,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Apprentice wand",
     "id": 6910,
     "version": "",
@@ -3769,6 +3778,15 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Arkan blade",
+    "id": 30955,
+    "version": "",
+    "slot": "weapon",
+    "category": "Slash Sword",
+    "isTwoHanded": false,
+    "speed": 4
   },
   {
     "name": "Armadyl bracers",
@@ -4216,6 +4234,78 @@
     "id": 22322,
     "version": "Normal",
     "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Avernic treads",
+    "id": 31088,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Avernic treads (et)",
+    "id": 31093,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Avernic treads (max)",
+    "id": 31097,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Avernic treads (pe)",
+    "id": 31092,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Avernic treads (pe)(et)",
+    "id": 31096,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Avernic treads (pr)",
+    "id": 31091,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Avernic treads (pr)(et)",
+    "id": 31095,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Avernic treads (pr)(pe)",
+    "id": 31094,
+    "version": "",
+    "slot": "feet",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -10836,6 +10926,15 @@
     "speed": 4
   },
   {
+    "name": "Confliction gauntlets",
+    "id": 31106,
+    "version": "",
+    "slot": "hands",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Construct. cape",
     "id": 9790,
     "version": "Trimmed",
@@ -16101,6 +16200,15 @@
     "speed": 0
   },
   {
+    "name": "Earthbound tecpatl",
+    "id": 30957,
+    "version": "",
+    "slot": "weapon",
+    "category": "Stab Sword",
+    "isTwoHanded": true,
+    "speed": 4
+  },
+  {
     "name": "Easter basket",
     "id": 4565,
     "version": "",
@@ -17478,6 +17586,24 @@
     "speed": 0
   },
   {
+    "name": "Eye of ayak",
+    "id": 31113,
+    "version": "Charged",
+    "slot": "weapon",
+    "category": "Powered Staff",
+    "isTwoHanded": false,
+    "speed": 3
+  },
+  {
+    "name": "Eye of ayak",
+    "id": 31115,
+    "version": "Uncharged",
+    "slot": "weapon",
+    "category": "Powered Staff",
+    "isTwoHanded": false,
+    "speed": 3
+  },
+  {
     "name": "Facemask",
     "id": 4164,
     "version": "",
@@ -18085,6 +18211,15 @@
     "id": 9785,
     "version": "",
     "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Fletching knife",
+    "id": 31043,
+    "version": "",
+    "slot": "shield",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -20844,6 +20979,60 @@
     "speed": 0
   },
   {
+    "name": "Greenman mask",
+    "id": 31034,
+    "version": "Magic",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Greenman mask",
+    "id": 31034,
+    "version": "Maple",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Greenman mask",
+    "id": 31034,
+    "version": "Normal",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Greenman mask",
+    "id": 31034,
+    "version": "Oak",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Greenman mask",
+    "id": 31034,
+    "version": "Willow",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Greenman mask",
+    "id": 31034,
+    "version": "Yew",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Gregg's eastdoor",
     "id": 25604,
     "version": "",
@@ -22408,6 +22597,15 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Humphrey Dumphrey",
+    "id": 30970,
+    "version": "",
+    "slot": "weapon",
+    "category": "blunt",
+    "isTwoHanded": true,
+    "speed": 4
   },
   {
     "name": "Hunter cape",
@@ -28746,6 +28944,15 @@
     "speed": 0
   },
   {
+    "name": "Orange (hat)",
+    "id": 31117,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Orange boater",
     "id": 7321,
     "version": "",
@@ -29596,6 +29803,15 @@
     "id": 26549,
     "version": "",
     "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Potato sack",
+    "id": 30947,
+    "version": "",
+    "slot": "head",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -31462,6 +31678,15 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Redwood hiking staff",
+    "id": 31049,
+    "version": "",
+    "slot": "weapon",
+    "category": "Blunt",
+    "isTwoHanded": false,
+    "speed": 5
   },
   {
     "name": "Redwood shield",
