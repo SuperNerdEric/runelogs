@@ -6,6 +6,9 @@ import {graphicObjectIdMap} from "../../lib/graphicObjectIdMap";
 import {gameObjectIdMap} from "../../lib/gameObjectIdMap";
 import {GameObjectState, GamePosition, GraphicsObjectState} from "./GameState";
 import {groundObjectIdMap} from "../../lib/groundObjectIdMap";
+import L, {LatLngBoundsExpression} from "leaflet";
+
+const TORNADO_IDS = new Set([8386, 10863, 10846]);
 
 interface MapMarkersProps {
     playerPositions: { [playerName: string]: GamePosition };
@@ -85,14 +88,30 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
                 const npcPosition = new Position(positionData.x, positionData.y, positionData.plane);
                 const rectangle = npcPosition.toLeaflet(map, npcRectangleOptions, size);
 
+                const isTornado = TORNADO_IDS.has(npcId);
                 const imageUrl = `https://chisel.weirdgloop.org/static/img/osrs-npc/${npcId}_128.png`;
+                const idStr = parts[1];
+                const indexStr = parts[2];
+                const displayName = isTornado ? `Tornado ${idStr}-${indexStr}` : formatActorKey(npcKey);
+
+                const baseBounds = rectangle.getBounds();
+
+                // If it's a tornado, stretch the bounds vertically
+                let adjustedBounds: LatLngBoundsExpression = baseBounds;
+                if (isTornado) {
+                    const height = baseBounds.getNorth() - baseBounds.getSouth();
+                    const sw = baseBounds.getSouthWest();
+                    const ne = baseBounds.getNorthEast();
+                    const stretchedNE = L.latLng(ne.lat + height, ne.lng);
+                    adjustedBounds = L.latLngBounds(sw, stretchedNE);
+                }
 
                 return (
                     <React.Fragment key={`npc-${npcKey}`}>
                         {/* Render the image overlay representing the full size of the NPC */}
                         <ImageOverlay
                             url={imageUrl}
-                            bounds={rectangle.getBounds()}
+                            bounds={adjustedBounds}
                             opacity={1}
                             interactive={false} // Set to false if you don't want the image to be clickable
                             pane="npcs"
@@ -102,7 +121,7 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
                             bounds={rectangle.getBounds()}
                             pathOptions={npcRectangleOptions}
                         >
-                            <Popup>{formatActorKey(npcKey)}</Popup>
+                            <Popup>{displayName}</Popup>
                         </Rectangle>
                     </React.Fragment>
                 );
