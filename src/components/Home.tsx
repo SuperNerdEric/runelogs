@@ -8,12 +8,10 @@ export default function Home() {
         <Box mt={1}>
             <Box p={2} pb={0} maxWidth={1000} mx="auto">
                 <Typography variant="h4" gutterBottom>
-                    Welcome to the new Runelogs experience
+                    Welcome to Runelogs
                 </Typography>
                 <Typography paragraph>
                     To upload a log please <strong>Log In</strong> / <strong>Register</strong> for an account.
-                    During this beta period, logs may be cleared or invalidated for leaderboards.
-                    We appreciate your patience.
                 </Typography>
                 <Typography paragraph>
                     Runelogs is a combat log analysis tool for Old School RuneScape that works with the{' '}
@@ -31,7 +29,6 @@ export default function Home() {
                     <Link href="https://github.com/SuperNerdEric/runelogs" target="_blank" rel="noopener">
                         GitHub
                     </Link>.
-                    We are especially looking for people with experience in front-end and design.
                 </Typography>
             </Box>
             <Box mt={4}>
