@@ -90,13 +90,11 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
 
                 const isTornado = TORNADO_IDS.has(npcId);
                 const imageUrl = `https://chisel.weirdgloop.org/static/img/osrs-npc/${npcId}_128.png`;
-                const idStr = parts[1];
-                const indexStr = parts[2];
-                const displayName = isTornado ? `Tornado ${idStr}-${indexStr}` : formatActorKey(npcKey);
 
                 const baseBounds = rectangle.getBounds();
 
                 // If it's a tornado, stretch the bounds vertically
+                // This is pretty hacky, but it works for now.
                 let adjustedBounds: LatLngBoundsExpression = baseBounds;
                 if (isTornado) {
                     const height = baseBounds.getNorth() - baseBounds.getSouth();
@@ -121,7 +119,7 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
                             bounds={rectangle.getBounds()}
                             pathOptions={npcRectangleOptions}
                         >
-                            <Popup>{displayName}</Popup>
+                            <Popup>{formatActorKey(npcKey)}</Popup>
                         </Rectangle>
                     </React.Fragment>
                 );
