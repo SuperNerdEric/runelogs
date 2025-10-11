@@ -19,6 +19,7 @@ import Login from "./components/Login";
 import Logout from "./components/Logout";
 import {initGA} from "./Analytics";
 import usePageTracking from "./hooks/usePageTracking";
+import SessionGuard from "./components/SessionGuard";
 
 const domain = "auth.runelogs.com";
 const clientId = "vNPXVhAvOj2ES9kqi5WPs80SnX8FPKqv";
@@ -67,6 +68,7 @@ root.render(
             >
                 <ThemeProvider theme={theme}>
                     <BrowserRouter>
+                        <SessionGuard />
                         <AppRoutes />
                     </BrowserRouter>
                 </ThemeProvider>
