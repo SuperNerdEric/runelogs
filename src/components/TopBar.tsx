@@ -59,14 +59,6 @@ const TopBar: React.FC = () => {
                         >
                             Runelogs
                         </Typography>
-                        <Icon
-                            icon="clarity:beta-solid"
-                            style={{
-                                width: '35px',
-                                height: '35px',
-                                marginLeft: '10px'
-                            }}
-                        />
                     </Box>
                     {isMobile ? (
                         <>
