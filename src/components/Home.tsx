@@ -2,17 +2,22 @@ import React from 'react';
 import Leaderboard from './Leaderboard';
 import {Box, Link, Typography} from '@mui/material';
 import OverallRecentEncounters from "./OverallRecentEncounters";
+import {useAuth0} from '@auth0/auth0-react';
 
 export default function Home() {
+    const {isAuthenticated} = useAuth0();
+
     return (
         <Box mt={1}>
             <Box p={2} pb={0} maxWidth={1000} mx="auto">
                 <Typography variant="h4" gutterBottom>
                     Welcome to Runelogs
                 </Typography>
-                <Typography paragraph>
-                    To upload a log please <strong>Log In</strong> / <strong>Register</strong> for an account.
-                </Typography>
+                {!isAuthenticated && (
+                    <Typography paragraph>
+                        To upload a log please <strong>Log In</strong> / <strong>Register</strong> for an account.
+                    </Typography>
+                )}
                 <Typography paragraph>
                     Runelogs is a combat log analysis tool for Old School RuneScape that works with the{' '}
                     <Link href="https://runelite.net/plugin-hub/show/combat-logger" target="_blank" rel="noopener">
