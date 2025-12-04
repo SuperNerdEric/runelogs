@@ -6,6 +6,7 @@ import {
     CircularProgress,
     Link,
     MenuItem,
+    Pagination,
     Select,
     Table,
     TableBody,
@@ -65,7 +66,10 @@ const Leaderboard: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [orderBy] = useState<'duration'>('duration');
     const [order, setOrder] = useState<Order>('asc');
+    const [page, setPage] = useState(1);
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    
+    const entriesPerPage = 25;
 
     useEffect(() => {
         const contentParam = searchParams.get('leaderboard');
@@ -102,6 +106,7 @@ const Leaderboard: React.FC = () => {
 
     useEffect(() => {
         fetchData();
+        setPage(1); // Reset to first page when data changes
     }, [fetchData]);
 
     if (loading)
@@ -183,48 +188,73 @@ const Leaderboard: React.FC = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {entries!.map((row, idx) => (
-                                    <TableRow key={row.id} hover>
-                                        <TableCell
-                                            sx={{
-                                                color: getRankColor(idx + 1),
-                                                fontWeight: 'bold',
-                                            }}
-                                        >
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                {idx + 1}
-                                                {idx === 0 && <CrownIcon />}
-                                                {idx === 1 && <MedalIcon color="#C0C0C0" />}
-                                                {idx === 2 && <MedalIcon color="#CD7F32" />}
-                                            </Box>
-                                        </TableCell>
-                                        <TableCell sx={{color: 'white'}}>
-                                            <Link
-                                                component={RouterLink}
-                                                to={`/encounter/${row.id}`}
-                                                underline="hover"
-                                                title={row.id}
-                                            >
-                                                {isMobile ? `${row.id.slice(0, 8)}...` : row.id}
-                                            </Link>
-                                        </TableCell>
-                                        <TableCell sx={{color: 'white'}}>{ticksToTime(row.duration)}</TableCell>
-                                        <TableCell sx={{color: 'white'}}>
-                                            {row.players.map((player, i) => (
-                                                <React.Fragment key={player}>
-                                                    <Link component={RouterLink} to={`/player/${player}`}
-                                                          underline="hover">
-                                                        {player}
+                                {entries
+                                    .slice((page - 1) * entriesPerPage, page * entriesPerPage)
+                                    .map((row, idx) => {
+                                        const actualRank = (page - 1) * entriesPerPage + idx + 1;
+                                        return (
+                                            <TableRow key={row.id} hover>
+                                                <TableCell
+                                                    sx={{
+                                                        color: getRankColor(actualRank),
+                                                        fontWeight: 'bold',
+                                                    }}
+                                                >
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                        {actualRank}
+                                                        {actualRank === 1 && <CrownIcon />}
+                                                        {actualRank === 2 && <MedalIcon color="#C0C0C0" />}
+                                                        {actualRank === 3 && <MedalIcon color="#CD7F32" />}
+                                                    </Box>
+                                                </TableCell>
+                                                <TableCell sx={{color: 'white'}}>
+                                                    <Link
+                                                        component={RouterLink}
+                                                        to={`/encounter/${row.id}`}
+                                                        underline="hover"
+                                                        title={row.id}
+                                                    >
+                                                        {isMobile ? `${row.id.slice(0, 8)}...` : row.id}
                                                     </Link>
-                                                    {i < row.players.length - 1 ? ', ' : ''}
-                                                </React.Fragment>
-                                            ))}
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                                </TableCell>
+                                                <TableCell sx={{color: 'white'}}>{ticksToTime(row.duration)}</TableCell>
+                                                <TableCell sx={{color: 'white'}}>
+                                                    {row.players.map((player, i) => (
+                                                        <React.Fragment key={player}>
+                                                            <Link component={RouterLink} to={`/player/${player}`}
+                                                                  underline="hover">
+                                                                {player}
+                                                            </Link>
+                                                            {i < row.players.length - 1 ? ', ' : ''}
+                                                        </React.Fragment>
+                                                    ))}
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
                             </TableBody>
                         </Table>
                     </TableContainer>
+                    <Box display="flex" justifyContent="center" pt={0} pb={1}>
+                        <Pagination
+                            count={Math.ceil(entries.length / entriesPerPage)}
+                            page={page}
+                            onChange={(_, value) => setPage(value)}
+                            sx={{
+                                '& .MuiPaginationItem-root': {
+                                    color: 'white',
+                                },
+                                '& .MuiPaginationItem-root.Mui-selected': {
+                                    backgroundColor: 'white',
+                                    color: 'black',
+                                    borderRadius: '4px',
+                                    '&:hover': {
+                                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                    },
+                                },
+                            }}
+                        />
+                    </Box>
                 </Box>
             ) : (
                 <Typography p={2} color="white">No records yet.</Typography>
