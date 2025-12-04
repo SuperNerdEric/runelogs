@@ -182,7 +182,6 @@ const Leaderboard: React.FC = () => {
                             <TableHead>
                                 <TableRow>
                                     <TableCell sx={{color: 'white'}}>Rank</TableCell>
-                                    <TableCell sx={{color: 'white'}}>Id</TableCell>
                                     <TableCell sx={{color: 'white'}}>Duration</TableCell>
                                     <TableCell sx={{color: 'white'}}>Players</TableCell>
                                 </TableRow>
@@ -200,21 +199,23 @@ const Leaderboard: React.FC = () => {
                                                         fontWeight: 'bold',
                                                     }}
                                                 >
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                        {actualRank}
-                                                        {actualRank === 1 && <CrownIcon />}
-                                                        {actualRank === 2 && <MedalIcon color="#C0C0C0" />}
-                                                        {actualRank === 3 && <MedalIcon color="#CD7F32" />}
-                                                    </Box>
-                                                </TableCell>
-                                                <TableCell sx={{color: 'white'}}>
                                                     <Link
                                                         component={RouterLink}
                                                         to={`/encounter/${row.id}`}
-                                                        underline="hover"
-                                                        title={row.id}
+                                                        sx={{
+                                                            textDecoration: 'none',
+                                                            color: 'inherit',
+                                                            '&:hover': {
+                                                                textDecoration: 'underline',
+                                                            },
+                                                        }}
                                                     >
-                                                        {isMobile ? `${row.id.slice(0, 8)}...` : row.id}
+                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                            {actualRank}
+                                                            {actualRank === 1 && <CrownIcon />}
+                                                            {actualRank === 2 && <MedalIcon color="#C0C0C0" />}
+                                                            {actualRank === 3 && <MedalIcon color="#CD7F32" />}
+                                                        </Box>
                                                     </Link>
                                                 </TableCell>
                                                 <TableCell sx={{color: 'white'}}>{ticksToTime(row.duration)}</TableCell>
