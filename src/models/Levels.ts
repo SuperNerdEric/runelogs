@@ -6,4 +6,5 @@ export interface Levels {
     magic: number;
     hitpoints: number;
     prayer: number;
+    sailing?: number;
 }

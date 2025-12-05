@@ -10,6 +10,7 @@ import hitpointsImage from '../assets/Hitpoints.webp';
 import magicImage from '../assets/Magic.webp';
 import rangedImage from '../assets/Ranged.webp';
 import prayerImage from '../assets/Prayer.webp';
+import sailingImage from '../assets/Sailing.webp';
 import {formatHHmmss} from "../utils/utils";
 import {BOSS_IDS} from "../utils/constants";
 import {Actor} from "../models/Actor";
@@ -57,6 +58,7 @@ export const statImages: Record<keyof Levels, string> = {
     magic: magicImage,
     hitpoints: hitpointsImage,
     prayer: prayerImage,
+    sailing: sailingImage,
 };
 
 const getItemImageUrl = (itemId: number): string => {
