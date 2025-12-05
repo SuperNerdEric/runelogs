@@ -7,6 +7,7 @@ import RangedImage from '../../assets/levels/Ranged.png';
 import MagicImage from '../../assets/levels/Magic.png';
 import HitpointsImage from '../../assets/levels/Hitpoints.png';
 import PrayerImage from '../../assets/levels/Prayer.png';
+import SailingImage from '../../assets/levels/Sailing.png';
 import {Levels} from '../../models/Levels';
 
 interface CombatLevelsProps {
@@ -26,12 +27,13 @@ const skillImages: { [key in keyof Levels]: string } = {
     magic: MagicImage,
     hitpoints: HitpointsImage,
     prayer: PrayerImage,
+    sailing: SailingImage,
 };
 
 const defaultLayout: (keyof Levels)[][] = [
     ['hitpoints', 'prayer'],
     ['attack', 'strength', 'defence'],
-    ['ranged', 'magic'],
+    ['ranged', 'magic', 'sailing'],
 ];
 
 const CombatLevels: React.FC<CombatLevelsProps> = ({
@@ -58,7 +60,7 @@ const CombatLevels: React.FC<CombatLevelsProps> = ({
         >
             {skillLayout.map((row, rowIndex) => (
                 <div key={rowIndex} style={{display: 'flex'}}>
-                    {row.map((skill) => (
+                    {row.filter((skill) => baseLevels[skill] !== undefined || boostedLevels[skill] !== undefined).map((skill) => (
                         <div key={skill} style={{position: 'relative'}}>
                             <img
                                 src={skillImages[skill]}
