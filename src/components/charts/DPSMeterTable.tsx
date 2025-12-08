@@ -3,6 +3,7 @@ import React, {useEffect, useState} from "react";
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
 import {DamageLog, LogTypes} from "../../models/LogLine";
 import {getFightPerformanceByPlayer, getPercentColor} from "../../utils/TickActivity";
+import {BOAT_IDS, BOAT_ID_TO_NAME} from "../../utils/constants";
 
 interface DPSMeterBarChartProps {
     fight: Fight;
@@ -25,10 +26,24 @@ const getDPSData = (fight: Fight, filteredFight: Fight, type: "damage-done" | "d
     for (const logLine of filteredFight.data) {
         if (logLine.type === LogTypes.DAMAGE) {
             const damageLog = logLine as DamageLog;
-            const actorName = type === "damage-done" ? damageLog.source.name : damageLog.target.name;
+            let actorName: string;
+            
+            if (type === "damage-done") {
+                actorName = damageLog.source.name;
+            } else {
+                // For damage-taken, check if target is a boat and use mapped name
+                if (damageLog.target.id && BOAT_IDS.includes(damageLog.target.id)) {
+                    const boatName = BOAT_ID_TO_NAME[damageLog.target.id] || "Boat";
+                    actorName = damageLog.target.index !== undefined 
+                        ? `${boatName}-${damageLog.target.index}` 
+                        : boatName;
+                } else {
+                    actorName = damageLog.target.name;
+                }
+            }
 
             if (!dpsData[actorName]) {
-                dpsData[actorName] = {accuracy: 0, dps: 0, totalDamage: 0, totalHits: 0, successfulHits: 0};
+                dpsData[actorName] = {accuracy: 0, dps: 0, totalDamage: 0, totalHits: 0, successfulHits: 0, activity: 0};
             }
 
             dpsData[actorName].totalDamage += damageLog.damageAmount;

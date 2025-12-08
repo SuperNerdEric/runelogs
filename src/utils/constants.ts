@@ -302,3 +302,17 @@ export const ECLIPSE_MOON_REGION = 6038;
 export const NEYPOTZLI_REGION_1 = 5525;
 export const NEYPOTZLI_REGION_2 = 5527;
 export const NEYPOTZLI_REGION_3 = 6039;
+
+export const BOAT_IDS: number[] = [
+    15187, // Small boat
+    15188, // Medium boat
+    15189, // Large boat
+    15190, // Colossal boat
+];
+
+export const BOAT_ID_TO_NAME: { [key: number]: string } = {
+    15187: "Raft",
+    15188: "Skiff",
+    15189: "Sloop",
+    15190: "Colossal boat",
+};

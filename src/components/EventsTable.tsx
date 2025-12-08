@@ -12,7 +12,7 @@ import rangedImage from '../assets/Ranged.webp';
 import prayerImage from '../assets/Prayer.webp';
 import sailingImage from '../assets/Sailing.webp';
 import {formatHHmmss} from "../utils/utils";
-import {BOSS_IDS} from "../utils/constants";
+import {BOSS_IDS, BOAT_IDS, BOAT_ID_TO_NAME} from "../utils/constants";
 import {Actor} from "../models/Actor";
 import ThickSkin from "../assets/prayers/inactive/ThickSkin.png";
 import BurstOfStrength from "../assets/prayers/inactive/BurstOfStrength.png";
@@ -69,6 +69,14 @@ const getActorName = (log: LogLine, key: 'source' | 'target'): string => {
     if (key in log) {
         // @ts-ignore https://github.com/microsoft/TypeScript/issues/56389
         const actor: Actor = log[key];
+        if (actor && actor.id && BOAT_IDS.includes(actor.id)) {
+            if (key === 'source') {
+                return "Unknown";
+            } else {
+                const boatName = BOAT_ID_TO_NAME[actor.id] || "Boat";
+                return actor.index !== undefined ? `${boatName}-${actor.index}` : boatName;
+            }
+        }
         if (actor && "index" in actor && !BOSS_IDS.includes(actor.id!)) {
             return `${actor.name} - ${actor.index}`;
         } else if (actor) {
