@@ -6,7 +6,8 @@ import {Fight} from "../../models/Fight";
 import EventsTable from "../EventsTable";
 import DPSMeterTable from "../charts/DPSMeterTable";
 import SectionBox from "../SectionBox";
-import {filterByType, LogTypes} from "../../models/LogLine";
+import {filterByType, LogTypes, DamageLog} from "../../models/LogLine";
+import {BOAT_IDS} from "../../utils/constants";
 
 interface LogsSelectionProps {
     fight: Fight;
@@ -20,12 +21,22 @@ const DamageDone: React.FC<LogsSelectionProps> = ({fight, type}) => {
     if (type === "damage-done") {
         fightWithFilteredLogs = {
             ...fight,
-            data: filteredLogs.filter(log => log.target.index), // Filters for logs where target is a monster
+            data: filteredLogs.filter(log => {
+                const damageLog = log as DamageLog;
+                // Include if target has index (monster) AND target is NOT a boat
+                return damageLog.target.index && 
+                       (!damageLog.target.id || !BOAT_IDS.includes(damageLog.target.id));
+            }),
         };
     } else {
         fightWithFilteredLogs = {
             ...fight,
-            data: filteredLogs.filter(log => !log.target.index), // Filters for logs where target is a player
+            data: filteredLogs.filter(log => {
+                const damageLog = log as DamageLog;
+                // Include if target has no index (player) OR target IS a boat
+                return !damageLog.target.index || 
+                       (damageLog.target.id && BOAT_IDS.includes(damageLog.target.id));
+            }),
         };
     }
 
