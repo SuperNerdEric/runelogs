@@ -33,34 +33,36 @@ const CustomTooltip: React.FC<any> = ({active, payload, label}) => {
     return null;
 };
 
-export const calculateDPSByInterval = (data: DamageLog[], interval: number) => {
+export const calculateDPSByInterval = (data: DamageLog[], interval: number, startTime: number, endTime: number) => {
     const dpsData: { timestamp: number; dps: number }[] = [];
 
-    if (data && data.length > 0) {
-        let currentIntervalStart = data[0].fightTimeMs!;
+    if (startTime >= endTime) {
+        return dpsData;
+    }
+
+    let currentIntervalStart = startTime;
+
+    for (let timestamp = startTime + interval; timestamp <= endTime + interval; timestamp += interval) {
+        const intervalEnd = Math.min(timestamp, endTime);
         let currentIntervalTotalDamage = 0;
-        let endTime = data[data.length - 1].fightTimeMs!;
 
-        for (let timestamp = currentIntervalStart; timestamp <= endTime; timestamp += interval) {
-            for (let i = 0; i < data.length; i++) {
-                const log = data[i];
-                const logTimestamp = log.fightTimeMs!;
-                const totalDamage = log.damageAmount !== undefined ? log.damageAmount : 0;
+        for (let i = 0; i < data.length; i++) {
+            const log = data[i];
+            const logTimestamp = log.fightTimeMs!;
+            const totalDamage = log.damageAmount !== undefined ? log.damageAmount : 0;
 
-                if (logTimestamp >= currentIntervalStart && logTimestamp < timestamp) {
-                    currentIntervalTotalDamage += totalDamage;
-                }
+            if (logTimestamp >= currentIntervalStart && logTimestamp < intervalEnd) {
+                currentIntervalTotalDamage += totalDamage;
             }
+        }
 
-            const intervalDuration = timestamp - currentIntervalStart;
-            const dps = (currentIntervalTotalDamage / intervalDuration) * 1000;
-            if (!isNaN(dps) && isFinite(dps)) {
-                dpsData.push({timestamp, dps});
-            }
+        const intervalDuration = intervalEnd - currentIntervalStart;
+        const dps = intervalDuration > 0 ? (currentIntervalTotalDamage / intervalDuration) * 1000 : 0;
+        dpsData.push({timestamp: intervalEnd, dps: Number.isFinite(dps) ? dps : 0});
 
-            // Move to the start of the next interval
-            currentIntervalStart = timestamp;
-            currentIntervalTotalDamage = 0;
+        currentIntervalStart = intervalEnd;
+        if (currentIntervalStart >= endTime) {
+            break;
         }
     }
 
@@ -74,7 +76,9 @@ const DPSChart: React.FC<DPSChartProps> = ({fight}) => {
     const fightLengthMs = (fight.metaData.fightDurationTicks ?? 0) * 600;
     const interval = Math.min(Math.max(fightLengthMs / 4, 600), 6000);
 
-    const dpsData = calculateDPSByInterval(filteredLogs, interval);
+    const startTime = fight.firstLine.fightTimeMs ?? 0;
+    const endTime = fight.lastLine.fightTimeMs ?? startTime;
+    const dpsData = calculateDPSByInterval(filteredLogs, interval, startTime, endTime);
 
     const tickInterval = Math.ceil(dpsData.length / 5);
 

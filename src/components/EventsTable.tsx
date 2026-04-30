@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
+import {Box, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 import {Fight} from "../models/Fight";
 import {LogLine, LogTypes} from "../models/LogLine";
 import {Levels} from "../models/Levels";
@@ -43,11 +43,21 @@ import Piety from "../assets/prayers/inactive/Piety.png";
 import Preserve from "../assets/prayers/inactive/Preserve.png";
 import Rigour from "../assets/prayers/inactive/Rigour.png";
 import Augury from "../assets/prayers/inactive/Augury.png";
+import {ActorFilter, matchesLogActorFilters} from "../utils/actorFilter";
 
 interface EventsTableProps {
     fight: Fight;
     maxHeight: string;
     showSource?: boolean;
+    sourceFilter?: ActorFilter | null;
+    targetFilter?: ActorFilter | null;
+    onSelectSourceFilter?: (filter: ActorFilter) => void;
+    onSelectTargetFilter?: (filter: ActorFilter) => void;
+    onClearSourceFilter?: () => void;
+    onClearTargetFilter?: () => void;
+    eventTypeFilter?: string | null;
+    onSelectEventTypeFilter?: (eventType: string) => void;
+    onClearEventTypeFilter?: () => void;
 }
 
 export const statImages: Record<keyof Levels, string> = {
@@ -86,6 +96,32 @@ const getActorName = (log: LogLine, key: 'source' | 'target'): string => {
     return "";
 }
 
+const getActorFromLog = (log: LogLine, key: 'source' | 'target'): Actor | undefined => {
+    if (key in log) {
+        // @ts-ignore https://github.com/microsoft/TypeScript/issues/56389
+        const actor: Actor = log[key];
+        if (!actor) {
+            return undefined;
+        }
+        if (actor.id && BOAT_IDS.includes(actor.id)) {
+            if (key === 'source') {
+                return {...actor, name: "Unknown"};
+            }
+            const boatName = BOAT_ID_TO_NAME[actor.id] || "Boat";
+            return {...actor, name: actor.index !== undefined ? `${boatName}-${actor.index}` : boatName};
+        }
+        return actor;
+    }
+    return undefined;
+};
+
+const getFilterTextColor = (filter: ActorFilter, loggedInPlayer: string): string => {
+    if (filter.name === loggedInPlayer) {
+        return '#abd473';
+    }
+    return '#b4bdff';
+};
+
 export const renderStatImages = (levels: Levels) => {
     return (
         <div style={{display: 'flex', alignItems: 'center'}}>
@@ -107,9 +143,30 @@ export const renderStatImages = (levels: Levels) => {
     );
 };
 
-const EventsTable: React.FC<EventsTableProps> = ({fight, maxHeight, showSource = false}) => {
+const EventsTable: React.FC<EventsTableProps> = ({
+    fight,
+    maxHeight,
+    showSource = false,
+    sourceFilter = null,
+    targetFilter = null,
+    onSelectSourceFilter,
+    onSelectTargetFilter,
+    onClearSourceFilter,
+    onClearTargetFilter,
+    eventTypeFilter = null,
+    onSelectEventTypeFilter,
+    onClearEventTypeFilter,
+}) => {
 
-    const logs = fight.data;
+    const logs = fight.data.filter((log) => {
+        if (!matchesLogActorFilters(log, sourceFilter, targetFilter)) {
+            return false;
+        }
+        if (eventTypeFilter && log.type !== eventTypeFilter) {
+            return false;
+        }
+        return true;
+    });
     const loggedInPlayer = fight.loggedInPlayer;
 
     const renderPrayerImages = (prayers: string[]) => {
@@ -140,52 +197,143 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, maxHeight, showSource =
     };
 
     return (
-        <Box
-            sx={{
-                width: '100%',
-                maxWidth: '1000px',
-                maxHeight: {
-                    xs: '70vh',
-                    sm: '70vh',
-                    md: maxHeight,
-                },
-                overflowY: 'auto',
-            }}
-        >
-            <TableContainer
+        <>
+            {(sourceFilter || targetFilter || eventTypeFilter) && (
+                <Box sx={{width: '100%', maxWidth: '1000px', mb: 1, display: 'flex', gap: 1, flexWrap: 'wrap'}}>
+                    {sourceFilter && (
+                        <Chip
+                            label={`Source: ${sourceFilter.name}`}
+                            onDelete={onClearSourceFilter}
+                            size="small"
+                            sx={{
+                                bgcolor: '#141414',
+                                color: getFilterTextColor(sourceFilter, loggedInPlayer),
+                                border: '1px solid grey',
+                                borderRadius: '5px',
+                                '& .MuiChip-label': {
+                                    fontSize: '0.9rem',
+                                    paddingLeft: '10px',
+                                    paddingRight: '10px',
+                                },
+                                '& .MuiChip-deleteIcon': {
+                                    color: getFilterTextColor(sourceFilter, loggedInPlayer),
+                                    fontSize: '1.05rem',
+                                    marginRight: '6px',
+                                },
+                                '& .MuiChip-deleteIcon:hover': {
+                                    color: getFilterTextColor(sourceFilter, loggedInPlayer),
+                                },
+                            }}
+                        />
+                    )}
+                    {targetFilter && (
+                        <Chip
+                            label={`Target: ${targetFilter.name}`}
+                            onDelete={onClearTargetFilter}
+                            size="small"
+                            sx={{
+                                bgcolor: '#141414',
+                                color: getFilterTextColor(targetFilter, loggedInPlayer),
+                                border: '1px solid grey',
+                                borderRadius: '5px',
+                                '& .MuiChip-label': {
+                                    fontSize: '0.9rem',
+                                    paddingLeft: '10px',
+                                    paddingRight: '10px',
+                                },
+                                '& .MuiChip-deleteIcon': {
+                                    color: getFilterTextColor(targetFilter, loggedInPlayer),
+                                    fontSize: '1.05rem',
+                                    marginRight: '6px',
+                                },
+                                '& .MuiChip-deleteIcon:hover': {
+                                    color: getFilterTextColor(targetFilter, loggedInPlayer),
+                                },
+                            }}
+                        />
+                    )}
+                    {eventTypeFilter && (
+                        <Chip
+                            label={`Type: ${eventTypeFilter}`}
+                            onDelete={onClearEventTypeFilter}
+                            size="small"
+                            sx={{
+                                bgcolor: '#141414',
+                                color: 'white',
+                                border: '1px solid grey',
+                                borderRadius: '5px',
+                                '& .MuiChip-label': {
+                                    fontSize: '0.9rem',
+                                    paddingLeft: '10px',
+                                    paddingRight: '10px',
+                                },
+                                '& .MuiChip-deleteIcon': {
+                                    color: 'white',
+                                    fontSize: '1.05rem',
+                                    marginRight: '6px',
+                                },
+                                '& .MuiChip-deleteIcon:hover': {
+                                    color: 'white',
+                                },
+                            }}
+                        />
+                    )}
+                </Box>
+            )}
+            <Box
                 sx={{
-                    '& .MuiTableCell-root': {
-                        fontSize: '13px',
-                        '@media (max-width: 768px)': {
-                            fontSize: '12px',
-                            padding: '2px 3px',
-                        },
+                    width: '100%',
+                    maxWidth: '1000px',
+                    maxHeight: {
+                        xs: '70vh',
+                        sm: '70vh',
+                        md: maxHeight,
                     },
+                    overflowY: 'auto',
                 }}
             >
-            <Table style={{tableLayout: 'auto'}}>
-                    <TableHead style={{backgroundColor: '#494949'}}>
-                        <TableRow>
-                            <TableCell style={{width: '50px', textAlign: 'center'}}>Time</TableCell>
-                            <TableCell
-                                style={{width: '120px', textAlign: 'right', paddingBottom: '2px'}}>Type</TableCell>
-                            <TableCell style={{textAlign: 'center'}}>Event</TableCell>
-                            <TableCell style={{width: '100px', textAlign: 'center'}}>Source</TableCell>
-                            <TableCell style={{width: '100px', textAlign: 'center'}}>Target</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {logs.map((log, index) => {
-                            let source = getActorName(log, 'source');
-                            let target = getActorName(log, 'target');
-                            return (
-                                <TableRow key={index} className={index % 2 === 0 ? 'even-row' : 'odd-row'}
-                                          style={{cursor: 'default'}}
-                                          onMouseEnter={(e) => e.currentTarget.classList.add('highlighted-row')}
-                                          onMouseLeave={(e) => e.currentTarget.classList.remove('highlighted-row')}>
-                                    <TableCell>{formatHHmmss(log.fightTimeMs!, true)}</TableCell>
-                                    <TableCell style={{width: '120px', textAlign: 'right'}}>{log.type}</TableCell>
-                                    <TableCell>
+                <TableContainer
+                    sx={{
+                        '& .MuiTableCell-root': {
+                            fontSize: '13px',
+                            '@media (max-width: 768px)': {
+                                fontSize: '12px',
+                                padding: '2px 3px',
+                            },
+                        },
+                    }}
+                >
+                <Table style={{tableLayout: 'auto'}}>
+                        <TableHead style={{backgroundColor: '#494949'}}>
+                            <TableRow>
+                                <TableCell style={{width: '50px', textAlign: 'center'}}>Time</TableCell>
+                                <TableCell
+                                    style={{width: '120px', textAlign: 'right', paddingBottom: '2px'}}>Type</TableCell>
+                                <TableCell style={{textAlign: 'center'}}>Event</TableCell>
+                                <TableCell style={{width: '100px', textAlign: 'center'}}>Source</TableCell>
+                                <TableCell style={{width: '100px', textAlign: 'center'}}>Target</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {logs.map((log, index) => {
+                                const source = getActorName(log, 'source');
+                                const target = getActorName(log, 'target');
+                                return (
+                                    <TableRow key={index} className={index % 2 === 0 ? 'even-row' : 'odd-row'}
+                                              style={{cursor: 'default'}}
+                                              onMouseEnter={(e) => e.currentTarget.classList.add('highlighted-row')}
+                                              onMouseLeave={(e) => e.currentTarget.classList.remove('highlighted-row')}>
+                                        <TableCell>{formatHHmmss(log.fightTimeMs!, true)}</TableCell>
+                                        <TableCell style={{width: '120px', textAlign: 'right'}}>
+                                            {onSelectEventTypeFilter ? (
+                                                <span className="link" onClick={() => onSelectEventTypeFilter(log.type)}>
+                                                    {log.type}
+                                                </span>
+                                            ) : (
+                                                log.type
+                                            )}
+                                        </TableCell>
+                                        <TableCell>
                                         {log.type === LogTypes.LOG_VERSION ? `Log version ${log.logVersion}` : ""}
                                         {log.type === LogTypes.LOGGED_IN_PLAYER ? `Logged in player ${log.loggedInPlayer}` : ""}
                                         {log.type === LogTypes.PLAYER_REGION ? `${log.playerRegion}` : ""}
@@ -245,23 +393,52 @@ const EventsTable: React.FC<EventsTableProps> = ({fight, maxHeight, showSource =
                                         {log.type === LogTypes.PATH_START ? `${log.pathName}` : ""}
                                         {log.type === LogTypes.PATH_COMPLETE ? `${log.pathName}` : ""}
                                         {log.type === LogTypes.DURATION ? `${log.duration}` : ""}
-                                    </TableCell>
-                                    <TableCell
-                                        className={source === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>
-                                        {source}
-                                    </TableCell>
-                                    <TableCell
-                                        className={target === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>
-                                        {target}
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
+                                        </TableCell>
+                                        <TableCell
+                                            className={source === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>
+                                            {(() => {
+                                                const sourceActor = getActorFromLog(log, 'source');
+                                                return sourceActor && onSelectSourceFilter ? (
+                                                    <span
+                                                        className="link"
+                                                        onClick={() => onSelectSourceFilter({
+                                                            name: sourceActor.name,
+                                                            id: sourceActor.id,
+                                                            index: sourceActor.index,
+                                                        })}
+                                                    >
+                                                        {source}
+                                                    </span>
+                                                ) : source;
+                                            })()}
+                                        </TableCell>
+                                        <TableCell
+                                            className={target === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>
+                                            {(() => {
+                                                const targetActor = getActorFromLog(log, 'target');
+                                                return targetActor && onSelectTargetFilter ? (
+                                                    <span
+                                                        className="link"
+                                                        onClick={() => onSelectTargetFilter({
+                                                            name: targetActor.name,
+                                                            id: targetActor.id,
+                                                            index: targetActor.index,
+                                                        })}
+                                                    >
+                                                        {target}
+                                                    </span>
+                                                ) : target;
+                                            })()}
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })}
+                        </TableBody>
 
-                </Table>
-            </TableContainer>
-        </Box>
+                    </Table>
+                </TableContainer>
+            </Box>
+        </>
     );
 };
 
