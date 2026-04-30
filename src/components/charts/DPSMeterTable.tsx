@@ -4,14 +4,19 @@ import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "
 import {DamageLog, LogTypes} from "../../models/LogLine";
 import {getFightPerformanceByPlayer, getPercentColor} from "../../utils/TickActivity";
 import {BOAT_IDS, BOAT_ID_TO_NAME} from "../../utils/constants";
+import {ActorFilter} from "../../utils/actorFilter";
+import {Actor} from "../../models/Actor";
 
 interface DPSMeterBarChartProps {
     fight: Fight;
     filteredFight: Fight;
     type: "damage-done" | "damage-taken";
+    onSelectSourceFilter: (filter: ActorFilter) => void;
+    onSelectTargetFilter: (filter: ActorFilter) => void;
 }
 
 interface DPSData {
+    actor: Actor;
     totalDamage: number;
     totalHits: number;
     successfulHits: number;
@@ -27,9 +32,11 @@ const getDPSData = (fight: Fight, filteredFight: Fight, type: "damage-done" | "d
         if (logLine.type === LogTypes.DAMAGE) {
             const damageLog = logLine as DamageLog;
             let actorName: string;
+            let actor: Actor;
             
             if (type === "damage-done") {
                 actorName = damageLog.source.name;
+                actor = damageLog.source;
             } else {
                 // For damage-taken, check if target is a boat and use mapped name
                 if (damageLog.target.id && BOAT_IDS.includes(damageLog.target.id)) {
@@ -37,13 +44,26 @@ const getDPSData = (fight: Fight, filteredFight: Fight, type: "damage-done" | "d
                     actorName = damageLog.target.index !== undefined 
                         ? `${boatName}-${damageLog.target.index}` 
                         : boatName;
+                    actor = {
+                        ...damageLog.target,
+                        name: actorName,
+                    };
                 } else {
                     actorName = damageLog.target.name;
+                    actor = damageLog.target;
                 }
             }
 
             if (!dpsData[actorName]) {
-                dpsData[actorName] = {accuracy: 0, dps: 0, totalDamage: 0, totalHits: 0, successfulHits: 0, activity: 0};
+                dpsData[actorName] = {
+                    actor,
+                    accuracy: 0,
+                    dps: 0,
+                    totalDamage: 0,
+                    totalHits: 0,
+                    successfulHits: 0,
+                    activity: 0,
+                };
             }
 
             dpsData[actorName].totalDamage += damageLog.damageAmount;
@@ -87,7 +107,13 @@ const getDPSData = (fight: Fight, filteredFight: Fight, type: "damage-done" | "d
     return dpsData;
 }
 
-const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({fight, filteredFight,  type}) => {
+const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
+    fight,
+    filteredFight,
+    type,
+    onSelectSourceFilter,
+    onSelectTargetFilter,
+}) => {
     const loggedInPlayer = fight.loggedInPlayer;
 
     const dpsData = getDPSData(fight, filteredFight, type);
@@ -156,7 +182,20 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({fight, filteredFight,  
                                     style={{width: '100px', textAlign: 'left'}}
                                     className={source === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}
                                 >
-                                    {source}
+                                    <span
+                                        className="link"
+                                        onClick={() => {
+                                            const filterActor = dpsData[source].actor;
+                                            const filter = {name: filterActor.name, id: filterActor.id, index: filterActor.index};
+                                            if (type === "damage-done") {
+                                                onSelectSourceFilter(filter);
+                                            } else {
+                                                onSelectTargetFilter(filter);
+                                            }
+                                        }}
+                                    >
+                                        {source}
+                                    </span>
                                 </TableCell>
                                 <TableCell style={{textAlign: 'center'}}>
                                     <div style={{display: 'flex', alignItems: 'center'}}>

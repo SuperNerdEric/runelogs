@@ -8,13 +8,29 @@ import DPSMeterTable from "../charts/DPSMeterTable";
 import SectionBox from "../SectionBox";
 import {filterByType, LogTypes, DamageLog} from "../../models/LogLine";
 import {BOAT_IDS} from "../../utils/constants";
+import {ActorFilter, matchesActorFilter} from "../../utils/actorFilter";
 
 interface LogsSelectionProps {
     fight: Fight;
     type: "damage-done" | "damage-taken";
+    sourceFilter: ActorFilter | null;
+    targetFilter: ActorFilter | null;
+    onSelectSourceFilter: (filter: ActorFilter) => void;
+    onSelectTargetFilter: (filter: ActorFilter) => void;
+    onClearSourceFilter: () => void;
+    onClearTargetFilter: () => void;
 }
 
-const DamageDone: React.FC<LogsSelectionProps> = ({fight, type}) => {
+const DamageDone: React.FC<LogsSelectionProps> = ({
+    fight,
+    type,
+    sourceFilter,
+    targetFilter,
+    onSelectSourceFilter,
+    onSelectTargetFilter,
+    onClearSourceFilter,
+    onClearTargetFilter,
+}) => {
     const filteredLogs = filterByType(fight.data, LogTypes.DAMAGE);
 
     let fightWithFilteredLogs;
@@ -24,8 +40,8 @@ const DamageDone: React.FC<LogsSelectionProps> = ({fight, type}) => {
             data: filteredLogs.filter(log => {
                 const damageLog = log as DamageLog;
                 // Include if target has index (monster) AND target is NOT a boat
-                return damageLog.target.index && 
-                       (!damageLog.target.id || !BOAT_IDS.includes(damageLog.target.id));
+                return Boolean(damageLog.target.index) &&
+                    (!damageLog.target.id || !BOAT_IDS.includes(damageLog.target.id));
             }),
         };
     } else {
@@ -34,11 +50,23 @@ const DamageDone: React.FC<LogsSelectionProps> = ({fight, type}) => {
             data: filteredLogs.filter(log => {
                 const damageLog = log as DamageLog;
                 // Include if target has no index (player) OR target IS a boat
-                return !damageLog.target.index || 
-                       (damageLog.target.id && BOAT_IDS.includes(damageLog.target.id));
+                return !damageLog.target.index ||
+                    (Boolean(damageLog.target.id) && BOAT_IDS.includes(damageLog.target.id!));
             }),
         };
     }
+
+    const fightWithActorFilters = {
+        ...fightWithFilteredLogs,
+        data: fightWithFilteredLogs.data.filter((log) => {
+            if (log.type !== LogTypes.DAMAGE) {
+                return false;
+            }
+
+            const damageLog = log as DamageLog;
+            return matchesActorFilter(damageLog.source, sourceFilter) && matchesActorFilter(damageLog.target, targetFilter);
+        }),
+    };
 
     return (
         <div>
@@ -47,20 +75,35 @@ const DamageDone: React.FC<LogsSelectionProps> = ({fight, type}) => {
                     <SectionBox>
                         <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400'}}>
                             {fight && fight.data && fight.data.length > 1 && (
-                                <DPSChart fight={fightWithFilteredLogs}/>
+                                <DPSChart fight={fightWithActorFilters}/>
                             )}
                         </div>
                     </SectionBox>
                     <SectionBox>
                         <div className="results-chart-container">
-                                <Results fight={fightWithFilteredLogs}/>
-                                {fightWithFilteredLogs && fightWithFilteredLogs.data && fightWithFilteredLogs.data.length > 0 && (
-                                    <HitDistributionChart fight={fightWithFilteredLogs}/>
+                                <Results fight={fightWithActorFilters}/>
+                                {fightWithActorFilters && fightWithActorFilters.data && fightWithActorFilters.data.length > 0 && (
+                                    <HitDistributionChart fight={fightWithActorFilters}/>
                                 )}
                         </div>
                     </SectionBox>
-                    <DPSMeterTable fight={fight} filteredFight={fightWithFilteredLogs} type={type}/>
-                    <EventsTable fight={fightWithFilteredLogs} maxHeight={'60vh'}/>
+                    <DPSMeterTable
+                        fight={fight}
+                        filteredFight={fightWithActorFilters}
+                        type={type}
+                        onSelectSourceFilter={onSelectSourceFilter}
+                        onSelectTargetFilter={onSelectTargetFilter}
+                    />
+                    <EventsTable
+                        fight={fightWithActorFilters}
+                        maxHeight={'60vh'}
+                        sourceFilter={sourceFilter}
+                        targetFilter={targetFilter}
+                        onSelectSourceFilter={onSelectSourceFilter}
+                        onSelectTargetFilter={onSelectTargetFilter}
+                        onClearSourceFilter={onClearSourceFilter}
+                        onClearTargetFilter={onClearTargetFilter}
+                    />
                 </div>
             )}
         </div>

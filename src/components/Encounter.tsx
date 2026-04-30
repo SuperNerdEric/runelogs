@@ -10,6 +10,7 @@ import {Icon} from '@iconify/react';
 import {getRankColor} from "../utils/utils";
 import {CrownIcon} from "./CrownIcon";
 import MedalIcon from "./MedalIcon";
+import {ActorFilter, deserializeActorFilter, serializeActorFilter} from "../utils/actorFilter";
 
 type EncounterApiFG = {
     type: 'fightGroup';
@@ -48,6 +49,9 @@ const Encounter: React.FC = () => {
     const isAggregate = window.location.pathname.startsWith('/encounter/aggregate/');
 
     const tabParam = searchParams.get('tab') as TabsEnum | null;
+    const sourceFilter = useMemo(() => deserializeActorFilter(searchParams.get('source')), [searchParams]);
+    const targetFilter = useMemo(() => deserializeActorFilter(searchParams.get('target')), [searchParams]);
+    const eventTypeFilter = searchParams.get('eventType');
     const isValidTab = Object.values(TabsEnum).includes(tabParam as TabsEnum);
     const [selectedTab, setSelectedTab] = useState<TabsEnum>(
         isValidTab ? (tabParam as TabsEnum) : TabsEnum.DAMAGE_DONE
@@ -133,6 +137,19 @@ const Encounter: React.FC = () => {
             navigate(`${basePath}/${f.id}?tab=${encodeURIComponent(tabValue)}`);
         },
         [group, navigate, searchParams, isAggregate]
+    );
+
+    const updateActorFilter = useCallback(
+        (key: 'source' | 'target', filter: ActorFilter | null) => {
+            const newParams = new URLSearchParams(searchParams);
+            if (filter) {
+                newParams.set(key, serializeActorFilter(filter));
+            } else {
+                newParams.delete(key);
+            }
+            navigate(`${window.location.pathname}?${newParams.toString()}`);
+        },
+        [navigate, searchParams]
     );
 
     useEffect(() => {
@@ -269,10 +286,51 @@ const Encounter: React.FC = () => {
                     ))}
                 </Tabs>
 
-                {selectedTab === TabsEnum.DAMAGE_DONE && <DamageDoneTab selectedLogs={fight}/>}
-                {selectedTab === TabsEnum.DAMAGE_TAKEN && <DamageTakenTab selectedLogs={fight}/>}
+                {selectedTab === TabsEnum.DAMAGE_DONE && (
+                    <DamageDoneTab
+                        selectedLogs={fight}
+                        sourceFilter={sourceFilter}
+                        targetFilter={targetFilter}
+                        onSelectSourceFilter={(filter) => updateActorFilter('source', filter)}
+                        onSelectTargetFilter={(filter) => updateActorFilter('target', filter)}
+                        onClearSourceFilter={() => updateActorFilter('source', null)}
+                        onClearTargetFilter={() => updateActorFilter('target', null)}
+                    />
+                )}
+                {selectedTab === TabsEnum.DAMAGE_TAKEN && (
+                    <DamageTakenTab
+                        selectedLogs={fight}
+                        sourceFilter={sourceFilter}
+                        targetFilter={targetFilter}
+                        onSelectSourceFilter={(filter) => updateActorFilter('source', filter)}
+                        onSelectTargetFilter={(filter) => updateActorFilter('target', filter)}
+                        onClearSourceFilter={() => updateActorFilter('source', null)}
+                        onClearTargetFilter={() => updateActorFilter('target', null)}
+                    />
+                )}
                 {selectedTab === TabsEnum.BOOSTS && <BoostsTab selectedLogs={fight}/>}
-                {selectedTab === TabsEnum.EVENTS && <EventsTab selectedLogs={fight}/>}
+                {selectedTab === TabsEnum.EVENTS && (
+                    <EventsTab
+                        selectedLogs={fight}
+                        sourceFilter={sourceFilter}
+                        targetFilter={targetFilter}
+                        onSelectSourceFilter={(filter) => updateActorFilter('source', filter)}
+                        onSelectTargetFilter={(filter) => updateActorFilter('target', filter)}
+                        onClearSourceFilter={() => updateActorFilter('source', null)}
+                        onClearTargetFilter={() => updateActorFilter('target', null)}
+                        eventTypeFilter={eventTypeFilter}
+                        onSelectEventTypeFilter={(eventType) => {
+                            const newParams = new URLSearchParams(searchParams);
+                            newParams.set('eventType', eventType);
+                            navigate(`${window.location.pathname}?${newParams.toString()}`);
+                        }}
+                        onClearEventTypeFilter={() => {
+                            const newParams = new URLSearchParams(searchParams);
+                            newParams.delete('eventType');
+                            navigate(`${window.location.pathname}?${newParams.toString()}`);
+                        }}
+                    />
+                )}
                 {selectedTab === TabsEnum.REPLAY && <ReplayTab selectedLogs={fight}/>}
             </div>
         </div>
