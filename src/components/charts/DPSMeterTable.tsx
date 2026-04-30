@@ -186,7 +186,7 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
                                         className="link"
                                         onClick={() => {
                                             const filterActor = dpsData[source].actor;
-                                            const filter = {name: filterActor.name, id: filterActor.id, index: filterActor.index};
+                                            const filter = {name: filterActor.name};
                                             if (type === "damage-done") {
                                                 onSelectSourceFilter(filter);
                                             } else {

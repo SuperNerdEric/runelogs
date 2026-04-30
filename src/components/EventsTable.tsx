@@ -1,5 +1,5 @@
-import React from 'react';
-import {Box, Chip, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
+import React, {useMemo, useState} from 'react';
+import {Box, Chip, Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 import {Fight} from "../models/Fight";
 import {LogLine, LogTypes} from "../models/LogLine";
 import {Levels} from "../models/Levels";
@@ -44,6 +44,7 @@ import Preserve from "../assets/prayers/inactive/Preserve.png";
 import Rigour from "../assets/prayers/inactive/Rigour.png";
 import Augury from "../assets/prayers/inactive/Augury.png";
 import {ActorFilter, matchesLogActorFilters} from "../utils/actorFilter";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 interface EventsTableProps {
     fight: Fight;
@@ -122,6 +123,26 @@ const getFilterTextColor = (filter: ActorFilter, loggedInPlayer: string): string
     return '#b4bdff';
 };
 
+const getActorSpecificIds = (
+    logs: LogLine[],
+    key: 'source' | 'target',
+    name: string
+): number[] => {
+    const idSet = new Set<number>();
+
+    for (const log of logs) {
+        const actor = getActorFromLog(log, key);
+        if (!actor || actor.name !== name) {
+            continue;
+        }
+        if (actor.index !== undefined) {
+            idSet.add(actor.index);
+        }
+    }
+
+    return Array.from(idSet).sort((a, b) => a - b);
+};
+
 export const renderStatImages = (levels: Levels) => {
     return (
         <div style={{display: 'flex', alignItems: 'center'}}>
@@ -168,6 +189,22 @@ const EventsTable: React.FC<EventsTableProps> = ({
         return true;
     });
     const loggedInPlayer = fight.loggedInPlayer;
+    const [sourceMenuAnchor, setSourceMenuAnchor] = useState<null | HTMLElement>(null);
+    const [targetMenuAnchor, setTargetMenuAnchor] = useState<null | HTMLElement>(null);
+
+    const sourceSpecificIds = useMemo(() => {
+        if (!sourceFilter) {
+            return [];
+        }
+        return getActorSpecificIds(fight.data, 'source', sourceFilter.name);
+    }, [fight.data, sourceFilter]);
+
+    const targetSpecificIds = useMemo(() => {
+        if (!targetFilter) {
+            return [];
+        }
+        return getActorSpecificIds(fight.data, 'target', targetFilter.name);
+    }, [fight.data, targetFilter]);
 
     const renderPrayerImages = (prayers: string[]) => {
         return (
@@ -201,56 +238,140 @@ const EventsTable: React.FC<EventsTableProps> = ({
             {(sourceFilter || targetFilter || eventTypeFilter) && (
                 <Box sx={{width: '100%', maxWidth: '1000px', mb: 1, display: 'flex', gap: 1, flexWrap: 'wrap'}}>
                     {sourceFilter && (
-                        <Chip
-                            label={`Source: ${sourceFilter.name}`}
-                            onDelete={onClearSourceFilter}
-                            size="small"
-                            sx={{
-                                bgcolor: '#141414',
-                                color: getFilterTextColor(sourceFilter, loggedInPlayer),
-                                border: '1px solid grey',
-                                borderRadius: '5px',
-                                '& .MuiChip-label': {
-                                    fontSize: '0.9rem',
-                                    paddingLeft: '10px',
-                                    paddingRight: '10px',
-                                },
-                                '& .MuiChip-deleteIcon': {
+                        <>
+                            <Chip
+                                label={`Source: ${sourceFilter.name}${sourceFilter.index !== undefined ? ` - ${sourceFilter.index}` : ''}`}
+                                onDelete={onClearSourceFilter}
+                                onClick={(e) => setSourceMenuAnchor(e.currentTarget)}
+                                icon={<ArrowDropDownIcon sx={{color: getFilterTextColor(sourceFilter, loggedInPlayer)}}/>}
+                                size="small"
+                                sx={{
+                                    bgcolor: '#141414',
                                     color: getFilterTextColor(sourceFilter, loggedInPlayer),
-                                    fontSize: '1.05rem',
-                                    marginRight: '6px',
-                                },
-                                '& .MuiChip-deleteIcon:hover': {
-                                    color: getFilterTextColor(sourceFilter, loggedInPlayer),
-                                },
-                            }}
-                        />
+                                    border: '1px solid grey',
+                                    borderRadius: '5px',
+                                    '& .MuiChip-label': {
+                                        fontSize: '0.9rem',
+                                        paddingLeft: '10px',
+                                        paddingRight: '10px',
+                                    },
+                                    '& .MuiChip-deleteIcon': {
+                                        color: getFilterTextColor(sourceFilter, loggedInPlayer),
+                                        fontSize: '1.05rem',
+                                        marginRight: '6px',
+                                    },
+                                    '& .MuiChip-deleteIcon:hover': {
+                                        color: getFilterTextColor(sourceFilter, loggedInPlayer),
+                                    },
+                                }}
+                            />
+                            <Menu
+                                anchorEl={sourceMenuAnchor}
+                                open={Boolean(sourceMenuAnchor)}
+                                onClose={() => setSourceMenuAnchor(null)}
+                                PaperProps={{
+                                    sx: {
+                                        maxHeight: '200px',
+                                        minWidth: '100px',
+                                        '& .MuiMenu-list': {
+                                            paddingRight: '12px',
+                                        },
+                                    },
+                                }}
+                            >
+                                <MenuItem
+                                    onClick={() => {
+                                        if (onSelectSourceFilter) {
+                                            onSelectSourceFilter({name: sourceFilter.name});
+                                        }
+                                        setSourceMenuAnchor(null);
+                                    }}
+                                >
+                                    All IDs
+                                </MenuItem>
+                                {sourceSpecificIds.map((specificId) => (
+                                    <MenuItem
+                                        key={`source-id-${specificId}`}
+                                        onClick={() => {
+                                            if (onSelectSourceFilter) {
+                                                onSelectSourceFilter({name: sourceFilter.name, index: specificId});
+                                            }
+                                            setSourceMenuAnchor(null);
+                                        }}
+                                    >
+                                        {specificId}
+                                    </MenuItem>
+                                ))}
+                            </Menu>
+                        </>
                     )}
                     {targetFilter && (
-                        <Chip
-                            label={`Target: ${targetFilter.name}`}
-                            onDelete={onClearTargetFilter}
-                            size="small"
-                            sx={{
-                                bgcolor: '#141414',
-                                color: getFilterTextColor(targetFilter, loggedInPlayer),
-                                border: '1px solid grey',
-                                borderRadius: '5px',
-                                '& .MuiChip-label': {
-                                    fontSize: '0.9rem',
-                                    paddingLeft: '10px',
-                                    paddingRight: '10px',
-                                },
-                                '& .MuiChip-deleteIcon': {
+                        <>
+                            <Chip
+                                label={`Target: ${targetFilter.name}${targetFilter.index !== undefined ? ` - ${targetFilter.index}` : ''}`}
+                                onDelete={onClearTargetFilter}
+                                onClick={(e) => setTargetMenuAnchor(e.currentTarget)}
+                                icon={<ArrowDropDownIcon sx={{color: getFilterTextColor(targetFilter, loggedInPlayer)}}/>}
+                                size="small"
+                                sx={{
+                                    bgcolor: '#141414',
                                     color: getFilterTextColor(targetFilter, loggedInPlayer),
-                                    fontSize: '1.05rem',
-                                    marginRight: '6px',
-                                },
-                                '& .MuiChip-deleteIcon:hover': {
-                                    color: getFilterTextColor(targetFilter, loggedInPlayer),
-                                },
-                            }}
-                        />
+                                    border: '1px solid grey',
+                                    borderRadius: '5px',
+                                    '& .MuiChip-label': {
+                                        fontSize: '0.9rem',
+                                        paddingLeft: '10px',
+                                        paddingRight: '10px',
+                                    },
+                                    '& .MuiChip-deleteIcon': {
+                                        color: getFilterTextColor(targetFilter, loggedInPlayer),
+                                        fontSize: '1.05rem',
+                                        marginRight: '6px',
+                                    },
+                                    '& .MuiChip-deleteIcon:hover': {
+                                        color: getFilterTextColor(targetFilter, loggedInPlayer),
+                                    },
+                                }}
+                            />
+                            <Menu
+                                anchorEl={targetMenuAnchor}
+                                open={Boolean(targetMenuAnchor)}
+                                onClose={() => setTargetMenuAnchor(null)}
+                                PaperProps={{
+                                    sx: {
+                                        maxHeight: '200px',
+                                        width: '100px',
+                                        '& .MuiMenu-list': {
+                                            paddingRight: '12px',
+                                        },
+                                    },
+                                }}
+                            >
+                                <MenuItem
+                                    onClick={() => {
+                                        if (onSelectTargetFilter) {
+                                            onSelectTargetFilter({name: targetFilter.name});
+                                        }
+                                        setTargetMenuAnchor(null);
+                                    }}
+                                >
+                                    All IDs
+                                </MenuItem>
+                                {targetSpecificIds.map((specificId) => (
+                                    <MenuItem
+                                        key={`target-id-${specificId}`}
+                                        onClick={() => {
+                                            if (onSelectTargetFilter) {
+                                                onSelectTargetFilter({name: targetFilter.name, index: specificId});
+                                            }
+                                            setTargetMenuAnchor(null);
+                                        }}
+                                    >
+                                        {specificId}
+                                    </MenuItem>
+                                ))}
+                            </Menu>
+                        </>
                     )}
                     {eventTypeFilter && (
                         <Chip
@@ -403,8 +524,6 @@ const EventsTable: React.FC<EventsTableProps> = ({
                                                         className="link"
                                                         onClick={() => onSelectSourceFilter({
                                                             name: sourceActor.name,
-                                                            id: sourceActor.id,
-                                                            index: sourceActor.index,
                                                         })}
                                                     >
                                                         {source}
@@ -421,8 +540,6 @@ const EventsTable: React.FC<EventsTableProps> = ({
                                                         className="link"
                                                         onClick={() => onSelectTargetFilter({
                                                             name: targetActor.name,
-                                                            id: targetActor.id,
-                                                            index: targetActor.index,
                                                         })}
                                                     >
                                                         {target}
