@@ -18063,24 +18063,6 @@
     "speed": 4
   },
   {
-    "name": "Demonic slayer helmet",
-    "id": 33340,
-    "version": "Radiant",
-    "slot": "head",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Demonic slayer helmet",
-    "id": 33338,
-    "version": "Regular",
-    "slot": "head",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
     "name": "Desert amulet 1",
     "id": 13133,
     "version": "",
@@ -32967,6 +32949,42 @@
     "speed": 0
   },
   {
+    "name": "Oathplate slayer helmet",
+    "id": 33338,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Oathplate slayer helmet (i)",
+    "id": 33443,
+    "version": "Emir's Arena",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Oathplate slayer helmet (i)",
+    "id": 33439,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Oathplate slayer helmet (i)",
+    "id": 33441,
+    "version": "Soul Wars",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Obsidian cape",
     "id": 6568,
     "version": "",
@@ -34897,6 +34915,42 @@
     "id": 30781,
     "version": "",
     "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Radiant slayer helmet",
+    "id": 33340,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Radiant slayer helmet (i)",
+    "id": 33449,
+    "version": "Emir's Arena",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Radiant slayer helmet (i)",
+    "id": 33445,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Radiant slayer helmet (i)",
+    "id": 33447,
+    "version": "Soul Wars",
+    "slot": "head",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
