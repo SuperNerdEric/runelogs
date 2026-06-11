@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import HitDistributionChart from "../charts/HitDistributionChart";
 import Results from "../Results";
 import DPSChart from "../charts/DPSChart";
@@ -9,16 +9,20 @@ import SectionBox from "../SectionBox";
 import {filterByType, LogTypes, DamageLog} from "../../models/LogLine";
 import {BOAT_IDS} from "../../utils/constants";
 import {ActorFilter, matchesActorFilter} from "../../utils/actorFilter";
+import {buildEquipmentTimelines, EquipmentFilter, matchesEquipmentFilter} from "../../utils/equipmentFilter";
 
 interface LogsSelectionProps {
     fight: Fight;
     type: "damage-done" | "damage-taken";
     sourceFilter: ActorFilter | null;
     targetFilter: ActorFilter | null;
+    equipmentFilter?: EquipmentFilter | null;
     onSelectSourceFilter: (filter: ActorFilter) => void;
     onSelectTargetFilter: (filter: ActorFilter) => void;
+    onSelectEquipmentFilter?: (filter: EquipmentFilter) => void;
     onClearSourceFilter: () => void;
     onClearTargetFilter: () => void;
+    onClearEquipmentFilter?: () => void;
 }
 
 const DamageDone: React.FC<LogsSelectionProps> = ({
@@ -26,10 +30,13 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
     type,
     sourceFilter,
     targetFilter,
+    equipmentFilter = null,
     onSelectSourceFilter,
     onSelectTargetFilter,
+    onSelectEquipmentFilter,
     onClearSourceFilter,
     onClearTargetFilter,
+    onClearEquipmentFilter,
 }) => {
     const filteredLogs = filterByType(fight.data, LogTypes.DAMAGE);
 
@@ -56,6 +63,11 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
         };
     }
 
+    const equipmentTimelines = useMemo(
+        () => buildEquipmentTimelines(fight.data),
+        [fight.data]
+    );
+
     const fightWithActorFilters = {
         ...fightWithFilteredLogs,
         data: fightWithFilteredLogs.data.filter((log) => {
@@ -64,7 +76,11 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
             }
 
             const damageLog = log as DamageLog;
-            return matchesActorFilter(damageLog.source, sourceFilter) && matchesActorFilter(damageLog.target, targetFilter);
+            if (!matchesActorFilter(damageLog.source, sourceFilter) || !matchesActorFilter(damageLog.target, targetFilter)) {
+                return false;
+            }
+
+            return matchesEquipmentFilter(log, equipmentTimelines, equipmentFilter ?? null, sourceFilter, targetFilter);
         }),
     };
 
@@ -96,13 +112,17 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
                     />
                     <EventsTable
                         fight={fightWithActorFilters}
+                        allLogs={fight.data}
                         maxHeight={'60vh'}
                         sourceFilter={sourceFilter}
                         targetFilter={targetFilter}
+                        equipmentFilter={equipmentFilter}
                         onSelectSourceFilter={onSelectSourceFilter}
                         onSelectTargetFilter={onSelectTargetFilter}
+                        onSelectEquipmentFilter={onSelectEquipmentFilter}
                         onClearSourceFilter={onClearSourceFilter}
                         onClearTargetFilter={onClearTargetFilter}
+                        onClearEquipmentFilter={onClearEquipmentFilter}
                     />
                 </div>
             )}

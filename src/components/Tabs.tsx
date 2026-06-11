@@ -5,6 +5,7 @@ import EventsTable from "./EventsTable";
 import {Fight} from "../models/Fight";
 import MainReplayComponent from "./replay/MainReplayComponent";
 import {ActorFilter} from "../utils/actorFilter";
+import {EquipmentFilter} from "../utils/equipmentFilter";
 
 export enum TabsEnum {
     DAMAGE_DONE = 'Damage Done',
@@ -18,10 +19,13 @@ interface FilterableTabProps {
     selectedLogs: Fight;
     sourceFilter: ActorFilter | null;
     targetFilter: ActorFilter | null;
+    equipmentFilter?: EquipmentFilter | null;
     onSelectSourceFilter: (filter: ActorFilter) => void;
     onSelectTargetFilter: (filter: ActorFilter) => void;
+    onSelectEquipmentFilter?: (filter: EquipmentFilter) => void;
     onClearSourceFilter: () => void;
     onClearTargetFilter: () => void;
+    onClearEquipmentFilter?: () => void;
     eventTypeFilter?: string | null;
     onSelectEventTypeFilter?: (eventType: string) => void;
     onClearEventTypeFilter?: () => void;
@@ -31,20 +35,26 @@ export const DamageDoneTab: React.FC<FilterableTabProps> = ({
     selectedLogs,
     sourceFilter,
     targetFilter,
+    equipmentFilter,
     onSelectSourceFilter,
     onSelectTargetFilter,
+    onSelectEquipmentFilter,
     onClearSourceFilter,
     onClearTargetFilter,
+    onClearEquipmentFilter,
 }) => {
     return <DamageDone
         fight={selectedLogs}
         type={"damage-done"}
         sourceFilter={sourceFilter}
         targetFilter={targetFilter}
+        equipmentFilter={equipmentFilter}
         onSelectSourceFilter={onSelectSourceFilter}
         onSelectTargetFilter={onSelectTargetFilter}
+        onSelectEquipmentFilter={onSelectEquipmentFilter}
         onClearSourceFilter={onClearSourceFilter}
         onClearTargetFilter={onClearTargetFilter}
+        onClearEquipmentFilter={onClearEquipmentFilter}
     />;
 };
 
@@ -52,20 +62,26 @@ export const DamageTakenTab: React.FC<FilterableTabProps> = ({
     selectedLogs,
     sourceFilter,
     targetFilter,
+    equipmentFilter,
     onSelectSourceFilter,
     onSelectTargetFilter,
+    onSelectEquipmentFilter,
     onClearSourceFilter,
     onClearTargetFilter,
+    onClearEquipmentFilter,
 }) => {
     return <DamageDone
         fight={selectedLogs}
         type={"damage-taken"}
         sourceFilter={sourceFilter}
         targetFilter={targetFilter}
+        equipmentFilter={equipmentFilter}
         onSelectSourceFilter={onSelectSourceFilter}
         onSelectTargetFilter={onSelectTargetFilter}
+        onSelectEquipmentFilter={onSelectEquipmentFilter}
         onClearSourceFilter={onClearSourceFilter}
         onClearTargetFilter={onClearTargetFilter}
+        onClearEquipmentFilter={onClearEquipmentFilter}
     />;
 };
 
@@ -77,10 +93,13 @@ export const EventsTab: React.FC<FilterableTabProps> = ({
     selectedLogs,
     sourceFilter,
     targetFilter,
+    equipmentFilter,
     onSelectSourceFilter,
     onSelectTargetFilter,
+    onSelectEquipmentFilter,
     onClearSourceFilter,
     onClearTargetFilter,
+    onClearEquipmentFilter,
     eventTypeFilter,
     onSelectEventTypeFilter,
     onClearEventTypeFilter,
@@ -92,10 +111,13 @@ export const EventsTab: React.FC<FilterableTabProps> = ({
             showSource={true}
             sourceFilter={sourceFilter}
             targetFilter={targetFilter}
+            equipmentFilter={equipmentFilter}
             onSelectSourceFilter={onSelectSourceFilter}
             onSelectTargetFilter={onSelectTargetFilter}
+            onSelectEquipmentFilter={onSelectEquipmentFilter}
             onClearSourceFilter={onClearSourceFilter}
             onClearTargetFilter={onClearTargetFilter}
+            onClearEquipmentFilter={onClearEquipmentFilter}
             eventTypeFilter={eventTypeFilter}
             onSelectEventTypeFilter={onSelectEventTypeFilter}
             onClearEventTypeFilter={onClearEventTypeFilter}
