@@ -11,6 +11,7 @@ import {getRankColor} from "../utils/utils";
 import {CrownIcon} from "./CrownIcon";
 import MedalIcon from "./MedalIcon";
 import {ActorFilter, deserializeActorFilter, serializeActorFilter} from "../utils/actorFilter";
+import {deserializeEquipmentFilter, EquipmentFilter, serializeEquipmentFilter} from "../utils/equipmentFilter";
 
 type EncounterApiFG = {
     type: 'fightGroup';
@@ -51,6 +52,7 @@ const Encounter: React.FC = () => {
     const tabParam = searchParams.get('tab') as TabsEnum | null;
     const sourceFilter = useMemo(() => deserializeActorFilter(searchParams.get('source')), [searchParams]);
     const targetFilter = useMemo(() => deserializeActorFilter(searchParams.get('target')), [searchParams]);
+    const equipmentFilter = useMemo(() => deserializeEquipmentFilter(searchParams.get('equipment')), [searchParams]);
     const eventTypeFilter = searchParams.get('eventType');
     const isValidTab = Object.values(TabsEnum).includes(tabParam as TabsEnum);
     const [selectedTab, setSelectedTab] = useState<TabsEnum>(
@@ -146,6 +148,19 @@ const Encounter: React.FC = () => {
                 newParams.set(key, serializeActorFilter(filter));
             } else {
                 newParams.delete(key);
+            }
+            navigate(`${window.location.pathname}?${newParams.toString()}`);
+        },
+        [navigate, searchParams]
+    );
+
+    const updateEquipmentFilter = useCallback(
+        (filter: EquipmentFilter | null) => {
+            const newParams = new URLSearchParams(searchParams);
+            if (filter) {
+                newParams.set('equipment', serializeEquipmentFilter(filter));
+            } else {
+                newParams.delete('equipment');
             }
             navigate(`${window.location.pathname}?${newParams.toString()}`);
         },
@@ -291,10 +306,13 @@ const Encounter: React.FC = () => {
                         selectedLogs={fight}
                         sourceFilter={sourceFilter}
                         targetFilter={targetFilter}
+                        equipmentFilter={equipmentFilter}
                         onSelectSourceFilter={(filter) => updateActorFilter('source', filter)}
                         onSelectTargetFilter={(filter) => updateActorFilter('target', filter)}
+                        onSelectEquipmentFilter={updateEquipmentFilter}
                         onClearSourceFilter={() => updateActorFilter('source', null)}
                         onClearTargetFilter={() => updateActorFilter('target', null)}
+                        onClearEquipmentFilter={() => updateEquipmentFilter(null)}
                     />
                 )}
                 {selectedTab === TabsEnum.DAMAGE_TAKEN && (
@@ -302,10 +320,13 @@ const Encounter: React.FC = () => {
                         selectedLogs={fight}
                         sourceFilter={sourceFilter}
                         targetFilter={targetFilter}
+                        equipmentFilter={equipmentFilter}
                         onSelectSourceFilter={(filter) => updateActorFilter('source', filter)}
                         onSelectTargetFilter={(filter) => updateActorFilter('target', filter)}
+                        onSelectEquipmentFilter={updateEquipmentFilter}
                         onClearSourceFilter={() => updateActorFilter('source', null)}
                         onClearTargetFilter={() => updateActorFilter('target', null)}
+                        onClearEquipmentFilter={() => updateEquipmentFilter(null)}
                     />
                 )}
                 {selectedTab === TabsEnum.BOOSTS && <BoostsTab selectedLogs={fight}/>}
@@ -314,10 +335,13 @@ const Encounter: React.FC = () => {
                         selectedLogs={fight}
                         sourceFilter={sourceFilter}
                         targetFilter={targetFilter}
+                        equipmentFilter={equipmentFilter}
                         onSelectSourceFilter={(filter) => updateActorFilter('source', filter)}
                         onSelectTargetFilter={(filter) => updateActorFilter('target', filter)}
+                        onSelectEquipmentFilter={updateEquipmentFilter}
                         onClearSourceFilter={() => updateActorFilter('source', null)}
                         onClearTargetFilter={() => updateActorFilter('target', null)}
+                        onClearEquipmentFilter={() => updateEquipmentFilter(null)}
                         eventTypeFilter={eventTypeFilter}
                         onSelectEventTypeFilter={(eventType) => {
                             const newParams = new URLSearchParams(searchParams);

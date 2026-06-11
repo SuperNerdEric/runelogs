@@ -1,5 +1,6 @@
 import React, {useMemo, useState} from 'react';
-import {Box, Chip, Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
+import {Box, Chip, Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip} from '@mui/material';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import {Fight} from "../models/Fight";
 import {LogLine, LogTypes} from "../models/LogLine";
 import {Levels} from "../models/Levels";
@@ -12,8 +13,6 @@ import rangedImage from '../assets/Ranged.webp';
 import prayerImage from '../assets/Prayer.webp';
 import sailingImage from '../assets/Sailing.webp';
 import {formatHHmmss} from "../utils/utils";
-import {BOSS_IDS, BOAT_IDS, BOAT_ID_TO_NAME} from "../utils/constants";
-import {Actor} from "../models/Actor";
 import ThickSkin from "../assets/prayers/inactive/ThickSkin.png";
 import BurstOfStrength from "../assets/prayers/inactive/BurstOfStrength.png";
 import ClarityOfThought from "../assets/prayers/inactive/ClarityOfThought.png";
@@ -44,10 +43,15 @@ import Preserve from "../assets/prayers/inactive/Preserve.png";
 import Rigour from "../assets/prayers/inactive/Rigour.png";
 import Augury from "../assets/prayers/inactive/Augury.png";
 import {ActorFilter, matchesLogActorFilters} from "../utils/actorFilter";
+import {EquipmentFilter, buildEquipmentTimelines, matchesEquipmentFilter} from "../utils/equipmentFilter";
+import {getActorFromLog, getActorName, getActorSpecificIds} from "../utils/actorUtils";
+import {itemIdMap} from "../lib/itemIdMap";
+import FilterSearchBar from "./FilterSearchBar";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 interface EventsTableProps {
     fight: Fight;
+    allLogs?: LogLine[];
     maxHeight: string;
     showSource?: boolean;
     sourceFilter?: ActorFilter | null;
@@ -56,6 +60,9 @@ interface EventsTableProps {
     onSelectTargetFilter?: (filter: ActorFilter) => void;
     onClearSourceFilter?: () => void;
     onClearTargetFilter?: () => void;
+    equipmentFilter?: EquipmentFilter | null;
+    onSelectEquipmentFilter?: (filter: EquipmentFilter) => void;
+    onClearEquipmentFilter?: () => void;
     eventTypeFilter?: string | null;
     onSelectEventTypeFilter?: (eventType: string) => void;
     onClearEventTypeFilter?: () => void;
@@ -76,71 +83,11 @@ const getItemImageUrl = (itemId: number): string => {
     return `https://chisel.weirdgloop.org/static/img/osrs-sprite/${itemId}.png`;
 };
 
-const getActorName = (log: LogLine, key: 'source' | 'target'): string => {
-    if (key in log) {
-        // @ts-ignore https://github.com/microsoft/TypeScript/issues/56389
-        const actor: Actor = log[key];
-        if (actor && actor.id && BOAT_IDS.includes(actor.id)) {
-            if (key === 'source') {
-                return "Unknown";
-            } else {
-                const boatName = BOAT_ID_TO_NAME[actor.id] || "Boat";
-                return actor.index !== undefined ? `${boatName}-${actor.index}` : boatName;
-            }
-        }
-        if (actor && "index" in actor && !BOSS_IDS.includes(actor.id!)) {
-            return `${actor.name} - ${actor.index}`;
-        } else if (actor) {
-            return actor.name;
-        }
-    }
-    return "";
-}
-
-const getActorFromLog = (log: LogLine, key: 'source' | 'target'): Actor | undefined => {
-    if (key in log) {
-        // @ts-ignore https://github.com/microsoft/TypeScript/issues/56389
-        const actor: Actor = log[key];
-        if (!actor) {
-            return undefined;
-        }
-        if (actor.id && BOAT_IDS.includes(actor.id)) {
-            if (key === 'source') {
-                return {...actor, name: "Unknown"};
-            }
-            const boatName = BOAT_ID_TO_NAME[actor.id] || "Boat";
-            return {...actor, name: actor.index !== undefined ? `${boatName}-${actor.index}` : boatName};
-        }
-        return actor;
-    }
-    return undefined;
-};
-
 const getFilterTextColor = (filter: ActorFilter, loggedInPlayer: string): string => {
     if (filter.name === loggedInPlayer) {
         return '#abd473';
     }
     return '#b4bdff';
-};
-
-const getActorSpecificIds = (
-    logs: LogLine[],
-    key: 'source' | 'target',
-    name: string
-): number[] => {
-    const idSet = new Set<number>();
-
-    for (const log of logs) {
-        const actor = getActorFromLog(log, key);
-        if (!actor || actor.name !== name) {
-            continue;
-        }
-        if (actor.index !== undefined) {
-            idSet.add(actor.index);
-        }
-    }
-
-    return Array.from(idSet).sort((a, b) => a - b);
 };
 
 export const renderStatImages = (levels: Levels) => {
@@ -166,6 +113,7 @@ export const renderStatImages = (levels: Levels) => {
 
 const EventsTable: React.FC<EventsTableProps> = ({
     fight,
+    allLogs,
     maxHeight,
     showSource = false,
     sourceFilter = null,
@@ -174,13 +122,23 @@ const EventsTable: React.FC<EventsTableProps> = ({
     onSelectTargetFilter,
     onClearSourceFilter,
     onClearTargetFilter,
+    equipmentFilter = null,
+    onSelectEquipmentFilter,
+    onClearEquipmentFilter,
     eventTypeFilter = null,
     onSelectEventTypeFilter,
     onClearEventTypeFilter,
 }) => {
+    const equipmentTimelines = useMemo(
+        () => buildEquipmentTimelines(allLogs ?? fight.data),
+        [allLogs, fight.data]
+    );
 
     const logs = fight.data.filter((log) => {
         if (!matchesLogActorFilters(log, sourceFilter, targetFilter)) {
+            return false;
+        }
+        if (!matchesEquipmentFilter(log, equipmentTimelines, equipmentFilter, sourceFilter, targetFilter)) {
             return false;
         }
         if (eventTypeFilter && log.type !== eventTypeFilter) {
@@ -233,9 +191,19 @@ const EventsTable: React.FC<EventsTableProps> = ({
         );
     };
 
+    const hasFilterControls = onSelectSourceFilter || onSelectTargetFilter || onSelectEquipmentFilter;
+
     return (
         <>
-            {(sourceFilter || targetFilter || eventTypeFilter) && (
+            {hasFilterControls && (
+                <FilterSearchBar
+                    fight={{...fight, data: allLogs ?? fight.data}}
+                    onSelectSourceFilter={onSelectSourceFilter}
+                    onSelectTargetFilter={onSelectTargetFilter}
+                    onSelectEquipmentFilter={onSelectEquipmentFilter}
+                />
+            )}
+            {(sourceFilter || targetFilter || equipmentFilter || eventTypeFilter) && (
                 <Box sx={{width: '100%', maxWidth: '1000px', mb: 1, display: 'flex', gap: 1, flexWrap: 'wrap'}}>
                     {sourceFilter && (
                         <>
@@ -373,6 +341,48 @@ const EventsTable: React.FC<EventsTableProps> = ({
                             </Menu>
                         </>
                     )}
+                    {equipmentFilter && (
+                        <Chip
+                            label={`Equipment: ${equipmentFilter.name || itemIdMap[equipmentFilter.id] || equipmentFilter.id}`}
+                            onDelete={onClearEquipmentFilter}
+                            icon={
+                                <Tooltip
+                                    title="Equipment filter is based on when an event was recorded. However, some actions, such as projectile damage, may have been initiated while different equipment was equipped."
+                                    arrow
+                                >
+                                    <ErrorOutlineIcon
+                                        sx={{
+                                            color: '#f44336 !important',
+                                            fontSize: '1.05rem',
+                                        }}
+                                    />
+                                </Tooltip>
+                            }
+                            size="small"
+                            sx={{
+                                bgcolor: '#141414',
+                                color: 'white',
+                                border: '1px solid grey',
+                                borderRadius: '5px',
+                                '& .MuiChip-label': {
+                                    fontSize: '0.9rem',
+                                    paddingLeft: '10px',
+                                    paddingRight: '10px',
+                                },
+                                '& .MuiChip-icon': {
+                                    marginLeft: '8px',
+                                },
+                                '& .MuiChip-deleteIcon': {
+                                    color: 'white',
+                                    fontSize: '1.05rem',
+                                    marginRight: '6px',
+                                },
+                                '& .MuiChip-deleteIcon:hover': {
+                                    color: 'white',
+                                },
+                            }}
+                        />
+                    )}
                     {eventTypeFilter && (
                         <Chip
                             label={`Type: ${eventTypeFilter}`}
@@ -467,15 +477,28 @@ const EventsTable: React.FC<EventsTableProps> = ({
                                                 {log.playerEquipment.map((itemId: string, i: number) => {
                                                     const id = parseInt(itemId);
                                                     return id > 0 ? (
-                                                        <div key={i} style={{
-                                                            width: '22px',
-                                                            overflow: 'hidden',
-                                                            marginRight: '5px',
-                                                            backgroundColor: '#494945',
-                                                            display: 'flex',
-                                                            justifyContent: 'center',
-                                                            alignItems: 'center'
-                                                        }}>
+                                                        <div
+                                                            key={i}
+                                                            className={onSelectEquipmentFilter ? 'link' : undefined}
+                                                            style={{
+                                                                width: '22px',
+                                                                overflow: 'hidden',
+                                                                marginRight: '5px',
+                                                                backgroundColor: '#494945',
+                                                                display: 'flex',
+                                                                justifyContent: 'center',
+                                                                alignItems: 'center',
+                                                                cursor: onSelectEquipmentFilter ? 'pointer' : 'default',
+                                                            }}
+                                                            onClick={() => {
+                                                                if (onSelectEquipmentFilter) {
+                                                                    onSelectEquipmentFilter({
+                                                                        id,
+                                                                        name: itemIdMap[id] || `Item ${id}`,
+                                                                    });
+                                                                }
+                                                            }}
+                                                        >
                                                             <img src={getItemImageUrl(id)}
                                                                  alt={`Item ${itemId}`}
                                                                  style={{height: '22px'}}/>
