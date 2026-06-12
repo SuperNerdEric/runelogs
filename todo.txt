@@ -1,0 +1,6 @@
+If there's no fight data found, but still a valid log we should display a better error
+If you are in a raid, and you die that shouldn't necessarily end the fight
+We are like double filtering in the Tabs.tsx as well as the individual charts components
+Boosts are going off the top of the chart when above 100 (usually?? but i swear i saw it not doing that before)
+Improve events table
+Damage charts last entry is sometimes before the fight ends (if someone else damages last or there's a delay). Is this okay? I think calculateDPS calculates this correctly by using the entire fight length
