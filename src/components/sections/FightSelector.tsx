@@ -88,27 +88,24 @@ interface FightSelectorProps {
     onSelectAggregateFight?: (indices: number[]) => void;
 }
 
-interface BannerProps {
+interface EncounterTitleBarProps {
     name: string;
     officialDurationTicks?: number;
     onClick?: () => void;
 }
 
-const Banner: React.FC<BannerProps> = ({name, officialDurationTicks, onClick}) => {
+const EncounterTitleBar: React.FC<EncounterTitleBarProps> = ({name, officialDurationTicks, onClick}) => {
     return (
-        <div className="banner" onClick={onClick}>
-            <p>
-                {name}
-                {officialDurationTicks != null && (
-                    <>
-                        <br/>
-                        <Typography component="span" variant="body2" color={colors.fight.success}>
-                            Overall - ({ticksToTime(officialDurationTicks)})
-                        </Typography>
-                    </>
-                )}
-            </p>
-
+        <div
+            className={`encounter-title-bar${onClick ? ' encounter-title-bar--clickable' : ''}`}
+            onClick={onClick}
+        >
+            <span className="encounter-title-bar-name">{name}</span>
+            {officialDurationTicks != null && (
+                <Typography component="span" variant="body2" color={colors.fight.success} display="block">
+                    Overall - ({ticksToTime(officialDurationTicks)})
+                </Typography>
+            )}
         </div>
     );
 };
@@ -151,14 +148,14 @@ const FightSelector: React.FC<FightSelectorProps> = ({fights, onSelectFight, onS
     }, [fights]);
 
     return (
-        <div style={{marginTop: '20px'}}>
+        <div className="fight-selector">
             {Object.keys(groupedFights).map(name => {
                 const fightGroup = groupedFights[name];
 
                 if (fightGroup.isRaid) {
                     return (
                         <div className="damage-done-container" key={name}>
-                            <Banner name={name} officialDurationTicks={fightGroup.officialDurationTicks}/>
+                            <EncounterTitleBar name={name} officialDurationTicks={fightGroup.officialDurationTicks}/>
                             <div className="fight-list">
                                 {fightGroup.fights.map((fight, index) => (
                                     <FightGroup
@@ -194,7 +191,7 @@ const FightSelector: React.FC<FightSelectorProps> = ({fights, onSelectFight, onS
 
                     return (
                         <div className="damage-done-container" key={name}>
-                            <Banner name={name} onClick={handleBannerClick}/>
+                            <EncounterTitleBar name={name} onClick={handleBannerClick}/>
                             <div className="fight-list">
                                 {fightGroup.fights.map((fight, index) => (
                                     <Fight

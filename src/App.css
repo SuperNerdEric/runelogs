@@ -109,6 +109,12 @@
     }
 }
 
+.fight-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
 .damage-done-container {
     text-align: center;
     width: 100%;
@@ -116,11 +122,11 @@
     background: var(--color-bg-surface);
     border: 3px solid var(--color-border-default);
     border-radius: 5px;
-    padding: 15px;
-    margin-bottom: 10px;
+    padding: 0;
     margin-left: auto;
     margin-right: auto;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 @media (max-width: 1490px) {
@@ -251,9 +257,6 @@
     min-height: 40px;
     height: auto;
     padding: 10px;
-    margin-bottom: 10px;
-    margin-left: 5px;
-    margin-right: 5px;
     font-size: var(--font-size-md);
     cursor: pointer;
     box-sizing: border-box;
@@ -273,9 +276,6 @@
     min-height: 40px;
     height: auto;
     padding: 10px;
-    margin-bottom: 10px;
-    margin-left: 5px;
-    margin-right: 5px;
     font-size: var(--font-size-md);
     cursor: pointer;
     box-sizing: border-box;
@@ -301,30 +301,36 @@
     word-break: break-word;
 }
 
-.banner {
+.encounter-title-bar {
     width: 100%;
-    border-top: 1px solid var(--color-border-white);
-    border-bottom: 1px solid var(--color-border-white);
-    margin-bottom: 10px;
+    padding: 7px 15px;
+    background: var(--color-bg-table-head);
+    border-bottom: 3px solid var(--color-border-default);
+    font-size: var(--font-size-lg);
+    text-align: left;
+    font-family: var(--font-body);
+    box-sizing: border-box;
+}
+
+.encounter-title-bar--clickable {
     cursor: pointer;
 }
 
-.banner:hover {
+.encounter-title-bar--clickable:hover {
     text-decoration: underline;
 }
 
-.banner p {
-    margin: 0;
-    padding: 10px;
-    font-size: var(--font-size-lg);
-    text-align: left;
-    font-family: var(--font-body) !important;
+.encounter-title-bar-name {
+    display: block;
 }
 
 .fight-list {
     display: flex;
     flex-wrap: wrap;
     align-items: stretch;
+    gap: 10px;
+    padding: 15px;
+    box-sizing: border-box;
 }
 
 .back-icon-wrapper {
@@ -464,9 +470,9 @@
 .log-info-box {
     background: var(--color-bg-surface);
     border: 3px solid var(--color-border-default);
-    border-radius: 1px;
+    border-radius: 5px;
     padding: 15px;
-    margin-bottom: 10px;
+    margin-bottom: 30px;
     color: var(--color-text-primary);
     display: grid;
     grid-template-columns: 80px 1fr;
