@@ -367,7 +367,7 @@ const Upload: React.FC = () => {
                         </Box>
                     )}
 
-                    <Box display="flex" justifyContent="flex-end">
+                    <Box display="flex" justifyContent="flex-end" sx={{[media.mobileDown]: {justifyContent: 'center'}}}>
                         <Box
                             component="button"
                             type="submit"
