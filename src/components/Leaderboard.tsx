@@ -23,6 +23,7 @@ import {encounterTableRowProps, stopRowClick} from '../utils/encounterTableRow';
 import {getRankColor, ticksToTime} from "../utils/utils";
 import {CrownIcon} from "./CrownIcon";
 import MedalIcon from "./MedalIcon";
+import TrophyIcon from "./TrophyIcon";
 
 type ContentOption = {
     label: string;
@@ -128,8 +129,11 @@ const Leaderboard: React.FC = () => {
 
     return (
         <Box m={0}>
-            <Box pb={0} pt={0}>
-                <Typography variant="h4" gutterBottom color="white">
+            <Box pt={0} pb={2} display="flex" alignItems="center" gap={1}>
+                <Box component="span" sx={{display: 'inline-flex', alignItems: 'center', lineHeight: 0}}>
+                    <TrophyIcon size={34}/>
+                </Box>
+                <Typography variant="h4" color="white" sx={{m: 0, lineHeight: 1.2}}>
                     Leaderboard
                 </Typography>
             </Box>
