@@ -6,6 +6,7 @@ import {getFightPerformanceByPlayer, getPercentColor} from "../../utils/TickActi
 import {BOAT_IDS, BOAT_ID_TO_NAME} from "../../utils/constants";
 import {ActorFilter} from "../../utils/actorFilter";
 import {Actor} from "../../models/Actor";
+import {colors} from "../../theme";
 
 interface DPSMeterBarChartProps {
     fight: Fight;
@@ -206,7 +207,7 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
                                                     marginRight: '5px'
                                                 }}>{damagePercentage ? `${damagePercentage}%` : ``}</span>
                                         <div style={{
-                                            backgroundColor: source === loggedInPlayer ? '#abd473' : '#007bff',
+                                            backgroundColor: source === loggedInPlayer ? colors.text.player : colors.dpsMeter.playerHighlight,
                                             height: '14px',
                                             marginRight: '10px',
                                             marginTop: '3px',

@@ -12,6 +12,7 @@ import {CrownIcon} from "./CrownIcon";
 import MedalIcon from "./MedalIcon";
 import {ActorFilter, deserializeActorFilter, serializeActorFilter} from "../utils/actorFilter";
 import {deserializeEquipmentFilter, EquipmentFilter, serializeEquipmentFilter} from "../utils/equipmentFilter";
+import {colors} from "../theme";
 
 type EncounterApiFG = {
     type: 'fightGroup';
@@ -264,8 +265,8 @@ const Encounter: React.FC = () => {
                         {(() => {
                             const rank = (fight as any)?.rank ?? (group as any)?.rank;
                             if (rank === 1) return <CrownIcon />;
-                            if (rank === 2) return <MedalIcon color="#C0C0C0" />;
-                            if (rank === 3) return <MedalIcon color="#CD7F32" />;
+                            if (rank === 2) return <MedalIcon color={colors.medal.silver} />;
+                            if (rank === 3) return <MedalIcon color={colors.medal.bronze} />;
                             return null;
                         })()}
                     </Box>

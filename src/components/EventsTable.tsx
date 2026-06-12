@@ -13,6 +13,7 @@ import rangedImage from '../assets/Ranged.webp';
 import prayerImage from '../assets/Prayer.webp';
 import sailingImage from '../assets/Sailing.webp';
 import {formatHHmmss} from "../utils/utils";
+import {colors} from "../theme";
 import ThickSkin from "../assets/prayers/inactive/ThickSkin.png";
 import BurstOfStrength from "../assets/prayers/inactive/BurstOfStrength.png";
 import ClarityOfThought from "../assets/prayers/inactive/ClarityOfThought.png";
@@ -85,9 +86,9 @@ const getItemImageUrl = (itemId: number): string => {
 
 const getFilterTextColor = (filter: ActorFilter, loggedInPlayer: string): string => {
     if (filter.name === loggedInPlayer) {
-        return '#abd473';
+        return colors.text.player;
     }
-    return '#b4bdff';
+    return colors.text.other;
 };
 
 export const renderStatImages = (levels: Levels) => {
@@ -214,7 +215,7 @@ const EventsTable: React.FC<EventsTableProps> = ({
                                 icon={<ArrowDropDownIcon sx={{color: getFilterTextColor(sourceFilter, loggedInPlayer)}}/>}
                                 size="small"
                                 sx={{
-                                    bgcolor: '#141414',
+                                    bgcolor: colors.background.surface,
                                     color: getFilterTextColor(sourceFilter, loggedInPlayer),
                                     border: '1px solid grey',
                                     borderRadius: '5px',
@@ -282,7 +283,7 @@ const EventsTable: React.FC<EventsTableProps> = ({
                                 icon={<ArrowDropDownIcon sx={{color: getFilterTextColor(targetFilter, loggedInPlayer)}}/>}
                                 size="small"
                                 sx={{
-                                    bgcolor: '#141414',
+                                    bgcolor: colors.background.surface,
                                     color: getFilterTextColor(targetFilter, loggedInPlayer),
                                     border: '1px solid grey',
                                     borderRadius: '5px',
@@ -360,7 +361,7 @@ const EventsTable: React.FC<EventsTableProps> = ({
                             }
                             size="small"
                             sx={{
-                                bgcolor: '#141414',
+                                bgcolor: colors.background.surface,
                                 color: 'white',
                                 border: '1px solid grey',
                                 borderRadius: '5px',
@@ -389,7 +390,7 @@ const EventsTable: React.FC<EventsTableProps> = ({
                             onDelete={onClearEventTypeFilter}
                             size="small"
                             sx={{
-                                bgcolor: '#141414',
+                                bgcolor: colors.background.surface,
                                 color: 'white',
                                 border: '1px solid grey',
                                 borderRadius: '5px',

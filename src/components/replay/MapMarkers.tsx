@@ -7,6 +7,7 @@ import {gameObjectIdMap} from "../../lib/gameObjectIdMap";
 import {GameObjectState, GamePosition, GraphicsObjectState} from "./GameState";
 import {groundObjectIdMap} from "../../lib/groundObjectIdMap";
 import L, {LatLngBoundsExpression} from "leaflet";
+import {colors} from "../../theme";
 
 const TORNADO_IDS = new Set([8386, 10863, 10846]);
 
@@ -32,7 +33,7 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
     const map = useMap();
 
     const npcRectangleOptions = {
-        color: '#e53333',
+        color: colors.replay.marker,
         fillOpacity: 0.0,
         weight: 2,
         interactive: true,
@@ -44,8 +45,8 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
             {Object.entries(playerPositions).map(([playerName, positionData]) => {
                 const isSelected = playerName === selectedPlayerName;
                 const playerRectangleOptions = {
-                    color: 'white',
-                    fillColor: 'white',
+                    color: colors.text.primary,
+                    fillColor: colors.text.primary,
                     fillOpacity: isSelected ? 1.0 : 0.0,
                     weight: 1,
                     interactive: true,

@@ -1,3 +1,4 @@
+import { colors } from '../theme';
 import {Fight} from "../models/Fight";
 import {LogTypes} from "../models/LogLine";
 import {weaponMap} from "../models/WeaponMap";
@@ -229,22 +230,10 @@ interface PerformanceProps {
 }
 
 export function getPercentColor(percentage: number) {
-    let percentColor;
-
-    if (percentage >= 100) {
-        percentColor = "#e5cc80";
-    } else if (percentage < 100 && percentage >= 99) {
-        percentColor = "#f48cba";
-    } else if (percentage < 99 && percentage >= 95) {
-        percentColor = "#ff8000";
-    } else if (percentage < 95 && percentage >= 75) {
-        percentColor = "#a335ee";
-    } else if (percentage < 90 && percentage >= 75) {
-        percentColor = "#0070dd";
-    } else if (percentage < 75 && percentage >= 60) {
-        percentColor = "#1eff00";
-    } else if (percentage < 60) {
-        percentColor = "#9d9d9d";
-    }
-    return percentColor;
+    if (percentage >= 100) return colors.rank.top3;
+    if (percentage >= 99) return colors.rank.top10;
+    if (percentage >= 95) return colors.rank.top20;
+    if (percentage >= 75) return colors.rank.top100;
+    if (percentage >= 60) return colors.rank.top500;
+    return colors.rank.default;
 }

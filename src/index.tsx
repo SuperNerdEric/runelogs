@@ -10,6 +10,7 @@ import Upload from "./components/Upload";
 import Log from "./components/Log/Log";
 import Logs from "./components/Logs";
 import theme from './theme';
+import ThemeVariables from './theme/ThemeVariables';
 import {ThemeProvider} from "@mui/material";
 import Encounter from "./components/Encounter";
 import Player from "./components/Player";
@@ -67,6 +68,7 @@ root.render(
                 useRefreshTokens={true}
             >
                 <ThemeProvider theme={theme}>
+                    <ThemeVariables />
                     <BrowserRouter>
                         <SessionGuard />
                         <AppRoutes />

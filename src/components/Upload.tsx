@@ -8,6 +8,7 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import {flushSync} from 'react-dom';
 import SectionBox from "./SectionBox";
 import {useStableDropzone} from "../hooks/useStableDropzone";
+import {colors} from "../theme";
 
 const Upload: React.FC = () => {
     const {isAuthenticated, isLoading, getAccessTokenSilently} = useAuth0();
@@ -164,7 +165,7 @@ const Upload: React.FC = () => {
                 {...getRootProps()}
                 sx={{
                     p: 4,
-                    borderColor: isDragActive ? '#1e88e5' : 'grey',
+                    borderColor: isDragActive ? colors.upload.dragActive : colors.border.default,
                     borderStyle: isDragActive ? 'dashed' : 'solid',
                 }}
             >
@@ -231,7 +232,7 @@ const Upload: React.FC = () => {
                             textTransform: 'none',
                             backgroundColor: 'white',
                             color: 'black',
-                            '&:hover': {backgroundColor: '#f0f0f0'}
+                            '&:hover': {backgroundColor: colors.upload.buttonHover}
                         }}
                     >
                         {selectedFile ? selectedFile.name : 'Choose Log File...'}
@@ -249,8 +250,8 @@ const Upload: React.FC = () => {
                                 sx={{
                                     height: 10,
                                     borderRadius: 5,
-                                    backgroundColor: '#444',
-                                    '& .MuiLinearProgress-bar': {backgroundColor: '#1e88e5'}
+                                    backgroundColor: colors.background.progress,
+                                    '& .MuiLinearProgress-bar': {backgroundColor: colors.upload.dragActive}
                                 }}
                             />
                             <Typography variant="body2" align="center" sx={{color: 'white', mt: 1}}>
@@ -269,7 +270,7 @@ const Upload: React.FC = () => {
                                 minWidth: 120,
                                 backgroundColor: 'white',
                                 color: 'black',
-                                '&:hover': {backgroundColor: '#f0f0f0'}
+                                '&:hover': {backgroundColor: colors.upload.buttonHover}
                             }}
                         >
                             {isSubmitting ? <CircularProgress size={24} color="inherit"/> : <><CloudUploadIcon

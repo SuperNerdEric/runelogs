@@ -4,6 +4,7 @@ import {LogLine, LogTypes} from '../../models/LogLine';
 import {getItemImageUrl} from "./PlayerEquipment";
 import undeadGraspImg from '../../assets/animations/Undead_Grasp_8972.png';
 import nullImg from '../../assets/animations/Null.png';
+import {colors, fontSizes} from '../../theme';
 
 interface TickChartProps {
     fight: Fight;
@@ -142,7 +143,7 @@ const TickChart: React.FC<TickChartProps> = ({
     const stickyHeader: CSSProperties = {
         position: 'sticky',
         left: 0,
-        backgroundColor: '#262a2e',
+        backgroundColor: colors.background.page,
         zIndex: 2,
         userSelect: 'text',
     };
@@ -155,16 +156,16 @@ const TickChart: React.FC<TickChartProps> = ({
     };
 
     const thTdStyle: CSSProperties = {
-        borderRight: '1px solid #999',
-        borderBottom: '1px solid #999',
+        borderRight: `1px solid ${colors.replay.gridBorder}`,
+        borderBottom: `1px solid ${colors.replay.gridBorder}`,
         padding: '2px 8px',
-        fontSize: '16px',
+        fontSize: fontSizes.base,
         textAlign: 'center',
         whiteSpace: 'nowrap',
     };
 
     const highlightedColumnStyle: CSSProperties = {
-        backgroundColor: 'rgb(0, 32, 64)',
+        backgroundColor: colors.background.rowHover,
     };
 
     // Helper: When user clicks a column, set the parent's currentTime

@@ -1,4 +1,5 @@
 import L, {LatLng, Map as LeafletMap, PolylineOptions, Rectangle} from 'leaflet';
+import {colors} from '../theme';
 
 export const MAP_HEIGHT_MAX_ZOOM_PX: number = 364544;
 export const MAP_WIDTH_MAX_ZOOM_PX: number = 104448;
@@ -53,8 +54,8 @@ export class Position {
 
         // Default rectangle options
         const defaultOptions: PolylineOptions = {
-            color: "#33b5e5",
-            fillColor: "#33b5e5",
+            color: colors.map.marker,
+            fillColor: colors.map.marker,
             fillOpacity: 1.0,
             weight: 1,
             interactive: false,
