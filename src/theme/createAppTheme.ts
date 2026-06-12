@@ -34,12 +34,15 @@ const theme = createTheme({
 
     typography: {
         fontFamily: fonts.body,
-        h1: { fontSize: typography.h1 },
-        h2: { fontSize: typography.h2 },
-        h3: { fontSize: typography.h3 },
-        h4: { fontSize: typography.h4 },
-        h5: { fontSize: typography.h5 },
-        h6: { fontSize: typography.h6 },
+        h1: { fontSize: typography.h1, fontWeight: 700, letterSpacing: '-0.025em' },
+        h2: { fontSize: typography.h2, fontWeight: 700, letterSpacing: '-0.02em' },
+        h3: { fontSize: typography.h3, fontWeight: 600, letterSpacing: '-0.015em' },
+        h4: { fontSize: typography.h4, fontWeight: 600, letterSpacing: '-0.01em' },
+        h5: { fontSize: typography.h5, fontWeight: 600 },
+        h6: { fontSize: typography.h6, fontWeight: 600 },
+        body1: { lineHeight: 1.5 },
+        body2: { lineHeight: 1.45 },
+        button: { textTransform: 'none', fontWeight: 500 },
     },
 
     components: {
@@ -111,6 +114,7 @@ const theme = createTheme({
                 head: {
                     backgroundColor: colors.background.tableHead,
                     fontWeight: 600,
+                    letterSpacing: '0.02em',
                 },
             },
         },
