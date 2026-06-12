@@ -58,7 +58,8 @@ const TopBar: React.FC = () => {
                             variant="h6"
                             sx={{ margin: 0, color: colors.text.primary, fontSize: fontSizes.topBarLogo }}
                         >
-                            Runelogs
+                            <Box component="span" sx={{color: colors.text.rune}}>Rune</Box>
+                            <Box component="span" sx={{color: colors.text.logs}}>logs</Box>
                         </Typography>
                     </Box>
                     {isMobile ? (
