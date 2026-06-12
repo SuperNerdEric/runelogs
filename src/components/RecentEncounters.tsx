@@ -12,7 +12,8 @@ import {
     Typography, useMediaQuery,
 } from '@mui/material';
 import {Link as RouterLink, useNavigate, useParams} from 'react-router-dom';
-import theme from "../theme";
+import HistoryIcon from '@mui/icons-material/History';
+import theme, {colors} from "../theme";
 import {encounterTableRowProps, stopRowClick} from '../utils/encounterTableRow';
 
 interface RecentEncounter {
@@ -80,8 +81,11 @@ const RecentEncounters: React.FC = () => {
     if (encounters.length === 0) {
         return (
             <Box mt={4}>
-                <Box pt={0} pb={2}>
-                    <Typography variant="h4" gutterBottom color="white">
+                <Box pt={0} pb={2} display="flex" alignItems="center" gap={1}>
+                    <Box component="span" sx={{display: 'inline-flex', alignItems: 'center', lineHeight: 0}}>
+                        <HistoryIcon sx={{color: colors.text.rune, fontSize: '2.125rem'}}/>
+                    </Box>
+                    <Typography variant="h4" color="white" sx={{m: 0, lineHeight: 1.2}}>
                         Recent Encounters
                     </Typography>
                 </Box>
@@ -92,8 +96,11 @@ const RecentEncounters: React.FC = () => {
 
     return (
         <Box mt={4}>
-            <Box pt={0} pb={2}>
-                <Typography variant="h4" gutterBottom color="white">
+            <Box pt={0} pb={2} display="flex" alignItems="center" gap={1}>
+                <Box component="span" sx={{display: 'inline-flex', alignItems: 'center', lineHeight: 0}}>
+                    <HistoryIcon sx={{color: colors.text.rune, fontSize: '2.125rem'}}/>
+                </Box>
+                <Typography variant="h4" color="white" sx={{m: 0, lineHeight: 1.2}}>
                     Recent Encounters
                 </Typography>
             </Box>

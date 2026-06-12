@@ -13,7 +13,8 @@ import {
     useMediaQuery
 } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import theme from '../theme';
+import HistoryIcon from '@mui/icons-material/History';
+import theme, {colors} from '../theme';
 import {encounterTableRowProps, stopRowClick} from '../utils/encounterTableRow';
 import {ticksToTime} from "../utils/utils";
 
@@ -69,8 +70,11 @@ const OverallRecentEncounters: React.FC = () => {
 
     return (
         <Box m={0}>
-            <Box pt={0} pb={2}>
-                <Typography variant="h4" gutterBottom color="white">
+            <Box pt={0} pb={2} display="flex" alignItems="center" gap={1}>
+                <Box component="span" sx={{display: 'inline-flex', alignItems: 'center', lineHeight: 0}}>
+                    <HistoryIcon sx={{color: colors.text.rune, fontSize: '2.125rem'}}/>
+                </Box>
+                <Typography variant="h4" color="white" sx={{m: 0, lineHeight: 1.2}}>
                     Recent Encounters
                 </Typography>
             </Box>

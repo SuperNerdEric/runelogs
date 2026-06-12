@@ -19,6 +19,7 @@ import {colors} from "../theme";
 import {getRankColor, ticksToTime} from "../utils/utils";
 import {CrownIcon} from "./CrownIcon";
 import MedalIcon from "./MedalIcon";
+import TrophyIcon from "./TrophyIcon";
 
 type ContentOption = {
     label: string;
@@ -104,8 +105,11 @@ const PersonalBests: React.FC = () => {
     if (fightGroups.length === 0) {
         return (
             <Box mt={4}>
-                <Box pt={0} pb={2}>
-                    <Typography variant="h4" gutterBottom color="white">
+                <Box pt={0} pb={2} display="flex" alignItems="center" gap={1}>
+                    <Box component="span" sx={{display: 'inline-flex', alignItems: 'center', lineHeight: 0}}>
+                        <TrophyIcon size={34}/>
+                    </Box>
+                    <Typography variant="h4" color="white" sx={{m: 0, lineHeight: 1.2}}>
                         Personal Bests
                     </Typography>
                 </Box>
@@ -118,8 +122,11 @@ const PersonalBests: React.FC = () => {
 
     return (
         <Box mt={4}>
-            <Box pt={0} pb={2}>
-                <Typography variant="h4" gutterBottom color="white">
+            <Box pt={0} pb={2} display="flex" alignItems="center" gap={1}>
+                <Box component="span" sx={{display: 'inline-flex', alignItems: 'center', lineHeight: 0}}>
+                    <TrophyIcon size={34}/>
+                </Box>
+                <Typography variant="h4" color="white" sx={{m: 0, lineHeight: 1.2}}>
                     Personal Bests
                 </Typography>
             </Box>
