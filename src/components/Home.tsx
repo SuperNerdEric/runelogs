@@ -3,6 +3,8 @@ import Leaderboard from './Leaderboard';
 import {Box, Link, Typography} from '@mui/material';
 import OverallRecentEncounters from "./OverallRecentEncounters";
 import {useAuth0} from '@auth0/auth0-react';
+import {colors} from '../theme';
+import logo from '../assets/Logo.png';
 
 export default function Home() {
     const {isAuthenticated} = useAuth0();
@@ -10,12 +12,51 @@ export default function Home() {
     return (
         <Box mt={1}>
             <Box p={2} pb={0} maxWidth={1000} mx="auto">
-                <Typography variant="h4" gutterBottom>
-                    Welcome to Runelogs
-                </Typography>
+                <Box sx={{display: 'flex', alignItems: 'center', gap: 2, mb: 2}}>
+                    {/* Hidden below 1440px — duplicates top bar branding */}
+                    <Box
+                        component="img"
+                        src={logo}
+                        alt=""
+                        sx={{
+                            height: 40,
+                            flexShrink: 0,
+                            '@media (max-width: 1439px)': {display: 'none'},
+                        }}
+                    />
+                    <Box>
+                        <Typography
+                            variant="h4"
+                            component="h1"
+                            sx={{
+                                color: 'white',
+                                fontWeight: 700,
+                                lineHeight: 1.2,
+                                '@media (max-width: 1439px)': {display: 'none'},
+                            }}
+                        >
+                            <Box component="span" sx={{color: colors.text.rune}}>Rune</Box>
+                            <Box component="span" sx={{color: colors.text.logs}}>logs</Box>
+                        </Typography>
+                        <Typography
+                            variant="subtitle1"
+                            sx={{
+                                color: 'grey.500',
+                                mt: 0.25,
+                                '@media (max-width: 1439px)': {
+                                    fontSize: '1.25rem',
+                                    mt: 0,
+                                },
+                            }}
+                        >
+                            Combat analysis for Old School RuneScape
+                        </Typography>
+                    </Box>
+                </Box>
                 {!isAuthenticated && (
                     <Typography paragraph>
-                        To upload a log please <strong>Log In</strong> / <strong>Register</strong> for an account.
+                        To upload a log please{' '}
+                        <strong>Log In</strong> / <strong>Register</strong> for an account.
                     </Typography>
                 )}
                 <Typography paragraph>
