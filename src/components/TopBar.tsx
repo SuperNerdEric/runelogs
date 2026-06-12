@@ -26,7 +26,7 @@ const TopBar: React.FC = () => {
     }
 
     return (
-        <AppBar position="static" style={{background: colors.background.surface}}>
+        <AppBar position="static" style={{background: colors.background.topBar}}>
             <Toolbar
                 style={{
                     display: 'flex',
