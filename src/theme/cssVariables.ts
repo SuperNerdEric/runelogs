@@ -2,6 +2,7 @@ import { colors, fonts, fontSizes, layout } from './tokens';
 
 export const cssVariables: Record<string, string> = {
     '--color-bg-page': colors.background.page,
+    '--color-bg-top-bar': colors.background.topBar,
     '--color-bg-surface': colors.background.surface,
     '--color-bg-surface-alt': colors.background.surfaceAlt,
     '--color-bg-row-even': colors.background.rowEven,
