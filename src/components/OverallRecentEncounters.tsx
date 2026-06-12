@@ -12,8 +12,9 @@ import {
     Typography,
     useMediaQuery
 } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import theme from '../theme';
+import {encounterTableRowProps, stopRowClick} from '../utils/encounterTableRow';
 import {ticksToTime} from "../utils/utils";
 
 type Encounter = {
@@ -30,6 +31,7 @@ type Encounter = {
 };
 
 const OverallRecentEncounters: React.FC = () => {
+    const navigate = useNavigate();
     const [encounters, setEncounters] = useState<Encounter[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -86,13 +88,14 @@ const OverallRecentEncounters: React.FC = () => {
                         </TableHead>
                         <TableBody>
                             {encounters.map((row) => (
-                                <TableRow key={row.id} hover>
+                                <TableRow key={row.id} {...encounterTableRowProps(navigate, row.id)}>
                                     <TableCell sx={{ color: 'white' }}>
                                         <Link
                                             component={RouterLink}
                                             to={`/encounter/${row.id}`}
                                             underline="hover"
                                             title={row.id}
+                                            onClick={stopRowClick}
                                         >
                                         {row.type === 'fight' ? row.mainEnemyName : row.leaderboardName}
                                         </Link>
@@ -103,7 +106,7 @@ const OverallRecentEncounters: React.FC = () => {
                                     <TableCell sx={{ color: 'white' }}>
                                         {row.players.map((p, i) => (
                                             <React.Fragment key={p}>
-                                                <Link component={RouterLink} to={`/player/${p}`} underline="hover">
+                                                <Link component={RouterLink} to={`/player/${p}`} underline="hover" onClick={stopRowClick}>
                                                     {p}
                                                 </Link>
                                                 {i < row.players.length - 1 ? ', ' : ''}

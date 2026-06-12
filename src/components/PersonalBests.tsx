@@ -12,8 +12,9 @@ import {
     Typography,
     useMediaQuery
 } from '@mui/material';
-import {Link as RouterLink, useParams} from 'react-router-dom';
+import {Link as RouterLink, useNavigate, useParams} from 'react-router-dom';
 import theme from "../theme";
+import {encounterTableRowProps, stopRowClick} from '../utils/encounterTableRow';
 import {colors} from "../theme";
 import {getRankColor, ticksToTime} from "../utils/utils";
 import {CrownIcon} from "./CrownIcon";
@@ -57,6 +58,7 @@ interface PersonalBestsResponse {
 }
 
 const PersonalBests: React.FC = () => {
+    const navigate = useNavigate();
     const {playerName} = useParams<{ playerName: string }>();
     const [data, setData] = useState<PersonalBestsResponse | null>(null);
     const [loading, setLoading] = useState(true);
@@ -150,7 +152,7 @@ const PersonalBests: React.FC = () => {
                                         const match = relevantFights.find(f => f.playerCount === count);
 
                                         return (
-                                            <TableRow key={count}>
+                                            <TableRow key={count} {...encounterTableRowProps(navigate, match?.id)}>
                                                 <TableCell sx={{color: 'white'}}>{count}</TableCell>
                                                 <TableCell sx={{color: 'white'}}>
                                                     {match ? ticksToTime(match.officialDurationTicks) : '-'}
@@ -178,6 +180,7 @@ const PersonalBests: React.FC = () => {
                                                             component={RouterLink}
                                                             to={`/encounter/${match.id}`}
                                                             underline="hover"
+                                                            onClick={stopRowClick}
                                                         >
                                                             {isMobile ? `${match.id.slice(0, 8)}...` : match.id}
                                                         </Link>
