@@ -37,7 +37,8 @@ function AppRoutes() {
     return (
         <div className="app-layout">
             <TopBar/>
-            <Routes>
+            <main className="app-main-content">
+                <Routes>
                 <Route path="/" element={<Home/>}/>
                 <Route path="/login" element={<Login />} />
                 <Route path="/logout" element={<Logout />} />
@@ -49,6 +50,7 @@ function AppRoutes() {
                 <Route path="/log/:logId" element={<Log/>}/>
                 <Route path="/logs/:uploaderId" element={<Logs/>}/>
             </Routes>
+            </main>
         </div>
     );
 }

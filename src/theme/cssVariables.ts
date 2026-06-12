@@ -1,4 +1,4 @@
-import { colors, fonts, fontSizes } from './tokens';
+import { colors, fonts, fontSizes, layout } from './tokens';
 
 export const cssVariables: Record<string, string> = {
     '--color-bg-page': colors.background.page,
@@ -54,4 +54,6 @@ export const cssVariables: Record<string, string> = {
     '--font-size-performance-title': fontSizes.performanceTitle,
     '--font-size-performance-percent': fontSizes.performancePercent,
     '--font-size-dropdown-fight': fontSizes.dropdownFight,
+
+    '--layout-content-max-width': `${layout.contentMaxWidth}px`,
 };

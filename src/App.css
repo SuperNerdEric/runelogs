@@ -17,12 +17,16 @@
 .App-main {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     justify-content: flex-start;
     margin-top: 6px;
     font-size: var(--font-size-responsive-main);
     color: var(--color-text-primary);
     width: 100%;
+    max-width: var(--layout-content-max-width);
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
 }
 
 .App-link {
@@ -108,17 +112,20 @@
 .damage-done-container {
     text-align: center;
     width: 100%;
-    max-width: 1000px;
+    max-width: var(--layout-content-max-width);
     background: var(--color-bg-surface);
     border: 3px solid var(--color-border-default);
     border-radius: 5px;
     padding: 15px;
     margin-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
 }
 
-@media (max-width: 1050px) {
+@media (max-width: 1490px) {
     .damage-done-container {
-        max-width: 90vw;
+        max-width: min(var(--layout-content-max-width), 98vw);
     }
 }
 
@@ -378,6 +385,7 @@
     margin-top: 10px;
     padding: 5px 10px;
     border-radius: 5px;
+    width: fit-content;
 }
 
 /* Map Container Styling */
@@ -446,11 +454,15 @@
     grid-template-columns: 80px 1fr;
     column-gap: 10px;
     row-gap: 6px;
-    width: 1000px;
+    width: 100%;
+    max-width: var(--layout-content-max-width);
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
 }
 
-@media (max-width: 1050px) {
-    .log-info-box { width: 90vw; }
+@media (max-width: 1490px) {
+    .log-info-box { max-width: min(var(--layout-content-max-width), 98vw); }
 }
 
 .log-info-label  { color: var(--color-text-other); }

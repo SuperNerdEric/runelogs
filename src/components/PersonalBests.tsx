@@ -45,6 +45,7 @@ interface FightGroup {
     leaderboardName: string;
     officialDurationTicks: number;
     playerCount: number;
+    rank?: number;
 }
 
 interface PersonalBestsResponse {
@@ -90,7 +91,7 @@ const PersonalBests: React.FC = () => {
 
     if (error) {
         return (
-            <Box m={2}>
+            <Box mt={4}>
                 <Typography color="error">{error}</Typography>
             </Box>
         );
@@ -98,35 +99,28 @@ const PersonalBests: React.FC = () => {
 
     const fightGroups = data?.personalBests.fightGroups || [];
 
-
     if (fightGroups.length === 0) {
         return (
-            <Box>
-                <Typography variant="h5" gutterBottom color="white">
-                    Personal Bests
-                </Typography>
-                <Box m={2}>
-                    <Typography variant="body1" color="white">
-                        No personal bests found.
+            <Box mt={4}>
+                <Box pt={0} pb={2}>
+                    <Typography variant="h4" gutterBottom color="white">
+                        Personal Bests
                     </Typography>
                 </Box>
+                <Typography variant="body1" color="white">
+                    No personal bests found.
+                </Typography>
             </Box>
         );
     }
 
     return (
-        <Box sx={{
-            maxWidth: 1000,
-            width: '100%',
-            '@media (max-width: 768px)': {
-                maxWidth: '98vw',
-                width: '100%',
-                overflowX: 'auto',
-            },
-        }}>
-            <Typography variant="h5" gutterBottom color="white">
-                Personal Bests
-            </Typography>
+        <Box mt={4}>
+            <Box pt={0} pb={2}>
+                <Typography variant="h4" gutterBottom color="white">
+                    Personal Bests
+                </Typography>
+            </Box>
 
             {contentOptions.map((content) => {
                 const relevantFights = fightGroups
@@ -136,12 +130,12 @@ const PersonalBests: React.FC = () => {
                 if (relevantFights.length === 0) return null;
 
                 return (
-                    <Box key={content.value} m={2}>
+                    <Box key={content.value} mb={3}>
                         <Typography variant="h6" gutterBottom color="white">
                             {content.label}
                         </Typography>
 
-                        <TableContainer sx={{backgroundColor: colors.background.surface, border: `1px solid ${colors.border.default}`, borderRadius: 1}}>
+                        <TableContainer>
                             <Table>
                                 <TableHead>
                                     <TableRow>

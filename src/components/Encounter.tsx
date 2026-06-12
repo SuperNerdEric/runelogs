@@ -215,7 +215,7 @@ const Encounter: React.FC = () => {
     return (
         <div className="App">
             <div className="App-main">
-                <div style={{display: 'flex', alignItems: 'center'}}>
+                <div style={{display: 'flex', alignItems: 'center', alignSelf: 'flex-start'}}>
                     <Typography
                         variant="h4"
                         color="white"
@@ -252,7 +252,7 @@ const Encounter: React.FC = () => {
                     </Typography>
                 </div>
                 {(fight as any)?.rank != null || (group as any)?.rank != null ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                    <Box sx={{display: 'flex', alignItems: 'center', gap: 1, mb: 1, alignSelf: 'center'}}>
                         <Typography
                             variant="h6"
                             sx={{
@@ -271,7 +271,7 @@ const Encounter: React.FC = () => {
                         })()}
                     </Box>
                 ) : null}
-                {dropdown}
+                {dropdown && <Box sx={{alignSelf: 'center'}}>{dropdown}</Box>}
 
                 <Tabs
                     value={selectedTab}

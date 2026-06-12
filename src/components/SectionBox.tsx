@@ -1,5 +1,5 @@
 import { Box, BoxProps } from '@mui/material';
-import { colors } from '../theme';
+import { colors, layout } from '../theme';
 
 const SectionBox = (props: BoxProps) => (
     <Box
@@ -12,7 +12,7 @@ const SectionBox = (props: BoxProps) => (
             marginBottom: '10px',
             borderRadius: '5px',
             overflowX: 'auto',
-            maxWidth: 1000,
+            maxWidth: layout.contentMaxWidth,
             width: '100%',
             '@media (max-width: 768px)': {
                 border: `1px solid ${colors.border.default}`,

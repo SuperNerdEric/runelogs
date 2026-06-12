@@ -10,7 +10,7 @@ import {alpha, Box, FormControl, FormControlLabel, MenuItem, Select, SelectChang
 import {styled} from "@mui/material/styles";
 import ActivityTable from "./ActivityTable";
 import SectionBox from "../SectionBox";
-import {colors} from "../../theme";
+import {colors, layout} from "../../theme";
 
 
 interface DPSChartProps {
@@ -228,7 +228,7 @@ const Boosts: React.FC<DPSChartProps> = ({fight}) => {
     }
 
     return (
-        <div style={{maxWidth: 1000, width: '100%'}}>
+        <div style={{maxWidth: layout.contentMaxWidth, width: '100%'}}>
             <ActivityTable fight={fight}/>
             <SectionBox>
                 <Box sx={{margin: '16px 0', width: 180}}>

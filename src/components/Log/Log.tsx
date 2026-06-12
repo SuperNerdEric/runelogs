@@ -5,6 +5,7 @@ import FightSelector from '../sections/FightSelector';
 import {FightMetaData} from '../../models/Fight';
 import {EncounterMetaData} from '../../models/LogLine';
 import LogInfoBox from "./LogInfoBox";
+import {contentColumnSx} from '../../theme';
 
 interface ApiFight {
     id: string;
@@ -188,7 +189,7 @@ const Log: React.FC = () => {
     }
 
     return (
-        <Box p={2}>
+        <Box p={2} sx={contentColumnSx}>
             <LogInfoBox uploaderId={uploaderId} uploadedAt={uploadedAt} logId={logId!}/>
 
             <FightSelector

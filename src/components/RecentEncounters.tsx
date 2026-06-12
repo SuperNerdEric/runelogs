@@ -13,7 +13,6 @@ import {
 } from '@mui/material';
 import {Link as RouterLink, useParams} from 'react-router-dom';
 import theme from "../theme";
-import {colors} from "../theme";
 
 interface RecentEncounter {
     type: 'fight' | 'fightGroup';
@@ -66,7 +65,7 @@ const RecentEncounters: React.FC = () => {
 
     if (error) {
         return (
-            <Box m={2}>
+            <Box mt={4}>
                 <Typography color="error">{error}</Typography>
             </Box>
         );
@@ -78,45 +77,50 @@ const RecentEncounters: React.FC = () => {
 
     if (encounters.length === 0) {
         return (
-            <Box m={2}>
+            <Box mt={4}>
+                <Box pt={0} pb={2}>
+                    <Typography variant="h4" gutterBottom color="white">
+                        Recent Encounters
+                    </Typography>
+                </Box>
                 <Typography color="white">No recent encounters found.</Typography>
             </Box>
         );
     }
 
     return (
-        <Box sx={{maxWidth: 1000, width: '100%', marginTop: 4}}>
-            <Typography variant="h5" gutterBottom color="white">
-                Recent Encounters
-            </Typography>
-            <Box m={2}>
-                <TableContainer sx={{backgroundColor: colors.background.surface, border: `1px solid ${colors.border.default}`, borderRadius: 1}}>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell sx={{color: 'white'}}>Name</TableCell>
-                                <TableCell sx={{color: 'white'}}>Id</TableCell>
-                                <TableCell sx={{color: 'white'}}>Date</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {encounters.map((enc) => (
-                                <TableRow key={enc.id}>
-                                    <TableCell sx={{color: 'white'}}>{enc.name}</TableCell>
-                                    <TableCell sx={{color: 'white'}}>
-                                        <Link component={RouterLink} to={`/encounter/${enc.id}`} underline="hover">
-                                            {isMobile ? `${enc.id.slice(0, 8)}...` : enc.id}
-                                        </Link>
-                                    </TableCell>
-                                    <TableCell sx={{color: 'white'}}>
-                                        {new Date(enc.startTime).toLocaleString()}
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+        <Box mt={4}>
+            <Box pt={0} pb={2}>
+                <Typography variant="h4" gutterBottom color="white">
+                    Recent Encounters
+                </Typography>
             </Box>
+            <TableContainer>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell sx={{color: 'white'}}>Name</TableCell>
+                            <TableCell sx={{color: 'white'}}>Id</TableCell>
+                            <TableCell sx={{color: 'white'}}>Date</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {encounters.map((enc) => (
+                            <TableRow key={enc.id}>
+                                <TableCell sx={{color: 'white'}}>{enc.name}</TableCell>
+                                <TableCell sx={{color: 'white'}}>
+                                    <Link component={RouterLink} to={`/encounter/${enc.id}`} underline="hover">
+                                        {isMobile ? `${enc.id.slice(0, 8)}...` : enc.id}
+                                    </Link>
+                                </TableCell>
+                                <TableCell sx={{color: 'white'}}>
+                                    {new Date(enc.startTime).toLocaleString()}
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </Box>
     );
 };
