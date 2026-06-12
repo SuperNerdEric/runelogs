@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react';
 
-import {Link as RouterLink, useSearchParams} from 'react-router-dom';
+import {Link as RouterLink, useNavigate, useSearchParams} from 'react-router-dom';
 import {
     Box,
     CircularProgress,
@@ -19,6 +19,7 @@ import {
 } from '@mui/material';
 import theme from "../theme";
 import {colors} from "../theme";
+import {encounterTableRowProps, stopRowClick} from '../utils/encounterTableRow';
 import {getRankColor, ticksToTime} from "../utils/utils";
 import {CrownIcon} from "./CrownIcon";
 import MedalIcon from "./MedalIcon";
@@ -49,6 +50,7 @@ interface Entry {
 }
 
 const Leaderboard: React.FC = () => {
+    const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
 
     const contentParam = searchParams.get('leaderboard');
@@ -193,7 +195,7 @@ const Leaderboard: React.FC = () => {
                                     .map((row, idx) => {
                                         const actualRank = (page - 1) * entriesPerPage + idx + 1;
                                         return (
-                                            <TableRow key={row.id} hover>
+                                            <TableRow key={row.id} {...encounterTableRowProps(navigate, row.id)}>
                                                 <TableCell
                                                     sx={{
                                                         color: getRankColor(actualRank),
@@ -203,6 +205,7 @@ const Leaderboard: React.FC = () => {
                                                     <Link
                                                         component={RouterLink}
                                                         to={`/encounter/${row.id}`}
+                                                        onClick={stopRowClick}
                                                         sx={{
                                                             textDecoration: 'none',
                                                             color: 'inherit',
@@ -224,7 +227,7 @@ const Leaderboard: React.FC = () => {
                                                     {row.players.map((player, i) => (
                                                         <React.Fragment key={player}>
                                                             <Link component={RouterLink} to={`/player/${player}`}
-                                                                  underline="hover">
+                                                                  underline="hover" onClick={stopRowClick}>
                                                                 {player}
                                                             </Link>
                                                             {i < row.players.length - 1 ? ', ' : ''}

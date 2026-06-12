@@ -11,8 +11,9 @@ import {
     TableRow,
     Typography, useMediaQuery,
 } from '@mui/material';
-import {Link as RouterLink, useParams} from 'react-router-dom';
+import {Link as RouterLink, useNavigate, useParams} from 'react-router-dom';
 import theme from "../theme";
+import {encounterTableRowProps, stopRowClick} from '../utils/encounterTableRow';
 
 interface RecentEncounter {
     type: 'fight' | 'fightGroup';
@@ -32,6 +33,7 @@ interface RecentEncountersResponse {
 }
 
 const RecentEncounters: React.FC = () => {
+    const navigate = useNavigate();
     const {playerName} = useParams<{ playerName: string }>();
     const [data, setData] = useState<RecentEncountersResponse | null>(null);
     const [loading, setLoading] = useState(true);
@@ -106,10 +108,10 @@ const RecentEncounters: React.FC = () => {
                     </TableHead>
                     <TableBody>
                         {encounters.map((enc) => (
-                            <TableRow key={enc.id}>
+                            <TableRow key={enc.id} {...encounterTableRowProps(navigate, enc.id)}>
                                 <TableCell sx={{color: 'white'}}>{enc.name}</TableCell>
                                 <TableCell sx={{color: 'white'}}>
-                                    <Link component={RouterLink} to={`/encounter/${enc.id}`} underline="hover">
+                                    <Link component={RouterLink} to={`/encounter/${enc.id}`} underline="hover" onClick={stopRowClick}>
                                         {isMobile ? `${enc.id.slice(0, 8)}...` : enc.id}
                                     </Link>
                                 </TableCell>
