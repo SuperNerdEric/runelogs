@@ -13,7 +13,7 @@ import rangedImage from '../assets/Ranged.webp';
 import prayerImage from '../assets/Prayer.webp';
 import sailingImage from '../assets/Sailing.webp';
 import {formatHHmmss} from "../utils/utils";
-import {colors} from "../theme";
+import {colors, layout} from "../theme";
 import ThickSkin from "../assets/prayers/inactive/ThickSkin.png";
 import BurstOfStrength from "../assets/prayers/inactive/BurstOfStrength.png";
 import ClarityOfThought from "../assets/prayers/inactive/ClarityOfThought.png";
@@ -205,7 +205,7 @@ const EventsTable: React.FC<EventsTableProps> = ({
                 />
             )}
             {(sourceFilter || targetFilter || equipmentFilter || eventTypeFilter) && (
-                <Box sx={{width: '100%', maxWidth: '1000px', mb: 1, display: 'flex', gap: 1, flexWrap: 'wrap'}}>
+                <Box sx={{width: '100%', maxWidth: `${layout.contentMaxWidth}px`, mb: 1, display: 'flex', gap: 1, flexWrap: 'wrap'}}>
                     {sourceFilter && (
                         <>
                             <Chip
@@ -415,7 +415,7 @@ const EventsTable: React.FC<EventsTableProps> = ({
             <Box
                 sx={{
                     width: '100%',
-                    maxWidth: '1000px',
+                    maxWidth: `${layout.contentMaxWidth}px`,
                     maxHeight: {
                         xs: '70vh',
                         sm: '70vh',

@@ -13,7 +13,7 @@ import {Fight} from "../models/Fight";
 import {LogTypes} from "../models/LogLine";
 import {ActorFilter} from "../utils/actorFilter";
 import {EquipmentFilter} from "../utils/equipmentFilter";
-import {colors} from "../theme";
+import {colors, layout} from "../theme";
 import {getActorFromLog} from "../utils/actorUtils";
 import {itemIdMap} from "../lib/itemIdMap";
 import {getItemImageUrl} from "./replay/PlayerEquipment";
@@ -165,7 +165,7 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
     }
 
     return (
-        <Box sx={{width: '100%', maxWidth: '1000px', mb: 1}}>
+        <Box sx={{width: '100%', maxWidth: layout.contentMaxWidth, mb: 1}}>
             <Autocomplete
                 open={open}
                 onOpen={() => setOpen(true)}

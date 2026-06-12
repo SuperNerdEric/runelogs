@@ -126,13 +126,13 @@ const Leaderboard: React.FC = () => {
 
     return (
         <Box m={0}>
-            <Box p={2} pb={0} pt={0}>
+            <Box pb={0} pt={0}>
                 <Typography variant="h4" gutterBottom color="white">
                     Leaderboard
                 </Typography>
             </Box>
 
-            <Box display="flex" p={2} pt={0}>
+            <Box display="flex" pt={0} pb={2} gap={1}>
                 <Select
                     value={content.value}
                     onChange={(e) => {
@@ -259,7 +259,7 @@ const Leaderboard: React.FC = () => {
                     </Box>
                 </Box>
             ) : (
-                <Typography p={2} color="white">No records yet.</Typography>
+                <Typography py={2} color="white">No records yet.</Typography>
             )}
         </Box>
     );

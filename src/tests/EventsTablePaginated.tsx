@@ -143,7 +143,7 @@ const EventsTable: React.FC<EventsTableProps> = ({ fight, maxHeight, showSource 
     };
 
     return (
-        <Box sx={{ width: '100%', maxWidth: '1000px', maxHeight: { xs: '70vh', sm: '70vh', md: maxHeight }}}>
+        <Box sx={{ width: '100%', maxWidth: 1440, maxHeight: { xs: '70vh', sm: '70vh', md: maxHeight }}}>
             <TableContainer sx={{ '& .MuiTableCell-root': { fontSize: '13px', '@media (max-width: 768px)': { fontSize: '12px', padding: '2px 3px' } } }}>
                 <Table style={{ tableLayout: 'auto' }}>
                     <TableHead style={{ backgroundColor: '#494949' }}>

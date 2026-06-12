@@ -67,7 +67,7 @@ const OverallRecentEncounters: React.FC = () => {
 
     return (
         <Box m={0}>
-            <Box p={2} pt={0}>
+            <Box pt={0} pb={2}>
                 <Typography variant="h4" gutterBottom color="white">
                     Recent Encounters
                 </Typography>

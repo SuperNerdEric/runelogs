@@ -1,5 +1,5 @@
 import { createTheme } from '@mui/material/styles';
-import { colors, fonts, fontSizes, typography } from './tokens';
+import { colors, fonts, fontSizes, typography, layout } from './tokens';
 
 const theme = createTheme({
     breakpoints: {
@@ -76,7 +76,8 @@ const theme = createTheme({
                     backgroundColor: colors.background.surface,
                     border: `3px solid ${colors.border.default}`,
                     borderRadius: '5px',
-                    maxWidth: '1000px',
+                    maxWidth: `${layout.contentMaxWidth}px`,
+                    width: '100%',
                     margin: '0 auto 15px',
                     boxSizing: 'border-box',
                     '@media (max-width: 768px)': {

@@ -99,6 +99,11 @@ export const colors = {
     },
 } as const;
 
+export const layout = {
+    contentMaxWidth: 1440,
+    desktopMinWidth: 1280,
+} as const;
+
 export const fonts = {
     body: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     system: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
