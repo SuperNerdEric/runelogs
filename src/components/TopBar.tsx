@@ -7,6 +7,7 @@ import logo from '../assets/Logo.png';
 import {Link} from "react-router-dom";
 import PlayerSearch from "./PlayerSearch";
 import {displayUsername} from "../utils/utils";
+import {colors, fontSizes} from "../theme";
 
 const TopBar: React.FC = () => {
     const {isAuthenticated, user, loginWithRedirect, logout} = useAuth0();
@@ -25,7 +26,7 @@ const TopBar: React.FC = () => {
     }
 
     return (
-        <AppBar position="static" style={{background: '#141414'}}>
+        <AppBar position="static" style={{background: colors.background.surface}}>
             <Toolbar
                 style={{
                     display: 'flex',
@@ -55,7 +56,7 @@ const TopBar: React.FC = () => {
                         />
                         <Typography
                             variant="h6"
-                            sx={{ margin: 0, color: 'white', fontSize: '25px' }}
+                            sx={{ margin: 0, color: colors.text.primary, fontSize: fontSizes.topBarLogo }}
                         >
                             Runelogs
                         </Typography>
@@ -65,7 +66,7 @@ const TopBar: React.FC = () => {
                             <Icon
                                 icon="ic:baseline-search"
                                 onClick={() => setSearchOpen((prev) => !prev)}
-                                style={{ fontSize: 28, color: 'white', cursor: 'pointer' }}
+                                style={{ fontSize: fontSizes.topBarIcon, color: colors.text.primary, cursor: 'pointer' }}
                             />
                         </>
                     ) : (
@@ -122,7 +123,7 @@ const TopBar: React.FC = () => {
                             sx={{
                                 ml: '20px',
                                 textTransform: 'none',
-                                fontSize: '16px',
+                                fontSize: fontSizes.base,
                             }}
                         >
                             Log in / Register
@@ -142,13 +143,13 @@ const TopBar: React.FC = () => {
                                 }}
                             >
                                 {isMobile ? (
-                                    <Icon icon="mdi:account-circle" style={{ width: 35, height: 35, color: 'white' }} />
+                                    <Icon icon="mdi:account-circle" style={{ width: 35, height: 35, color: colors.text.primary }} />
                                 ) : (
                                     <>
-                                        <Typography variant="body1" style={{ color: 'white', textTransform: 'capitalize' }}>
+                                        <Typography variant="body1" style={{ color: colors.text.primary, textTransform: 'capitalize' }}>
                                             {displayUsername(user?.username) || 'User'}
                                         </Typography>
-                                        <ArrowDropDownIcon style={{ color: 'white' }} />
+                                        <ArrowDropDownIcon style={{ color: colors.text.primary }} />
                                     </>
                                 )}
                             </Button>
@@ -162,12 +163,12 @@ const TopBar: React.FC = () => {
                                 slotProps={{
                                     paper: {
                                         sx: {
-                                            backgroundColor: 'black',
-                                            color: 'white',
+                                            backgroundColor: colors.background.black,
+                                            color: colors.text.primary,
                                             minHeight: 50,
                                             minWidth: 200,
                                             borderRadius: 1,
-                                            border: '1px solid grey',
+                                            border: `1px solid ${colors.border.default}`,
                                             boxShadow: '0px 4px 10px rgba(0,0,0,0.3)',
                                             '& .MuiMenu-list': {
                                                 paddingY: 0.5
@@ -180,10 +181,10 @@ const TopBar: React.FC = () => {
                                 MenuListProps={{
                                     sx: {
                                         '& .MuiMenuItem-root': {
-                                            color: 'white',
+                                            color: colors.text.primary,
                                             fontSize: '1rem',
                                             paddingY: 1,
-                                            '&:hover': {backgroundColor: '#333'}
+                                            '&:hover': {backgroundColor: colors.background.hover}
                                         }
                                     }
                                 }}

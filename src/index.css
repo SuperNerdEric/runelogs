@@ -13,13 +13,13 @@ code {
 }
 
 .app-layout {
-    background-color: #262a2e;
+    background-color: var(--color-bg-page);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    font-size: calc(10px + 2vmin);
-    color: white;
+    font-size: var(--font-size-responsive-main);
+    color: var(--color-text-primary);
     width: 100%;
 }

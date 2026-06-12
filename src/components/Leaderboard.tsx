@@ -18,6 +18,7 @@ import {
     useMediaQuery,
 } from '@mui/material';
 import theme from "../theme";
+import {colors} from "../theme";
 import {getRankColor, ticksToTime} from "../utils/utils";
 import {CrownIcon} from "./CrownIcon";
 import MedalIcon from "./MedalIcon";
@@ -213,8 +214,8 @@ const Leaderboard: React.FC = () => {
                                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                             {actualRank}
                                                             {actualRank === 1 && <CrownIcon />}
-                                                            {actualRank === 2 && <MedalIcon color="#C0C0C0" />}
-                                                            {actualRank === 3 && <MedalIcon color="#CD7F32" />}
+                                                            {actualRank === 2 && <MedalIcon color={colors.medal.silver} />}
+                                                            {actualRank === 3 && <MedalIcon color={colors.medal.bronze} />}
                                                         </Box>
                                                     </Link>
                                                 </TableCell>

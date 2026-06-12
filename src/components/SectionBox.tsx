@@ -1,12 +1,13 @@
 import { Box, BoxProps } from '@mui/material';
+import { colors } from '../theme';
 
 const SectionBox = (props: BoxProps) => (
     <Box
         {...props}
         sx={{
             p: 2,
-            bgcolor: '#141414',
-            border: '3px solid grey',
+            bgcolor: colors.background.surface,
+            border: `3px solid ${colors.border.default}`,
             boxSizing: 'border-box',
             marginBottom: '10px',
             borderRadius: '5px',
@@ -14,7 +15,7 @@ const SectionBox = (props: BoxProps) => (
             maxWidth: 1000,
             width: '100%',
             '@media (max-width: 768px)': {
-                border: '1px solid grey',
+                border: `1px solid ${colors.border.default}`,
                 maxWidth: '98vw',
                 width: '100%',
                 overflowX: 'auto',

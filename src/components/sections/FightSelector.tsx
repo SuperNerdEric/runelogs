@@ -4,6 +4,7 @@ import {formatHHmmss, ticksToTime} from "../../utils/utils";
 import {isFightGroupMetadata} from "../../models/FightGroup";
 import {EncounterMetaData} from '../../models/LogLine';
 import {Typography} from "@mui/material";
+import {colors} from "../../theme";
 
 interface FightProps {
     fight: FightMetaData;
@@ -22,7 +23,7 @@ const Fight: React.FC<FightProps> = ({fight, index, title, onSelectFight, isShor
         hour12: true,
     });
 
-    const nameColor = fight.success ? 'rgb(128, 230, 102)' : 'rgb(230, 128, 102)';
+    const nameColor = fight.success ? colors.fight.success : colors.fight.failure;
 
     const handleClick = () => {
         onSelectFight(index);
@@ -63,7 +64,7 @@ const FightGroup: React.FC<FightGroupProps> = ({fight, index, fightGroupIndex, f
         hour12: true,
     });
 
-    const nameColor = fight.success ? 'rgb(128, 230, 102)' : 'rgb(230, 128, 102)';
+    const nameColor = fight.success ? colors.fight.success : colors.fight.failure;
 
     const handleClick = () => {
         onSelectFight(index, fightGroupIndex);
@@ -101,7 +102,7 @@ const Banner: React.FC<BannerProps> = ({name, officialDurationTicks, onClick}) =
                 {officialDurationTicks != null && (
                     <>
                         <br/>
-                        <Typography component="span" variant="body2" color='rgb(128, 230, 102)'>
+                        <Typography component="span" variant="body2" color={colors.fight.success}>
                             Overall - ({ticksToTime(officialDurationTicks)})
                         </Typography>
                     </>

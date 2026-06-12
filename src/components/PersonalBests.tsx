@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import {Link as RouterLink, useParams} from 'react-router-dom';
 import theme from "../theme";
+import {colors} from "../theme";
 import {getRankColor, ticksToTime} from "../utils/utils";
 import {CrownIcon} from "./CrownIcon";
 import MedalIcon from "./MedalIcon";
@@ -140,7 +141,7 @@ const PersonalBests: React.FC = () => {
                             {content.label}
                         </Typography>
 
-                        <TableContainer sx={{backgroundColor: '#141414', border: '1px solid grey', borderRadius: 1}}>
+                        <TableContainer sx={{backgroundColor: colors.background.surface, border: `1px solid ${colors.border.default}`, borderRadius: 1}}>
                             <Table>
                                 <TableHead>
                                     <TableRow>
@@ -172,8 +173,8 @@ const PersonalBests: React.FC = () => {
                                                                 {match.rank}
                                                             </Typography>
                                                             {match.rank === 1 && <CrownIcon />}
-                                                            {match.rank === 2 && <MedalIcon color="#C0C0C0" />}
-                                                            {match.rank === 3 && <MedalIcon color="#CD7F32" />}
+                                                            {match.rank === 2 && <MedalIcon color={colors.medal.silver} />}
+                                                            {match.rank === 3 && <MedalIcon color={colors.medal.bronze} />}
                                                         </Box>
                                                     ) : '-'}
                                                 </TableCell>

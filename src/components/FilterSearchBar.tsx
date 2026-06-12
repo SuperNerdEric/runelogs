@@ -13,6 +13,7 @@ import {Fight} from "../models/Fight";
 import {LogTypes} from "../models/LogLine";
 import {ActorFilter} from "../utils/actorFilter";
 import {EquipmentFilter} from "../utils/equipmentFilter";
+import {colors} from "../theme";
 import {getActorFromLog} from "../utils/actorUtils";
 import {itemIdMap} from "../lib/itemIdMap";
 import {getItemImageUrl} from "./replay/PlayerEquipment";
@@ -256,7 +257,7 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
                                         width: 22,
                                         height: 22,
                                         flexShrink: 0,
-                                        backgroundColor: '#494945',
+                                        backgroundColor: colors.background.tableHeadAlt,
                                     }}
                                 />
                             )}
@@ -294,7 +295,7 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
                         }}
                         sx={{
                             '& .MuiInputBase-root': {
-                                bgcolor: '#141414',
+                                bgcolor: colors.background.surface,
                                 color: 'white',
                             },
                             '& .MuiOutlinedInput-notchedOutline': {
@@ -321,7 +322,7 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
                     },
                     paper: {
                         sx: {
-                            bgcolor: '#1e1e1e',
+                            bgcolor: colors.background.surfaceMenu,
                             color: 'white',
                         },
                     },

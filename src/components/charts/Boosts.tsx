@@ -10,6 +10,7 @@ import {alpha, Box, FormControl, FormControlLabel, MenuItem, Select, SelectChang
 import {styled} from "@mui/material/styles";
 import ActivityTable from "./ActivityTable";
 import SectionBox from "../SectionBox";
+import {colors} from "../../theme";
 
 
 interface DPSChartProps {
@@ -204,9 +205,9 @@ const Boosts: React.FC<DPSChartProps> = ({fight}) => {
             });
         }
 
-        const verticalMelee = "rgb(153, 38, 58)";
-        const verticalRanged = "rgb(72, 84, 55)";
-        const verticalMagic = "rgb(28, 95, 115)";
+        const verticalMelee = colors.chart.meleeVertical;
+        const verticalRanged = colors.chart.rangedVertical;
+        const verticalMagic = colors.chart.magicVertical;
 
         tempAttack.forEach(attack => {
             if (MELEE_ANIMATIONS.includes(attack.animationId)) {
@@ -295,13 +296,13 @@ const Boosts: React.FC<DPSChartProps> = ({fight}) => {
                                                ifOverflow="extendDomain"/>
                             )
                         ))}
-                        <Line type="stepAfter" dataKey="attack" stroke="#C69B6D" dot={false} animationDuration={0}/>
-                        <Line type="stepAfter" dataKey="strength" stroke="#C41E3A" dot={false} animationDuration={0}/>
-                        <Line type="stepAfter" dataKey="defence" stroke="#0070DD" dot={false} animationDuration={0}/>
-                        <Line type="stepAfter" dataKey="ranged" stroke="#AAD372" dot={false} animationDuration={0}/>
-                        <Line type="stepAfter" dataKey="magic" stroke="#3FC7EB" dot={false} animationDuration={0}/>
+                        <Line type="stepAfter" dataKey="attack" stroke={colors.chart.attack} dot={false} animationDuration={0}/>
+                        <Line type="stepAfter" dataKey="strength" stroke={colors.chart.strength} dot={false} animationDuration={0}/>
+                        <Line type="stepAfter" dataKey="defence" stroke={colors.chart.defence} dot={false} animationDuration={0}/>
+                        <Line type="stepAfter" dataKey="ranged" stroke={colors.chart.ranged} dot={false} animationDuration={0}/>
+                        <Line type="stepAfter" dataKey="magic" stroke={colors.chart.magic} dot={false} animationDuration={0}/>
                         <Tooltip content={(props) => <CustomTooltip {...props} data={boostedLevelsData}/>}
-                                 cursor={{fill: '#3c3226'}}/>
+                                 cursor={{fill: colors.chart.cursor}}/>
                     </LineChart>
                 </ResponsiveContainer>
                 <ResponsiveContainer width="100%" height={350}>
@@ -325,9 +326,9 @@ const Boosts: React.FC<DPSChartProps> = ({fight}) => {
                             tickFormatter={(tick) => (tick !== 0 ? tick : '')}
                             domain={[0, 125]}
                         />
-                        <Line type="stepAfter" dataKey="hitpoints" stroke="red" dot={false} animationDuration={0}/>
-                        <Line type="stepAfter" dataKey="prayer" stroke="yellow" dot={false} animationDuration={0}/>
-                        <Tooltip content={(props) => <CustomTooltip {...props} />} cursor={{fill: '#3c3226'}}/>
+                        <Line type="stepAfter" dataKey="hitpoints" stroke={colors.chart.hitpoints} dot={false} animationDuration={0}/>
+                        <Line type="stepAfter" dataKey="prayer" stroke={colors.chart.prayer} dot={false} animationDuration={0}/>
+                        <Tooltip content={(props) => <CustomTooltip {...props} />} cursor={{fill: colors.chart.cursor}}/>
                     </LineChart>
                 </ResponsiveContainer>
             </SectionBox>
@@ -339,13 +340,13 @@ export default Boosts;
 
 const TanToggle = styled(Switch)(({theme}) => ({
     '& .MuiSwitch-switchBase.Mui-checked': {
-        color: "#D2B48C",
+        color: colors.switch.tanHex,
         '&:hover': {
-            backgroundColor: alpha("#D2B48C", theme.palette.action.hoverOpacity),
+            backgroundColor: alpha(colors.switch.tanHex, theme.palette.action.hoverOpacity),
         },
     },
     '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-        backgroundColor: "#D2B48C",
+        backgroundColor: colors.switch.tanHex,
     },
     '& .MuiSwitch-track': {
         backgroundColor: theme.palette.grey[400],

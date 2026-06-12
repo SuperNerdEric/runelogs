@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Box, List, ListItem, Paper, Popper, TextField} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
+import {colors} from '../theme';
 
 interface PlayerSearchProps {
     onSelect?: () => void;
@@ -75,12 +76,12 @@ const PlayerSearch: React.FC<PlayerSearchProps> = ({ onSelect }) => {
                 size="small"
                 sx={{
                     input: {color: 'white'},
-                    backgroundColor: '#141414',
+                    backgroundColor: colors.background.surface,
                     width: 200,
                 }}
             />
             <Popper open={open && results.length > 0} anchorEl={anchorRef.current} placement="bottom-start">
-                <Paper sx={{backgroundColor: '#1f1f1f', width: 250}}>
+                <Paper sx={{backgroundColor: colors.background.surfaceDropdown, width: 250}}>
                     <List>
                         {results.map((name, idx) => (
                             <ListItem
@@ -89,8 +90,8 @@ const PlayerSearch: React.FC<PlayerSearchProps> = ({ onSelect }) => {
                                 selected={idx === highlightedIndex}
                                 onClick={() => handleClick(name)}
                                 sx={{
-                                    '&.Mui-selected': {backgroundColor: '#2e2e2e'},
-                                    '&:hover': {backgroundColor: '#333'},
+                                    '&.Mui-selected': {backgroundColor: colors.background.surfaceSelected},
+                                    '&:hover': {backgroundColor: colors.background.hover},
                                     color: 'white'
                                 }}
                             >

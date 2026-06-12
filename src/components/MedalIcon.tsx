@@ -1,11 +1,12 @@
 import React from 'react';
+import { colors } from '../theme';
 
 type MedalIconProps = {
     size?: number;
     color?: string;
 };
 
-const MedalIcon = ({ size = 24, color = '#C0C0C0' }: MedalIconProps) => (
+const MedalIcon = ({ size = 24, color = colors.medal.silver }: MedalIconProps) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         width={size}

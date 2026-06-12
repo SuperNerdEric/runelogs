@@ -11,6 +11,7 @@ import CombatLevels from './CombatLevels';
 import TickChart from './TickChart';
 import {useMediaQuery} from "@mui/material";
 import theme from "../../theme";
+import {colors} from "../../theme";
 import EquipmentIcon from "../../assets/replay-icons/equipment.png";
 import PrayerIcon from "../../assets/replay-icons/prayer.png";
 import StatsIcon from "../../assets/replay-icons/stats.png";
@@ -96,7 +97,7 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
     }, []);
 
     const getTabButtonStyle = (tab: 'levels' | 'equipment' | 'prayers'): React.CSSProperties => ({
-        backgroundColor: activeTab === tab ? 'rgb(183, 157, 126)' : 'rgb(115, 101, 89)',
+        backgroundColor: activeTab === tab ? colors.replay.tabActive : colors.replay.tabInactive,
         border: '1px solid black',
         padding: '6px',
         borderRadius: '4px',

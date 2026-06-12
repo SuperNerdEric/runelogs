@@ -1,4 +1,5 @@
 import React from 'react';
+import {colors, fontSizes} from '../../theme';
 
 interface PlayerSelectorProps {
     players: string[];
@@ -42,14 +43,14 @@ const PlayerSelector: React.FC<PlayerSelectorProps> = ({ players, selectedPlayer
                             onSelectPlayer(selectedPlayer === playerName ? undefined : playerName)
                         }
                         style={{
-                            backgroundColor: '#262a2e',
-                            color: '#b4bdff',
+                            backgroundColor: colors.background.page,
+                            color: colors.text.other,
                             padding: '5px 0',
                             cursor: 'pointer',
                             textAlign: 'center',
-                            fontSize: '16px',
+                            fontSize: fontSizes.base,
                             width: `${tileWidth}px`,
-                            border: selectedPlayer === playerName ? '2px solid white' : '2px solid black',
+                            border: selectedPlayer === playerName ? `2px solid ${colors.border.white}` : `2px solid ${colors.border.black}`,
                         }}
                     >
                         {playerName}

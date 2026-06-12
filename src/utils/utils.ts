@@ -3,6 +3,7 @@ import {LogLine, LogTypes} from "../models/LogLine";
 import moment from "moment/moment";
 import {npcIdMap} from '../lib/npcIdMap';
 import {Actor} from "../models/Actor";
+import { colors } from '../theme';
 
 
 /**
@@ -90,22 +91,11 @@ export const displayUsername = (username: string): string => {
 };
 
 export const getRankColor = (rank: number): string => {
-    let rankColor = "#9d9d9d"; // Default color for ranks below 60
-
-    if (rank <= 3) {
-        rankColor = "#e5cc80";
-    } else if (rank <= 10 && rank > 3) {
-        rankColor = "#f48cba";
-    } else if (rank <= 20 && rank > 10) {
-        rankColor = "#ff8000";
-    } else if (rank <= 100 && rank > 20) {
-        rankColor = "#a335ee";
-    } else if (rank <= 200 && rank > 100) {
-        rankColor = "#0070dd";
-    } else if (rank <= 500 && rank > 200) {
-        rankColor = "#1eff00";
-    } else if (rank > 500) {
-        rankColor = "#9d9d9d";
-    }
-    return rankColor;
+    if (rank <= 3) return colors.rank.top3;
+    if (rank <= 10) return colors.rank.top10;
+    if (rank <= 20) return colors.rank.top20;
+    if (rank <= 100) return colors.rank.top100;
+    if (rank <= 200) return colors.rank.top200;
+    if (rank <= 500) return colors.rank.top500;
+    return colors.rank.default;
 }

@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import {Link as RouterLink, useParams} from 'react-router-dom';
 import theme from "../theme";
+import {colors} from "../theme";
 
 interface RecentEncounter {
     type: 'fight' | 'fightGroup';
@@ -89,7 +90,7 @@ const RecentEncounters: React.FC = () => {
                 Recent Encounters
             </Typography>
             <Box m={2}>
-                <TableContainer sx={{backgroundColor: '#141414', border: '1px solid grey', borderRadius: 1}}>
+                <TableContainer sx={{backgroundColor: colors.background.surface, border: `1px solid ${colors.border.default}`, borderRadius: 1}}>
                     <Table>
                         <TableHead>
                             <TableRow>
