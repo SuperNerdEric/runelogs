@@ -72,11 +72,11 @@ export function HomeHero({icon: Icon = QueryStatsIcon, iconColor, iconBg, iconBo
             <Typography
                 variant="h6"
                 sx={{
+                    display: 'none',
                     textAlign: 'center',
                     fontWeight: 400,
                     m: 0,
-                    fontSize: '1.1875rem',
-                    [media.desktopUp]: {fontSize: '1.25rem'},
+                    [media.desktopUp]: {display: 'block', fontSize: '1.25rem'},
                 }}
             >
                 {subtitle}
