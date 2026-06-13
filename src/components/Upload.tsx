@@ -1,7 +1,7 @@
 import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
 import {Link as RouterLink, useNavigate} from 'react-router-dom';
 import {useAuth0} from '@auth0/auth0-react';
-import {Alert, Box, CircularProgress, LinearProgress, Link, Tooltip, Typography} from '@mui/material';
+import {Alert, Box, CircularProgress, LinearProgress, Link, TextField, Tooltip, Typography} from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
@@ -51,6 +51,7 @@ const Upload: React.FC = () => {
     const navigate = useNavigate();
 
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [logName, setLogName] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorText, setErrorText] = useState<string | null>(null);
     const [uploadPhase, setUploadPhase] = useState<'upload' | 'parse' | null>(null);
@@ -106,6 +107,10 @@ const Upload: React.FC = () => {
             const token = await getAccessTokenSilently();
             const formData = new FormData();
             formData.append('logFile', selectedFile);
+            const trimmedName = logName.trim();
+            if (trimmedName) {
+                formData.append('name', trimmedName);
+            }
 
             const xhr = new XMLHttpRequest();
             xhr.open('POST', `${import.meta.env.VITE_API_URL}/log`, true);
@@ -135,7 +140,13 @@ const Upload: React.FC = () => {
                 setIsSubmitting(false);
             };
 
-            xhr.onprogress = (e) => {
+            const resetUploadState = () => {
+                setIsSubmitting(false);
+                setProgress(null);
+                setUploadPhase(null);
+            };
+
+            xhr.onprogress = () => {
                 const newText = xhr.responseText.substring(lastResponseLength);
                 lastResponseLength = xhr.responseText.length;
 
@@ -155,15 +166,20 @@ const Upload: React.FC = () => {
 
                     if (!eventType || !dataText) continue;
 
-                    let payload: { progress?: number; logId?: string };
+                    let payload: { progress?: number; logId?: string; error?: string };
                     try {
                         payload = JSON.parse(dataText);
                     } catch {
                         continue;
                     }
 
+                    if (eventType === 'error') {
+                        setErrorText(payload.error || 'Upload failed');
+                        resetUploadState();
+                        return;
+                    }
+
                     if (eventType === 'progress' && typeof payload.progress === 'number') {
-                        // @ts-ignore
                         flushSync(() => setProgress(payload.progress));
                     }
 
@@ -171,6 +187,12 @@ const Upload: React.FC = () => {
                         navigate(`/log/${payload.logId}`);
                         return;
                     }
+                }
+            };
+
+            xhr.onload = () => {
+                if (xhr.status >= 400) {
+                    resetUploadState();
                 }
             };
 
@@ -341,6 +363,31 @@ const Upload: React.FC = () => {
                             {selectedFile ? selectedFile.name : 'Choose Log File...'}
                             <input type="file" accept=".txt" hidden onChange={handleFileChange}/>
                         </Box>
+                    </Box>
+
+                    <Box>
+                        <Typography sx={{ mb: 0.75, color: colors.text.primary, fontWeight: 500 }}>
+                            Name{' '}
+                            <Box component="span" sx={{ color: 'rgba(255, 255, 255, 0.5)', fontWeight: 400 }}>
+                                (Optional)
+                            </Box>
+                        </Typography>
+                        <TextField
+                            value={logName}
+                            onChange={(e) => setLogName(e.target.value)}
+                            disabled={isSubmitting}
+                            fullWidth
+                            inputProps={{ maxLength: 100 }}
+                            sx={{
+                                '& .MuiInputBase-root': {
+                                    bgcolor: colors.background.surfaceAlt,
+                                    color: colors.text.primary,
+                                },
+                                '& .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: colors.border.default,
+                                },
+                            }}
+                        />
                     </Box>
 
                     {errorText && <Alert severity="error">{errorText}</Alert>}

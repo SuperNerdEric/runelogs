@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link as RouterLink, useParams } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 import {
     Alert,
     Box,
@@ -14,18 +14,23 @@ import {
     TableHead,
     TableRow,
     TableSortLabel,
-    Typography, useMediaQuery,
+    TextField,
+    Typography,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 import { format } from 'date-fns';
 import { useAuth0 } from '@auth0/auth0-react';
 import {closeSnackbar, SnackbarKey, useSnackbar} from "notistack";
-import CloseIcon from "@mui/icons-material/Close";
-import theme, {contentColumnSx} from "../theme";
+import {contentColumnSx, media} from "../theme";
 import {displayUsername} from "../utils/utils";
+import {logTableRowProps, stopRowClick} from "../utils/encounterTableRow";
 
 interface LogItem {
     id: string;
+    name: string | null;
     uploadedAt: string;
     eligible: boolean;
     _count: {
@@ -39,13 +44,135 @@ interface LogsResponse {
 }
 
 // Define the possible columns to sort by
-type SortKey = 'id' | 'uploadedAt' | 'fights' | 'fightGroups';
+type SortKey = 'name' | 'uploadedAt' | 'fights' | 'fightGroups';
 
 // Direction type
 type Order = 'asc' | 'desc';
 
+const nameColumnSx = {
+    color: 'white',
+    width: '100%',
+    maxWidth: 0,
+    overflow: 'hidden',
+} as const;
+
+const shrinkColumnSx = {
+    color: 'white',
+    whiteSpace: 'nowrap',
+} as const;
+
+const tableCellPaddingSx = {
+    paddingY: 1,
+    [media.mobileDown]: { px: 1 },
+} as const;
+
+interface LogNameCellProps {
+    log: LogItem;
+    canEdit: boolean;
+    onRename: (logId: string, name: string) => Promise<void>;
+}
+
+const LogNameCell: React.FC<LogNameCellProps> = ({ log, canEdit, onRename }) => {
+    const [editing, setEditing] = useState(false);
+    const [draft, setDraft] = useState(log.name ?? '');
+    const [saving, setSaving] = useState(false);
+
+    const startEditing = () => {
+        setDraft(log.name ?? '');
+        setEditing(true);
+    };
+
+    const cancelEditing = () => {
+        setDraft(log.name ?? '');
+        setEditing(false);
+    };
+
+    const saveEditing = async () => {
+        if (saving) return;
+        setSaving(true);
+        try {
+            await onRename(log.id, draft);
+            setEditing(false);
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    if (editing) {
+        return (
+            <Box display="flex" alignItems="center" gap={0.5} width="100%" onClick={stopRowClick}>
+                <TextField
+                    value={draft}
+                    onChange={(e) => setDraft(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            void saveEditing();
+                        } else if (e.key === 'Escape') {
+                            cancelEditing();
+                        }
+                    }}
+                    size="small"
+                    autoFocus
+                    disabled={saving}
+                    fullWidth
+                    inputProps={{ maxLength: 100 }}
+                    sx={{
+                        flex: 1,
+                        minWidth: 0,
+                        '& .MuiInputBase-input': { color: 'white', py: 0.5 },
+                        '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.3)' },
+                    }}
+                />
+                <IconButton aria-label="save log name" size="small" onClick={() => void saveEditing()} disabled={saving} sx={{ flexShrink: 0 }}>
+                    <CheckIcon fontSize="small" sx={{ color: 'white' }} />
+                </IconButton>
+                <IconButton aria-label="cancel edit" size="small" onClick={cancelEditing} disabled={saving} sx={{ flexShrink: 0 }}>
+                    <CloseIcon fontSize="small" sx={{ color: 'white' }} />
+                </IconButton>
+            </Box>
+        );
+    }
+
+    return (
+        <Box display="flex" alignItems="center" width="100%" gap={1}>
+            <Link
+                component={RouterLink}
+                to={`/log/${log.id}`}
+                onClick={stopRowClick}
+                underline="hover"
+                sx={{
+                    color: log.name ? 'white' : 'rgba(255,255,255,0.5)',
+                    fontStyle: log.name ? 'normal' : 'italic',
+                    flex: 1,
+                    minWidth: 0,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                }}
+            >
+                {log.name ?? 'Unnamed'}
+            </Link>
+            {canEdit && (
+                <IconButton
+                    aria-label="edit log name"
+                    size="small"
+                    onClick={(e) => {
+                        stopRowClick(e);
+                        startEditing();
+                    }}
+                    sx={{ flexShrink: 0, ml: 'auto' }}
+                >
+                    <EditIcon fontSize="small" sx={{ color: 'rgba(255,255,255,0.7)' }} />
+                </IconButton>
+            )}
+        </Box>
+    );
+};
+
 const Logs: React.FC = () => {
     const { uploaderId } = useParams<{ uploaderId: string }>();
+    const navigate = useNavigate();
     const { user, getAccessTokenSilently } = useAuth0();
     const {enqueueSnackbar} = useSnackbar();
     const [logs, setLogs] = useState<LogItem[] | null>(null);
@@ -55,7 +182,7 @@ const Logs: React.FC = () => {
     // Sorting state
     const [orderBy, setOrderBy] = useState<SortKey>('uploadedAt');
     const [order, setOrder] = useState<Order>('desc');
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const canEditLogs = user?.username === uploaderId;
 
     const action = (snackbarId: SnackbarKey) => (
         <IconButton
@@ -96,6 +223,35 @@ const Logs: React.FC = () => {
 
         fetchLogs();
     }, [uploaderId]);
+
+    const handleRename = async (logId: string, name: string) => {
+        try {
+            const token = await getAccessTokenSilently();
+            const resp = await fetch(`${import.meta.env.VITE_API_URL}/log/${logId}`, {
+                method: 'PATCH',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: name.trim() || null }),
+            });
+
+            if (!resp.ok) {
+                const body = await resp.json().catch(() => ({}));
+                throw new Error(body.error || `Rename failed with status ${resp.status}`);
+            }
+
+            const data: { name: string | null } = await resp.json();
+            setLogs((prev) =>
+                prev?.map((log) => (log.id === logId ? { ...log, name: data.name } : log)) ?? null
+            );
+            enqueueSnackbar('Log renamed', { variant: 'success', autoHideDuration: 1000, action });
+        } catch (err: any) {
+            console.error('Failed to rename log:', err);
+            enqueueSnackbar(err.message || 'Failed to rename log', { variant: 'error', action });
+            throw err;
+        }
+    };
 
     const handleDelete = async (logId: string) => {
         const confirmed = window.confirm('Are you sure you want to delete this log?');
@@ -154,9 +310,9 @@ const Logs: React.FC = () => {
             let valB: number | string = '';
 
             switch (orderBy) {
-                case 'id':
-                    valA = a.id;
-                    valB = b.id;
+                case 'name':
+                    valA = a.name ?? '';
+                    valB = b.name ?? '';
                     break;
                 case 'uploadedAt':
                     // Compare as timestamps
@@ -193,7 +349,7 @@ const Logs: React.FC = () => {
     };
 
     return (
-        <Box sx={{...contentColumnSx, mt: 1, px: 2, pb: 0}}>
+        <Box sx={{...contentColumnSx, mt: 1, px: 2, pb: 0, [media.mobileDown]: { px: 1 }}}>
             <Box m={0}>
                 <Box pb={0} pt={0}>
                     <Typography variant="h4" gutterBottom sx={{color: 'white', textTransform: 'capitalize'}}>
@@ -201,36 +357,36 @@ const Logs: React.FC = () => {
                     </Typography>
                 </Box>
 
-            <TableContainer component={Paper} sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
-                <Table>
+            <TableContainer component={Paper} sx={{ backgroundColor: 'transparent', boxShadow: 'none', width: '100%' }}>
+                <Table sx={{ tableLayout: 'auto', width: '100%' }}>
                     <TableHead>
                         <TableRow>
-                            {/* Log ID Column */}
-                            <TableCell sx={{ color: 'white' }}>
+                            {/* Log Name Column */}
+                            <TableCell sx={nameColumnSx}>
                                 <TableSortLabel
-                                    active={orderBy === 'id'}
-                                    direction={orderBy === 'id' ? order : 'asc'}
-                                    onClick={() => handleRequestSort('id')}
+                                    active={orderBy === 'name'}
+                                    direction={orderBy === 'name' ? order : 'asc'}
+                                    onClick={() => handleRequestSort('name')}
                                     sx={{ color: 'white', '& .MuiTableSortLabel-icon': { color: 'white !important' } }}
                                 >
-                                    <strong>Log ID</strong>
+                                    <strong>Name</strong>
                                 </TableSortLabel>
                             </TableCell>
 
-                            {/* Uploaded At Column */}
-                            <TableCell sx={{ color: 'white' }}>
+                            {/* Uploaded Column */}
+                            <TableCell sx={shrinkColumnSx}>
                                 <TableSortLabel
                                     active={orderBy === 'uploadedAt'}
                                     direction={orderBy === 'uploadedAt' ? order : 'asc'}
                                     onClick={() => handleRequestSort('uploadedAt')}
                                     sx={{ color: 'white', '& .MuiTableSortLabel-icon': { color: 'white !important' } }}
                                 >
-                                    <strong>Uploaded At</strong>
+                                    <strong>Uploaded</strong>
                                 </TableSortLabel>
                             </TableCell>
 
                             {/* # Fights Column */}
-                            <TableCell align="right" sx={{ color: 'white' }}>
+                            <TableCell align="right" sx={{ ...shrinkColumnSx, [media.mobileDown]: { display: 'none' } }}>
                                 <TableSortLabel
                                     active={orderBy === 'fights'}
                                     direction={orderBy === 'fights' ? order : 'asc'}
@@ -242,7 +398,7 @@ const Logs: React.FC = () => {
                             </TableCell>
 
                             {/* # Fight Groups Column */}
-                            <TableCell align="right" sx={{ color: 'white' }}>
+                            <TableCell align="right" sx={{ ...shrinkColumnSx, [media.mobileDown]: { display: 'none' } }}>
                                 <TableSortLabel
                                     active={orderBy === 'fightGroups'}
                                     direction={orderBy === 'fightGroups' ? order : 'asc'}
@@ -254,44 +410,51 @@ const Logs: React.FC = () => {
                             </TableCell>
 
                             {/* Delete Column */}
-
-                            <TableCell align="center" sx={{ color: 'white' }}>
-                            </TableCell>
+                            {canEditLogs && (
+                                <TableCell align="center" sx={shrinkColumnSx}>
+                                </TableCell>
+                            )}
                         </TableRow>
                     </TableHead>
 
                     <TableBody>
                         {sortedLogs.map((log) => (
-                            <TableRow key={log.id} hover>
-                                <TableCell sx={{ color: 'white', paddingY: 1 }}>
-                                    <Link component={RouterLink} to={`/log/${log.id}`} underline="hover">
-                                        {isMobile ? `${log.id.slice(0, 8)}...` : log.id}
-                                    </Link>
+                            <TableRow key={log.id} {...logTableRowProps(navigate, log.id)}>
+                                <TableCell sx={{ ...nameColumnSx, ...tableCellPaddingSx }}>
+                                    <LogNameCell log={log} canEdit={canEditLogs} onRename={handleRename} />
                                 </TableCell>
 
-                                <TableCell sx={{ color: 'white', paddingY: 1 }}>
-                                    {format(new Date(log.uploadedAt), 'PPpp')}
+                                <TableCell sx={{ ...shrinkColumnSx, ...tableCellPaddingSx }}>
+                                    <Box component="span" sx={{ [media.desktopUp]: { display: 'none' } }}>
+                                        {format(new Date(log.uploadedAt), 'MMM d, yyyy')}
+                                    </Box>
+                                    <Box component="span" sx={{ display: 'none', [media.desktopUp]: { display: 'inline' } }}>
+                                        {format(new Date(log.uploadedAt), 'PPp')}
+                                    </Box>
                                 </TableCell>
 
-                                <TableCell align="right" sx={{ color: 'white', paddingY: 1 }}>
+                                <TableCell align="right" sx={{ ...shrinkColumnSx, ...tableCellPaddingSx, [media.mobileDown]: { display: 'none' } }}>
                                     {log._count.fights}
                                 </TableCell>
 
-                                <TableCell align="right" sx={{ color: 'white', paddingY: 1 }}>
+                                <TableCell align="right" sx={{ ...shrinkColumnSx, ...tableCellPaddingSx, [media.mobileDown]: { display: 'none' } }}>
                                     {log._count.fightGroups}
                                 </TableCell>
 
-                                <TableCell align="center" sx={{ color: 'white', paddingY: 1 }}>
-                                    {user?.username === uploaderId && (
+                                {canEditLogs && (
+                                    <TableCell align="center" sx={{ ...shrinkColumnSx, ...tableCellPaddingSx }}>
                                         <IconButton
                                             aria-label="delete"
-                                            onClick={() => handleDelete(log.id)}
+                                            onClick={(e) => {
+                                                stopRowClick(e);
+                                                void handleDelete(log.id);
+                                            }}
                                             size="small"
                                         >
                                             <DeleteIcon fontSize="small" sx={{ color: 'white' }} />
                                         </IconButton>
-                                    )}
-                                </TableCell>
+                                    </TableCell>
+                                )}
                             </TableRow>
                         ))}
                     </TableBody>
