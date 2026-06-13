@@ -24,7 +24,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { format } from 'date-fns';
 import { useAuth0 } from '@auth0/auth0-react';
 import {closeSnackbar, SnackbarKey, useSnackbar} from "notistack";
-import {contentColumnSx, media} from "../theme";
+import {contentColumnSx, logNameTextSx, media} from "../theme";
 import {displayUsername} from "../utils/utils";
 import {logTableRowProps, stopRowClick} from "../utils/encounterTableRow";
 
@@ -142,8 +142,7 @@ const LogNameCell: React.FC<LogNameCellProps> = ({ log, canEdit, onRename }) => 
                 onClick={stopRowClick}
                 underline="hover"
                 sx={{
-                    color: log.name ? 'white' : 'rgba(255,255,255,0.5)',
-                    fontStyle: log.name ? 'normal' : 'italic',
+                    ...logNameTextSx(!!log.name),
                     flex: 1,
                     minWidth: 0,
                     overflow: 'hidden',

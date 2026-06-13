@@ -27,6 +27,7 @@ export const colors = {
     text: {
         primary: '#ffffff',
         gold: '#e5cc80',
+        muted: 'rgba(255, 255, 255, 0.5)',
         logs: 'rgb(255, 215, 0)',
         rune: '#A9CAD3',
         player: '#abd473',

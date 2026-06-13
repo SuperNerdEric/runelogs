@@ -58,6 +58,7 @@ type ApiEncounter = ApiFightOnly | ApiFightGroup;
 
 interface ApiResponse {
     logId: string;
+    name: string | null;
     uploaderId: string;
     uploadedAt: string;
     encounters: ApiEncounter[];
@@ -71,6 +72,7 @@ const Log: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [metadata, setMetadata] = useState<EncounterMetaData[] | null>(null);
     const [uploaderId, setUploaderId] = useState<string>('');
+    const [logName, setLogName] = useState<string | null>(null);
     const [uploadedAt, setUploadedAt] = useState<string>('');
     const [encounters, setEncounters] = useState<ApiEncounter[]>([]);
 
@@ -100,8 +102,9 @@ const Log: React.FC = () => {
                 const body: ApiResponse = await res.json();
                 setEncounters(body.encounters);
 
-                const {uploaderId: up, uploadedAt: ua} = body;
+                const {uploaderId: up, name, uploadedAt: ua} = body;
                 setUploaderId(up);
+                setLogName(name);
                 setUploadedAt(ua);
 
                 const out: EncounterMetaData[] = [];
@@ -190,7 +193,7 @@ const Log: React.FC = () => {
 
     return (
         <Box p={2} sx={contentColumnSx}>
-            <LogInfoBox uploaderId={uploaderId} uploadedAt={uploadedAt} logId={logId!}/>
+            <LogInfoBox uploaderId={uploaderId} logName={logName} logId={logId!} uploadedAt={uploadedAt} onLogNameChange={setLogName}/>
 
             <FightSelector
                 fights={metadata}
