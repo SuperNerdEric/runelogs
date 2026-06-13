@@ -24,7 +24,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { format } from 'date-fns';
 import { useAuth0 } from '@auth0/auth0-react';
 import {closeSnackbar, SnackbarKey, useSnackbar} from "notistack";
-import {contentColumnSx, logNameTextSx, media} from "../theme";
+import {contentColumnSx, logNameTextSx, accountTextSx, media} from "../theme";
 import {displayUsername} from "../utils/utils";
 import {logTableRowProps, stopRowClick} from "../utils/encounterTableRow";
 
@@ -295,6 +295,12 @@ const Logs: React.FC = () => {
     if (!logs || logs.length === 0) {
         return (
             <Box m={2}>
+                <Typography variant="h4" gutterBottom sx={{color: 'white'}}>
+                    Logs:{' '}
+                    <Box component="span" sx={{...accountTextSx, textTransform: 'capitalize'}}>
+                        {displayUsername(uploaderId || 'Unknown User')}
+                    </Box>
+                </Typography>
                 <Typography variant="h6" sx={{ color: 'white' }}>
                     No logs found for this uploader.
                 </Typography>
@@ -351,8 +357,11 @@ const Logs: React.FC = () => {
         <Box sx={{...contentColumnSx, mt: 1, px: 2, pb: 0, [media.mobileDown]: { px: 1 }}}>
             <Box m={0}>
                 <Box pb={0} pt={0}>
-                    <Typography variant="h4" gutterBottom sx={{color: 'white', textTransform: 'capitalize'}}>
-                        Logs: {displayUsername(uploaderId || 'Unknown User')}
+                    <Typography variant="h4" gutterBottom sx={{color: 'white'}}>
+                        Logs:{' '}
+                        <Box component="span" sx={{...accountTextSx, textTransform: 'capitalize'}}>
+                            {displayUsername(uploaderId || 'Unknown User')}
+                        </Box>
                     </Typography>
                 </Box>
 

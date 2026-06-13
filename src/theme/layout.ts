@@ -12,6 +12,10 @@ export const logNameTextSx = (hasName: boolean) => ({
     fontStyle: hasName ? 'normal' as const : 'italic' as const,
 });
 
+export const accountTextSx = {
+    color: 'var(--color-text-account)',
+} as const;
+
 export const media = {
     desktopUp: `@media (min-width: ${layout.desktopMinWidth}px)`,
     mobileDown: `@media (max-width: ${layout.desktopMinWidth - 1}px)`,

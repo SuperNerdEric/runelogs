@@ -16,7 +16,7 @@ import {closeSnackbar, SnackbarKey, useSnackbar} from "notistack";
 import CloseIcon from '@mui/icons-material/Close';
 import React, { useState } from "react";
 import {displayUsername} from "../../utils/utils";
-import { logNameTextSx } from '../../theme';
+import { logNameTextSx, accountTextSx } from '../../theme';
 
 interface Props {
     uploaderId: string;
@@ -143,9 +143,9 @@ const LogInfoBox: React.FC<Props> = ({
                 component={RouterLink}
                 style={{textTransform: 'capitalize'}}
                 to={`/logs/${uploaderId}`}
-                className="log-info-value"
                 underline="hover"
                 variant="body1"
+                sx={accountTextSx}
             >
                 {displayUsername(uploaderId)}
             </Link>
