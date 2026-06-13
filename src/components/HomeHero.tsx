@@ -51,24 +51,32 @@ export function HomeHero({icon: Icon = QueryStatsIcon, iconColor, iconBg, iconBo
             pt: 2,
             pb: 0.5,
             userSelect: 'none',
-            [media.desktopUp]: {gap: 1.5, pt: 0.5},
+            [media.desktopUp]: {gap: 1.25, pt: 0.5},
         }}>
-            <Box sx={{display: 'none', [media.desktopUp]: {display: 'block'}}}>
-                {iconWrapperSx ? <Box sx={iconWrapperSx}>{icon}</Box> : icon}
+            <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 2,
+                [media.desktopUp]: {gap: 0.5},
+            }}>
+                <Box sx={{display: 'none', [media.desktopUp]: {display: 'block'}}}>
+                    {iconWrapperSx ? <Box sx={iconWrapperSx}>{icon}</Box> : icon}
+                </Box>
+                <Typography
+                    variant="h4"
+                    sx={{
+                        textAlign: 'center',
+                        lineHeight: 1.3,
+                        fontWeight: 600,
+                        m: 0,
+                        fontSize: '1.625rem',
+                        [media.desktopUp]: {fontSize: '2.125rem'},
+                    }}
+                >
+                    {tagline}
+                </Typography>
             </Box>
-            <Typography
-                variant="h4"
-                sx={{
-                    textAlign: 'center',
-                    lineHeight: 1.3,
-                    fontWeight: 600,
-                    m: 0,
-                    fontSize: '1.625rem',
-                    [media.desktopUp]: {fontSize: '2.125rem'},
-                }}
-            >
-                {tagline}
-            </Typography>
             <Typography
                 variant="h6"
                 sx={{
