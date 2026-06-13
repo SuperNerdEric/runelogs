@@ -9,12 +9,14 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    Typography, useMediaQuery,
+    Typography,
 } from '@mui/material';
 import {Link as RouterLink, useNavigate, useParams} from 'react-router-dom';
 import HistoryIcon from '@mui/icons-material/History';
-import theme, {colors} from "../theme";
+import {format} from 'date-fns';
+import {colors, media} from "../theme";
 import {encounterTableRowProps, stopRowClick} from '../utils/encounterTableRow';
+import {ticksToTime} from '../utils/utils';
 
 interface RecentEncounter {
     type: 'fight' | 'fightGroup';
@@ -26,6 +28,7 @@ interface RecentEncounter {
     success?: boolean;
     officialDurationTicks: number | null;
     uploadedAt: string;
+    players?: string[];
 }
 
 interface RecentEncountersResponse {
@@ -39,7 +42,6 @@ const RecentEncounters: React.FC = () => {
     const [data, setData] = useState<RecentEncountersResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     useEffect(() => {
         const fetchData = async () => {
@@ -109,21 +111,50 @@ const RecentEncounters: React.FC = () => {
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{color: 'white'}}>Name</TableCell>
-                            <TableCell sx={{color: 'white'}}>Id</TableCell>
-                            <TableCell sx={{color: 'white'}}>Date</TableCell>
+                            <TableCell sx={{color: 'white', whiteSpace: 'nowrap'}}>Duration</TableCell>
+                            <TableCell sx={{color: 'white'}}>Players</TableCell>
+                            <TableCell sx={{color: 'white', whiteSpace: 'nowrap'}}>Date</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {encounters.map((enc) => (
                             <TableRow key={enc.id} {...encounterTableRowProps(navigate, enc.id)}>
-                                <TableCell sx={{color: 'white'}}>{enc.name}</TableCell>
                                 <TableCell sx={{color: 'white'}}>
-                                    <Link component={RouterLink} to={`/encounter/${enc.id}`} underline="hover" onClick={stopRowClick}>
-                                        {isMobile ? `${enc.id.slice(0, 8)}...` : enc.id}
+                                    <Link
+                                        component={RouterLink}
+                                        to={`/encounter/${enc.id}`}
+                                        underline="hover"
+                                        onClick={stopRowClick}
+                                    >
+                                        {enc.name}
                                     </Link>
                                 </TableCell>
+                                <TableCell sx={{color: 'white', whiteSpace: 'nowrap'}}>
+                                    {enc.officialDurationTicks != null ? ticksToTime(enc.officialDurationTicks) : '-'}
+                                </TableCell>
                                 <TableCell sx={{color: 'white'}}>
-                                    {new Date(enc.startTime).toLocaleString()}
+                                    {enc.players?.length ? enc.players.map((p, i) => (
+                                        <React.Fragment key={p}>
+                                            <Link
+                                                component={RouterLink}
+                                                to={`/player/${p}`}
+                                                underline="hover"
+                                                onClick={stopRowClick}
+                                                sx={p === playerName ? {color: colors.text.player} : undefined}
+                                            >
+                                                {p}
+                                            </Link>
+                                            {i < enc.players!.length - 1 ? ', ' : ''}
+                                        </React.Fragment>
+                                    )) : '-'}
+                                </TableCell>
+                                <TableCell sx={{color: 'white', whiteSpace: 'nowrap'}}>
+                                    <Box component="span" sx={{ [media.desktopUp]: { display: 'none' } }}>
+                                        {format(new Date(enc.startTime), 'MMM d, yyyy')}
+                                    </Box>
+                                    <Box component="span" sx={{ display: 'none', [media.desktopUp]: { display: 'inline' } }}>
+                                        {format(new Date(enc.startTime), 'PPp')}
+                                    </Box>
                                 </TableCell>
                             </TableRow>
                         ))}

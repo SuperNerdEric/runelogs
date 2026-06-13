@@ -10,11 +10,11 @@ import {
     TableHead,
     TableRow,
     Typography,
-    useMediaQuery
 } from '@mui/material';
 import {Link as RouterLink, useNavigate, useParams} from 'react-router-dom';
-import theme from "../theme";
+import {format} from 'date-fns';
 import {encounterTableRowProps, stopRowClick} from '../utils/encounterTableRow';
+import {media} from "../theme";
 import {colors} from "../theme";
 import {getRankColor, ticksToTime} from "../utils/utils";
 import {CrownIcon} from "./CrownIcon";
@@ -41,6 +41,14 @@ const contentOptions: ContentOption[] = [
     {label: 'Fortis Colosseum', value: 'Fortis Colosseum', playerCounts: [1]},
 ];
 
+const partySizeColumnSx = {
+    color: 'white',
+    whiteSpace: 'nowrap',
+    [media.mobileDown]: {
+        minWidth: 32,
+    },
+} as const;
+
 interface FightGroup {
     id: string;
     name: string;
@@ -48,6 +56,8 @@ interface FightGroup {
     officialDurationTicks: number;
     playerCount: number;
     rank?: number;
+    startTime?: string;
+    players?: string[];
 }
 
 interface PersonalBestsResponse {
@@ -64,7 +74,6 @@ const PersonalBests: React.FC = () => {
     const [data, setData] = useState<PersonalBestsResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     useEffect(() => {
         const fetchData = async () => {
@@ -148,10 +157,11 @@ const PersonalBests: React.FC = () => {
                             <Table>
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell sx={{color: 'white'}}>Players</TableCell>
-                                        <TableCell sx={{color: 'white'}}>Duration</TableCell>
+                                        <TableCell sx={partySizeColumnSx}>#</TableCell>
                                         <TableCell sx={{color: 'white'}}>Rank</TableCell>
-                                        <TableCell sx={{color: 'white'}}>Id</TableCell>
+                                        <TableCell sx={{color: 'white'}}>Duration</TableCell>
+                                        <TableCell sx={{color: 'white'}}>Players</TableCell>
+                                        <TableCell sx={{color: 'white', whiteSpace: 'nowrap', [media.mobileDown]: { display: 'none' }}}>Date</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -160,9 +170,19 @@ const PersonalBests: React.FC = () => {
 
                                         return (
                                             <TableRow key={count} {...encounterTableRowProps(navigate, match?.id)}>
-                                                <TableCell sx={{color: 'white'}}>{count}</TableCell>
-                                                <TableCell sx={{color: 'white'}}>
-                                                    {match ? ticksToTime(match.officialDurationTicks) : '-'}
+                                                <TableCell sx={partySizeColumnSx}>
+                                                    {match ? (
+                                                        <Link
+                                                            component={RouterLink}
+                                                            to={`/encounter/${match.id}`}
+                                                            underline="hover"
+                                                            onClick={stopRowClick}
+                                                        >
+                                                            {count}
+                                                        </Link>
+                                                    ) : (
+                                                        count
+                                                    )}
                                                 </TableCell>
                                                 <TableCell sx={{color: 'white'}}>
                                                     {match?.rank ? (
@@ -182,15 +202,34 @@ const PersonalBests: React.FC = () => {
                                                     ) : '-'}
                                                 </TableCell>
                                                 <TableCell sx={{color: 'white'}}>
-                                                    {match ? (
-                                                        <Link
-                                                            component={RouterLink}
-                                                            to={`/encounter/${match.id}`}
-                                                            underline="hover"
-                                                            onClick={stopRowClick}
-                                                        >
-                                                            {isMobile ? `${match.id.slice(0, 8)}...` : match.id}
-                                                        </Link>
+                                                    {match ? ticksToTime(match.officialDurationTicks) : '-'}
+                                                </TableCell>
+                                                <TableCell sx={{color: 'white'}}>
+                                                    {match?.players?.length ? match.players.map((p, i) => (
+                                                        <React.Fragment key={p}>
+                                                            <Link
+                                                                component={RouterLink}
+                                                                to={`/player/${p}`}
+                                                                underline="hover"
+                                                                onClick={stopRowClick}
+                                                                sx={p === playerName ? {color: colors.text.player} : undefined}
+                                                            >
+                                                                {p}
+                                                            </Link>
+                                                            {i < match.players!.length - 1 ? ', ' : ''}
+                                                        </React.Fragment>
+                                                    )) : '-'}
+                                                </TableCell>
+                                                <TableCell sx={{color: 'white', whiteSpace: 'nowrap', [media.mobileDown]: { display: 'none' }}}>
+                                                    {match?.startTime ? (
+                                                        <>
+                                                            <Box component="span" sx={{ [media.desktopUp]: { display: 'none' } }}>
+                                                                {format(new Date(match.startTime), 'MMM d, yyyy')}
+                                                            </Box>
+                                                            <Box component="span" sx={{ display: 'none', [media.desktopUp]: { display: 'inline' } }}>
+                                                                {format(new Date(match.startTime), 'PPp')}
+                                                            </Box>
+                                                        </>
                                                     ) : (
                                                         '-'
                                                     )}
