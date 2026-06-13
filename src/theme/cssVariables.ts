@@ -20,6 +20,7 @@ export const cssVariables: Record<string, string> = {
     '--color-text-primary': colors.text.primary,
     '--color-text-gold': colors.text.gold,
     '--color-text-muted': colors.text.muted,
+    '--color-text-account': colors.text.rune,
     '--color-text-player': colors.text.player,
     '--color-text-other': colors.text.other,
     '--color-text-dps': colors.text.dps,

@@ -7,7 +7,7 @@ import logo from '../assets/Logo.png';
 import {Link} from "react-router-dom";
 import PlayerSearch from "./PlayerSearch";
 import {displayUsername} from "../utils/utils";
-import {colors, fontSizes} from "../theme";
+import {colors, fontSizes, accountTextSx} from "../theme";
 
 const TopBar: React.FC = () => {
     const {isAuthenticated, user, loginWithRedirect, logout} = useAuth0();
@@ -147,7 +147,7 @@ const TopBar: React.FC = () => {
                                     <Icon icon="mdi:account-circle" style={{ width: 35, height: 35, color: colors.text.primary }} />
                                 ) : (
                                     <>
-                                        <Typography variant="body1" style={{ color: colors.text.primary, textTransform: 'capitalize' }}>
+                                        <Typography variant="body1" sx={{ ...accountTextSx, textTransform: 'capitalize', fontWeight: 600 }}>
                                             {displayUsername(user?.username) || 'User'}
                                         </Typography>
                                         <ArrowDropDownIcon style={{ color: colors.text.primary }} />
