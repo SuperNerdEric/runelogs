@@ -7,6 +7,11 @@ export const contentColumnSx = {
     boxSizing: 'border-box',
 } as const;
 
+export const logNameTextSx = (hasName: boolean) => ({
+    color: hasName ? 'var(--color-text-gold)' : 'var(--color-text-muted)',
+    fontStyle: hasName ? 'normal' as const : 'italic' as const,
+});
+
 export const media = {
     desktopUp: `@media (min-width: ${layout.desktopMinWidth}px)`,
     mobileDown: `@media (max-width: ${layout.desktopMinWidth - 1}px)`,
