@@ -17,6 +17,17 @@ export function encounterTableRowProps(
     };
 }
 
+export function logTableRowProps(
+    navigate: NavigateFunction,
+    logId: string,
+): Partial<TableRowProps> {
+    return {
+        hover: true,
+        onClick: () => navigate(`/log/${logId}`),
+        sx: {cursor: 'pointer'},
+    };
+}
+
 export function stopRowClick(event: MouseEvent) {
     event.stopPropagation();
 }
