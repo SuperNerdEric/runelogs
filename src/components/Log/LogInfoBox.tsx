@@ -186,16 +186,15 @@ const LogInfoBox: React.FC<Props> = ({
             ) : (
                 <Box
                     className="log-info-value"
-                    sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.25, maxWidth: '100%' }}
+                    sx={{ display: 'flex', alignItems: 'flex-start', gap: 0.25, minWidth: 0 }}
                 >
                     <Typography
                         component="span"
                         sx={{
                             ...logNameTextSx(!!logName),
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
                             minWidth: 0,
+                            overflowWrap: 'break-word',
+                            wordBreak: 'break-word',
                         }}
                     >
                         {logName ?? 'Unnamed'}
