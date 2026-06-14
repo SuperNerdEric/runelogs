@@ -39,6 +39,8 @@ const contentOptions: ContentOption[] = [
     {label: 'Fight Caves', value: 'Fight Caves', playerCounts: [1]},
     {label: 'The Inferno', value: 'The Inferno', playerCounts: [1]},
     {label: 'Fortis Colosseum', value: 'Fortis Colosseum', playerCounts: [1]},
+    {label: 'The Gauntlet', value: 'The Gauntlet', playerCounts: [1]},
+    {label: 'Corrupted Gauntlet', value: 'Corrupted Gauntlet', playerCounts: [1]},
 ];
 
 const partySizeColumnSx = {
