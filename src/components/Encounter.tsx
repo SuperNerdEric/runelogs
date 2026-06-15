@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Link, useNavigate, useParams, useSearchParams} from 'react-router-dom';
-import {Box, CircularProgress, Tab, Tabs, Typography} from '@mui/material';
+import {Box, CircularProgress, Tab, Tabs, Typography, Alert} from '@mui/material';
 import {BoostsTab, DamageDoneTab, DamageTakenTab, EventsTab, ReplayTab, TabsEnum,} from './Tabs';
 import {Fight, FightMetaData, isFight} from '../models/Fight';
 import * as semver from 'semver';
@@ -18,6 +18,7 @@ type EncounterApiFG = {
     type: 'fightGroup';
     id: string;
     name: string;
+    receivingData?: boolean;
     fights: { id: string; name: string; order: number }[];
 };
 
@@ -25,9 +26,11 @@ type EncounterApiFight = {
     type: 'fight';
     fightGroup?: string;
     fight: Fight;
+    receivingData?: boolean;
     meta: {
         fightGroup?: { id: string; name: string };
         log: { id: string };
+        receivingData?: boolean;
     };
 };
 
@@ -44,6 +47,7 @@ const Encounter: React.FC = () => {
     const [logId, setLogId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [receivingData, setReceivingData] = useState(false);
 
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
@@ -91,8 +95,10 @@ const Encounter: React.FC = () => {
     }, [group]);
 
     const fetchEncounter = useCallback(
-        async (encounterId: string, asInitial = false) => {
-            setLoading(true);
+        async (encounterId: string, asInitial = false, showLoading = true) => {
+            if (showLoading) {
+                setLoading(true);
+            }
             setError(null);
             try {
                 const res = await fetch(
@@ -107,20 +113,24 @@ const Encounter: React.FC = () => {
                     if (!isFight(data.fight)) throw new Error('Malformed fight payload');
                     setFight(data.fight);
                     setLogId(data.meta.log.id);
+                    setReceivingData(Boolean(data.meta.receivingData ?? data.receivingData));
 
                     if (asInitial && data.meta.fightGroup?.id) {
-                        await fetchEncounter(data.meta.fightGroup.id);
+                        await fetchEncounter(data.meta.fightGroup.id, false, showLoading);
                     }
                 } else {
                     setGroup(data);
+                    setReceivingData(Boolean(data.receivingData));
                     if (asInitial && data.fights.length) {
-                        await fetchEncounter(data.fights[0].id);
+                        await fetchEncounter(data.fights[0].id, false, showLoading);
                     }
                 }
             } catch (e: any) {
                 setError(e.message || 'Unknown error');
             } finally {
-                setLoading(false);
+                if (showLoading) {
+                    setLoading(false);
+                }
             }
         },
         [isAggregate]
@@ -172,9 +182,21 @@ const Encounter: React.FC = () => {
         if (id) {
             setGroup(null);
             setFight(null);
-            fetchEncounter(id, true);
+            fetchEncounter(id, true, true);
         }
     }, [id, fetchEncounter]);
+
+    useEffect(() => {
+        if (!id || !receivingData || isAggregate) {
+            return;
+        }
+
+        const interval = window.setInterval(() => {
+            fetchEncounter(id, false, false);
+        }, 5000);
+
+        return () => window.clearInterval(interval);
+    }, [id, receivingData, isAggregate, fetchEncounter]);
 
     const availableTabs = useMemo(() => {
         if (!fight) return [];
@@ -251,6 +273,11 @@ const Encounter: React.FC = () => {
                         )}
                     </Typography>
                 </div>
+                {receivingData && (
+                    <Alert severity="info" sx={{alignSelf: 'stretch', mb: 1}}>
+                        Log is receiving more data — this page will refresh while new data arrives.
+                    </Alert>
+                )}
                 {(fight as any)?.rank != null || (group as any)?.rank != null ? (
                     <Box sx={{display: 'flex', alignItems: 'center', gap: 1, mb: 1, alignSelf: 'center'}}>
                         <Typography

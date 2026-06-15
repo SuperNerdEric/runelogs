@@ -16,6 +16,7 @@ import Encounter from "./components/Encounter";
 import Player from "./components/Player";
 import Home from "./components/Home";
 import Help from "./components/Help";
+import LiveLog from "./components/LiveLog";
 import Login from "./components/Login";
 import Logout from "./components/Logout";
 import {initGA} from "./Analytics";
@@ -47,6 +48,7 @@ function AppRoutes() {
                 <Route path="/encounter/:id" element={<Encounter />} />
                 <Route path="/encounter/aggregate/:id" element={<Encounter />} />
                 <Route path="/upload" element={<Upload/>}/>
+                <Route path="/live-log" element={<LiveLog/>}/>
                 <Route path="/log/:logId" element={<Log/>}/>
                 <Route path="/logs/:uploaderId" element={<Logs/>}/>
             </Routes>

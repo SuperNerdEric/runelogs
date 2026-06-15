@@ -61,6 +61,9 @@ interface ApiResponse {
     name: string | null;
     uploaderId: string;
     uploadedAt: string;
+    isLive?: boolean;
+    receivingData?: boolean;
+    liveActiveEncounterId?: string | null;
     encounters: ApiEncounter[];
 }
 
@@ -75,87 +78,104 @@ const Log: React.FC = () => {
     const [logName, setLogName] = useState<string | null>(null);
     const [uploadedAt, setUploadedAt] = useState<string>('');
     const [encounters, setEncounters] = useState<ApiEncounter[]>([]);
+    const [receivingData, setReceivingData] = useState<boolean>(false);
 
-    useEffect(() => {
+    const loadLog = async (showLoading = true) => {
         if (!logId) {
             setError('No logId provided in URL');
             setLoading(false);
             return;
         }
 
-        (async () => {
+        if (showLoading) {
             setLoading(true);
-            setError(null);
+        }
+        setError(null);
 
-            try {
-                const token = await (window as any).auth0?.getAccessTokenSilently?.();
-                const res = await fetch(`${import.meta.env.VITE_API_URL}/log/${logId}`, {
-                    headers: {
-                        Authorization: token ? `Bearer ${token}` : ''
-                    }
-                });
-
-                if (!res.ok) {
-                    throw new Error(`Server responded with status ${res.status}`);
+        try {
+            const token = await (window as any).auth0?.getAccessTokenSilently?.();
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/log/${logId}`, {
+                headers: {
+                    Authorization: token ? `Bearer ${token}` : ''
                 }
+            });
 
-                const body: ApiResponse = await res.json();
-                setEncounters(body.encounters);
+            if (!res.ok) {
+                throw new Error(`Server responded with status ${res.status}`);
+            }
 
-                const {uploaderId: up, name, uploadedAt: ua} = body;
-                setUploaderId(up);
-                setLogName(name);
-                setUploadedAt(ua);
+            const body: ApiResponse = await res.json();
+            setEncounters(body.encounters);
+            setReceivingData(Boolean(body.receivingData));
 
-                const out: EncounterMetaData[] = [];
+            const {uploaderId: up, name, uploadedAt: ua} = body;
+            setUploaderId(up);
+            setLogName(name);
+            setUploadedAt(ua);
 
-                // Sort top‐level encounters by their `order` field:
-                body.encounters.sort((a, b) => a.order - b.order);
+            const out: EncounterMetaData[] = [];
 
-                for (const enc of body.encounters) {
-                    if (enc.type === 'fightGroup') {
-                        // Build an array of FightMetaData for each nested ApiFight:
-                        const childFights: FightMetaData[] = enc.fights
-                            .slice()
-                            .sort((a, b) => a.order - b.order)
-                            .map((f) => {
-                                return {
-                                    name: f.name,
-                                    startTime: f.startTime,
-                                    fightDurationTicks: f.fightDurationTicks,
-                                    success: f.success
-                                };
-                            });
+            body.encounters.sort((a, b) => a.order - b.order);
 
-                        const fgMeta = {
-                            name: enc.name,
-                            officialDurationTicks: enc.officialDurationTicks,
-                            fights: childFights
-                        };
+            for (const enc of body.encounters) {
+                if (enc.type === 'fightGroup') {
+                    const childFights: FightMetaData[] = enc.fights
+                        .slice()
+                        .sort((a, b) => a.order - b.order)
+                        .map((f) => {
+                            return {
+                                name: f.name,
+                                startTime: f.startTime,
+                                fightDurationTicks: f.fightDurationTicks,
+                                success: f.success
+                            };
+                        });
 
-                        out.push(fgMeta);
-                    } else {
-                        // Standalone fight → FightMetaData
-                        const fMeta: FightMetaData = {
-                            name: enc.mainEnemyName,
-                            startTime: enc.startTime,
-                            fightDurationTicks: enc.fightDurationTicks,
-                            success: enc.success
-                        };
+                    const fgMeta = {
+                        name: enc.name,
+                        officialDurationTicks: enc.officialDurationTicks,
+                        fights: childFights
+                    };
 
-                        out.push(fMeta);
-                    }
+                    out.push(fgMeta);
+                } else {
+                    const fMeta: FightMetaData = {
+                        name: enc.mainEnemyName,
+                        startTime: enc.startTime,
+                        fightDurationTicks: enc.fightDurationTicks,
+                        success: enc.success
+                    };
+
+                    out.push(fMeta);
                 }
+            }
 
-                setMetadata(out);
-            } catch (err: any) {
-                console.error(err);
-                setError(err.message || 'Unknown error fetching log');
-            } finally {
+            setMetadata(out);
+        } catch (err: any) {
+            console.error(err);
+            setError(err.message || 'Unknown error fetching log');
+        } finally {
+            if (showLoading) {
                 setLoading(false);
             }
-        })();
+        }
+    };
+
+    useEffect(() => {
+        loadLog(true);
     }, [logId]);
+
+    useEffect(() => {
+        if (!logId || !receivingData) {
+            return;
+        }
+
+        const interval = window.setInterval(() => {
+            loadLog(false);
+        }, 5000);
+
+        return () => window.clearInterval(interval);
+    }, [logId, receivingData]);
 
     if (loading) {
         return (
@@ -181,71 +201,74 @@ const Log: React.FC = () => {
         );
     }
 
-    if (!metadata || metadata.length === 0) {
-        return (
-            <Box p={4}>
-                <Alert severity="info">
-                    <Typography variant="h6">No encounters found in this log.</Typography>
-                </Alert>
-            </Box>
-        );
-    }
+    const hasEncounters = metadata !== null && metadata.length > 0;
 
     return (
         <Box p={2} sx={contentColumnSx}>
+            {receivingData && (
+                <Alert severity="info" sx={{mb: 2}}>
+                    Live log in progress — this page will refresh while new data is received.
+                </Alert>
+            )}
             <LogInfoBox uploaderId={uploaderId} logName={logName} logId={logId!} uploadedAt={uploadedAt} onLogNameChange={setLogName}/>
 
-            <FightSelector
-                fights={metadata}
-                onSelectFight={(index, fightGroupIndex) => {
-                    let fightId: string | undefined;
-                    const encounter = encounters[index];
-                    if (fightGroupIndex === undefined) {
-                        if (encounter && encounter.type === 'fight') {
-                            fightId = encounter.id;
+            {hasEncounters ? (
+                <FightSelector
+                    fights={metadata!}
+                    onSelectFight={(index, fightGroupIndex) => {
+                        let fightId: string | undefined;
+                        const encounter = encounters[index];
+                        if (fightGroupIndex === undefined) {
+                            if (encounter && encounter.type === 'fight') {
+                                fightId = encounter.id;
+                            }
+                        } else {
+                            if (encounter && encounter.type === 'fightGroup') {
+                                fightId = encounter.fights[fightGroupIndex].id;
+                            }
                         }
-                    } else {
-                        if (encounter && encounter.type === 'fightGroup') {
-                            fightId = encounter.fights[fightGroupIndex].id;
+                        if (fightId) {
+                            navigate(`/encounter/${fightId}`);
                         }
-                    }
-                    if (fightId) {
-                        navigate(`/encounter/${fightId}`);
-                    }
-                }}
-                onSelectAggregateFight={async (indices) => {
-                    const selectedFights: string[] = [];
+                    }}
+                    onSelectAggregateFight={async (indices) => {
+                        const selectedFights: string[] = [];
 
-                    for (const i of indices) {
-                        const encounter = encounters[i];
-                        if (encounter?.type === 'fight') {
-                            selectedFights.push(encounter.id);
-                        }
-                    }
-
-                    if (selectedFights.length === 0) return;
-
-                    try {
-                        const res = await fetch(`${import.meta.env.VITE_API_URL}/fight/aggregate`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ fightIds: selectedFights })
-                        });
-
-                        if (!res.ok) {
-                            console.error(`Failed to create aggregate fight: ${res.status}`);
-                            return;
+                        for (const i of indices) {
+                            const encounter = encounters[i];
+                            if (encounter?.type === 'fight') {
+                                selectedFights.push(encounter.id);
+                            }
                         }
 
-                        const { aggregateId } = await res.json();
-                        navigate(`/encounter/aggregate/${aggregateId}`);
-                    } catch (err) {
-                        console.error('Error aggregating fights:', err);
-                    }
-                }}
-            />
+                        if (selectedFights.length === 0) return;
+
+                        try {
+                            const res = await fetch(`${import.meta.env.VITE_API_URL}/fight/aggregate`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ fightIds: selectedFights })
+                            });
+
+                            if (!res.ok) {
+                                console.error(`Failed to create aggregate fight: ${res.status}`);
+                                return;
+                            }
+
+                            const { aggregateId } = await res.json();
+                            navigate(`/encounter/aggregate/${aggregateId}`);
+                        } catch (err) {
+                            console.error('Error aggregating fights:', err);
+                        }
+                    }}
+                />
+            ) : (
+                <Typography sx={{mt: 2, color: 'white'}}>
+                    No encounters found in this log.
+                </Typography>
+            )}
         </Box>
     );
 };
