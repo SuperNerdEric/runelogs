@@ -233,7 +233,7 @@ export const npcIdMap: Record<number, NPC> = {
     226: { name: "null", size: 1 },
     227: { name: "Butler", size: 1 },
     228: { name: "null", size: 1 },
-    229: { name: "null", size: 1 },
+    229: { name: "Demon butler", size: 1 },
     230: { name: "null", size: 1 },
     231: { name: "Wolf", size: 2 },
     232: { name: "Jungle Wolf", size: 2 },
@@ -15688,6 +15688,5 @@ export const npcIdMap: Record<number, NPC> = {
     15707: { name: "null", size: 1 },
     15708: { name: "null", size: 1 },
     15709: { name: "null", size: 1 },
-    15710: { name: "Demon butler", size: 1 },
     15711: { name: "Demon butler", size: 1 },
 };
