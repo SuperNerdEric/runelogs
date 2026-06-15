@@ -294,7 +294,7 @@ const Logs: React.FC = () => {
 
     if (!logs || logs.length === 0) {
         return (
-            <Box m={2}>
+            <Box sx={{...contentColumnSx, mt: 1, px: 2, pb: 0, [media.mobileDown]: { px: 1 }}}>
                 <Typography variant="h4" gutterBottom sx={{color: 'white'}}>
                     Logs:{' '}
                     <Box component="span" sx={{...accountTextSx, textTransform: 'capitalize'}}>

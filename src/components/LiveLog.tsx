@@ -64,6 +64,8 @@ const panelIconInlineSx = {
     mx: 0.25,
 };
 
+const NO_ACCESS_KEY_MESSAGE = 'You do not have a live log access key yet.';
+
 const textFieldSx = {
     '& .MuiInputBase-root': {
         bgcolor: colors.background.surfaceAlt,
@@ -296,59 +298,44 @@ const LiveLog: React.FC = () => {
                 </Box>
 
                 <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
-                    {!accessKey ? (
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                gap: 1.5,
-                                py: 3,
-                                px: 2,
-                                borderRadius: 1.5,
-                                border: `2px dashed ${colors.border.default}`,
-                                bgcolor: colors.background.surfaceAlt,
+                    <Box>
+                        <Typography sx={{mb: 0.75, color: colors.text.primary, fontWeight: 500}}>
+                            Runelogs Access Key
+                        </Typography>
+                        <TextField
+                            fullWidth
+                            value={
+                                accessKey
+                                    ? revealed
+                                        ? accessKey
+                                        : '•'.repeat(Math.min(accessKey.length, 48))
+                                    : NO_ACCESS_KEY_MESSAGE
+                            }
+                            InputProps={{
+                                readOnly: true,
+                                endAdornment: accessKey ? (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label={revealed ? 'Hide access key' : 'Reveal access key'}
+                                            onClick={() => setRevealed((prev) => !prev)}
+                                            edge="end"
+                                        >
+                                            {revealed ? <VisibilityOffIcon/> : <VisibilityIcon/>}
+                                        </IconButton>
+                                        <IconButton aria-label="Copy access key" onClick={handleCopy} edge="end">
+                                            <ContentCopyIcon/>
+                                        </IconButton>
+                                    </InputAdornment>
+                                ) : undefined,
                             }}
-                        >
-                            <SensorsIcon sx={{fontSize: 40, color: colors.text.rune}}/>
-                            <Typography sx={{color: colors.text.primary, textAlign: 'center'}}>
-                                You do not have a live log access key yet.
+                            sx={textFieldSx}
+                        />
+                        {copied && accessKey && (
+                            <Typography variant="body2" sx={{mt: 1, color: colors.text.heal}}>
+                                Copied to clipboard
                             </Typography>
-                        </Box>
-                    ) : (
-                        <Box>
-                            <Typography sx={{mb: 0.75, color: colors.text.primary, fontWeight: 500}}>
-                                Runelogs Access Key
-                            </Typography>
-                            <TextField
-                                fullWidth
-                                value={revealed ? accessKey : '•'.repeat(Math.min(accessKey.length, 48))}
-                                InputProps={{
-                                    readOnly: true,
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label={revealed ? 'Hide access key' : 'Reveal access key'}
-                                                onClick={() => setRevealed((prev) => !prev)}
-                                                edge="end"
-                                            >
-                                                {revealed ? <VisibilityOffIcon/> : <VisibilityIcon/>}
-                                            </IconButton>
-                                            <IconButton aria-label="Copy access key" onClick={handleCopy} edge="end">
-                                                <ContentCopyIcon/>
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                                sx={textFieldSx}
-                            />
-                            {copied && (
-                                <Typography variant="body2" sx={{mt: 1, color: colors.text.heal}}>
-                                    Copied to clipboard
-                                </Typography>
-                            )}
-                        </Box>
-                    )}
+                        )}
+                    </Box>
 
                     {error && <Alert severity="error">{error}</Alert>}
 

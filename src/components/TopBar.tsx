@@ -1,6 +1,11 @@
 import React, {useState} from 'react';
-import {AppBar, Box, Button, Menu, MenuItem, Toolbar, Typography, useMediaQuery, useTheme} from '@mui/material';
+import {AppBar, Box, Button, ListItemIcon, ListItemText, Menu, MenuItem, Toolbar, Typography, useMediaQuery, useTheme} from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import LogoutIcon from '@mui/icons-material/Logout';
+import SensorsIcon from '@mui/icons-material/Sensors';
 import {Icon} from '@iconify/react';
 import {useAuth0} from '@auth0/auth0-react';
 import logo from '../assets/Logo.png';
@@ -8,6 +13,11 @@ import {Link} from "react-router-dom";
 import PlayerSearch from "./PlayerSearch";
 import {displayUsername} from "../utils/utils";
 import {colors, fontSizes, accountTextSx} from "../theme";
+
+const menuItemIconSx = {
+    minWidth: 36,
+    color: colors.upload.dragActive,
+};
 
 const TopBar: React.FC = () => {
     const {isAuthenticated, user, loginWithRedirect, logout} = useAuth0();
@@ -186,7 +196,10 @@ const TopBar: React.FC = () => {
                                             fontSize: '1rem',
                                             paddingY: 1,
                                             '&:hover': {backgroundColor: colors.background.hover}
-                                        }
+                                        },
+                                        '& .MuiListItemText-primary': {
+                                            color: colors.text.primary,
+                                        },
                                     }
                                 }}
                             >
@@ -195,22 +208,41 @@ const TopBar: React.FC = () => {
                                     to={`/logs/${user?.username}`}
                                     onClick={handleMenuClose}
                                 >
-                                    My Logs
+                                    <ListItemIcon sx={menuItemIconSx}>
+                                        <FolderOpenOutlinedIcon fontSize="small"/>
+                                    </ListItemIcon>
+                                    <ListItemText>My Logs</ListItemText>
                                 </MenuItem>
 
+{/*                                <MenuItem
+                                    component={Link}
+                                    to="/live-log"
+                                    onClick={handleMenuClose}
+                                >
+                                    <ListItemIcon sx={menuItemIconSx}>
+                                        <SensorsIcon fontSize="small"/>
+                                    </ListItemIcon>
+                                    <ListItemText>Live Log</ListItemText>
+                                </MenuItem>*/}
                                 <MenuItem
                                     component={Link}
                                     to="/upload"
                                     onClick={handleMenuClose}
                                 >
-                                    Upload Log
+                                    <ListItemIcon sx={menuItemIconSx}>
+                                        <CloudUploadIcon fontSize="small"/>
+                                    </ListItemIcon>
+                                    <ListItemText>Upload Log</ListItemText>
                                 </MenuItem>
                                 <MenuItem
                                     component={Link}
                                     to="/help"
                                     onClick={handleMenuClose}
                                 >
-                                    Help
+                                    <ListItemIcon sx={menuItemIconSx}>
+                                        <HelpOutlineIcon fontSize="small"/>
+                                    </ListItemIcon>
+                                    <ListItemText>Help</ListItemText>
                                 </MenuItem>
                                 <MenuItem
                                     onClick={() => {
@@ -218,7 +250,10 @@ const TopBar: React.FC = () => {
                                         logout({logoutParams: {returnTo: window.location.origin}});
                                     }}
                                 >
-                                    Logout
+                                    <ListItemIcon sx={menuItemIconSx}>
+                                        <LogoutIcon fontSize="small"/>
+                                    </ListItemIcon>
+                                    <ListItemText>Logout</ListItemText>
                                 </MenuItem>
                             </Menu>
                         </>
