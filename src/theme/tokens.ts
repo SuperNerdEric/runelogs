@@ -51,13 +51,13 @@ export const colors = {
         bronze: '#CD7F32',
         gold: 'gold',
     },
-    rank: {
-        top3: '#e5cc80',
-        top10: '#f48cba',
-        top20: '#ff8000',
-        top100: '#a335ee',
-        top200: '#0070dd',
-        top500: '#1eff00',
+    percentile: {
+        p100: '#e5cc80',
+        p99: '#f48cba',
+        p95: '#ff8000',
+        p75: '#a335ee',
+        p50: '#0070dd',
+        p25: '#1eff00',
         default: '#9d9d9d',
     },
     chart: {

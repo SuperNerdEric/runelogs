@@ -4,7 +4,7 @@ import './index.css';
 import './App.css';
 import {SnackbarProvider} from 'notistack';
 import {Auth0Provider} from "@auth0/auth0-react";
-import {BrowserRouter, Route, Routes} from 'react-router-dom';
+import {BrowserRouter, Navigate, Route, Routes, useParams} from 'react-router-dom';
 import TopBar from "./components/TopBar";
 import Upload from "./components/Upload";
 import Log from "./components/Log/Log";
@@ -13,15 +13,19 @@ import theme from './theme';
 import ThemeVariables from './theme/ThemeVariables';
 import {ThemeProvider} from "@mui/material";
 import Encounter from "./components/Encounter";
+import FightGroupSummary from "./components/FightGroupSummary";
 import Player from "./components/Player";
 import Home from "./components/Home";
 import Help from "./components/Help";
+import LeaderboardsPage from "./components/LeaderboardsPage";
+import RecentEncountersPage from "./components/RecentEncountersPage";
 import LiveLog from "./components/LiveLog";
 import Login from "./components/Login";
 import Logout from "./components/Logout";
 import {initGA} from "./Analytics";
 import usePageTracking from "./hooks/usePageTracking";
 import SessionGuard from "./components/SessionGuard";
+import {getRunSummaryHref, RUN_SUMMARY_PATH} from "./utils/encounterTableRow";
 
 const domain = "auth.runelogs.com";
 const clientId = "vNPXVhAvOj2ES9kqi5WPs80SnX8FPKqv";
@@ -31,6 +35,11 @@ const root = ReactDOM.createRoot(
 );
 
 initGA();
+
+function FightGroupUrlRedirect() {
+    const {id} = useParams<{id: string}>();
+    return <Navigate to={getRunSummaryHref(id!)} replace/>;
+}
 
 function AppRoutes() {
     usePageTracking();
@@ -47,7 +56,11 @@ function AppRoutes() {
                 <Route path="/player/:playerName" element={<Player/>}/>
                 <Route path="/encounter/:id" element={<Encounter />} />
                 <Route path="/encounter/aggregate/:id" element={<Encounter />} />
+                <Route path={`${RUN_SUMMARY_PATH}/:id`} element={<FightGroupSummary />} />
+                <Route path="/fight-group/:id" element={<FightGroupUrlRedirect />} />
                 <Route path="/upload" element={<Upload/>}/>
+                <Route path="/leaderboards" element={<LeaderboardsPage/>}/>
+                <Route path="/recent-encounters" element={<RecentEncountersPage/>}/>
                 <Route path="/live-log" element={<LiveLog/>}/>
                 <Route path="/log/:logId" element={<Log/>}/>
                 <Route path="/logs/:uploaderId" element={<Logs/>}/>

@@ -33,6 +33,7 @@ interface FilterableTabProps {
     eventTypeFilter?: string | null;
     onSelectEventTypeFilter?: (eventType: string) => void;
     onClearEventTypeFilter?: () => void;
+    dpsPercentiles?: Record<string, number>;
 }
 
 export const DamageDoneTab: React.FC<FilterableTabProps> = ({
@@ -49,6 +50,7 @@ export const DamageDoneTab: React.FC<FilterableTabProps> = ({
     onClearTargetFilter,
     onClearEquipmentFilter,
     onClearPrayerFilter,
+    dpsPercentiles,
 }) => {
     return <DamageDone
         fight={selectedLogs}
@@ -57,6 +59,7 @@ export const DamageDoneTab: React.FC<FilterableTabProps> = ({
         targetFilter={targetFilter}
         equipmentFilter={equipmentFilter}
         prayerFilter={prayerFilter}
+        dpsPercentiles={dpsPercentiles}
         onSelectSourceFilter={onSelectSourceFilter}
         onSelectTargetFilter={onSelectTargetFilter}
         onSelectEquipmentFilter={onSelectEquipmentFilter}

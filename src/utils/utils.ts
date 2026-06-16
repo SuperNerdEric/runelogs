@@ -3,7 +3,6 @@ import {LogLine, LogTypes} from "../models/LogLine";
 import moment from "moment/moment";
 import {npcIdMap} from '../lib/npcIdMap';
 import {Actor} from "../models/Actor";
-import { colors } from '../theme';
 
 
 /**
@@ -89,13 +88,3 @@ export const getActor = (actorString: string): Actor => {
 export const displayUsername = (username: string): string => {
     return username.replace(/_/g, ' ');
 };
-
-export const getRankColor = (rank: number): string => {
-    if (rank <= 3) return colors.rank.top3;
-    if (rank <= 10) return colors.rank.top10;
-    if (rank <= 20) return colors.rank.top20;
-    if (rank <= 100) return colors.rank.top100;
-    if (rank <= 200) return colors.rank.top200;
-    if (rank <= 500) return colors.rank.top500;
-    return colors.rank.default;
-}

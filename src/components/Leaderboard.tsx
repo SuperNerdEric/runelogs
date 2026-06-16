@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 
 import {Link as RouterLink, useNavigate, useSearchParams} from 'react-router-dom';
 import {
@@ -15,164 +15,311 @@ import {
     TableHead,
     TableRow,
     Typography,
-    useMediaQuery,
 } from '@mui/material';
-import theme from "../theme";
 import {colors} from "../theme";
-import {encounterTableRowProps, stopRowClick} from '../utils/encounterTableRow';
-import {getRankColor, ticksToTime} from "../utils/utils";
+import {encounterTableRowProps, getEncounterHref, stopRowClick} from '../utils/encounterTableRow';
+import {
+    buildLeaderboardHref,
+    LEADERBOARD_CONTENT_OPTIONS,
+    LeaderboardMode,
+} from '../utils/leaderboardContent';
+import {getDpsPercentileColor} from "../utils/TickActivity";
+import {getPercentileAccentColor} from "../utils/percentile";
+import {ticksToTime} from "../utils/utils";
 import {CrownIcon} from "./CrownIcon";
 import MedalIcon from "./MedalIcon";
-import TrophyIcon from "./TrophyIcon";
 
-type ContentOption = {
-    label: string;
-    value: string;
-    playerCounts: number[];
-    defaultPlayerCount: number;
-};
-
-const contentOptions: ContentOption[] = [
-    {label: 'Theatre of Blood', value: 'Theatre of Blood', playerCounts: [1, 2, 3, 4, 5], defaultPlayerCount: 4},
-    {label: 'Theatre of Blood: Hard Mode', value: 'Theatre of Blood: Hard Mode', playerCounts: [1, 2, 3, 4, 5], defaultPlayerCount: 5},
-    {label: 'Tombs of Amascut', value: 'Tombs of Amascut', playerCounts: [1, 2, 3, 4, 5, 6, 7, 8], defaultPlayerCount: 1},
-    {label: 'Tombs of Amascut: Expert Mode', value: 'Tombs of Amascut: Expert Mode', playerCounts: [1, 2, 3, 4, 5, 6, 7, 8], defaultPlayerCount: 1},
-    {label: 'Fight Caves', value: 'Fight Caves', playerCounts: [1], defaultPlayerCount: 1},
-    {label: 'The Inferno', value: 'The Inferno', playerCounts: [1], defaultPlayerCount: 1},
-    {label: 'Fortis Colosseum', value: 'Fortis Colosseum', playerCounts: [1], defaultPlayerCount: 1},
-    {label: 'The Gauntlet', value: 'The Gauntlet', playerCounts: [1], defaultPlayerCount: 1},
-    {label: 'Corrupted Gauntlet', value: 'Corrupted Gauntlet', playerCounts: [1], defaultPlayerCount: 1},
-];
-
-type Order = 'asc' | 'desc';
-
-interface Entry {
+type DurationEntry = {
     id: string;
     duration: number;
     players: string[];
+    percentile?: number;
+};
+
+type DpsEntry = {
+    rank: number;
+    player: string;
+    dps: number;
+    encounterId: string;
+    encounterType: 'fight' | 'fightGroup';
+};
+
+type DpsConfigGroup = {
+    contentName: string;
+    fights: string[];
+    hasOverall: boolean;
+};
+
+const modeOptions: { label: string; value: LeaderboardMode }[] = [
+    {label: 'Duration', value: 'duration'},
+    {label: 'DPS', value: 'dps'},
+];
+
+const highlightedRowSx = {
+    bgcolor: colors.background.surfaceAlt,
+    backgroundImage: `linear-gradient(90deg, rgba(56, 139, 253, 0.2) 0%, rgba(28, 33, 40, 0.95) 42%, ${colors.background.surfaceAlt} 100%)`,
+    boxShadow: `inset 4px 0 0 ${colors.upload.dragActive}, 0 0 20px rgba(56, 139, 253, 0.12)`,
+    transition: 'background-color 0.2s ease, box-shadow 0.2s ease',
+    '& td': {
+        bgcolor: 'transparent',
+        borderBottomColor: 'rgba(56, 139, 253, 0.22)',
+    },
+    '&:hover': {
+        bgcolor: colors.background.surfaceSelected,
+        backgroundImage: `linear-gradient(90deg, rgba(56, 139, 253, 0.28) 0%, rgba(48, 54, 61, 0.98) 42%, ${colors.background.surfaceSelected} 100%)`,
+        boxShadow: `inset 4px 0 0 ${colors.upload.dragActive}, 0 0 24px rgba(56, 139, 253, 0.18)`,
+    },
+} as const;
+
+interface LeaderboardProps {
+    entriesPerPage?: number;
 }
 
-const Leaderboard: React.FC = () => {
+const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
 
+    const modeParam = searchParams.get('mode') as LeaderboardMode | null;
+    const mode: LeaderboardMode = modeParam === 'dps' ? 'dps' : 'duration';
+
     const contentParam = searchParams.get('leaderboard');
     const playerCountParam = parseInt(searchParams.get('playerCount') || '', 10);
+    const fightParam = searchParams.get('fight');
+    const highlightRankParam = parseInt(searchParams.get('highlightRank') || '', 10);
+    const highlightRank = Number.isFinite(highlightRankParam) && highlightRankParam > 0
+        ? highlightRankParam
+        : null;
 
-    const initialContent = contentOptions.find(o => o.value === contentParam) ?? contentOptions[0];
+    const initialContent = LEADERBOARD_CONTENT_OPTIONS.find(o => o.value === contentParam) ?? LEADERBOARD_CONTENT_OPTIONS[0];
     const initialPlayerCount = initialContent.playerCounts.includes(playerCountParam)
         ? playerCountParam
         : initialContent.defaultPlayerCount;
 
     const [content, setContent] = useState(initialContent);
     const [playerCount, setPlayerCount] = useState(initialPlayerCount);
+    const [dpsConfig, setDpsConfig] = useState<DpsConfigGroup[]>([]);
+    const [selectedFight, setSelectedFight] = useState<string>('Overall');
 
-    const [entries, setEntries] = useState<Entry[] | null>(null);
+    const [durationEntries, setDurationEntries] = useState<DurationEntry[] | null>(null);
+    const [durationResultType, setDurationResultType] = useState<'fight' | 'fightGroup'>('fight');
+    const [dpsEntries, setDpsEntries] = useState<DpsEntry[] | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [orderBy] = useState<'duration'>('duration');
-    const [order, setOrder] = useState<Order>('asc');
     const [page, setPage] = useState(1);
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-    
-    const entriesPerPage = 25;
+    const highlightedRowRef = useRef<HTMLTableRowElement | null>(null);
+
+    const availableFights = dpsConfig.find((group) => group.contentName === content.value)?.fights ?? [];
 
     useEffect(() => {
-        const contentParam = searchParams.get('leaderboard');
-        const playerCountParam = parseInt(searchParams.get('playerCount') || '', 10);
+        fetch(`${import.meta.env.VITE_API_URL}/dps-leaderboard/config`)
+            .then((res) => res.ok ? res.json() : Promise.reject())
+            .then((data) => setDpsConfig(data.fightGroups ?? []))
+            .catch(() => setDpsConfig([]));
+    }, []);
 
-        const newContent = contentOptions.find(o => o.value === contentParam) ?? contentOptions[0];
-        const newPlayerCount = newContent.playerCounts.includes(playerCountParam)
-            ? playerCountParam
+    useEffect(() => {
+        const newContentParam = searchParams.get('leaderboard');
+        const newPlayerCountParam = parseInt(searchParams.get('playerCount') || '', 10);
+        const newFightParam = searchParams.get('fight');
+
+        const newContent = LEADERBOARD_CONTENT_OPTIONS.find(o => o.value === newContentParam) ?? LEADERBOARD_CONTENT_OPTIONS[0];
+        const newPlayerCount = newContent.playerCounts.includes(newPlayerCountParam)
+            ? newPlayerCountParam
             : newContent.defaultPlayerCount;
 
         setContent(newContent);
         setPlayerCount(newPlayerCount);
-    }, [searchParams]);
 
+        const fightsForContent = dpsConfig.find((group) => group.contentName === newContent.value)?.fights ?? [];
+        if (newFightParam && fightsForContent.includes(newFightParam)) {
+            setSelectedFight(newFightParam);
+        } else if (fightsForContent.includes('Overall')) {
+            setSelectedFight('Overall');
+        } else if (fightsForContent.length > 0) {
+            setSelectedFight(fightsForContent[0]);
+        }
+    }, [searchParams, dpsConfig]);
+
+    const fetchDurationData = useCallback(async () => {
+        const url = `${import.meta.env.VITE_API_URL}/leaderboard?content=${encodeURIComponent(
+            content.value,
+        )}&playerCount=${playerCount}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const data = await res.json();
+        setDurationEntries(data.leaderboard);
+        setDurationResultType(data.type === 'fightGroup' ? 'fightGroup' : 'fight');
+    }, [content, playerCount]);
+
+    const fetchDpsData = useCallback(async () => {
+        const url = `${import.meta.env.VITE_API_URL}/dps-leaderboard?content=${encodeURIComponent(
+            content.value,
+        )}&fight=${encodeURIComponent(selectedFight)}&playerCount=${playerCount}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const data = await res.json();
+        setDpsEntries(data.leaderboard);
+    }, [content, playerCount, selectedFight]);
 
     const fetchData = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
-            const url = `${import.meta.env.VITE_API_URL}/leaderboard?content=${encodeURIComponent(
-                content.value,
-            )}&playerCount=${playerCount}`;
-            const res = await fetch(url);
-            if (!res.ok) throw new Error(`Server returned ${res.status}`);
-            const data = await res.json();
-            setEntries(data.leaderboard);
+            if (mode === 'dps') {
+                await fetchDpsData();
+            } else {
+                await fetchDurationData();
+            }
         } catch (e: any) {
             setError(e.message || 'Unknown error');
         } finally {
             setLoading(false);
         }
-    }, [content, playerCount]);
-
+    }, [mode, fetchDpsData, fetchDurationData]);
 
     useEffect(() => {
         fetchData();
-        setPage(1); // Reset to first page when data changes
     }, [fetchData]);
 
-    if (loading)
+    useEffect(() => {
+        if (!highlightRank) {
+            setPage(1);
+            return;
+        }
+        setPage(Math.max(1, Math.ceil(highlightRank / entriesPerPage)));
+    }, [highlightRank, entriesPerPage, mode, content.value, playerCount, selectedFight]);
+
+    useEffect(() => {
+        if (!highlightRank || loading) {
+            return;
+        }
+        const timer = window.setTimeout(() => {
+            highlightedRowRef.current?.scrollIntoView({block: 'center', behavior: 'smooth'});
+        }, 100);
+        return () => window.clearTimeout(timer);
+    }, [highlightRank, loading, page, durationEntries, dpsEntries, mode]);
+
+    const updateSearchParams = (updates: Record<string, string>) => {
+        setSearchParams({
+            mode,
+            leaderboard: content.value,
+            playerCount: playerCount.toString(),
+            ...(mode === 'dps' ? {fight: selectedFight} : {}),
+            ...updates,
+        });
+    };
+
+    const setLeaderboardSearchParams = (params: {
+        mode: LeaderboardMode;
+        leaderboard: string;
+        playerCount: number;
+        fight?: string;
+        highlightRank?: number | null;
+    }) => {
+        setSearchParams(Object.fromEntries(
+            new URLSearchParams(
+                buildLeaderboardHref({
+                    mode: params.mode,
+                    leaderboard: params.leaderboard,
+                    playerCount: params.playerCount,
+                    fight: params.fight,
+                    highlightRank: params.highlightRank ?? undefined,
+                }).split('?')[1] ?? '',
+            ),
+        ));
+    };
+
+    if (loading) {
         return (
-            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+            <Box display="flex" justifyContent="center" alignItems="center" py={4}>
                 <CircularProgress color="inherit"/>
             </Box>
         );
+    }
 
-    if (error)
+    if (error) {
         return (
             <Box m={2}>
                 <Typography color="error">{error}</Typography>
             </Box>
         );
+    }
+
+    const dpsTotal = dpsEntries?.length ?? 0;
 
     return (
         <Box m={0}>
-            <Box pt={0} pb={2} display="flex" alignItems="center" gap={1}>
-                <Box component="span" sx={{display: 'inline-flex', alignItems: 'center', lineHeight: 0}}>
-                    <TrophyIcon size={34}/>
-                </Box>
-                <Typography variant="h4" color="white" sx={{m: 0, lineHeight: 1.2}}>
-                    Leaderboard
-                </Typography>
-            </Box>
-
-            <Box display="flex" pt={0} pb={2} gap={1}>
+            <Box display="flex" pt={0} pb={2} gap={1} flexWrap="wrap" alignItems="center">
                 <Select
-                    value={content.value}
+                    value={mode}
                     onChange={(e) => {
-                        const selectedContent = contentOptions.find((o) => o.value === e.target.value)!;
-                        setContent(selectedContent);
-
-                        const newDefault = selectedContent.defaultPlayerCount;
-                        setPlayerCount(newDefault);
-
-                        setSearchParams({
-                            leaderboard: selectedContent.value,
-                            playerCount: newDefault.toString(),
+                        const nextMode = e.target.value as LeaderboardMode;
+                        setLeaderboardSearchParams({
+                            mode: nextMode,
+                            leaderboard: content.value,
+                            playerCount,
+                            fight: nextMode === 'dps' ? selectedFight : undefined,
                         });
                     }}
                     size="small"
                 >
-                    {contentOptions.map((o) => (
+                    {modeOptions.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                        </MenuItem>
+                    ))}
+                </Select>
+
+                <Select
+                    value={content.value}
+                    onChange={(e) => {
+                        const selectedContent = LEADERBOARD_CONTENT_OPTIONS.find((o) => o.value === e.target.value)!;
+                        setContent(selectedContent);
+                        const newDefault = selectedContent.defaultPlayerCount;
+                        setPlayerCount(newDefault);
+                        const fights = dpsConfig.find((group) => group.contentName === selectedContent.value)?.fights ?? [];
+                        const nextFight = fights.includes('Overall') ? 'Overall' : (fights[0] ?? 'Overall');
+                        setSelectedFight(nextFight);
+                        setLeaderboardSearchParams({
+                            mode,
+                            leaderboard: selectedContent.value,
+                            playerCount: newDefault,
+                            fight: mode === 'dps' ? nextFight : undefined,
+                        });
+                    }}
+                    size="small"
+                >
+                    {LEADERBOARD_CONTENT_OPTIONS.map((o) => (
                         <MenuItem key={o.value} value={o.value}>
                             {o.label}
                         </MenuItem>
                     ))}
                 </Select>
 
+                {mode === 'dps' && availableFights.length > 0 && (
+                    <Select
+                        value={selectedFight}
+                        onChange={(e) => {
+                            const fight = e.target.value;
+                            setSelectedFight(fight);
+                            updateSearchParams({fight});
+                        }}
+                        size="small"
+                    >
+                        {availableFights.map((fight) => (
+                            <MenuItem key={fight} value={fight}>
+                                {fight}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                )}
+
                 <Select
                     value={playerCount}
                     onChange={(e) => {
                         const count = Number(e.target.value);
                         setPlayerCount(count);
-                        setSearchParams({
-                            leaderboard: content.value,
-                            playerCount: count.toString(),
-                        });
+                        updateSearchParams({playerCount: count.toString()});
                     }}
                     size="small"
                 >
@@ -184,7 +331,7 @@ const Leaderboard: React.FC = () => {
                 </Select>
             </Box>
 
-            {entries && entries.length > 0 ? (
+            {mode === 'duration' && durationEntries && durationEntries.length > 0 ? (
                 <Box>
                     <TableContainer>
                         <Table>
@@ -196,31 +343,32 @@ const Leaderboard: React.FC = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {entries
+                                {durationEntries
                                     .slice((page - 1) * entriesPerPage, page * entriesPerPage)
                                     .map((row, idx) => {
                                         const actualRank = (page - 1) * entriesPerPage + idx + 1;
+                                        const isHighlighted = highlightRank === actualRank;
+                                        const rankColor = getPercentileAccentColor(row.percentile);
                                         return (
-                                            <TableRow key={row.id} {...encounterTableRowProps(navigate, row.id)}>
-                                                <TableCell
-                                                    sx={{
-                                                        color: getRankColor(actualRank),
-                                                        fontWeight: 'bold',
-                                                    }}
-                                                >
+                                            <TableRow
+                                                key={row.id}
+                                                ref={isHighlighted ? highlightedRowRef : undefined}
+                                                {...encounterTableRowProps(navigate, row.id, {
+                                                    durationResultType,
+                                                })}
+                                                sx={{
+                                                    cursor: 'pointer',
+                                                    ...(isHighlighted ? highlightedRowSx : {}),
+                                                }}
+                                            >
+                                                <TableCell sx={{color: rankColor, fontWeight: 'bold'}}>
                                                     <Link
                                                         component={RouterLink}
-                                                        to={`/encounter/${row.id}`}
+                                                        to={getEncounterHref(row.id, {durationResultType})}
                                                         onClick={stopRowClick}
-                                                        sx={{
-                                                            textDecoration: 'none',
-                                                            color: 'inherit',
-                                                            '&:hover': {
-                                                                textDecoration: 'underline',
-                                                            },
-                                                        }}
+                                                        sx={{textDecoration: 'none', color: 'inherit', '&:hover': {textDecoration: 'underline'}}}
                                                     >
-                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                        <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
                                                             {actualRank}
                                                             {actualRank === 1 && <CrownIcon />}
                                                             {actualRank === 2 && <MedalIcon color={colors.medal.silver} />}
@@ -248,20 +396,96 @@ const Leaderboard: React.FC = () => {
                     </TableContainer>
                     <Box display="flex" justifyContent="center" pt={0} pb={1}>
                         <Pagination
-                            count={Math.ceil(entries.length / entriesPerPage)}
+                            count={Math.ceil(durationEntries.length / entriesPerPage)}
                             page={page}
                             onChange={(_, value) => setPage(value)}
                             sx={{
-                                '& .MuiPaginationItem-root': {
-                                    color: 'white',
-                                },
+                                '& .MuiPaginationItem-root': {color: 'white'},
                                 '& .MuiPaginationItem-root.Mui-selected': {
                                     backgroundColor: 'white',
                                     color: 'black',
                                     borderRadius: '4px',
-                                    '&:hover': {
-                                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                                    },
+                                },
+                            }}
+                        />
+                    </Box>
+                </Box>
+            ) : mode === 'dps' && dpsEntries && dpsEntries.length > 0 ? (
+                <Box>
+                    <TableContainer>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell sx={{color: 'white'}}>Rank</TableCell>
+                                    <TableCell sx={{color: 'white'}}>Player</TableCell>
+                                    <TableCell sx={{color: 'white'}}>DPS</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {dpsEntries
+                                    .slice((page - 1) * entriesPerPage, page * entriesPerPage)
+                                    .map((row) => {
+                                        const percentile = dpsTotal <= 1
+                                            ? 100
+                                            : Math.round(((dpsTotal - row.rank) / (dpsTotal - 1)) * 100);
+                                        const dpsColor = getDpsPercentileColor(percentile);
+                                        const isHighlighted = highlightRank === row.rank;
+
+                                        return (
+                                            <TableRow
+                                                key={`${row.player}-${row.rank}`}
+                                                ref={isHighlighted ? highlightedRowRef : undefined}
+                                                {...encounterTableRowProps(navigate, row.encounterId, {
+                                                    encounterType: row.encounterType,
+                                                    fightKey: selectedFight,
+                                                })}
+                                                sx={{
+                                                    cursor: 'pointer',
+                                                    ...(isHighlighted ? highlightedRowSx : {}),
+                                                }}
+                                            >
+                                                <TableCell sx={{color: dpsColor, fontWeight: 'bold'}}>
+                                                    <Link
+                                                        component={RouterLink}
+                                                        to={getEncounterHref(row.encounterId, {
+                                                            encounterType: row.encounterType,
+                                                            fightKey: selectedFight,
+                                                        })}
+                                                        onClick={stopRowClick}
+                                                        sx={{textDecoration: 'none', color: 'inherit', '&:hover': {textDecoration: 'underline'}}}
+                                                    >
+                                                        <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+                                                            {row.rank}
+                                                            {row.rank === 1 && <CrownIcon />}
+                                                            {row.rank === 2 && <MedalIcon color={colors.medal.silver} />}
+                                                            {row.rank === 3 && <MedalIcon color={colors.medal.bronze} />}
+                                                        </Box>
+                                                    </Link>
+                                                </TableCell>
+                                                <TableCell sx={{color: 'white'}}>
+                                                    <Link component={RouterLink} to={`/player/${row.player}`}
+                                                          underline="hover" onClick={stopRowClick}>
+                                                        {row.player}
+                                                    </Link>
+                                                </TableCell>
+                                                <TableCell sx={{color: dpsColor, fontWeight: 'bold'}}>{row.dps}</TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <Box display="flex" justifyContent="center" pt={0} pb={1}>
+                        <Pagination
+                            count={Math.ceil(dpsEntries.length / entriesPerPage)}
+                            page={page}
+                            onChange={(_, value) => setPage(value)}
+                            sx={{
+                                '& .MuiPaginationItem-root': {color: 'white'},
+                                '& .MuiPaginationItem-root.Mui-selected': {
+                                    backgroundColor: 'white',
+                                    color: 'black',
+                                    borderRadius: '4px',
                                 },
                             }}
                         />

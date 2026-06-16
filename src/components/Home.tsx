@@ -4,10 +4,12 @@ import {Box, Link, Typography} from '@mui/material';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import {Link as RouterLink} from 'react-router-dom';
 import OverallRecentEncounters from "./OverallRecentEncounters";
+import HistoryIcon from '@mui/icons-material/History';
 import {useAuth0} from '@auth0/auth0-react';
 import {colors, contentColumnSx, media} from '../theme';
 import {HomeHero} from './HomeHero';
 import {HomeHeroSubtitle, HomeHeroTagline} from './homeHeroContent';
+import TrophyIcon from './TrophyIcon';
 
 export default function Home() {
     const {isAuthenticated} = useAuth0();
@@ -51,10 +53,52 @@ export default function Home() {
                 </Link>.
             </Typography>
             <Box mt={4}>
-                <Leaderboard/>
+                <Box pt={0} pb={1} display="flex" alignItems="center" gap={1}>
+                    <Box component="span" sx={{display: 'inline-flex', alignItems: 'center', lineHeight: 0}}>
+                        <TrophyIcon size={34}/>
+                    </Box>
+                    <Typography
+                        component={RouterLink}
+                        to="/leaderboards"
+                        variant="h4"
+                        color="white"
+                        sx={{
+                            m: 0,
+                            lineHeight: 1.2,
+                            textDecoration: 'none',
+                            '&:hover': {
+                                textDecoration: 'underline',
+                            },
+                        }}
+                    >
+                        Leaderboards
+                    </Typography>
+                </Box>
+                <Leaderboard entriesPerPage={25}/>
             </Box>
             <Box mt={4}>
-                <OverallRecentEncounters/>
+                <Box pt={0} pb={1} display="flex" alignItems="center" gap={1}>
+                    <Box component="span" sx={{display: 'inline-flex', alignItems: 'center', lineHeight: 0}}>
+                        <HistoryIcon sx={{color: colors.text.rune, fontSize: '2.125rem'}}/>
+                    </Box>
+                    <Typography
+                        component={RouterLink}
+                        to="/recent-encounters"
+                        variant="h4"
+                        color="white"
+                        sx={{
+                            m: 0,
+                            lineHeight: 1.2,
+                            textDecoration: 'none',
+                            '&:hover': {
+                                textDecoration: 'underline',
+                            },
+                        }}
+                    >
+                        Recent Encounters
+                    </Typography>
+                </Box>
+                <OverallRecentEncounters embedded entriesPerPage={10}/>
             </Box>
         </Box>
     );

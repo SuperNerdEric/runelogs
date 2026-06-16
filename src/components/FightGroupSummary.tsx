@@ -1,0 +1,305 @@
+import React, {useEffect, useMemo, useState} from 'react';
+import {Link as RouterLink, useParams} from 'react-router-dom';
+import {
+    Alert,
+    Box,
+    CircularProgress,
+    Link,
+    Typography,
+} from '@mui/material';
+import DamageMeterTable from './charts/DamageMeterTable';
+import {FightGroupFightRows} from './sections/LogFightList';
+import RunInfoBox from './RunInfoBox';
+import PageBreadcrumbs from './PageBreadcrumbs';
+import {contentColumnSx, pageHeroTitleSx} from '../theme';
+import {colors} from '../theme';
+import {getDpsPercentileColor} from '../utils/TickActivity';
+import {displayUsername, ticksToTime} from '../utils/utils';
+import {getEncounterHref} from '../utils/encounterTableRow';
+import RunSummaryRankBadges from './badges/RunSummaryRankBadges';
+import {resolvePlayerRankPercentile} from './badges/playerRankPercentile';
+import '../App.css';
+
+interface PlayerDpsRow {
+    playerId: string;
+    damageDealt: number;
+    dps: number;
+    percentile?: number;
+    rank?: number;
+}
+
+interface PlayerRank {
+    playerId: string;
+    category: string;
+    rank: number;
+    percentile?: number;
+}
+
+interface FightGroupFight {
+    id: string;
+    name: string;
+    startTime: string;
+    fightDurationTicks: number;
+    success: boolean;
+    order: number;
+    dpsLeaderboardKey?: string | null;
+    playerDps?: Array<{
+        playerId: string;
+        percentile?: number;
+        rank?: number;
+    }>;
+}
+
+interface FightGroupSummaryData {
+    id: string;
+    name: string;
+    leaderboardName: string | null;
+    officialDurationTicks: number | null;
+    success: boolean;
+    startTime: string;
+    log: {
+        id: string;
+        uploaderId: string;
+        uploadedAt: string;
+        name: string | null;
+    };
+    receivingData?: boolean;
+    players: string[];
+    playerCount: number;
+    durationRank: number | null;
+    durationPercentile: number | null;
+    overallDps: PlayerDpsRow[];
+    playerRanks: PlayerRank[];
+    fights: FightGroupFight[];
+}
+
+const TOP_RANK_CATEGORIES = new Set(['Duration', 'Overall DPS']);
+
+const FightGroupSummary: React.FC = () => {
+    const {id} = useParams<{ id: string }>();
+    const [data, setData] = useState<FightGroupSummaryData | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const loadSummary = async (showLoading = true) => {
+        if (!id) {
+            setError('No run id provided in URL');
+            setLoading(false);
+            return;
+        }
+
+        if (showLoading) {
+            setLoading(true);
+        }
+        setError(null);
+
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/fightGroup/${id}`);
+            if (!res.ok) {
+                throw new Error(`Server responded with status ${res.status}`);
+            }
+            const body: FightGroupSummaryData = await res.json();
+            setData(body);
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Unknown error';
+            setError(message);
+        } finally {
+            if (showLoading) {
+                setLoading(false);
+            }
+        }
+    };
+
+    useEffect(() => {
+        loadSummary(true);
+    }, [id]);
+
+    useEffect(() => {
+        if (!data?.receivingData) {
+            return;
+        }
+        const interval = window.setInterval(() => loadSummary(false), 5000);
+        return () => window.clearInterval(interval);
+    }, [data?.receivingData, id]);
+
+    const topRankBadges = useMemo(() => {
+        if (!data) {
+            return [];
+        }
+        return data.playerRanks.filter((entry) => TOP_RANK_CATEGORIES.has(entry.category));
+    }, [data]);
+
+    const fightRankBadgesByKey = useMemo(() => {
+        if (!data) {
+            return new Map<string, PlayerRank[]>();
+        }
+        const map = new Map<string, PlayerRank[]>();
+        for (const entry of data.playerRanks) {
+            if (TOP_RANK_CATEGORIES.has(entry.category)) {
+                continue;
+            }
+            const list = map.get(entry.category) ?? [];
+            list.push(entry);
+            map.set(entry.category, list);
+        }
+        return map;
+    }, [data]);
+
+    const percentileContext = useMemo(() => ({
+        overallDps: data?.overallDps ?? [],
+        fights: data?.fights.map((fight) => ({
+            dpsLeaderboardKey: fight.dpsLeaderboardKey,
+            name: fight.name,
+            playerDps: fight.playerDps ?? [],
+        })),
+        durationPercentile: data?.durationPercentile,
+    }), [data]);
+
+    if (loading) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+                <CircularProgress/>
+            </Box>
+        );
+    }
+
+    if (error || !data) {
+        return (
+            <Box p={4}>
+                <Alert severity="error">{error ?? 'Run not found'}</Alert>
+            </Box>
+        );
+    }
+
+    const displayDurationTicks = data.officialDurationTicks
+        ?? data.fights.reduce((sum, fight) => sum + fight.fightDurationTicks, 0);
+
+    const topRankLabel = (entry: PlayerRank) => {
+        if (entry.category === 'Duration') {
+            return 'Duration';
+        }
+        return `${displayUsername(entry.playerId)} — Overall DPS`;
+    };
+
+    return (
+        <Box p={2} sx={contentColumnSx} className="fight-group-summary">
+            {data.receivingData && (
+                <Alert severity="info" sx={{mb: 2}}>
+                    Live log in progress — this page will refresh while new data is received.
+                </Alert>
+            )}
+
+            <PageBreadcrumbs
+                segments={[
+                    {
+                        label: data.log.name ?? 'Unnamed',
+                        href: `/log/${data.log.id}`,
+                    },
+                    {label: data.name},
+                ]}
+            />
+
+            <Box className="run-summary-hero" sx={{textAlign: 'center', mb: 2}}>
+                <Typography
+                    component="h1"
+                    variant="h4"
+                    sx={{
+                        ...pageHeroTitleSx,
+                        mb: displayDurationTicks > 0 ? 0.5 : 0,
+                    }}
+                >
+                    {data.name}
+                </Typography>
+                {displayDurationTicks > 0 && (
+                    <Typography
+                        component="p"
+                        sx={{
+                            color: data.success ? colors.fight.success : colors.fight.failure,
+                            fontWeight: 700,
+                            fontSize: {xs: '1.25rem', sm: '1.75rem'},
+                            m: 0,
+                        }}
+                    >
+                        {ticksToTime(displayDurationTicks)}
+                    </Typography>
+                )}
+            </Box>
+
+            <RunSummaryRankBadges
+                entries={topRankBadges}
+                percentileContext={percentileContext}
+                leaderboardName={data.leaderboardName}
+                playerCount={data.playerCount}
+                labelForEntry={topRankLabel}
+            />
+
+            <RunInfoBox
+                startTime={data.startTime}
+                players={data.players}
+            />
+
+            {data.overallDps.length > 0 && (
+                <Box className="damage-done-container fight-group-dps-table" sx={{mb: 2}}>
+                    <Box className="encounter-title-bar">
+                        <span className="encounter-title-bar-name">Overall Damage</span>
+                    </Box>
+                    <DamageMeterTable
+                        colorByDamageRank
+                        rows={data.overallDps.map((row) => ({
+                            key: row.playerId,
+                            name: (
+                                <>
+                                    {row.playerId === 'Unknown' ? (
+                                        'Unknown'
+                                    ) : (
+                                        <Link
+                                            component={RouterLink}
+                                            to={`/player/${row.playerId}`}
+                                            underline="hover"
+                                            color="inherit"
+                                        >
+                                            {displayUsername(row.playerId)}
+                                        </Link>
+                                    )}
+                                </>
+                            ),
+                            damageDealt: row.damageDealt,
+                            dps: row.dps,
+                            dpsColor: row.percentile !== undefined
+                                ? getDpsPercentileColor(row.percentile)
+                                : colors.text.dps,
+                            useDpsTextClass: row.percentile === undefined,
+                        }))}
+                    />
+                </Box>
+            )}
+
+            <div className="damage-done-container">
+                <FightGroupFightRows
+                    fights={data.fights.map((fight, fightGroupIndex) => {
+                        const fightKey = fight.dpsLeaderboardKey ?? fight.name;
+                        const rankBadges = (fightRankBadgesByKey.get(fightKey) ?? []).map((entry) => ({
+                            playerId: entry.playerId,
+                            rank: entry.rank,
+                            percentile: resolvePlayerRankPercentile(entry, percentileContext),
+                        }));
+                        return {
+                            fight: {
+                                name: fight.name,
+                                startTime: fight.startTime,
+                                fightDurationTicks: fight.fightDurationTicks,
+                                success: fight.success,
+                            },
+                            index: 0,
+                            fightGroupIndex,
+                            href: getEncounterHref(fight.id),
+                            rankBadges,
+                        };
+                    })}
+                />
+            </div>
+        </Box>
+    );
+};
+
+export default FightGroupSummary;

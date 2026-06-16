@@ -213,7 +213,7 @@ const LogInfoBox: React.FC<Props> = ({
             )}
 
             <Typography className="log-info-label">Log&nbsp;ID</Typography>
-            <Typography className="log-info-value">{logId}</Typography>
+            <Typography className="log-info-value log-info-id">{logId}</Typography>
 
             <Typography className="log-info-label">Uploaded</Typography>
             <Typography className="log-info-value">

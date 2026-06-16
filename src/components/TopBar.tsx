@@ -214,7 +214,7 @@ const TopBar: React.FC = () => {
                                     <ListItemText>My Logs</ListItemText>
                                 </MenuItem>
 
-{/*                                <MenuItem
+                                <MenuItem
                                     component={Link}
                                     to="/live-log"
                                     onClick={handleMenuClose}
@@ -223,7 +223,7 @@ const TopBar: React.FC = () => {
                                         <SensorsIcon fontSize="small"/>
                                     </ListItemIcon>
                                     <ListItemText>Live Log</ListItemText>
-                                </MenuItem>*/}
+                                </MenuItem>
                                 <MenuItem
                                     component={Link}
                                     to="/upload"

@@ -1,5 +1,14 @@
 import { colors, fonts, fontSizes, layout } from './tokens';
 
+export const fightTileCssValues = {
+    minBase: '10rem',
+    max: '30rem',
+    gap: '0.625rem',
+    listPadding: '0.9375rem',
+    paddingX: '0.625rem',
+    starPaddingRight: '1.75rem',
+} as const;
+
 export const cssVariables: Record<string, string> = {
     '--color-bg-page': colors.background.page,
     '--color-bg-top-bar': colors.background.topBar,
@@ -59,4 +68,11 @@ export const cssVariables: Record<string, string> = {
     '--font-size-dropdown-fight': fontSizes.dropdownFight,
 
     '--layout-content-max-width': `${layout.contentMaxWidth}px`,
+
+    '--fight-tile-min-base': fightTileCssValues.minBase,
+    '--fight-tile-max': fightTileCssValues.max,
+    '--fight-tile-gap': fightTileCssValues.gap,
+    '--fight-list-padding': fightTileCssValues.listPadding,
+    '--fight-tile-padding-x': fightTileCssValues.paddingX,
+    '--fight-tile-star-padding-right': fightTileCssValues.starPaddingRight,
 };

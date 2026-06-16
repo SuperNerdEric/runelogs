@@ -16,7 +16,10 @@ export function isFightGroup(e: Encounter): e is FightGroup {
 export interface FightGroupMetaData {
     name: string;
     officialDurationTicks?: number;
-    fights: FightMetaData[]
+    success?: boolean;
+    fights: FightMetaData[];
+    id?: string;
+    leaderboardName?: string | null;
 }
 
 export function isFightGroupMetadata(metaData: EncounterMetaData | null): metaData is FightGroupMetaData {

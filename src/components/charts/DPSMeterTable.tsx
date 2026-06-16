@@ -2,8 +2,9 @@ import {Fight} from "../../models/Fight";
 import React, {useEffect, useState} from "react";
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
 import {DamageLog, LogTypes} from "../../models/LogLine";
-import {getFightPerformanceByPlayer, getPercentColor} from "../../utils/TickActivity";
+import {getFightPerformanceByPlayer, getPercentColor, getDpsPercentileColor} from "../../utils/TickActivity";
 import {BOAT_IDS, BOAT_ID_TO_NAME} from "../../utils/constants";
+import {calculatePlayerDps, getFightDurationSeconds} from "../../utils/dpsCalculation";
 import {ActorFilter} from "../../utils/actorFilter";
 import {Actor} from "../../models/Actor";
 import {colors} from "../../theme";
@@ -12,6 +13,7 @@ interface DPSMeterBarChartProps {
     fight: Fight;
     filteredFight: Fight;
     type: "damage-done" | "damage-taken";
+    dpsPercentiles?: Record<string, number>;
     onSelectSourceFilter: (filter: ActorFilter) => void;
     onSelectTargetFilter: (filter: ActorFilter) => void;
 }
@@ -80,19 +82,29 @@ const getDPSData = (fight: Fight, filteredFight: Fight, type: "damage-done" | "d
 
         for (const [player, playerPerformance] of performanceMap.entries()) {
             const percentage = playerPerformance.activeTicks / fight.metaData.fightDurationTicks;
-            console.log(`Player: ${player}, Active Ticks: ${playerPerformance.activeTicks}, Percentage: ${percentage}`);
 
             if (dpsData[player]) {
                 dpsData[player].activity = Number((percentage * 100).toFixed(2));
             }
         }
+
+        const playerDpsByName = new Map(
+            calculatePlayerDps(fight, filteredFight.data).map((entry) => [entry.playerName, entry.dps]),
+        );
+        for (const [playerName, dps] of playerDpsByName) {
+            if (dpsData[playerName]) {
+                dpsData[playerName].dps = Number(dps.toFixed(3));
+            }
+        }
     }
 
-    const fightDurationSeconds = (fight.lastLine.fightTimeMs! - fight.firstLine.fightTimeMs!) / 1000;
+    const fightDurationSeconds = getFightDurationSeconds(fight);
 
     const dpsArray = Object.entries(dpsData).map(([actor, data]: [string, DPSData]) => {
         const accuracy = (data.successfulHits / data.totalHits) * 100;
-        const dps = data.totalDamage / fightDurationSeconds;
+        const dps = type === "damage-done" && fight.players.includes(actor)
+            ? data.dps
+            : data.totalDamage / fightDurationSeconds;
         return {actor, damage: data.totalDamage, accuracy, dps};
     });
 
@@ -112,6 +124,7 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
     fight,
     filteredFight,
     type,
+    dpsPercentiles,
     onSelectSourceFilter,
     onSelectTargetFilter,
 }) => {
@@ -223,8 +236,18 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
                                     </TableCell>
                                 )}
                                 <TableCell style={{width: '70px', textAlign: 'right'}}>{data.accuracy}%</TableCell>
-                                <TableCell style={{width: '70px', textAlign: 'right'}}
-                                           className={'dps-text'}>{data.dps}</TableCell>
+                                <TableCell
+                                    style={{
+                                        width: '70px',
+                                        textAlign: 'right',
+                                        color: type === 'damage-done' && dpsPercentiles?.[source] !== undefined
+                                            ? getDpsPercentileColor(dpsPercentiles[source])
+                                            : undefined,
+                                    }}
+                                    className={type === 'damage-done' && dpsPercentiles?.[source] === undefined ? 'dps-text' : undefined}
+                                >
+                                    {data.dps}
+                                </TableCell>
                             </TableRow>
                         );
                     })}

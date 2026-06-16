@@ -16,6 +16,13 @@ export const accountTextSx = {
     color: 'var(--color-text-account)',
 } as const;
 
+export const pageHeroTitleSx = {
+    color: 'var(--color-text-primary)',
+    fontWeight: 700,
+    fontSize: {xs: '1.5rem', sm: '2rem'},
+    wordBreak: 'break-word',
+} as const;
+
 export const media = {
     desktopUp: `@media (min-width: ${layout.desktopMinWidth}px)`,
     mobileDown: `@media (max-width: ${layout.desktopMinWidth - 1}px)`,
