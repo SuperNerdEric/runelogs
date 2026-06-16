@@ -1,17 +1,20 @@
 import React from 'react';
 import {Link as RouterLink} from 'react-router-dom';
-import {Box, Typography} from '@mui/material';
+import {Box, Tooltip, Typography} from '@mui/material';
 import {colors} from '../../theme';
 import {getPercentileAccentColor} from '../../utils/percentile';
 import {CrownIcon} from '../CrownIcon';
 import MedalIcon from '../MedalIcon';
+import RankBadgeCategoryIcon, {RankBadgeCategory} from './RankBadgeCategoryIcon';
 
 export interface PercentileRankBadgeProps {
     rank: number;
     label: string;
+    category: RankBadgeCategory;
     percentile?: number;
     compact?: boolean;
     href?: string;
+    tooltipFightName?: string;
 }
 
 const nonSelectableSx = {
@@ -28,30 +31,64 @@ const linkableSx = {
     },
 } as const;
 
+function buildBadgeTooltip(
+    category: RankBadgeCategory,
+    rank: number,
+    label: string,
+    tooltipFightName?: string,
+): string {
+    if (category === 'duration') {
+        return `Ranked #${rank} on the duration leaderboard`;
+    }
+
+    if (label.includes('Overall')) {
+        const playerName = label.replace(/\s*—\s*Overall$/, '').trim();
+        return playerName
+            ? `${playerName} — Ranked #${rank} on the overall DPS leaderboard`
+            : `Ranked #${rank} on the overall DPS leaderboard`;
+    }
+
+    if (label && tooltipFightName) {
+        return `${label} — Ranked #${rank} on the ${tooltipFightName} DPS leaderboard`;
+    }
+
+    return label
+        ? `${label} — Ranked #${rank} on the DPS leaderboard`
+        : `Ranked #${rank} on the DPS leaderboard`;
+}
+
 const PercentileRankBadge: React.FC<PercentileRankBadgeProps> = ({
     rank,
     label,
+    category,
     percentile,
     compact = false,
     href,
+    tooltipFightName,
 }) => {
     const accentColor = getPercentileAccentColor(percentile);
     const showGlow = !compact && percentile !== undefined && percentile >= 99;
+    const categoryIconSize = compact ? 16 : 24;
+    const categoryLabel = category === 'duration' ? 'Duration' : 'DPS';
 
     const inner = compact ? (
         <>
+            <RankBadgeCategoryIcon category={category} size={categoryIconSize} />
             <Typography
                 component="span"
                 sx={{color: accentColor, fontWeight: 700, fontSize: '0.7rem', lineHeight: 1.2}}
             >
                 #{rank}
             </Typography>
-            <Typography component="span" sx={{color: colors.text.primary, fontSize: '0.65rem', lineHeight: 1.2}}>
-                {label}
-            </Typography>
+            {label && (
+                <Typography component="span" sx={{color: colors.text.primary, fontSize: '0.65rem', lineHeight: 1.2}}>
+                    {label}
+                </Typography>
+            )}
         </>
     ) : (
         <>
+            <RankBadgeCategoryIcon category={category} size={categoryIconSize} />
             <Typography
                 component="span"
                 sx={{color: accentColor, fontWeight: 700, fontSize: {xs: '1rem', sm: '1.15rem'}}}
@@ -61,9 +98,11 @@ const PercentileRankBadge: React.FC<PercentileRankBadgeProps> = ({
             {rank === 1 && <CrownIcon />}
             {rank === 2 && <MedalIcon color={colors.medal.silver} />}
             {rank === 3 && <MedalIcon color={colors.medal.bronze} />}
-            <Typography component="span" sx={{color: colors.text.primary, fontSize: {xs: '0.8rem', sm: '0.9rem'}}}>
-                {label}
-            </Typography>
+            {label && (
+                <Typography component="span" sx={{color: colors.text.primary, fontSize: {xs: '0.8rem', sm: '0.9rem'}}}>
+                    {label}
+                </Typography>
+            )}
         </>
     );
 
@@ -95,18 +134,30 @@ const PercentileRankBadge: React.FC<PercentileRankBadgeProps> = ({
             boxShadow: showGlow ? `0 0 12px ${accentColor}55` : undefined,
         };
 
-    if (!href) {
-        return (
-            <Box component="span" className="fight-group-rank-badge" sx={sx}>
-                {inner}
-            </Box>
-        );
+    const ariaLabel = label
+        ? `${categoryLabel} rank #${rank} — ${label}`
+        : `${categoryLabel} rank #${rank}`;
+
+    const badge = !href ? (
+        <Box component="span" className="fight-group-rank-badge" aria-label={ariaLabel} sx={sx}>
+            {inner}
+        </Box>
+    ) : (
+        <Box component={RouterLink} to={href} className="fight-group-rank-badge" aria-label={ariaLabel} sx={sx}>
+            {inner}
+        </Box>
+    );
+
+    if (compact) {
+        return badge;
     }
 
     return (
-        <Box component={RouterLink} to={href} className="fight-group-rank-badge" sx={sx}>
-            {inner}
-        </Box>
+        <Tooltip title={buildBadgeTooltip(category, rank, label, tooltipFightName)} arrow placement="top">
+            <Box component="span" sx={{display: 'inline-flex'}}>
+                {badge}
+            </Box>
+        </Tooltip>
     );
 };
 

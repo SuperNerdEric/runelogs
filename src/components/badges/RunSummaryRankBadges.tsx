@@ -7,6 +7,7 @@ import {
     PlayerRankPercentileContext,
     resolvePlayerRankPercentile,
 } from './playerRankPercentile';
+import {RankBadgeCategory} from './RankBadgeCategoryIcon';
 
 interface RunSummaryRankBadgesProps {
     entries: PlayerRankEntry[];
@@ -14,6 +15,10 @@ interface RunSummaryRankBadgesProps {
     leaderboardName: string | null;
     playerCount: number;
     labelForEntry: (entry: PlayerRankEntry) => string;
+}
+
+function categoryForEntry(entry: PlayerRankEntry): RankBadgeCategory {
+    return entry.category === 'Duration' ? 'duration' : 'dps';
 }
 
 const RunSummaryRankBadges: React.FC<RunSummaryRankBadgesProps> = ({
@@ -33,6 +38,7 @@ const RunSummaryRankBadges: React.FC<RunSummaryRankBadgesProps> = ({
                 <PercentileRankBadge
                     key={`${entry.category}-${entry.playerId}-${index}`}
                     rank={entry.rank}
+                    category={categoryForEntry(entry)}
                     percentile={resolvePlayerRankPercentile(entry, percentileContext)}
                     label={labelForEntry(entry)}
                     href={buildPlayerRankLeaderboardHref(entry, leaderboardName, playerCount)}

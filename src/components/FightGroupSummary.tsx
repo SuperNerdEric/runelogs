@@ -176,9 +176,9 @@ const FightGroupSummary: React.FC = () => {
 
     const topRankLabel = (entry: PlayerRank) => {
         if (entry.category === 'Duration') {
-            return 'Duration';
+            return '';
         }
-        return `${displayUsername(entry.playerId)} — Overall DPS`;
+        return `${displayUsername(entry.playerId)} — Overall`;
     };
 
     return (
