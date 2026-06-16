@@ -27,6 +27,7 @@ import {getDpsPercentileColor} from "../utils/TickActivity";
 import {getPercentileAccentColor} from "../utils/percentile";
 import {ticksToTime} from "../utils/utils";
 import {CrownIcon} from "./CrownIcon";
+import DurationDpsModeSelector from './DurationDpsModeSelector';
 import MedalIcon from "./MedalIcon";
 
 type DurationEntry = {
@@ -49,11 +50,6 @@ type DpsConfigGroup = {
     fights: string[];
     hasOverall: boolean;
 };
-
-const modeOptions: { label: string; value: LeaderboardMode }[] = [
-    {label: 'Duration', value: 'duration'},
-    {label: 'DPS', value: 'dps'},
-];
 
 const highlightedRowSx = {
     bgcolor: colors.background.surfaceAlt,
@@ -249,27 +245,19 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
 
     return (
         <Box m={0}>
-            <Box display="flex" pt={0} pb={2} gap={1} flexWrap="wrap" alignItems="center">
-                <Select
-                    value={mode}
-                    onChange={(e) => {
-                        const nextMode = e.target.value as LeaderboardMode;
-                        setLeaderboardSearchParams({
-                            mode: nextMode,
-                            leaderboard: content.value,
-                            playerCount,
-                            fight: nextMode === 'dps' ? selectedFight : undefined,
-                        });
-                    }}
-                    size="small"
-                >
-                    {modeOptions.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                        </MenuItem>
-                    ))}
-                </Select>
+            <DurationDpsModeSelector
+                value={mode}
+                onChange={(nextMode) => {
+                    setLeaderboardSearchParams({
+                        mode: nextMode,
+                        leaderboard: content.value,
+                        playerCount,
+                        fight: nextMode === 'dps' ? selectedFight : undefined,
+                    });
+                }}
+            />
 
+            <Box display="flex" pt={0} pb={2} gap={1} flexWrap="wrap" alignItems="center">
                 <Select
                     value={content.value}
                     onChange={(e) => {
