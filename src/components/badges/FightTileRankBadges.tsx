@@ -24,6 +24,7 @@ const FightTileRankBadges: React.FC<FightTileRankBadgesProps> = ({badges}) => {
                 <PercentileRankBadge
                     key={badge.playerId}
                     rank={badge.rank}
+                    category="dps"
                     percentile={badge.percentile}
                     label={displayUsername(badge.playerId)}
                     compact

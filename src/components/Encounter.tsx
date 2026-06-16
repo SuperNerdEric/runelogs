@@ -346,6 +346,7 @@ const Encounter: React.FC = () => {
                     leaderboardName={leaderboardName}
                     playerCount={playerCount}
                     dpsLeaderboardKey={dpsLeaderboardKey}
+                    fightName={dpsLeaderboardKey ?? fight.name}
                 />
 
                 <Tabs

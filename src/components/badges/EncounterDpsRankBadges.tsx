@@ -10,6 +10,7 @@ interface EncounterDpsRankBadgesProps {
     leaderboardName: string | null;
     playerCount: number;
     dpsLeaderboardKey: string | null;
+    fightName: string;
 }
 
 const EncounterDpsRankBadges: React.FC<EncounterDpsRankBadgesProps> = ({
@@ -18,6 +19,7 @@ const EncounterDpsRankBadges: React.FC<EncounterDpsRankBadgesProps> = ({
     leaderboardName,
     playerCount,
     dpsLeaderboardKey,
+    fightName,
 }) => {
     const badges = useMemo(
         () =>
@@ -47,8 +49,10 @@ const EncounterDpsRankBadges: React.FC<EncounterDpsRankBadgesProps> = ({
                 <PercentileRankBadge
                     key={badge.playerId}
                     rank={badge.rank}
+                    category="dps"
                     percentile={badge.percentile}
                     label={displayUsername(badge.playerId)}
+                    tooltipFightName={fightName}
                     href={badge.href}
                 />
             ))}
