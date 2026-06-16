@@ -14,39 +14,13 @@ import prayerImage from '../assets/Prayer.webp';
 import sailingImage from '../assets/Sailing.webp';
 import {formatHHmmss} from "../utils/utils";
 import {colors, layout} from "../theme";
-import ThickSkin from "../assets/prayers/inactive/ThickSkin.png";
-import BurstOfStrength from "../assets/prayers/inactive/BurstOfStrength.png";
-import ClarityOfThought from "../assets/prayers/inactive/ClarityOfThought.png";
-import SharpEye from "../assets/prayers/inactive/SharpEye.png";
-import MysticWill from "../assets/prayers/inactive/MysticWill.png";
-import RockSkin from "../assets/prayers/inactive/RockSkin.png";
-import SuperhumanStrength from "../assets/prayers/inactive/SuperhumanStrength.png";
-import ImprovedReflexes from "../assets/prayers/inactive/ImprovedReflexes.png";
-import RapidRestore from "../assets/prayers/inactive/RapidRestore.png";
-import RapidHeal from "../assets/prayers/inactive/RapidHeal.png";
-import ProtectItem from "../assets/prayers/inactive/ProtectItem.png";
-import HawkEye from "../assets/prayers/inactive/HawkEye.png";
-import MysticLore from "../assets/prayers/inactive/MysticLore.png";
-import SteelSkin from "../assets/prayers/inactive/SteelSkin.png";
-import UltimateStrength from "../assets/prayers/inactive/UltimateStrength.png";
-import IncredibleReflexes from "../assets/prayers/inactive/IncredibleReflexes.png";
-import ProtectFromMagic from "../assets/prayers/inactive/ProtectFromMagic.png";
-import ProtectFromMissiles from "../assets/prayers/inactive/ProtectFromMissiles.png";
-import ProtectFromMelee from "../assets/prayers/inactive/ProtectFromMelee.png";
-import EagleEye from "../assets/prayers/inactive/EagleEye.png";
-import MysticMight from "../assets/prayers/inactive/MysticMight.png";
-import Retribution from "../assets/prayers/inactive/Retribution.png";
-import Redemption from "../assets/prayers/inactive/Redemption.png";
-import Smite from "../assets/prayers/inactive/Smite.png";
-import Chivalry from "../assets/prayers/inactive/Chivalry.png";
-import Piety from "../assets/prayers/inactive/Piety.png";
-import Preserve from "../assets/prayers/inactive/Preserve.png";
-import Rigour from "../assets/prayers/inactive/Rigour.png";
-import Augury from "../assets/prayers/inactive/Augury.png";
 import {ActorFilter, matchesLogActorFilters} from "../utils/actorFilter";
 import {EquipmentFilter, buildEquipmentTimelines, matchesEquipmentFilter} from "../utils/equipmentFilter";
+import {PrayerFilter, buildPrayerTimelines, matchesPrayerFilter} from "../utils/prayerFilter";
 import {getActorFromLog, getActorName, getActorSpecificIds} from "../utils/actorUtils";
 import {itemIdMap} from "../lib/itemIdMap";
+import {prayerIdMap} from "../lib/prayerIdMap";
+import {prayerImages} from "../lib/prayerImages";
 import FilterSearchBar from "./FilterSearchBar";
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
@@ -64,6 +38,9 @@ interface EventsTableProps {
     equipmentFilter?: EquipmentFilter | null;
     onSelectEquipmentFilter?: (filter: EquipmentFilter) => void;
     onClearEquipmentFilter?: () => void;
+    prayerFilter?: PrayerFilter | null;
+    onSelectPrayerFilter?: (filter: PrayerFilter) => void;
+    onClearPrayerFilter?: () => void;
     eventTypeFilter?: string | null;
     onSelectEventTypeFilter?: (eventType: string) => void;
     onClearEventTypeFilter?: () => void;
@@ -126,6 +103,9 @@ const EventsTable: React.FC<EventsTableProps> = ({
     equipmentFilter = null,
     onSelectEquipmentFilter,
     onClearEquipmentFilter,
+    prayerFilter = null,
+    onSelectPrayerFilter,
+    onClearPrayerFilter,
     eventTypeFilter = null,
     onSelectEventTypeFilter,
     onClearEventTypeFilter,
@@ -135,11 +115,19 @@ const EventsTable: React.FC<EventsTableProps> = ({
         [allLogs, fight.data]
     );
 
+    const prayerTimelines = useMemo(
+        () => buildPrayerTimelines(allLogs ?? fight.data),
+        [allLogs, fight.data]
+    );
+
     const logs = fight.data.filter((log) => {
         if (!matchesLogActorFilters(log, sourceFilter, targetFilter)) {
             return false;
         }
         if (!matchesEquipmentFilter(log, equipmentTimelines, equipmentFilter, sourceFilter, targetFilter)) {
+            return false;
+        }
+        if (!matchesPrayerFilter(log, prayerTimelines, prayerFilter, sourceFilter, targetFilter)) {
             return false;
         }
         if (eventTypeFilter && log.type !== eventTypeFilter) {
@@ -170,12 +158,31 @@ const EventsTable: React.FC<EventsTableProps> = ({
             <div style={{display: 'flex', alignItems: 'center'}}>
                 {prayers.map((prayerIdStr, index) => {
                     const prayerId = parseInt(prayerIdStr, 10);
+                    if (prayerId <= 0) {
+                        return null;
+                    }
+
                     const prayerImage = prayerImages[prayerId];
                     if (prayerImage) {
                         return (
-                            <div key={index} style={{display: 'inline-block', marginLeft: '0px'}}>
+                            <div
+                                key={index}
+                                className={onSelectPrayerFilter ? 'link' : undefined}
+                                style={{
+                                    display: 'inline-block',
+                                    marginLeft: '0px',
+                                    cursor: onSelectPrayerFilter ? 'pointer' : 'default',
+                                }}
+                                onClick={() => {
+                                    if (onSelectPrayerFilter) {
+                                        onSelectPrayerFilter({
+                                            id: prayerId,
+                                            name: prayerIdMap[prayerId] || `Prayer ${prayerId}`,
+                                        });
+                                    }
+                                }}
+                            >
                                 <img
-                                    key={index}
                                     src={prayerImage}
                                     alt={`Prayer ${prayerId}`}
                                     style={{
@@ -192,7 +199,7 @@ const EventsTable: React.FC<EventsTableProps> = ({
         );
     };
 
-    const hasFilterControls = onSelectSourceFilter || onSelectTargetFilter || onSelectEquipmentFilter;
+    const hasFilterControls = onSelectSourceFilter || onSelectTargetFilter || onSelectEquipmentFilter || onSelectPrayerFilter;
 
     return (
         <>
@@ -202,9 +209,10 @@ const EventsTable: React.FC<EventsTableProps> = ({
                     onSelectSourceFilter={onSelectSourceFilter}
                     onSelectTargetFilter={onSelectTargetFilter}
                     onSelectEquipmentFilter={onSelectEquipmentFilter}
+                    onSelectPrayerFilter={onSelectPrayerFilter}
                 />
             )}
-            {(sourceFilter || targetFilter || equipmentFilter || eventTypeFilter) && (
+            {(sourceFilter || targetFilter || equipmentFilter || prayerFilter || eventTypeFilter) && (
                 <Box sx={{width: '100%', maxWidth: `${layout.contentMaxWidth}px`, mb: 1, display: 'flex', gap: 1, flexWrap: 'wrap'}}>
                     {sourceFilter && (
                         <>
@@ -349,6 +357,48 @@ const EventsTable: React.FC<EventsTableProps> = ({
                             icon={
                                 <Tooltip
                                     title="Equipment filter is based on when an event was recorded. However, some actions, such as projectile damage, may have been initiated while different equipment was equipped."
+                                    arrow
+                                >
+                                    <ErrorOutlineIcon
+                                        sx={{
+                                            color: '#f44336 !important',
+                                            fontSize: '1.05rem',
+                                        }}
+                                    />
+                                </Tooltip>
+                            }
+                            size="small"
+                            sx={{
+                                bgcolor: colors.background.surface,
+                                color: 'white',
+                                border: '1px solid grey',
+                                borderRadius: '5px',
+                                '& .MuiChip-label': {
+                                    fontSize: '0.9rem',
+                                    paddingLeft: '10px',
+                                    paddingRight: '10px',
+                                },
+                                '& .MuiChip-icon': {
+                                    marginLeft: '8px',
+                                },
+                                '& .MuiChip-deleteIcon': {
+                                    color: 'white',
+                                    fontSize: '1.05rem',
+                                    marginRight: '6px',
+                                },
+                                '& .MuiChip-deleteIcon:hover': {
+                                    color: 'white',
+                                },
+                            }}
+                        />
+                    )}
+                    {prayerFilter && (
+                        <Chip
+                            label={`Prayer: ${prayerFilter.name || prayerIdMap[prayerFilter.id] || prayerFilter.id}`}
+                            onDelete={onClearPrayerFilter}
+                            icon={
+                                <Tooltip
+                                    title="Prayer filter is based on when an event was recorded. Active prayers and overhead prayers are tracked separately in the log."
                                     arrow
                                 >
                                     <ErrorOutlineIcon
@@ -584,35 +634,3 @@ const EventsTable: React.FC<EventsTableProps> = ({
 };
 
 export default EventsTable;
-
-const prayerImages: { [prayerId: number]: string } = {
-    4104: ThickSkin,
-    4105: BurstOfStrength,
-    4106: ClarityOfThought,
-    4122: SharpEye,
-    4123: MysticWill,
-    4107: RockSkin,
-    4108: SuperhumanStrength,
-    4109: ImprovedReflexes,
-    4110: RapidRestore,
-    4111: RapidHeal,
-    4112: ProtectItem,
-    4124: HawkEye,
-    4125: MysticLore,
-    4113: SteelSkin,
-    4114: UltimateStrength,
-    4115: IncredibleReflexes,
-    4116: ProtectFromMagic,
-    4117: ProtectFromMissiles,
-    4118: ProtectFromMelee,
-    4126: EagleEye,
-    4127: MysticMight,
-    4119: Retribution,
-    4120: Redemption,
-    4121: Smite,
-    4128: Chivalry,
-    4129: Piety,
-    5466: Preserve,
-    5464: Rigour,
-    5465: Augury,
-};

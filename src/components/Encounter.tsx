@@ -12,6 +12,7 @@ import {CrownIcon} from "./CrownIcon";
 import MedalIcon from "./MedalIcon";
 import {ActorFilter, deserializeActorFilter, serializeActorFilter} from "../utils/actorFilter";
 import {deserializeEquipmentFilter, EquipmentFilter, serializeEquipmentFilter} from "../utils/equipmentFilter";
+import {deserializePrayerFilter, PrayerFilter, serializePrayerFilter} from "../utils/prayerFilter";
 import {colors} from "../theme";
 
 type EncounterApiFG = {
@@ -58,6 +59,7 @@ const Encounter: React.FC = () => {
     const sourceFilter = useMemo(() => deserializeActorFilter(searchParams.get('source')), [searchParams]);
     const targetFilter = useMemo(() => deserializeActorFilter(searchParams.get('target')), [searchParams]);
     const equipmentFilter = useMemo(() => deserializeEquipmentFilter(searchParams.get('equipment')), [searchParams]);
+    const prayerFilter = useMemo(() => deserializePrayerFilter(searchParams.get('prayer')), [searchParams]);
     const eventTypeFilter = searchParams.get('eventType');
     const isValidTab = Object.values(TabsEnum).includes(tabParam as TabsEnum);
     const [selectedTab, setSelectedTab] = useState<TabsEnum>(
@@ -172,6 +174,19 @@ const Encounter: React.FC = () => {
                 newParams.set('equipment', serializeEquipmentFilter(filter));
             } else {
                 newParams.delete('equipment');
+            }
+            navigate(`${window.location.pathname}?${newParams.toString()}`);
+        },
+        [navigate, searchParams]
+    );
+
+    const updatePrayerFilter = useCallback(
+        (filter: PrayerFilter | null) => {
+            const newParams = new URLSearchParams(searchParams);
+            if (filter) {
+                newParams.set('prayer', serializePrayerFilter(filter));
+            } else {
+                newParams.delete('prayer');
             }
             navigate(`${window.location.pathname}?${newParams.toString()}`);
         },
@@ -335,12 +350,15 @@ const Encounter: React.FC = () => {
                         sourceFilter={sourceFilter}
                         targetFilter={targetFilter}
                         equipmentFilter={equipmentFilter}
+                        prayerFilter={prayerFilter}
                         onSelectSourceFilter={(filter) => updateActorFilter('source', filter)}
                         onSelectTargetFilter={(filter) => updateActorFilter('target', filter)}
                         onSelectEquipmentFilter={updateEquipmentFilter}
+                        onSelectPrayerFilter={updatePrayerFilter}
                         onClearSourceFilter={() => updateActorFilter('source', null)}
                         onClearTargetFilter={() => updateActorFilter('target', null)}
                         onClearEquipmentFilter={() => updateEquipmentFilter(null)}
+                        onClearPrayerFilter={() => updatePrayerFilter(null)}
                     />
                 )}
                 {selectedTab === TabsEnum.DAMAGE_TAKEN && (
@@ -349,12 +367,15 @@ const Encounter: React.FC = () => {
                         sourceFilter={sourceFilter}
                         targetFilter={targetFilter}
                         equipmentFilter={equipmentFilter}
+                        prayerFilter={prayerFilter}
                         onSelectSourceFilter={(filter) => updateActorFilter('source', filter)}
                         onSelectTargetFilter={(filter) => updateActorFilter('target', filter)}
                         onSelectEquipmentFilter={updateEquipmentFilter}
+                        onSelectPrayerFilter={updatePrayerFilter}
                         onClearSourceFilter={() => updateActorFilter('source', null)}
                         onClearTargetFilter={() => updateActorFilter('target', null)}
                         onClearEquipmentFilter={() => updateEquipmentFilter(null)}
+                        onClearPrayerFilter={() => updatePrayerFilter(null)}
                     />
                 )}
                 {selectedTab === TabsEnum.BOOSTS && <BoostsTab selectedLogs={fight}/>}
@@ -364,12 +385,15 @@ const Encounter: React.FC = () => {
                         sourceFilter={sourceFilter}
                         targetFilter={targetFilter}
                         equipmentFilter={equipmentFilter}
+                        prayerFilter={prayerFilter}
                         onSelectSourceFilter={(filter) => updateActorFilter('source', filter)}
                         onSelectTargetFilter={(filter) => updateActorFilter('target', filter)}
                         onSelectEquipmentFilter={updateEquipmentFilter}
+                        onSelectPrayerFilter={updatePrayerFilter}
                         onClearSourceFilter={() => updateActorFilter('source', null)}
                         onClearTargetFilter={() => updateActorFilter('target', null)}
                         onClearEquipmentFilter={() => updateEquipmentFilter(null)}
+                        onClearPrayerFilter={() => updatePrayerFilter(null)}
                         eventTypeFilter={eventTypeFilter}
                         onSelectEventTypeFilter={(eventType) => {
                             const newParams = new URLSearchParams(searchParams);

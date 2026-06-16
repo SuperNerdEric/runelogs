@@ -10,6 +10,7 @@ import {filterByType, LogTypes, DamageLog} from "../../models/LogLine";
 import {BOAT_IDS} from "../../utils/constants";
 import {ActorFilter, matchesActorFilter} from "../../utils/actorFilter";
 import {buildEquipmentTimelines, EquipmentFilter, matchesEquipmentFilter} from "../../utils/equipmentFilter";
+import {buildPrayerTimelines, matchesPrayerFilter, PrayerFilter} from "../../utils/prayerFilter";
 
 interface LogsSelectionProps {
     fight: Fight;
@@ -17,12 +18,15 @@ interface LogsSelectionProps {
     sourceFilter: ActorFilter | null;
     targetFilter: ActorFilter | null;
     equipmentFilter?: EquipmentFilter | null;
+    prayerFilter?: PrayerFilter | null;
     onSelectSourceFilter: (filter: ActorFilter) => void;
     onSelectTargetFilter: (filter: ActorFilter) => void;
     onSelectEquipmentFilter?: (filter: EquipmentFilter) => void;
+    onSelectPrayerFilter?: (filter: PrayerFilter) => void;
     onClearSourceFilter: () => void;
     onClearTargetFilter: () => void;
     onClearEquipmentFilter?: () => void;
+    onClearPrayerFilter?: () => void;
 }
 
 const DamageDone: React.FC<LogsSelectionProps> = ({
@@ -31,12 +35,15 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
     sourceFilter,
     targetFilter,
     equipmentFilter = null,
+    prayerFilter = null,
     onSelectSourceFilter,
     onSelectTargetFilter,
     onSelectEquipmentFilter,
+    onSelectPrayerFilter,
     onClearSourceFilter,
     onClearTargetFilter,
     onClearEquipmentFilter,
+    onClearPrayerFilter,
 }) => {
     const filteredLogs = filterByType(fight.data, LogTypes.DAMAGE);
 
@@ -68,6 +75,11 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
         [fight.data]
     );
 
+    const prayerTimelines = useMemo(
+        () => buildPrayerTimelines(fight.data),
+        [fight.data]
+    );
+
     const fightWithActorFilters = {
         ...fightWithFilteredLogs,
         data: fightWithFilteredLogs.data.filter((log) => {
@@ -80,7 +92,11 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
                 return false;
             }
 
-            return matchesEquipmentFilter(log, equipmentTimelines, equipmentFilter ?? null, sourceFilter, targetFilter);
+            if (!matchesEquipmentFilter(log, equipmentTimelines, equipmentFilter ?? null, sourceFilter, targetFilter)) {
+                return false;
+            }
+
+            return matchesPrayerFilter(log, prayerTimelines, prayerFilter ?? null, sourceFilter, targetFilter);
         }),
     };
 
@@ -117,12 +133,15 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
                         sourceFilter={sourceFilter}
                         targetFilter={targetFilter}
                         equipmentFilter={equipmentFilter}
+                        prayerFilter={prayerFilter}
                         onSelectSourceFilter={onSelectSourceFilter}
                         onSelectTargetFilter={onSelectTargetFilter}
                         onSelectEquipmentFilter={onSelectEquipmentFilter}
+                        onSelectPrayerFilter={onSelectPrayerFilter}
                         onClearSourceFilter={onClearSourceFilter}
                         onClearTargetFilter={onClearTargetFilter}
                         onClearEquipmentFilter={onClearEquipmentFilter}
+                        onClearPrayerFilter={onClearPrayerFilter}
                     />
                 </div>
             )}
