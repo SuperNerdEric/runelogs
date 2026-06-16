@@ -5,20 +5,18 @@ import {
     Link,
     MenuItem,
     Select,
-    Tab,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
     TableRow,
-    Tabs,
     Typography,
 } from '@mui/material';
 import {Link as RouterLink, useNavigate, useParams} from 'react-router-dom';
 import {format} from 'date-fns';
 import {encounterTableRowProps, getEncounterHref, stopRowClick} from '../utils/encounterTableRow';
-import {buildLeaderboardHref, LEADERBOARD_CONTENT_OPTIONS} from '../utils/leaderboardContent';
+import {buildLeaderboardHref, LeaderboardMode, LEADERBOARD_CONTENT_OPTIONS} from '../utils/leaderboardContent';
 import {media} from "../theme";
 import {colors} from "../theme";
 import {getDpsPercentileColor} from "../utils/TickActivity";
@@ -27,47 +25,7 @@ import {ticksToTime} from "../utils/utils";
 import {CrownIcon} from "./CrownIcon";
 import MedalIcon from "./MedalIcon";
 import TrophyIcon from "./TrophyIcon";
-
-type PersonalBestsMode = 'duration' | 'dps';
-
-const personalBestsTabsContainerSx = {
-    display: 'inline-flex',
-    mb: 2,
-    bgcolor: colors.background.surfaceAlt,
-    borderRadius: '8px',
-    border: `1px solid ${colors.border.default}`,
-    p: '4px',
-} as const;
-
-const personalBestsTabsSx = {
-    minHeight: 44,
-    '& .MuiTabs-flexContainer': {
-        gap: '4px',
-    },
-    '& .MuiTabs-indicator': {
-        display: 'none',
-    },
-} as const;
-
-const personalBestsTabSx = {
-    color: 'white',
-    fontSize: {xs: '1.1rem', sm: '1.35rem'},
-    fontWeight: 600,
-    textTransform: 'none',
-    minHeight: 44,
-    py: 1,
-    borderRadius: '6px',
-    transition: 'background-color 0.15s ease, color 0.15s ease',
-} as const;
-
-const personalBestsTabStateSx = (selected: boolean) => ({
-    color: selected ? colors.text.lightblue : colors.text.muted,
-    bgcolor: selected ? colors.background.surfaceSelected : 'transparent',
-    '&:hover': {
-        bgcolor: selected ? colors.background.surfaceSelected : colors.background.hover,
-        color: selected ? colors.text.lightblue : colors.text.primary,
-    },
-});
+import DurationDpsModeSelector from './DurationDpsModeSelector';
 
 const partySizeColumnSx = {
     color: 'white',
@@ -128,7 +86,7 @@ function dpsRankColor(rank: number, leaderboardSize: number): string {
 const PersonalBests: React.FC = () => {
     const navigate = useNavigate();
     const {playerName} = useParams<{ playerName: string }>();
-    const [mode, setMode] = useState<PersonalBestsMode>('duration');
+    const [mode, setMode] = useState<LeaderboardMode>('duration');
     const [durationData, setDurationData] = useState<PersonalBestsResponse | null>(null);
     const [dpsData, setDpsData] = useState<DpsPersonalBestsResponse | null>(null);
     const [dpsConfig, setDpsConfig] = useState<DpsConfigGroup[]>([]);
@@ -317,30 +275,7 @@ const PersonalBests: React.FC = () => {
                 </Typography>
             </Box>
 
-            <Box sx={personalBestsTabsContainerSx}>
-                <Tabs
-                    value={mode}
-                    onChange={(_, value: PersonalBestsMode) => setMode(value)}
-                    sx={personalBestsTabsSx}
-                >
-                    <Tab
-                        label="Duration"
-                        value="duration"
-                        sx={{
-                            ...personalBestsTabSx,
-                            ...personalBestsTabStateSx(mode === 'duration'),
-                        }}
-                    />
-                    <Tab
-                        label="DPS"
-                        value="dps"
-                        sx={{
-                            ...personalBestsTabSx,
-                            ...personalBestsTabStateSx(mode === 'dps'),
-                        }}
-                    />
-                </Tabs>
-            </Box>
+            <DurationDpsModeSelector value={mode} onChange={setMode} />
 
             {isBusy && (
                 <Box display="flex" justifyContent="center" py={4}>

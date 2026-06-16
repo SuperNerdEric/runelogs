@@ -12,16 +12,17 @@ const CATEGORY_ICONS: Record<RankBadgeCategory, string> = {
 interface RankBadgeCategoryIconProps {
     category: RankBadgeCategory;
     size: number;
+    color?: string;
 }
 
-const RankBadgeCategoryIcon: React.FC<RankBadgeCategoryIconProps> = ({category, size}) => (
+const RankBadgeCategoryIcon: React.FC<RankBadgeCategoryIconProps> = ({category, size, color = colors.text.muted}) => (
     <Icon
         icon={CATEGORY_ICONS[category]}
         style={{
             fontSize: size,
             width: size,
             height: size,
-            color: colors.text.muted,
+            color,
             flexShrink: 0,
             display: 'inline-block',
             verticalAlign: 'middle',
