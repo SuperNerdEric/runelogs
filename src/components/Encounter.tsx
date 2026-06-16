@@ -1,25 +1,26 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {Link, useNavigate, useParams, useSearchParams} from 'react-router-dom';
+import {useNavigate, useParams, useSearchParams} from 'react-router-dom';
 import {Box, CircularProgress, Tab, Tabs, Typography, Alert} from '@mui/material';
 import {BoostsTab, DamageDoneTab, DamageTakenTab, EventsTab, ReplayTab, TabsEnum,} from './Tabs';
 import {Fight, FightMetaData, isFight} from '../models/Fight';
 import * as semver from 'semver';
 import '../App.css';
-import DropdownFightSelector from './sections/DropdownFightSelector';
-import {Icon} from '@iconify/react';
-import {getRankColor} from "../utils/utils";
-import {CrownIcon} from "./CrownIcon";
-import MedalIcon from "./MedalIcon";
+import EncounterFightTitle from './EncounterFightTitle';
+import PageBreadcrumbs, {BreadcrumbSegment} from './PageBreadcrumbs';
+import EncounterDpsRankBadges from './badges/EncounterDpsRankBadges';
+import {inferLeaderboardFightGroupName} from '../utils/leaderboardContent';
+import {getRunSummaryHref} from '../utils/encounterTableRow';
 import {ActorFilter, deserializeActorFilter, serializeActorFilter} from "../utils/actorFilter";
 import {deserializeEquipmentFilter, EquipmentFilter, serializeEquipmentFilter} from "../utils/equipmentFilter";
 import {deserializePrayerFilter, PrayerFilter, serializePrayerFilter} from "../utils/prayerFilter";
-import {colors} from "../theme";
 
 type EncounterApiFG = {
     type: 'fightGroup';
     id: string;
     name: string;
+    leaderboardName?: string | null;
     receivingData?: boolean;
+    rank?: number;
     fights: { id: string; name: string; order: number }[];
 };
 
@@ -29,9 +30,14 @@ type EncounterApiFight = {
     fight: Fight;
     receivingData?: boolean;
     meta: {
-        fightGroup?: { id: string; name: string };
-        log: { id: string };
+        fightGroup?: { id: string; name: string; leaderboardName?: string | null };
+        log: { id: string; name?: string | null };
         receivingData?: boolean;
+        rank?: number;
+        dpsPercentiles?: Record<string, number>;
+        dpsRanks?: Record<string, number>;
+        dpsLeaderboardKey?: string | null;
+        players?: string[];
     };
 };
 
@@ -46,9 +52,16 @@ const Encounter: React.FC = () => {
     const [fight, setFight] = useState<Fight | null>(null);
     const [group, setGroup] = useState<EncounterApiFG | null>(null);
     const [logId, setLogId] = useState<string | null>(null);
+    const [logName, setLogName] = useState<string | null>(null);
+    const [fightGroupMeta, setFightGroupMeta] = useState<{ id: string; name: string } | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [receivingData, setReceivingData] = useState(false);
+    const [dpsPercentiles, setDpsPercentiles] = useState<Record<string, number>>({});
+    const [dpsRanks, setDpsRanks] = useState<Record<string, number>>({});
+    const [dpsLeaderboardKey, setDpsLeaderboardKey] = useState<string | null>(null);
+    const [playerCount, setPlayerCount] = useState(0);
+    const [leaderboardName, setLeaderboardName] = useState<string | null>(null);
 
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
@@ -115,7 +128,19 @@ const Encounter: React.FC = () => {
                     if (!isFight(data.fight)) throw new Error('Malformed fight payload');
                     setFight(data.fight);
                     setLogId(data.meta.log.id);
+                    setLogName(data.meta.log.name ?? null);
+                    setFightGroupMeta(data.meta.fightGroup ?? null);
                     setReceivingData(Boolean(data.meta.receivingData ?? data.receivingData));
+                    setDpsPercentiles(data.meta.dpsPercentiles ?? {});
+                    setDpsRanks(data.meta.dpsRanks ?? {});
+                    setDpsLeaderboardKey(data.meta.dpsLeaderboardKey ?? null);
+                    setPlayerCount(data.meta.players?.length ?? 0);
+                    setLeaderboardName(
+                        data.meta.fightGroup?.leaderboardName
+                            ?? (data.meta.fightGroup?.name
+                                ? inferLeaderboardFightGroupName(data.meta.fightGroup.name)
+                                : null),
+                    );
 
                     if (asInitial && data.meta.fightGroup?.id) {
                         await fetchEncounter(data.meta.fightGroup.id, false, showLoading);
@@ -123,6 +148,9 @@ const Encounter: React.FC = () => {
                 } else {
                     setGroup(data);
                     setReceivingData(Boolean(data.receivingData));
+                    setLeaderboardName(
+                        data.leaderboardName ?? inferLeaderboardFightGroupName(data.name),
+                    );
                     if (asInitial && data.fights.length) {
                         await fetchEncounter(data.fights[0].id, false, showLoading);
                     }
@@ -197,6 +225,12 @@ const Encounter: React.FC = () => {
         if (id) {
             setGroup(null);
             setFight(null);
+            setLogName(null);
+            setFightGroupMeta(null);
+            setDpsRanks({});
+            setDpsLeaderboardKey(null);
+            setPlayerCount(0);
+            setLeaderboardName(null);
             fetchEncounter(id, true, true);
         }
     }, [id, fetchEncounter]);
@@ -220,6 +254,8 @@ const Encounter: React.FC = () => {
         );
     }, [fight]);
 
+    const runMeta = group ?? fightGroupMeta;
+
     // Dynamically calculate font size based on the number of tabs
     // So that for smaller screens all tabs together equal 95% of the width
     const TAB_COUNT = availableTabs.length;
@@ -240,80 +276,77 @@ const Encounter: React.FC = () => {
             </Box>
         );
 
-    const dropdown =
-        group && (
-            <DropdownFightSelector
-                fights={selectorMeta}
-                onSelectFight={handleSelectFight}
-                selectedFightIndex={selectorMeta.findIndex((m) => m.id === fight.id)}
-            />
-        );
+    const selectedFightIndex = group
+        ? Math.max(0, selectorMeta.findIndex((m) => m.id === fight.id))
+        : undefined;
+
+    const breadcrumbSegments: BreadcrumbSegment[] = [
+        {
+            label: logName ?? 'Unnamed',
+            href: `/log/${logId}`,
+        },
+    ];
+
+    if (runMeta) {
+        breadcrumbSegments.push({
+            label: runMeta.name,
+            href: getRunSummaryHref(runMeta.id),
+        });
+
+        if (group && selectorMeta.length > 1) {
+            breadcrumbSegments.push({
+                label: fight.name,
+                select: {
+                    options: selectorMeta.map((entry, index) => ({
+                        value: index,
+                        label: entry.name,
+                    })),
+                    value: selectedFightIndex ?? 0,
+                    onChange: handleSelectFight,
+                },
+            });
+        } else {
+            breadcrumbSegments.push({label: fight.name});
+        }
+    } else {
+        breadcrumbSegments.push({label: fight.name});
+    }
 
     return (
         <div className="App">
             <div className="App-main">
-                <div style={{display: 'flex', alignItems: 'center', alignSelf: 'flex-start'}}>
-                    <Typography
-                        variant="h4"
-                        color="white"
-                        sx={{display: 'flex', alignItems: 'center'}}
-                    >
-                        {logId && (
-                            <Link to={`/log/${logId}`} className="back-icon-wrapper">
-                                <Box
-                                    component={Icon}
-                                    icon="ic:round-arrow-back"
-                                    sx={{
-                                        fontSize: (theme) => theme.typography.h4.fontSize,
-                                        color: 'white',
-                                        verticalAlign: 'middle',
-                                    }}
-                                />
-                            </Link>
-                        )}
-                        {group ? (
-                            group.name
-                        ) : fight.isNpc ? (
-                            <a
-                                href={`https://oldschool.runescape.wiki/w/${fight.mainEnemyName}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="link"
-                                style={{color: 'inherit'}}
-                            >
-                                {fight.name}
-                            </a>
-                        ) : (
-                            fight.name
-                        )}
-                    </Typography>
-                </div>
+                {breadcrumbSegments.length > 0 && (
+                    <PageBreadcrumbs segments={breadcrumbSegments} sx={{alignSelf: 'flex-start'}}/>
+                )}
+                <EncounterFightTitle
+                    fightName={fight.name}
+                    isNpc={fight.isNpc}
+                    mainEnemyName={fight.mainEnemyName}
+                    fightSelect={
+                        group && selectorMeta.length > 1
+                            ? {
+                                options: selectorMeta.map((entry, index) => ({
+                                    value: index,
+                                    label: entry.name,
+                                })),
+                                value: selectedFightIndex ?? 0,
+                                onChange: handleSelectFight,
+                            }
+                            : undefined
+                    }
+                />
                 {receivingData && (
                     <Alert severity="info" sx={{alignSelf: 'stretch', mb: 1}}>
                         Log is receiving more data — this page will refresh while new data arrives.
                     </Alert>
                 )}
-                {(fight as any)?.rank != null || (group as any)?.rank != null ? (
-                    <Box sx={{display: 'flex', alignItems: 'center', gap: 1, mb: 1, alignSelf: 'center'}}>
-                        <Typography
-                            variant="h6"
-                            sx={{
-                                color: getRankColor((fight as any)?.rank ?? (group as any)?.rank),
-                                fontWeight: 'bold',
-                            }}
-                        >
-                            #{(fight as any)?.rank ?? (group as any)?.rank}
-                        </Typography>
-                        {(() => {
-                            const rank = (fight as any)?.rank ?? (group as any)?.rank;
-                            if (rank === 1) return <CrownIcon />;
-                            if (rank === 2) return <MedalIcon color={colors.medal.silver} />;
-                            if (rank === 3) return <MedalIcon color={colors.medal.bronze} />;
-                            return null;
-                        })()}
-                    </Box>
-                ) : null}
-                {dropdown && <Box sx={{alignSelf: 'center'}}>{dropdown}</Box>}
+                <EncounterDpsRankBadges
+                    dpsRanks={dpsRanks}
+                    dpsPercentiles={dpsPercentiles}
+                    leaderboardName={leaderboardName}
+                    playerCount={playerCount}
+                    dpsLeaderboardKey={dpsLeaderboardKey}
+                />
 
                 <Tabs
                     value={selectedTab}
@@ -347,6 +380,7 @@ const Encounter: React.FC = () => {
                 {selectedTab === TabsEnum.DAMAGE_DONE && (
                     <DamageDoneTab
                         selectedLogs={fight}
+                        dpsPercentiles={dpsPercentiles}
                         sourceFilter={sourceFilter}
                         targetFilter={targetFilter}
                         equipmentFilter={equipmentFilter}

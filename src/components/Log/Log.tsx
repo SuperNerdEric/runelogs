@@ -6,6 +6,8 @@ import {FightMetaData} from '../../models/Fight';
 import {EncounterMetaData} from '../../models/LogLine';
 import LogInfoBox from "./LogInfoBox";
 import {contentColumnSx} from '../../theme';
+import {getEncounterHref, getRunSummaryHref} from '../../utils/encounterTableRow';
+import {inferLeaderboardFightGroupName} from '../../utils/leaderboardContent';
 
 interface ApiFight {
     id: string;
@@ -31,6 +33,7 @@ interface ApiFightGroup {
     name: string;
     leaderboardName: string;
     officialDurationTicks: number | null;
+    success: boolean;
     order: number;
     fights: ApiFight[];
 }
@@ -131,10 +134,18 @@ const Log: React.FC = () => {
                             };
                         });
 
+                    const totalDurationTicks = childFights.reduce(
+                        (sum, f) => sum + f.fightDurationTicks,
+                        0,
+                    );
+
                     const fgMeta = {
                         name: enc.name,
-                        officialDurationTicks: enc.officialDurationTicks,
-                        fights: childFights
+                        officialDurationTicks: enc.officialDurationTicks ?? (totalDurationTicks > 0 ? totalDurationTicks : undefined),
+                        success: enc.success,
+                        fights: childFights,
+                        id: enc.id,
+                        leaderboardName: enc.leaderboardName ?? inferLeaderboardFightGroupName(enc.name),
                     };
 
                     out.push(fgMeta);
@@ -215,22 +226,24 @@ const Log: React.FC = () => {
             {hasEncounters ? (
                 <FightSelector
                     fights={metadata!}
-                    onSelectFight={(index, fightGroupIndex) => {
-                        let fightId: string | undefined;
+                    getFightHref={(index, fightGroupIndex) => {
                         const encounter = encounters[index];
+                        if (!encounter) {
+                            return undefined;
+                        }
                         if (fightGroupIndex === undefined) {
-                            if (encounter && encounter.type === 'fight') {
-                                fightId = encounter.id;
+                            if (encounter.type === 'fight') {
+                                return getEncounterHref(encounter.id);
                             }
-                        } else {
-                            if (encounter && encounter.type === 'fightGroup') {
-                                fightId = encounter.fights[fightGroupIndex].id;
-                            }
+                            return undefined;
                         }
-                        if (fightId) {
-                            navigate(`/encounter/${fightId}`);
+                        if (encounter.type === 'fightGroup') {
+                            const fightId = encounter.fights[fightGroupIndex]?.id;
+                            return fightId ? getEncounterHref(fightId) : undefined;
                         }
+                        return undefined;
                     }}
+                    getFightGroupHref={getRunSummaryHref}
                     onSelectAggregateFight={async (indices) => {
                         const selectedFights: string[] = [];
 

@@ -27,6 +27,7 @@ interface LogsSelectionProps {
     onClearTargetFilter: () => void;
     onClearEquipmentFilter?: () => void;
     onClearPrayerFilter?: () => void;
+    dpsPercentiles?: Record<string, number>;
 }
 
 const DamageDone: React.FC<LogsSelectionProps> = ({
@@ -44,6 +45,7 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
     onClearTargetFilter,
     onClearEquipmentFilter,
     onClearPrayerFilter,
+    dpsPercentiles,
 }) => {
     const filteredLogs = filterByType(fight.data, LogTypes.DAMAGE);
 
@@ -123,6 +125,7 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
                         fight={fight}
                         filteredFight={fightWithActorFilters}
                         type={type}
+                        dpsPercentiles={dpsPercentiles}
                         onSelectSourceFilter={onSelectSourceFilter}
                         onSelectTargetFilter={onSelectTargetFilter}
                     />

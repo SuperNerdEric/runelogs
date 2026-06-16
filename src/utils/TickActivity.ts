@@ -196,7 +196,7 @@ export function getFightPerformanceByPlayer(fight: Fight): Map<string, FightPerf
             // Don't count active time past the end of the fight
             // If you sit idle for 3 ticks and then 1 hit the monster with a 5 tick weapon that shouldn't be 100%
             if (log.fightTimeMs! + weaponSpeedSeconds * 1000 > fightEndMs) {
-                weaponSpeedSeconds = (fightEndMs - log.fightTimeMs!) / 1000;
+                weaponSpeedSeconds = Math.max((fightEndMs - log.fightTimeMs!) / 1000, 0);
             }
             state.activeTime += weaponSpeedSeconds;
         }
@@ -230,10 +230,21 @@ interface PerformanceProps {
 }
 
 export function getPercentColor(percentage: number) {
-    if (percentage >= 100) return colors.rank.top3;
-    if (percentage >= 99) return colors.rank.top10;
-    if (percentage >= 95) return colors.rank.top20;
-    if (percentage >= 75) return colors.rank.top100;
-    if (percentage >= 60) return colors.rank.top500;
-    return colors.rank.default;
+    if (percentage >= 100) return colors.percentile.p100;
+    if (percentage >= 99) return colors.percentile.p99;
+    if (percentage >= 95) return colors.percentile.p95;
+    if (percentage >= 75) return colors.percentile.p75;
+    if (percentage >= 60) return colors.percentile.p25;
+    return colors.percentile.default;
+}
+
+/** Colors values by leaderboard percentile (100 = best). */
+export function getDpsPercentileColor(percentile: number) {
+    if (percentile >= 100) return colors.percentile.p100;
+    if (percentile >= 99) return colors.percentile.p99;
+    if (percentile >= 95) return colors.percentile.p95;
+    if (percentile >= 75) return colors.percentile.p75;
+    if (percentile >= 50) return colors.percentile.p50;
+    if (percentile >= 25) return colors.percentile.p25;
+    return colors.percentile.default;
 }

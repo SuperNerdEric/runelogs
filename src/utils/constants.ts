@@ -304,10 +304,10 @@ export const NEYPOTZLI_REGION_2 = 5527;
 export const NEYPOTZLI_REGION_3 = 6039;
 
 export const BOAT_IDS: number[] = [
-    15187, // Small boat
-    15188, // Medium boat
-    15189, // Large boat
-    15190, // Colossal boat
+    15187, // Sailing: small boat
+    15188, // Sailing: medium boat
+    15189, // Sailing: large boat
+    15190, // Sailing: colossal boat
 ];
 
 export const BOAT_ID_TO_NAME: { [key: number]: string } = {

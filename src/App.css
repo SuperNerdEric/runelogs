@@ -249,50 +249,53 @@
     font-family: var(--font-body) !important;
 }
 
-.fight-container {
+.fight-tile,
+a.fight-tile {
     position: relative;
     border: 1px solid var(--color-border-black);
     background-color: var(--color-bg-fight);
-    width: 160px;
     min-height: 40px;
     height: auto;
-    padding: 10px;
+    max-width: 100%;
+    padding: var(--fight-tile-padding-x);
     font-size: var(--font-size-md);
     cursor: pointer;
     box-sizing: border-box;
-    overflow-wrap: break-word;
-    word-break: break-word;
-}
-
-.fight-container:hover {
-    border-color: var(--color-border-white);
-}
-
-.fight-group-container {
-    position: relative;
-    border: 1px solid var(--color-border-black);
-    background-color: var(--color-bg-fight);
-    width: 300px;
-    min-height: 40px;
-    height: auto;
-    padding: 10px;
-    font-size: var(--font-size-md);
-    cursor: pointer;
-    box-sizing: border-box;
-    overflow-wrap: break-word;
-    word-break: break-word;
-}
-
-.fight-group-container:hover {
-    border-color: var(--color-border-white);
-}
-
-.fight-container,
-.fight-group-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    flex-shrink: 0;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+}
+
+.fight-tile--has-star {
+    padding-right: var(--fight-tile-star-padding-right);
+}
+
+.fight-tile:hover,
+a.fight-tile:hover {
+    border-color: var(--color-border-white);
+}
+
+.fight-tile-primary {
+    font-size: var(--font-size-lg);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.fight-tile-title,
+.fight-tile-duration {
+    display: inline;
+}
+
+.fight-tile-start-time {
+    margin-top: 2px;
 }
 
 .fight-title {
@@ -320,17 +323,58 @@
     text-decoration: underline;
 }
 
+a.encounter-title-bar {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+a.encounter-title-bar.encounter-title-bar--clickable:hover {
+    text-decoration: underline;
+}
+
 .encounter-title-bar-name {
     display: block;
 }
 
+.fight-list-container {
+    container-type: inline-size;
+    width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+    font-size: var(--font-size-lg);
+}
+
 .fight-list {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
     align-items: stretch;
-    gap: 10px;
-    padding: 15px;
+    justify-content: start;
+    gap: var(--fight-tile-gap);
+    padding: var(--fight-list-padding);
     box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(
+            min(
+                100%,
+                max(
+                    var(--fight-tile-min-base),
+                    calc(var(--fight-tile-label-ch, 12) * 1ch + 2 * var(--fight-tile-padding-x))
+                )
+            ),
+            1fr
+        )
+    );
+}
+
+@media (max-width: 768px) {
+    .fight-tile-primary {
+        white-space: normal;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
 }
 
 .back-icon-wrapper {
@@ -401,17 +445,6 @@
     text-decoration: underline;
 }
 
-.dropdown-fight-selector {
-    background-color: var(--color-bg-surface);
-    border: 3px solid var(--color-border-default);
-    color: var(--color-text-primary);
-    font-size: var(--font-size-dropdown-fight);
-    margin-top: 10px;
-    padding: 5px 10px;
-    border-radius: 5px;
-    width: fit-content;
-}
-
 /* Map Container Styling */
 .leaflet-container {
     background: var(--color-bg-map);
@@ -475,7 +508,7 @@
     margin-bottom: 30px;
     color: var(--color-text-primary);
     display: grid;
-    grid-template-columns: 80px 1fr;
+    grid-template-columns: minmax(0, max-content) minmax(0, 1fr);
     column-gap: 10px;
     row-gap: 6px;
     width: 100%;
@@ -483,6 +516,7 @@
     margin-left: auto;
     margin-right: auto;
     box-sizing: border-box;
+    overflow-x: clip;
 }
 
 @media (max-width: 1490px) {
@@ -490,7 +524,23 @@
 }
 
 .log-info-label  { color: var(--color-text-other); }
-.log-info-value  { color: var(--color-text-gold); }
+.log-info-value  {
+    color: var(--color-text-gold);
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.log-info-box .MuiLink-root {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.log-info-id {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+}
 
 @media (max-width: 768px) {
     .averages-grid {
@@ -510,5 +560,57 @@
     .averages-grid > div {
         grid-column: auto !important;
         grid-row: auto !important;
+    }
+}
+
+.fight-group-summary {
+    width: 100%;
+    max-width: var(--layout-content-max-width);
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.fight-group-summary-header {
+    width: 100%;
+}
+
+.run-summary-hero {
+    width: 100%;
+}
+
+.fight-group-rank-callouts {
+    width: 100%;
+}
+
+.fight-group-rank-badge {
+    max-width: 100%;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.fight-group-dps-table .MuiTableCell-root {
+    font-size: 13px;
+}
+
+.fight-group-dps-table .MuiTableContainer-root {
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    max-width: none;
+    width: 100%;
+}
+
+.fight-group-dps-table .encounter-title-bar {
+    border-bottom: 1px solid var(--color-border-default);
+}
+
+@media (max-width: 768px) {
+    .fight-group-dps-table .MuiTableCell-root {
+        font-size: 11px;
+        padding: 4px 6px;
+    }
+
+    .fight-group-rank-badge {
+        max-width: 100%;
     }
 }
