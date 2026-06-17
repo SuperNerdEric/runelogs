@@ -21,10 +21,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
 import { format } from 'date-fns';
 import { useAuth0 } from '@auth0/auth0-react';
 import {closeSnackbar, SnackbarKey, useSnackbar} from "notistack";
-import {contentColumnSx, logNameTextSx, accountTextSx, media} from "../theme";
+import {colors, contentColumnSx, logNameTextSx, accountTextSx, media} from "../theme";
 import {displayUsername} from "../utils/utils";
 import {logTableRowProps, stopRowClick} from "../utils/encounterTableRow";
 
@@ -64,6 +65,25 @@ const shrinkColumnSx = {
 const tableCellPaddingSx = {
     paddingY: 1,
     [media.mobileDown]: { px: 1 },
+} as const;
+
+const pageContainerSx = {
+    ...contentColumnSx,
+    mt: 2,
+    px: 2,
+    pb: 4,
+    [media.mobileDown]: { px: 1 },
+} as const;
+
+const pageHeaderIconBoxSx = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 56,
+    height: 56,
+    borderRadius: 2,
+    bgcolor: colors.background.surfaceAlt,
+    border: `1px solid ${colors.border.default}`,
 } as const;
 
 interface LogNameCellProps {
@@ -168,6 +188,43 @@ const LogNameCell: React.FC<LogNameCellProps> = ({ log, canEdit, onRename }) => 
         </Box>
     );
 };
+
+interface LogsPageHeaderProps {
+    uploaderId?: string;
+}
+
+const LogsPageHeader: React.FC<LogsPageHeaderProps> = ({ uploaderId }) => (
+    <Box
+        sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+            mb: 3,
+            pt: 1,
+        }}
+    >
+        <Box sx={pageHeaderIconBoxSx}>
+            <FolderOpenOutlinedIcon sx={{ fontSize: 32, color: colors.upload.dragActive }} />
+        </Box>
+        <Box>
+            <Typography
+                variant="h4"
+                sx={{
+                    m: 0,
+                    fontWeight: 600,
+                    textTransform: 'capitalize',
+                    lineHeight: 1.15,
+                    ...accountTextSx,
+                }}
+            >
+                {displayUsername(uploaderId || 'Unknown User')}
+            </Typography>
+            <Typography sx={{ color: colors.text.muted, fontSize: '0.875rem', lineHeight: 1.15, mt: 0 }}>
+                Uploaded logs
+            </Typography>
+        </Box>
+    </Box>
+);
 
 const Logs: React.FC = () => {
     const { uploaderId } = useParams<{ uploaderId: string }>();
@@ -294,14 +351,9 @@ const Logs: React.FC = () => {
 
     if (!logs || logs.length === 0) {
         return (
-            <Box sx={{...contentColumnSx, mt: 1, px: 2, pb: 0, [media.mobileDown]: { px: 1 }}}>
-                <Typography variant="h4" gutterBottom sx={{color: 'white'}}>
-                    Logs:{' '}
-                    <Box component="span" sx={{...accountTextSx, textTransform: 'capitalize'}}>
-                        {displayUsername(uploaderId || 'Unknown User')}
-                    </Box>
-                </Typography>
-                <Typography variant="h6" sx={{ color: 'white' }}>
+            <Box sx={pageContainerSx}>
+                <LogsPageHeader uploaderId={uploaderId} />
+                <Typography variant="h6" sx={{ color: colors.text.primary }}>
                     No logs found for this uploader.
                 </Typography>
             </Box>
@@ -354,16 +406,8 @@ const Logs: React.FC = () => {
     };
 
     return (
-        <Box sx={{...contentColumnSx, mt: 1, px: 2, pb: 0, [media.mobileDown]: { px: 1 }}}>
-            <Box m={0}>
-                <Box pb={0} pt={0}>
-                    <Typography variant="h4" gutterBottom sx={{color: 'white'}}>
-                        Logs:{' '}
-                        <Box component="span" sx={{...accountTextSx, textTransform: 'capitalize'}}>
-                            {displayUsername(uploaderId || 'Unknown User')}
-                        </Box>
-                    </Typography>
-                </Box>
+        <Box sx={pageContainerSx}>
+            <LogsPageHeader uploaderId={uploaderId} />
 
             <TableContainer component={Paper} sx={{ backgroundColor: 'transparent', boxShadow: 'none', width: '100%' }}>
                 <Table sx={{ tableLayout: 'auto', width: '100%' }}>
@@ -468,7 +512,6 @@ const Logs: React.FC = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
-            </Box>
         </Box>
     );
 };
