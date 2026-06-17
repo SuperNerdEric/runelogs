@@ -80,7 +80,7 @@ export function buildRecentEncountersHref(params: {
     return query ? `/recent-encounters?${query}` : '/recent-encounters';
 }
 
-export type LeaderboardMode = 'duration' | 'dps';
+export type LeaderboardMode = 'time' | 'dps';
 
 export function buildLeaderboardHref(params: {
     mode: LeaderboardMode;
@@ -113,7 +113,7 @@ export function buildPlayerRankLeaderboardHref(
     }
     if (entry.category === 'Duration') {
         return buildLeaderboardHref({
-            mode: 'duration',
+            mode: 'time',
             leaderboard: leaderboardName,
             playerCount,
             highlightRank: entry.rank,

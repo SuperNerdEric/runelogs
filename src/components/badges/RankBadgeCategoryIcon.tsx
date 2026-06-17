@@ -2,10 +2,10 @@ import React from 'react';
 import {Icon} from '@iconify/react';
 import {colors} from '../../theme';
 
-export type RankBadgeCategory = 'duration' | 'dps';
+export type RankBadgeCategory = 'time' | 'dps';
 
 const CATEGORY_ICONS: Record<RankBadgeCategory, string> = {
-    duration: 'mdi:clock-outline',
+    time: 'mdi:clock-outline',
     dps: 'mdi:sword',
 };
 
