@@ -18,6 +18,7 @@ import {colors} from "../theme";
 import {encounterTableRowProps, getEncounterHref, stopRowClick} from '../utils/encounterTableRow';
 import {
     buildLeaderboardHref,
+    buildLeaderboardPlayerCountOptions,
     LEADERBOARD_CONTENT_OPTIONS,
     LeaderboardMode,
 } from '../utils/leaderboardContent';
@@ -492,10 +493,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
                     value={playerCount}
                     compact
                     sx={filterFieldCompactSx}
-                    options={content.playerCounts.map((pc) => ({
-                        value: pc,
-                        label: pc,
-                    }))}
+                    options={buildLeaderboardPlayerCountOptions(content.playerCounts)}
                     onChange={(count) => {
                         setPlayerCount(count);
                         updateSearchParams({playerCount: count.toString()});

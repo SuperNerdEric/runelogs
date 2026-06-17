@@ -32,10 +32,15 @@ import FilterSelect from './filters/FilterSelect';
 import FilterToolbar from './filters/FilterToolbar';
 import {filterFieldCompactSx} from './filters/filterStyles';
 import {
+    BROWSE_ANY_PLAYER_COUNT,
+    BrowsePlayerCount,
+    buildBrowsePlayerCountOptions,
     buildUploaderLogsHref,
+    browsePlayerCountToApiParam,
     isRecentEncountersAllContent,
     RECENT_ENCOUNTERS_CONTENT_OPTIONS,
     RecentEncountersContentOption,
+    resolveBrowsePlayerCount,
     resolveRecentEncountersContent,
 } from '../utils/leaderboardContent';
 
@@ -96,22 +101,10 @@ const pageHeaderIconBoxSx = {
     border: `1px solid ${colors.border.default}`,
 } as const;
 
-function resolvePlayerCount(
-    content: RecentEncountersContentOption,
-    playerCountParam: number,
-): number {
-    if (isRecentEncountersAllContent(content.value) || content.defaultPlayerCount == null) {
-        return content.defaultPlayerCount ?? 1;
-    }
-    return content.playerCounts.includes(playerCountParam)
-        ? playerCountParam
-        : content.defaultPlayerCount;
-}
-
 function toSearchParams(
     uploaderId: string,
     content: RecentEncountersContentOption,
-    playerCount: number,
+    playerCount: BrowsePlayerCount,
 ): Record<string, string> {
     return Object.fromEntries(
         new URLSearchParams(
@@ -119,7 +112,7 @@ function toSearchParams(
                 content: content.value,
                 playerCount: isRecentEncountersAllContent(content.value)
                     ? undefined
-                    : playerCount,
+                    : browsePlayerCountToApiParam(playerCount),
             }).split('?')[1] ?? '',
         ),
     );
@@ -307,9 +300,9 @@ const Logs: React.FC = () => {
     const {enqueueSnackbar} = useSnackbar();
 
     const contentParam = searchParams.get('content');
-    const playerCountParam = parseInt(searchParams.get('playerCount') || '', 10);
+    const playerCountParam = searchParams.get('playerCount');
     const initialContent = resolveRecentEncountersContent(contentParam);
-    const initialPlayerCount = resolvePlayerCount(initialContent, playerCountParam);
+    const initialPlayerCount = resolveBrowsePlayerCount(initialContent, playerCountParam);
 
     const [content, setContent] = useState(initialContent);
     const [playerCount, setPlayerCount] = useState(initialPlayerCount);
@@ -325,9 +318,9 @@ const Logs: React.FC = () => {
 
     useEffect(() => {
         const newContent = resolveRecentEncountersContent(searchParams.get('content'));
-        const newPlayerCount = resolvePlayerCount(
+        const newPlayerCount = resolveBrowsePlayerCount(
             newContent,
-            parseInt(searchParams.get('playerCount') || '', 10),
+            searchParams.get('playerCount'),
         );
 
         setContent(newContent);
@@ -336,7 +329,7 @@ const Logs: React.FC = () => {
 
     const updateSearchParams = (updates: {
         content?: RecentEncountersContentOption;
-        playerCount?: number;
+        playerCount?: BrowsePlayerCount;
     }) => {
         if (!uploaderId) {
             return;
@@ -372,7 +365,10 @@ const Logs: React.FC = () => {
             const params = new URLSearchParams();
             if (!isRecentEncountersAllContent(content.value)) {
                 params.set('content', content.value);
-                params.set('playerCount', String(playerCount));
+                const apiPlayerCount = browsePlayerCountToApiParam(playerCount);
+                if (apiPlayerCount != null) {
+                    params.set('playerCount', String(apiPlayerCount));
+                }
             }
 
             const query = params.toString();
@@ -468,7 +464,7 @@ const Logs: React.FC = () => {
                     const selectedContent = RECENT_ENCOUNTERS_CONTENT_OPTIONS.find(
                         (option) => option.value === nextContentValue,
                     )!;
-                    const newPlayerCount = selectedContent.defaultPlayerCount ?? 1;
+                    const newPlayerCount = BROWSE_ANY_PLAYER_COUNT;
                     setContent(selectedContent);
                     setPlayerCount(newPlayerCount);
                     updateSearchParams({
@@ -479,15 +475,12 @@ const Logs: React.FC = () => {
             />
 
             {!isAllContent && content.defaultPlayerCount != null && (
-                <FilterSelect
+                <FilterSelect<BrowsePlayerCount>
                     field="team"
                     value={playerCount}
                     compact
                     sx={filterFieldCompactSx}
-                    options={content.playerCounts.map((pc) => ({
-                        value: pc,
-                        label: pc,
-                    }))}
+                    options={buildBrowsePlayerCountOptions(content.playerCounts)}
                     onChange={(count) => {
                         setPlayerCount(count);
                         updateSearchParams({playerCount: count});
