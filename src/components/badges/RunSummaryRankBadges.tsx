@@ -18,7 +18,7 @@ interface RunSummaryRankBadgesProps {
 }
 
 function categoryForEntry(entry: PlayerRankEntry): RankBadgeCategory {
-    return entry.category === 'Duration' ? 'duration' : 'dps';
+    return entry.category === 'Duration' ? 'time' : 'dps';
 }
 
 const RunSummaryRankBadges: React.FC<RunSummaryRankBadgesProps> = ({

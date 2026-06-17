@@ -37,8 +37,8 @@ function buildBadgeTooltip(
     label: string,
     tooltipFightName?: string,
 ): string {
-    if (category === 'duration') {
-        return `Ranked #${rank} on the duration leaderboard`;
+    if (category === 'time') {
+        return `Ranked #${rank} on the Time leaderboard`;
     }
 
     if (label.includes('Overall')) {
@@ -69,7 +69,7 @@ const PercentileRankBadge: React.FC<PercentileRankBadgeProps> = ({
     const accentColor = getPercentileAccentColor(percentile);
     const showGlow = !compact && percentile !== undefined && percentile >= 99;
     const categoryIconSize = compact ? 16 : 24;
-    const categoryLabel = category === 'duration' ? 'Duration' : 'DPS';
+    const categoryLabel = category === 'time' ? 'Time' : 'DPS';
 
     const inner = compact ? (
         <>

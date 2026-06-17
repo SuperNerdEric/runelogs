@@ -92,7 +92,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const modeParam = searchParams.get('mode') as LeaderboardMode | null;
-    const mode: LeaderboardMode = modeParam === 'dps' ? 'dps' : 'duration';
+    const mode: LeaderboardMode = modeParam === 'dps' ? 'dps' : 'time';
 
     const contentParam = searchParams.get('leaderboard');
     const playerCountParam = parseInt(searchParams.get('playerCount') || '', 10);
@@ -422,7 +422,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
     );
 
     const renderLeaderboardContent = () => (
-        mode === 'duration' ? renderDurationTable() : renderDpsTable()
+        mode === 'time' ? renderDurationTable() : renderDpsTable()
     );
 
     return (

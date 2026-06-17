@@ -15,7 +15,7 @@ import {
 } from './filters/filterStyles';
 
 const MODE_OPTIONS: { label: string; value: LeaderboardMode }[] = [
-    {label: 'Duration', value: 'duration'},
+    {label: 'Time', value: 'time'},
     {label: 'DPS', value: 'dps'},
 ];
 

@@ -86,7 +86,7 @@ function dpsRankColor(rank: number, leaderboardSize: number): string {
 const PersonalBests: React.FC = () => {
     const navigate = useNavigate();
     const {playerName} = useParams<{ playerName: string }>();
-    const [mode, setMode] = useState<LeaderboardMode>('duration');
+    const [mode, setMode] = useState<LeaderboardMode>('time');
     const [durationData, setDurationData] = useState<PersonalBestsResponse | null>(null);
     const [dpsData, setDpsData] = useState<DpsPersonalBestsResponse | null>(null);
     const [dpsConfig, setDpsConfig] = useState<DpsConfigGroup[]>([]);
@@ -283,7 +283,7 @@ const PersonalBests: React.FC = () => {
                 </Box>
             )}
 
-            {!isBusy && mode === 'duration' && !hasDuration && (
+            {!isBusy && mode === 'time' && !hasDuration && (
                 <Typography variant="body1" color="white">
                     No personal bests found.
                 </Typography>
@@ -295,7 +295,7 @@ const PersonalBests: React.FC = () => {
                 </Typography>
             )}
 
-            {!isBusy && mode === 'duration' && LEADERBOARD_CONTENT_OPTIONS.map((content) => {
+            {!isBusy && mode === 'time' && LEADERBOARD_CONTENT_OPTIONS.map((content) => {
                 const relevantFights = durationFightGroups
                     .filter((f) => f.leaderboardName === content.value)
                     .sort((a, b) => a.playerCount - b.playerCount);
@@ -349,7 +349,7 @@ const PersonalBests: React.FC = () => {
                                                             : 'white',
                                                         match?.rank
                                                             ? buildLeaderboardHref({
-                                                                mode: 'duration',
+                                                                mode: 'time',
                                                                 leaderboard: content.value,
                                                                 playerCount: count,
                                                                 highlightRank: match.rank,
