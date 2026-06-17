@@ -21,6 +21,7 @@ import {
     RecentEncountersContentOption,
     resolveRecentEncountersContent,
 } from '../utils/leaderboardContent';
+import {colors} from '../theme';
 import {ticksToTime} from '../utils/utils';
 import FilterSelect from './filters/FilterSelect';
 import FilterToolbar from './filters/FilterToolbar';
@@ -34,6 +35,7 @@ type Encounter = {
     leaderboardName?: string;
     startTime: string;
     officialDurationTicks: number;
+    success: boolean;
     logId: string;
     uploadedAt: string;
     players: string[];
@@ -278,7 +280,11 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
                                                 {row.type === 'fight' ? row.mainEnemyName : row.leaderboardName}
                                             </Link>
                                         </TableCell>
-                                        <TableCell sx={{color: 'white'}}>
+                                        <TableCell sx={{
+                                            color: row.success
+                                                ? colors.fight.success
+                                                : colors.fight.failure,
+                                        }}>
                                             {ticksToTime(row.officialDurationTicks)}
                                         </TableCell>
                                         <TableCell sx={{color: 'white'}}>
