@@ -3,9 +3,7 @@ import {
     Box,
     CircularProgress,
     Link,
-    MenuItem,
     Pagination,
-    Select,
     Table,
     TableBody,
     TableCell,
@@ -24,6 +22,9 @@ import {
     resolveRecentEncountersContent,
 } from '../utils/leaderboardContent';
 import {ticksToTime} from '../utils/utils';
+import FilterSelect from './filters/FilterSelect';
+import FilterToolbar from './filters/FilterToolbar';
+import {filterFieldCompactSx} from './filters/filterStyles';
 
 type Encounter = {
     type: 'fight' | 'fightGroup';
@@ -73,6 +74,21 @@ function toSearchParams(
         ),
     );
 }
+
+const paginationSx = {
+    '& .MuiPaginationItem-root': {color: 'white'},
+    '& .MuiPaginationItem-root.Mui-selected': {
+        backgroundColor: 'white',
+        color: 'black',
+        borderRadius: '4px',
+    },
+} as const;
+
+const tableStatusCellSx = {
+    py: 4,
+    color: 'white',
+    borderBottom: 'none',
+} as const;
 
 const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
     embedded = false,
@@ -161,33 +177,32 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
         setSearchParams(toSearchParams(nextContent, nextPlayerCount, nextPage));
     };
 
-    if (loading) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" py={4}>
-                <CircularProgress color="inherit"/>
-            </Box>
-        );
-    }
-
-    if (error) {
-        return (
-            <Box m={2}>
-                <Typography color="error">{error}</Typography>
-            </Box>
-        );
-    }
-
+    const rows = encounters ?? [];
     const pageCount = Math.max(1, Math.ceil(total / entriesPerPage));
+
+    const renderTableStatusRow = (content: React.ReactNode) => (
+        <TableRow>
+            <TableCell colSpan={4} align="center" sx={tableStatusCellSx}>
+                {content}
+            </TableCell>
+        </TableRow>
+    );
 
     return (
         <Box m={0}>
             {!embedded && (
-                <Box display="flex" pt={0} pb={2} gap={1} flexWrap="wrap" alignItems="center">
-                    <Select
+                <FilterToolbar>
+                    <FilterSelect
+                        field="content"
                         value={content.value}
-                        onChange={(e) => {
+                        options={RECENT_ENCOUNTERS_CONTENT_OPTIONS.map((option) => ({
+                            value: option.value,
+                            label: option.label,
+                        }))}
+                        sx={{minWidth: {xs: 100, sm: 140}}}
+                        onChange={(nextContentValue) => {
                             const selectedContent = RECENT_ENCOUNTERS_CONTENT_OPTIONS.find(
-                                (o) => o.value === e.target.value,
+                                (option) => option.value === nextContentValue,
                             )!;
                             const newPlayerCount = selectedContent.defaultPlayerCount ?? 1;
                             setContent(selectedContent);
@@ -199,121 +214,111 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
                                 page: 1,
                             });
                         }}
-                        size="small"
-                    >
-                        {RECENT_ENCOUNTERS_CONTENT_OPTIONS.map((o) => (
-                            <MenuItem key={o.value} value={o.value}>
-                                {o.label}
-                            </MenuItem>
-                        ))}
-                    </Select>
+                    />
 
                     {!isAllContent && content.defaultPlayerCount != null && (
-                        <Select
+                        <FilterSelect
+                            field="team"
                             value={playerCount}
-                            onChange={(e) => {
-                                const count = Number(e.target.value);
+                            compact
+                            sx={filterFieldCompactSx}
+                            options={content.playerCounts.map((pc) => ({
+                                value: pc,
+                                label: pc,
+                            }))}
+                            onChange={(count) => {
                                 setPlayerCount(count);
                                 setPage(1);
                                 updateSearchParams({playerCount: count, page: 1});
                             }}
-                            size="small"
-                        >
-                            {content.playerCounts.map((pc) => (
-                                <MenuItem key={pc} value={pc}>
-                                    {pc}
-                                </MenuItem>
-                            ))}
-                        </Select>
+                        />
                     )}
-                </Box>
+                </FilterToolbar>
             )}
 
-            {encounters && encounters.length > 0 ? (
-                <Box>
-                    <TableContainer>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell sx={{color: 'white'}}>Name</TableCell>
-                                    <TableCell sx={{color: 'white'}}>Duration</TableCell>
-                                    <TableCell sx={{color: 'white'}}>Players</TableCell>
-                                    <TableCell sx={{color: 'white'}}></TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {encounters.map((row) => {
-                                    const encounterOptions = row.type === 'fightGroup'
-                                        ? {durationResultType: 'fightGroup' as const}
-                                        : undefined;
+            <Box>
+                <TableContainer>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell sx={{color: 'white'}}>Name</TableCell>
+                                <TableCell sx={{color: 'white'}}>Duration</TableCell>
+                                <TableCell sx={{color: 'white'}}>Players</TableCell>
+                                <TableCell sx={{color: 'white'}}></TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {loading && renderTableStatusRow(
+                                <CircularProgress color="inherit" size={28}/>,
+                            )}
+                            {!loading && error && renderTableStatusRow(
+                                <Typography color="error">{error}</Typography>,
+                            )}
+                            {!loading && !error && rows.length === 0 && renderTableStatusRow(
+                                <Typography color="white">No recent encounters found.</Typography>,
+                            )}
+                            {!loading && !error && rows.map((row) => {
+                                const encounterOptions = row.type === 'fightGroup'
+                                    ? {durationResultType: 'fightGroup' as const}
+                                    : undefined;
 
-                                    return (
-                                        <TableRow
-                                            key={row.id}
-                                            {...encounterTableRowProps(navigate, row.id, encounterOptions)}
-                                        >
-                                            <TableCell sx={{color: 'white'}}>
-                                                <Link
-                                                    component={RouterLink}
-                                                    to={getEncounterHref(row.id, encounterOptions)}
-                                                    underline="hover"
-                                                    title={row.id}
-                                                    onClick={stopRowClick}
-                                                >
-                                                    {row.type === 'fight' ? row.mainEnemyName : row.leaderboardName}
-                                                </Link>
-                                            </TableCell>
-                                            <TableCell sx={{color: 'white'}}>
-                                                {ticksToTime(row.officialDurationTicks)}
-                                            </TableCell>
-                                            <TableCell sx={{color: 'white'}}>
-                                                {row.players.map((p, i) => (
-                                                    <React.Fragment key={p}>
-                                                        <Link
-                                                            component={RouterLink}
-                                                            to={`/player/${p}`}
-                                                            underline="hover"
-                                                            onClick={stopRowClick}
-                                                        >
-                                                            {p}
-                                                        </Link>
-                                                        {i < row.players.length - 1 ? ', ' : ''}
-                                                    </React.Fragment>
-                                                ))}
-                                            </TableCell>
-                                            <TableCell sx={{color: 'white'}}>
-                                                {getRelativeTime(new Date(row.startTime))}
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    {!embedded && pageCount > 1 && (
-                        <Box display="flex" justifyContent="center" pt={0} pb={1}>
-                            <Pagination
-                                count={pageCount}
-                                page={page}
-                                onChange={(_, value) => {
-                                    setPage(value);
-                                    updateSearchParams({page: value});
-                                }}
-                                sx={{
-                                    '& .MuiPaginationItem-root': {color: 'white'},
-                                    '& .MuiPaginationItem-root.Mui-selected': {
-                                        backgroundColor: 'white',
-                                        color: 'black',
-                                        borderRadius: '4px',
-                                    },
-                                }}
-                            />
-                        </Box>
-                    )}
-                </Box>
-            ) : (
-                <Typography py={2} color="white">No recent encounters found.</Typography>
-            )}
+                                return (
+                                    <TableRow
+                                        key={row.id}
+                                        {...encounterTableRowProps(navigate, row.id, encounterOptions)}
+                                    >
+                                        <TableCell sx={{color: 'white'}}>
+                                            <Link
+                                                component={RouterLink}
+                                                to={getEncounterHref(row.id, encounterOptions)}
+                                                underline="hover"
+                                                title={row.id}
+                                                onClick={stopRowClick}
+                                            >
+                                                {row.type === 'fight' ? row.mainEnemyName : row.leaderboardName}
+                                            </Link>
+                                        </TableCell>
+                                        <TableCell sx={{color: 'white'}}>
+                                            {ticksToTime(row.officialDurationTicks)}
+                                        </TableCell>
+                                        <TableCell sx={{color: 'white'}}>
+                                            {row.players.map((p, i) => (
+                                                <React.Fragment key={p}>
+                                                    <Link
+                                                        component={RouterLink}
+                                                        to={`/player/${p}`}
+                                                        underline="hover"
+                                                        onClick={stopRowClick}
+                                                    >
+                                                        {p}
+                                                    </Link>
+                                                    {i < row.players.length - 1 ? ', ' : ''}
+                                                </React.Fragment>
+                                            ))}
+                                        </TableCell>
+                                        <TableCell sx={{color: 'white'}}>
+                                            {getRelativeTime(new Date(row.startTime))}
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                {!embedded && !loading && pageCount > 1 && (
+                    <Box display="flex" justifyContent="center" pt={0} pb={1}>
+                        <Pagination
+                            count={pageCount}
+                            page={page}
+                            onChange={(_, value) => {
+                                setPage(value);
+                                updateSearchParams({page: value});
+                            }}
+                            sx={paginationSx}
+                        />
+                    </Box>
+                )}
+            </Box>
         </Box>
     );
 };

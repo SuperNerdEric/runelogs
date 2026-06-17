@@ -5,9 +5,7 @@ import {
     Box,
     CircularProgress,
     Link,
-    MenuItem,
     Pagination,
-    Select,
     Table,
     TableBody,
     TableCell,
@@ -28,6 +26,9 @@ import {getPercentileAccentColor} from "../utils/percentile";
 import {ticksToTime} from "../utils/utils";
 import {CrownIcon} from "./CrownIcon";
 import DurationDpsModeSelector from './DurationDpsModeSelector';
+import FilterSelect from './filters/FilterSelect';
+import FilterToolbar from './filters/FilterToolbar';
+import {filterFieldCompactSx} from './filters/filterStyles';
 import MedalIcon from "./MedalIcon";
 
 type DurationEntry = {
@@ -65,6 +66,21 @@ const highlightedRowSx = {
         backgroundImage: `linear-gradient(90deg, rgba(56, 139, 253, 0.28) 0%, rgba(48, 54, 61, 0.98) 42%, ${colors.background.surfaceSelected} 100%)`,
         boxShadow: `inset 4px 0 0 ${colors.upload.dragActive}, 0 0 24px rgba(56, 139, 253, 0.18)`,
     },
+} as const;
+
+const paginationSx = {
+    '& .MuiPaginationItem-root': {color: 'white'},
+    '& .MuiPaginationItem-root.Mui-selected': {
+        backgroundColor: 'white',
+        color: 'black',
+        borderRadius: '4px',
+    },
+} as const;
+
+const tableStatusCellSx = {
+    py: 4,
+    color: 'white',
+    borderBottom: 'none',
 } as const;
 
 interface LeaderboardProps {
@@ -225,47 +241,225 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
         ));
     };
 
-    if (loading) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" py={4}>
-                <CircularProgress color="inherit"/>
-            </Box>
-        );
-    }
-
-    if (error) {
-        return (
-            <Box m={2}>
-                <Typography color="error">{error}</Typography>
-            </Box>
-        );
-    }
-
     const dpsTotal = dpsEntries?.length ?? 0;
+    const durationRows = durationEntries ?? [];
+    const dpsRows = dpsEntries ?? [];
+
+    const renderTableStatusRow = (colSpan: number, content: React.ReactNode) => (
+        <TableRow>
+            <TableCell colSpan={colSpan} align="center" sx={tableStatusCellSx}>
+                {content}
+            </TableCell>
+        </TableRow>
+    );
+
+    const renderDurationTable = () => (
+        <Box>
+            <TableContainer>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell sx={{color: 'white'}}>Rank</TableCell>
+                            <TableCell sx={{color: 'white'}}>Duration</TableCell>
+                            <TableCell sx={{color: 'white'}}>Players</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {loading && renderTableStatusRow(3, <CircularProgress color="inherit" size={28}/>)}
+                        {!loading && error && renderTableStatusRow(3, (
+                            <Typography color="error">{error}</Typography>
+                        ))}
+                        {!loading && !error && durationRows.length === 0 && renderTableStatusRow(3, (
+                            <Typography color="white">No records yet.</Typography>
+                        ))}
+                        {!loading && !error && durationRows
+                            .slice((page - 1) * entriesPerPage, page * entriesPerPage)
+                            .map((row, idx) => {
+                                const actualRank = (page - 1) * entriesPerPage + idx + 1;
+                                const isHighlighted = highlightRank === actualRank;
+                                const rankColor = getPercentileAccentColor(row.percentile);
+                                return (
+                                    <TableRow
+                                        key={row.id}
+                                        ref={isHighlighted ? highlightedRowRef : undefined}
+                                        {...encounterTableRowProps(navigate, row.id, {
+                                            durationResultType,
+                                        })}
+                                        sx={{
+                                            cursor: 'pointer',
+                                            ...(isHighlighted ? highlightedRowSx : {}),
+                                        }}
+                                    >
+                                        <TableCell sx={{color: rankColor, fontWeight: 'bold'}}>
+                                            <Link
+                                                component={RouterLink}
+                                                to={getEncounterHref(row.id, {durationResultType})}
+                                                onClick={stopRowClick}
+                                                sx={{textDecoration: 'none', color: 'inherit', '&:hover': {textDecoration: 'underline'}}}
+                                            >
+                                                <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+                                                    {actualRank}
+                                                    {actualRank === 1 && <CrownIcon />}
+                                                    {actualRank === 2 && <MedalIcon color={colors.medal.silver} />}
+                                                    {actualRank === 3 && <MedalIcon color={colors.medal.bronze} />}
+                                                </Box>
+                                            </Link>
+                                        </TableCell>
+                                        <TableCell sx={{color: 'white'}}>{ticksToTime(row.duration)}</TableCell>
+                                        <TableCell sx={{color: 'white'}}>
+                                            {row.players.map((player, i) => (
+                                                <React.Fragment key={player}>
+                                                    <Link component={RouterLink} to={`/player/${player}`}
+                                                          underline="hover" onClick={stopRowClick}>
+                                                        {player}
+                                                    </Link>
+                                                    {i < row.players.length - 1 ? ', ' : ''}
+                                                </React.Fragment>
+                                            ))}
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            {!loading && durationRows.length > 0 && (
+                <Box display="flex" justifyContent="center" pt={0} pb={1}>
+                    <Pagination
+                        count={Math.ceil(durationRows.length / entriesPerPage)}
+                        page={page}
+                        onChange={(_, value) => setPage(value)}
+                        sx={paginationSx}
+                    />
+                </Box>
+            )}
+        </Box>
+    );
+
+    const renderDpsTable = () => (
+        <Box>
+            <TableContainer>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell sx={{color: 'white'}}>Rank</TableCell>
+                            <TableCell sx={{color: 'white'}}>Player</TableCell>
+                            <TableCell sx={{color: 'white'}}>DPS</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {loading && renderTableStatusRow(3, <CircularProgress color="inherit" size={28}/>)}
+                        {!loading && error && renderTableStatusRow(3, (
+                            <Typography color="error">{error}</Typography>
+                        ))}
+                        {!loading && !error && dpsRows.length === 0 && renderTableStatusRow(3, (
+                            <Typography color="white">No records yet.</Typography>
+                        ))}
+                        {!loading && !error && dpsRows
+                            .slice((page - 1) * entriesPerPage, page * entriesPerPage)
+                            .map((row) => {
+                                const percentile = dpsTotal <= 1
+                                    ? 100
+                                    : Math.round(((dpsTotal - row.rank) / (dpsTotal - 1)) * 100);
+                                const dpsColor = getDpsPercentileColor(percentile);
+                                const isHighlighted = highlightRank === row.rank;
+
+                                return (
+                                    <TableRow
+                                        key={`${row.player}-${row.rank}`}
+                                        ref={isHighlighted ? highlightedRowRef : undefined}
+                                        {...encounterTableRowProps(navigate, row.encounterId, {
+                                            encounterType: row.encounterType,
+                                            fightKey: selectedFight,
+                                        })}
+                                        sx={{
+                                            cursor: 'pointer',
+                                            ...(isHighlighted ? highlightedRowSx : {}),
+                                        }}
+                                    >
+                                        <TableCell sx={{color: dpsColor, fontWeight: 'bold'}}>
+                                            <Link
+                                                component={RouterLink}
+                                                to={getEncounterHref(row.encounterId, {
+                                                    encounterType: row.encounterType,
+                                                    fightKey: selectedFight,
+                                                })}
+                                                onClick={stopRowClick}
+                                                sx={{textDecoration: 'none', color: 'inherit', '&:hover': {textDecoration: 'underline'}}}
+                                            >
+                                                <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+                                                    {row.rank}
+                                                    {row.rank === 1 && <CrownIcon />}
+                                                    {row.rank === 2 && <MedalIcon color={colors.medal.silver} />}
+                                                    {row.rank === 3 && <MedalIcon color={colors.medal.bronze} />}
+                                                </Box>
+                                            </Link>
+                                        </TableCell>
+                                        <TableCell sx={{color: 'white'}}>
+                                            <Link component={RouterLink} to={`/player/${row.player}`}
+                                                  underline="hover" onClick={stopRowClick}>
+                                                {row.player}
+                                            </Link>
+                                        </TableCell>
+                                        <TableCell sx={{color: dpsColor, fontWeight: 'bold'}}>{row.dps}</TableCell>
+                                    </TableRow>
+                                );
+                            })}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            {!loading && dpsRows.length > 0 && (
+                <Box display="flex" justifyContent="center" pt={0} pb={1}>
+                    <Pagination
+                        count={Math.ceil(dpsRows.length / entriesPerPage)}
+                        page={page}
+                        onChange={(_, value) => setPage(value)}
+                        sx={paginationSx}
+                    />
+                </Box>
+            )}
+        </Box>
+    );
+
+    const renderLeaderboardContent = () => (
+        mode === 'duration' ? renderDurationTable() : renderDpsTable()
+    );
 
     return (
         <Box m={0}>
-            <DurationDpsModeSelector
-                value={mode}
-                onChange={(nextMode) => {
-                    setLeaderboardSearchParams({
-                        mode: nextMode,
-                        leaderboard: content.value,
-                        playerCount,
-                        fight: nextMode === 'dps' ? selectedFight : undefined,
-                    });
-                }}
-            />
-
-            <Box display="flex" pt={0} pb={2} gap={1} flexWrap="wrap" alignItems="center">
-                <Select
+            <FilterToolbar
+                modeSelector={(
+                    <DurationDpsModeSelector
+                        value={mode}
+                        onChange={(nextMode) => {
+                            setLeaderboardSearchParams({
+                                mode: nextMode,
+                                leaderboard: content.value,
+                                playerCount,
+                                fight: nextMode === 'dps' ? selectedFight : undefined,
+                            });
+                        }}
+                    />
+                )}
+            >
+                <FilterSelect
+                    field="content"
                     value={content.value}
-                    onChange={(e) => {
-                        const selectedContent = LEADERBOARD_CONTENT_OPTIONS.find((o) => o.value === e.target.value)!;
+                    options={LEADERBOARD_CONTENT_OPTIONS.map((option) => ({
+                        value: option.value,
+                        label: option.label,
+                    }))}
+                    sx={{minWidth: {xs: 120, sm: 160}}}
+                    onChange={(nextContentValue) => {
+                        const selectedContent = LEADERBOARD_CONTENT_OPTIONS.find(
+                            (option) => option.value === nextContentValue,
+                        )!;
                         setContent(selectedContent);
                         const newDefault = selectedContent.defaultPlayerCount;
                         setPlayerCount(newDefault);
-                        const fights = dpsConfig.find((group) => group.contentName === selectedContent.value)?.fights ?? [];
+                        const fights = dpsConfig.find(
+                            (group) => group.contentName === selectedContent.value,
+                        )?.fights ?? [];
                         const nextFight = fights.includes('Overall') ? 'Overall' : (fights[0] ?? 'Overall');
                         setSelectedFight(nextFight);
                         setLeaderboardSearchParams({
@@ -275,213 +469,41 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
                             fight: mode === 'dps' ? nextFight : undefined,
                         });
                     }}
-                    size="small"
-                >
-                    {LEADERBOARD_CONTENT_OPTIONS.map((o) => (
-                        <MenuItem key={o.value} value={o.value}>
-                            {o.label}
-                        </MenuItem>
-                    ))}
-                </Select>
+                />
 
                 {mode === 'dps' && availableFights.length > 0 && (
-                    <Select
+                    <FilterSelect
+                        field="fight"
                         value={selectedFight}
-                        onChange={(e) => {
-                            const fight = e.target.value;
+                        options={availableFights.map((fight) => ({
+                            value: fight,
+                            label: fight,
+                        }))}
+                        sx={{minWidth: {xs: 100, sm: 120}}}
+                        onChange={(fight) => {
                             setSelectedFight(fight);
                             updateSearchParams({fight});
                         }}
-                        size="small"
-                    >
-                        {availableFights.map((fight) => (
-                            <MenuItem key={fight} value={fight}>
-                                {fight}
-                            </MenuItem>
-                        ))}
-                    </Select>
+                    />
                 )}
 
-                <Select
+                <FilterSelect
+                    field="team"
                     value={playerCount}
-                    onChange={(e) => {
-                        const count = Number(e.target.value);
+                    compact
+                    sx={filterFieldCompactSx}
+                    options={content.playerCounts.map((pc) => ({
+                        value: pc,
+                        label: pc,
+                    }))}
+                    onChange={(count) => {
                         setPlayerCount(count);
                         updateSearchParams({playerCount: count.toString()});
                     }}
-                    size="small"
-                >
-                    {content.playerCounts.map((pc) => (
-                        <MenuItem key={pc} value={pc}>
-                            {pc}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </Box>
+                />
+            </FilterToolbar>
 
-            {mode === 'duration' && durationEntries && durationEntries.length > 0 ? (
-                <Box>
-                    <TableContainer>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell sx={{color: 'white'}}>Rank</TableCell>
-                                    <TableCell sx={{color: 'white'}}>Duration</TableCell>
-                                    <TableCell sx={{color: 'white'}}>Players</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {durationEntries
-                                    .slice((page - 1) * entriesPerPage, page * entriesPerPage)
-                                    .map((row, idx) => {
-                                        const actualRank = (page - 1) * entriesPerPage + idx + 1;
-                                        const isHighlighted = highlightRank === actualRank;
-                                        const rankColor = getPercentileAccentColor(row.percentile);
-                                        return (
-                                            <TableRow
-                                                key={row.id}
-                                                ref={isHighlighted ? highlightedRowRef : undefined}
-                                                {...encounterTableRowProps(navigate, row.id, {
-                                                    durationResultType,
-                                                })}
-                                                sx={{
-                                                    cursor: 'pointer',
-                                                    ...(isHighlighted ? highlightedRowSx : {}),
-                                                }}
-                                            >
-                                                <TableCell sx={{color: rankColor, fontWeight: 'bold'}}>
-                                                    <Link
-                                                        component={RouterLink}
-                                                        to={getEncounterHref(row.id, {durationResultType})}
-                                                        onClick={stopRowClick}
-                                                        sx={{textDecoration: 'none', color: 'inherit', '&:hover': {textDecoration: 'underline'}}}
-                                                    >
-                                                        <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-                                                            {actualRank}
-                                                            {actualRank === 1 && <CrownIcon />}
-                                                            {actualRank === 2 && <MedalIcon color={colors.medal.silver} />}
-                                                            {actualRank === 3 && <MedalIcon color={colors.medal.bronze} />}
-                                                        </Box>
-                                                    </Link>
-                                                </TableCell>
-                                                <TableCell sx={{color: 'white'}}>{ticksToTime(row.duration)}</TableCell>
-                                                <TableCell sx={{color: 'white'}}>
-                                                    {row.players.map((player, i) => (
-                                                        <React.Fragment key={player}>
-                                                            <Link component={RouterLink} to={`/player/${player}`}
-                                                                  underline="hover" onClick={stopRowClick}>
-                                                                {player}
-                                                            </Link>
-                                                            {i < row.players.length - 1 ? ', ' : ''}
-                                                        </React.Fragment>
-                                                    ))}
-                                                </TableCell>
-                                            </TableRow>
-                                        );
-                                    })}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    <Box display="flex" justifyContent="center" pt={0} pb={1}>
-                        <Pagination
-                            count={Math.ceil(durationEntries.length / entriesPerPage)}
-                            page={page}
-                            onChange={(_, value) => setPage(value)}
-                            sx={{
-                                '& .MuiPaginationItem-root': {color: 'white'},
-                                '& .MuiPaginationItem-root.Mui-selected': {
-                                    backgroundColor: 'white',
-                                    color: 'black',
-                                    borderRadius: '4px',
-                                },
-                            }}
-                        />
-                    </Box>
-                </Box>
-            ) : mode === 'dps' && dpsEntries && dpsEntries.length > 0 ? (
-                <Box>
-                    <TableContainer>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell sx={{color: 'white'}}>Rank</TableCell>
-                                    <TableCell sx={{color: 'white'}}>Player</TableCell>
-                                    <TableCell sx={{color: 'white'}}>DPS</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {dpsEntries
-                                    .slice((page - 1) * entriesPerPage, page * entriesPerPage)
-                                    .map((row) => {
-                                        const percentile = dpsTotal <= 1
-                                            ? 100
-                                            : Math.round(((dpsTotal - row.rank) / (dpsTotal - 1)) * 100);
-                                        const dpsColor = getDpsPercentileColor(percentile);
-                                        const isHighlighted = highlightRank === row.rank;
-
-                                        return (
-                                            <TableRow
-                                                key={`${row.player}-${row.rank}`}
-                                                ref={isHighlighted ? highlightedRowRef : undefined}
-                                                {...encounterTableRowProps(navigate, row.encounterId, {
-                                                    encounterType: row.encounterType,
-                                                    fightKey: selectedFight,
-                                                })}
-                                                sx={{
-                                                    cursor: 'pointer',
-                                                    ...(isHighlighted ? highlightedRowSx : {}),
-                                                }}
-                                            >
-                                                <TableCell sx={{color: dpsColor, fontWeight: 'bold'}}>
-                                                    <Link
-                                                        component={RouterLink}
-                                                        to={getEncounterHref(row.encounterId, {
-                                                            encounterType: row.encounterType,
-                                                            fightKey: selectedFight,
-                                                        })}
-                                                        onClick={stopRowClick}
-                                                        sx={{textDecoration: 'none', color: 'inherit', '&:hover': {textDecoration: 'underline'}}}
-                                                    >
-                                                        <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-                                                            {row.rank}
-                                                            {row.rank === 1 && <CrownIcon />}
-                                                            {row.rank === 2 && <MedalIcon color={colors.medal.silver} />}
-                                                            {row.rank === 3 && <MedalIcon color={colors.medal.bronze} />}
-                                                        </Box>
-                                                    </Link>
-                                                </TableCell>
-                                                <TableCell sx={{color: 'white'}}>
-                                                    <Link component={RouterLink} to={`/player/${row.player}`}
-                                                          underline="hover" onClick={stopRowClick}>
-                                                        {row.player}
-                                                    </Link>
-                                                </TableCell>
-                                                <TableCell sx={{color: dpsColor, fontWeight: 'bold'}}>{row.dps}</TableCell>
-                                            </TableRow>
-                                        );
-                                    })}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    <Box display="flex" justifyContent="center" pt={0} pb={1}>
-                        <Pagination
-                            count={Math.ceil(dpsEntries.length / entriesPerPage)}
-                            page={page}
-                            onChange={(_, value) => setPage(value)}
-                            sx={{
-                                '& .MuiPaginationItem-root': {color: 'white'},
-                                '& .MuiPaginationItem-root.Mui-selected': {
-                                    backgroundColor: 'white',
-                                    color: 'black',
-                                    borderRadius: '4px',
-                                },
-                            }}
-                        />
-                    </Box>
-                </Box>
-            ) : (
-                <Typography py={2} color="white">No records yet.</Typography>
-            )}
+            {renderLeaderboardContent()}
         </Box>
     );
 };
