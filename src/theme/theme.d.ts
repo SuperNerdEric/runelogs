@@ -6,6 +6,7 @@ declare module '@mui/material/styles' {
             gold: string;
             player: string;
             other: string;
+            unknown: string;
             dps: string;
             damage: string;
             heal: string;

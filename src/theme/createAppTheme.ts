@@ -24,6 +24,7 @@ const theme = createTheme({
             gold: colors.text.gold,
             player: colors.text.player,
             other: colors.text.other,
+            unknown: colors.text.unknown,
             dps: colors.text.dps,
             damage: colors.text.damage,
             heal: colors.text.heal,

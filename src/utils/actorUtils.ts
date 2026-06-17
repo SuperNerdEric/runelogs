@@ -2,13 +2,19 @@ import {Actor} from "../models/Actor";
 import {LogLine} from "../models/LogLine";
 import {BOSS_IDS, BOAT_IDS, BOAT_ID_TO_NAME} from "./constants";
 
+export const UNKNOWN_PLAYER_NAME = 'Unknown';
+
+export function isUnknownPlayer(playerId: string): boolean {
+    return playerId === UNKNOWN_PLAYER_NAME;
+}
+
 export const getActorName = (log: LogLine, key: 'source' | 'target'): string => {
     if (key in log) {
         // @ts-ignore https://github.com/microsoft/TypeScript/issues/56389
         const actor: Actor = log[key];
         if (actor && actor.id && BOAT_IDS.includes(actor.id)) {
             if (key === 'source') {
-                return "Unknown";
+                return UNKNOWN_PLAYER_NAME;
             } else {
                 const boatName = BOAT_ID_TO_NAME[actor.id] || "Boat";
                 return actor.index !== undefined ? `${boatName}-${actor.index}` : boatName;
@@ -32,7 +38,7 @@ export const getActorFromLog = (log: LogLine, key: 'source' | 'target'): Actor |
         }
         if (actor.id && BOAT_IDS.includes(actor.id)) {
             if (key === 'source') {
-                return {...actor, name: "Unknown"};
+                return {...actor, name: UNKNOWN_PLAYER_NAME};
             }
             const boatName = BOAT_ID_TO_NAME[actor.id] || "Boat";
             return {...actor, name: actor.index !== undefined ? `${boatName}-${actor.index}` : boatName};

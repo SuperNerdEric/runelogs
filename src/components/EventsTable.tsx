@@ -17,7 +17,7 @@ import {colors, layout} from "../theme";
 import {ActorFilter, matchesLogActorFilters} from "../utils/actorFilter";
 import {EquipmentFilter, buildEquipmentTimelines, matchesEquipmentFilter} from "../utils/equipmentFilter";
 import {PrayerFilter, buildPrayerTimelines, matchesPrayerFilter} from "../utils/prayerFilter";
-import {getActorFromLog, getActorName, getActorSpecificIds} from "../utils/actorUtils";
+import {getActorFromLog, getActorName, getActorSpecificIds, isUnknownPlayer} from "../utils/actorUtils";
 import {itemIdMap} from "../lib/itemIdMap";
 import {prayerIdMap} from "../lib/prayerIdMap";
 import {prayerImages} from "../lib/prayerImages";
@@ -65,7 +65,20 @@ const getFilterTextColor = (filter: ActorFilter, loggedInPlayer: string): string
     if (filter.name === loggedInPlayer) {
         return colors.text.player;
     }
+    if (isUnknownPlayer(filter.name)) {
+        return colors.text.unknown;
+    }
     return colors.text.other;
+};
+
+const getSourceTextClass = (source: string, loggedInPlayer: string): string => {
+    if (source === loggedInPlayer) {
+        return 'logged-in-player-text';
+    }
+    if (isUnknownPlayer(source)) {
+        return 'unknown-text';
+    }
+    return 'other-text';
 };
 
 export const renderStatImages = (levels: Levels) => {
@@ -589,8 +602,7 @@ const EventsTable: React.FC<EventsTableProps> = ({
                                         {log.type === LogTypes.PATH_COMPLETE ? `${log.pathName}` : ""}
                                         {log.type === LogTypes.DURATION ? `${log.duration}` : ""}
                                         </TableCell>
-                                        <TableCell
-                                            className={source === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>
+                                        <TableCell className={getSourceTextClass(source, loggedInPlayer)}>
                                             {(() => {
                                                 const sourceActor = getActorFromLog(log, 'source');
                                                 return sourceActor && onSelectSourceFilter ? (

@@ -13,9 +13,10 @@ import RunInfoBox from './RunInfoBox';
 import PageBreadcrumbs from './PageBreadcrumbs';
 import {contentColumnSx, pageHeroTitleSx} from '../theme';
 import {colors} from '../theme';
-import {getDpsPercentileColor} from '../utils/TickActivity';
 import {displayUsername, ticksToTime} from '../utils/utils';
 import {getEncounterHref} from '../utils/encounterTableRow';
+import {isUnknownPlayer, UNKNOWN_PLAYER_NAME} from '../utils/actorUtils';
+import {getPlayerDpsDisplayColor} from '../utils/percentile';
 import RunSummaryRankBadges from './badges/RunSummaryRankBadges';
 import {resolvePlayerRankPercentile} from './badges/playerRankPercentile';
 import '../App.css';
@@ -126,7 +127,9 @@ const FightGroupSummary: React.FC = () => {
         if (!data) {
             return [];
         }
-        return data.playerRanks.filter((entry) => TOP_RANK_CATEGORIES.has(entry.category));
+        return data.playerRanks.filter(
+            (entry) => TOP_RANK_CATEGORIES.has(entry.category) && !isUnknownPlayer(entry.playerId),
+        );
     }, [data]);
 
     const fightRankBadgesByKey = useMemo(() => {
@@ -135,7 +138,7 @@ const FightGroupSummary: React.FC = () => {
         }
         const map = new Map<string, PlayerRank[]>();
         for (const entry of data.playerRanks) {
-            if (TOP_RANK_CATEGORIES.has(entry.category)) {
+            if (TOP_RANK_CATEGORIES.has(entry.category) || isUnknownPlayer(entry.playerId)) {
                 continue;
             }
             const list = map.get(entry.category) ?? [];
@@ -244,13 +247,15 @@ const FightGroupSummary: React.FC = () => {
                         <span className="encounter-title-bar-name">Overall Damage</span>
                     </Box>
                     <DamageMeterTable
-                        colorByDamageRank
-                        rows={data.overallDps.map((row) => ({
+                        rows={data.overallDps.map((row) => {
+                            const unknown = isUnknownPlayer(row.playerId);
+                            const dpsDisplay = getPlayerDpsDisplayColor(row.playerId, row.percentile);
+                            return {
                             key: row.playerId,
                             name: (
                                 <>
-                                    {row.playerId === 'Unknown' ? (
-                                        'Unknown'
+                                    {unknown ? (
+                                        UNKNOWN_PLAYER_NAME
                                     ) : (
                                         <Link
                                             component={RouterLink}
@@ -263,13 +268,13 @@ const FightGroupSummary: React.FC = () => {
                                     )}
                                 </>
                             ),
+                            nameClassName: unknown ? 'unknown-text' : undefined,
                             damageDealt: row.damageDealt,
                             dps: row.dps,
-                            dpsColor: row.percentile !== undefined
-                                ? getDpsPercentileColor(row.percentile)
-                                : colors.text.dps,
-                            useDpsTextClass: row.percentile === undefined,
-                        }))}
+                            dpsColor: dpsDisplay.color,
+                            useDpsTextClass: dpsDisplay.useDpsTextClass,
+                        };
+                        })}
                     />
                 </Box>
             )}
@@ -278,7 +283,9 @@ const FightGroupSummary: React.FC = () => {
                 <FightGroupFightRows
                     fights={data.fights.map((fight, fightGroupIndex) => {
                         const fightKey = fight.dpsLeaderboardKey ?? fight.name;
-                        const rankBadges = (fightRankBadgesByKey.get(fightKey) ?? []).map((entry) => ({
+                        const rankBadges = (fightRankBadgesByKey.get(fightKey) ?? [])
+                            .filter((entry) => !isUnknownPlayer(entry.playerId))
+                            .map((entry) => ({
                             playerId: entry.playerId,
                             rank: entry.rank,
                             percentile: resolvePlayerRankPercentile(entry, percentileContext),

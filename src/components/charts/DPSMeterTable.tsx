@@ -2,7 +2,9 @@ import {Fight} from "../../models/Fight";
 import React, {useEffect, useState} from "react";
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
 import {DamageLog, LogTypes} from "../../models/LogLine";
-import {getFightPerformanceByPlayer, getPercentColor, getDpsPercentileColor} from "../../utils/TickActivity";
+import {getFightPerformanceByPlayer, getPercentColor} from "../../utils/TickActivity";
+import {isUnknownPlayer} from "../../utils/actorUtils";
+import {getPlayerDpsDisplayColor} from "../../utils/percentile";
 import {BOAT_IDS, BOAT_ID_TO_NAME} from "../../utils/constants";
 import {calculatePlayerDps, getFightDurationSeconds} from "../../utils/dpsCalculation";
 import {ActorFilter} from "../../utils/actorFilter";
@@ -186,6 +188,11 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
                 <TableBody>
                     {sortedDPSData.map(([source, data]: [string, DPSData], index: number) => {
                         const damagePercentage = Number(((data.totalDamage / totalDamage) * 100).toFixed(2));
+                        const unknown = isUnknownPlayer(source);
+                        const dpsDisplay = getPlayerDpsDisplayColor(
+                            source,
+                            type === 'damage-done' ? dpsPercentiles?.[source] : undefined,
+                        );
 
                         return (
                             <TableRow key={index} className={index % 2 === 0 ? 'even-row' : 'odd-row'}
@@ -194,7 +201,13 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
                                       onMouseLeave={(e) => e.currentTarget.classList.remove('highlighted-row')}>
                                 <TableCell
                                     style={{width: '100px', textAlign: 'left'}}
-                                    className={source === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}
+                                    className={
+                                        unknown
+                                            ? 'unknown-text'
+                                            : source === loggedInPlayer
+                                                ? 'logged-in-player-text'
+                                                : 'other-text'
+                                    }
                                 >
                                     <span
                                         className="link"
@@ -220,7 +233,11 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
                                                     marginRight: '5px'
                                                 }}>{damagePercentage ? `${damagePercentage}%` : ``}</span>
                                         <div style={{
-                                            backgroundColor: source === loggedInPlayer ? colors.text.player : colors.dpsMeter.playerHighlight,
+                                            backgroundColor: unknown
+                                                ? colors.text.unknown
+                                                : source === loggedInPlayer
+                                                    ? colors.text.player
+                                                    : colors.dpsMeter.playerHighlight,
                                             height: '14px',
                                             marginRight: '10px',
                                             marginTop: '3px',
@@ -231,8 +248,12 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
                                     </div>
                                 </TableCell>
                                 {type === "damage-done" && (
-                                    <TableCell style={{width: '60px', textAlign: 'right', color: source === "Unknown" ? undefined : getPercentColor(data.activity)}}>
-                                        {source === "Unknown" ? "-" : `${data.activity}%`}
+                                    <TableCell style={{
+                                        width: '60px',
+                                        textAlign: 'right',
+                                        color: unknown ? colors.text.unknown : getPercentColor(data.activity),
+                                    }}>
+                                        {unknown ? "-" : `${data.activity}%`}
                                     </TableCell>
                                 )}
                                 <TableCell style={{width: '70px', textAlign: 'right'}}>{data.accuracy}%</TableCell>
@@ -240,11 +261,9 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
                                     style={{
                                         width: '70px',
                                         textAlign: 'right',
-                                        color: type === 'damage-done' && dpsPercentiles?.[source] !== undefined
-                                            ? getDpsPercentileColor(dpsPercentiles[source])
-                                            : undefined,
+                                        color: type === 'damage-done' ? dpsDisplay.color : undefined,
                                     }}
-                                    className={type === 'damage-done' && dpsPercentiles?.[source] === undefined ? 'dps-text' : undefined}
+                                    className={type === 'damage-done' && dpsDisplay.useDpsTextClass ? 'dps-text' : undefined}
                                 >
                                     {data.dps}
                                 </TableCell>

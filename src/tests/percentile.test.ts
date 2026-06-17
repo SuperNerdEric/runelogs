@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest';
-import {getPercentileAccentColor, rankToPercentile} from '../utils/percentile';
+import {getPercentileAccentColor, getPlayerDpsDisplayColor, rankToPercentile} from '../utils/percentile';
 import {colors} from '../theme';
 
 describe('rankToPercentile', () => {
@@ -23,5 +23,27 @@ describe('getPercentileAccentColor', () => {
 
     it('uses the top-tier color for a perfect percentile', () => {
         expect(getPercentileAccentColor(100)).toBe(colors.percentile.p100);
+    });
+});
+
+describe('getPlayerDpsDisplayColor', () => {
+    it('uses the unknown color for unidentified players', () => {
+        expect(getPlayerDpsDisplayColor('Unknown')).toEqual({
+            color: colors.text.unknown,
+            useDpsTextClass: false,
+        });
+    });
+
+    it('uses percentile color when ranked', () => {
+        const result = getPlayerDpsDisplayColor('player1', 99);
+        expect(result.useDpsTextClass).toBe(false);
+        expect(result.color).toBe(colors.percentile.p99);
+    });
+
+    it('falls back to dps text class when unranked', () => {
+        expect(getPlayerDpsDisplayColor('player1')).toEqual({
+            color: colors.text.dps,
+            useDpsTextClass: true,
+        });
     });
 });
