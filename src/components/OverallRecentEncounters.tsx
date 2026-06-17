@@ -15,10 +15,15 @@ import {
 import {Link as RouterLink, useNavigate, useSearchParams} from 'react-router-dom';
 import {encounterTableRowProps, getEncounterHref, stopRowClick} from '../utils/encounterTableRow';
 import {
+    BROWSE_ANY_PLAYER_COUNT,
+    BrowsePlayerCount,
+    buildBrowsePlayerCountOptions,
     buildRecentEncountersHref,
+    browsePlayerCountToApiParam,
     isRecentEncountersAllContent,
     RECENT_ENCOUNTERS_CONTENT_OPTIONS,
     RecentEncountersContentOption,
+    resolveBrowsePlayerCount,
     resolveRecentEncountersContent,
 } from '../utils/leaderboardContent';
 import {colors} from '../theme';
@@ -47,21 +52,9 @@ interface OverallRecentEncountersProps {
     entriesPerPage?: number;
 }
 
-function resolvePlayerCount(
-    content: RecentEncountersContentOption,
-    playerCountParam: number,
-): number {
-    if (isRecentEncountersAllContent(content.value) || content.defaultPlayerCount == null) {
-        return content.defaultPlayerCount ?? 1;
-    }
-    return content.playerCounts.includes(playerCountParam)
-        ? playerCountParam
-        : content.defaultPlayerCount;
-}
-
 function toSearchParams(
     content: RecentEncountersContentOption,
-    playerCount: number,
+    playerCount: BrowsePlayerCount,
     page: number,
 ): Record<string, string> {
     return Object.fromEntries(
@@ -70,7 +63,7 @@ function toSearchParams(
                 content: content.value,
                 playerCount: isRecentEncountersAllContent(content.value)
                     ? undefined
-                    : playerCount,
+                    : browsePlayerCountToApiParam(playerCount),
                 page,
             }).split('?')[1] ?? '',
         ),
@@ -100,11 +93,11 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
     const [searchParams, setSearchParams] = useSearchParams();
 
     const contentParam = embedded ? null : searchParams.get('content');
-    const playerCountParam = embedded ? NaN : parseInt(searchParams.get('playerCount') || '', 10);
+    const playerCountParam = embedded ? null : searchParams.get('playerCount');
     const pageParam = embedded ? 1 : parseInt(searchParams.get('page') || '', 10);
 
     const initialContent = resolveRecentEncountersContent(contentParam);
-    const initialPlayerCount = resolvePlayerCount(initialContent, playerCountParam);
+    const initialPlayerCount = resolveBrowsePlayerCount(initialContent, playerCountParam);
     const initialPage = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
 
     const [content, setContent] = useState(initialContent);
@@ -123,9 +116,9 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
         }
 
         const newContent = resolveRecentEncountersContent(searchParams.get('content'));
-        const newPlayerCount = resolvePlayerCount(
+        const newPlayerCount = resolveBrowsePlayerCount(
             newContent,
-            parseInt(searchParams.get('playerCount') || '', 10),
+            searchParams.get('playerCount'),
         );
         const newPageParam = parseInt(searchParams.get('page') || '', 10);
         const newPage = Number.isFinite(newPageParam) && newPageParam > 0 ? newPageParam : 1;
@@ -147,7 +140,10 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
 
             if (!embedded && !isRecentEncountersAllContent(content.value)) {
                 params.set('content', content.value);
-                params.set('playerCount', String(playerCount));
+                const apiPlayerCount = browsePlayerCountToApiParam(playerCount);
+                if (apiPlayerCount != null) {
+                    params.set('playerCount', String(apiPlayerCount));
+                }
             }
 
             const res = await fetch(
@@ -170,7 +166,7 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
 
     const updateSearchParams = (updates: {
         content?: RecentEncountersContentOption;
-        playerCount?: number;
+        playerCount?: BrowsePlayerCount;
         page?: number;
     }) => {
         const nextContent = updates.content ?? content;
@@ -206,7 +202,7 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
                             const selectedContent = RECENT_ENCOUNTERS_CONTENT_OPTIONS.find(
                                 (option) => option.value === nextContentValue,
                             )!;
-                            const newPlayerCount = selectedContent.defaultPlayerCount ?? 1;
+                            const newPlayerCount = BROWSE_ANY_PLAYER_COUNT;
                             setContent(selectedContent);
                             setPlayerCount(newPlayerCount);
                             setPage(1);
@@ -219,15 +215,12 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
                     />
 
                     {!isAllContent && content.defaultPlayerCount != null && (
-                        <FilterSelect
+                        <FilterSelect<BrowsePlayerCount>
                             field="team"
                             value={playerCount}
                             compact
                             sx={filterFieldCompactSx}
-                            options={content.playerCounts.map((pc) => ({
-                                value: pc,
-                                label: pc,
-                            }))}
+                            options={buildBrowsePlayerCountOptions(content.playerCounts)}
                             onChange={(count) => {
                                 setPlayerCount(count);
                                 setPage(1);

@@ -61,6 +61,47 @@ export function isRecentEncountersAllContent(value: string): boolean {
     return value === RECENT_ENCOUNTERS_ALL_CONTENT;
 }
 
+/** Sentinel for browse filters (recent encounters, uploader logs) that match any party size. */
+export const BROWSE_ANY_PLAYER_COUNT = 'any' as const;
+
+export type BrowsePlayerCount = number | typeof BROWSE_ANY_PLAYER_COUNT;
+
+export function resolveBrowsePlayerCount(
+    content: RecentEncountersContentOption,
+    playerCountParam: string | null,
+): BrowsePlayerCount {
+    if (isRecentEncountersAllContent(content.value)) {
+        return BROWSE_ANY_PLAYER_COUNT;
+    }
+    if (!playerCountParam) {
+        return BROWSE_ANY_PLAYER_COUNT;
+    }
+    const parsed = parseInt(playerCountParam, 10);
+    if (Number.isFinite(parsed) && content.playerCounts.includes(parsed)) {
+        return parsed;
+    }
+    return BROWSE_ANY_PLAYER_COUNT;
+}
+
+export function browsePlayerCountToApiParam(playerCount: BrowsePlayerCount): number | undefined {
+    return playerCount === BROWSE_ANY_PLAYER_COUNT ? undefined : playerCount;
+}
+
+export function buildLeaderboardPlayerCountOptions(
+    playerCounts: readonly number[],
+): Array<{value: number; label: string}> {
+    return playerCounts.map((pc) => ({value: pc, label: String(pc)}));
+}
+
+export function buildBrowsePlayerCountOptions(
+    playerCounts: readonly number[],
+): Array<{value: BrowsePlayerCount; label: string}> {
+    return [
+        {value: BROWSE_ANY_PLAYER_COUNT, label: 'Any'},
+        ...buildLeaderboardPlayerCountOptions(playerCounts),
+    ];
+}
+
 export function buildRecentEncountersHref(params: {
     content?: string;
     playerCount?: number;
