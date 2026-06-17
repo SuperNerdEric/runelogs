@@ -9,6 +9,7 @@ import TopBar from "./components/TopBar";
 import Upload from "./components/Upload";
 import Log from "./components/Log/Log";
 import Logs from "./components/Logs";
+import LogsPageHeaderVariants from "./components/dev/LogsPageHeaderVariants";
 import theme from './theme';
 import ThemeVariables from './theme/ThemeVariables';
 import {ThemeProvider} from "@mui/material";
@@ -64,6 +65,7 @@ function AppRoutes() {
                 <Route path="/live-log" element={<LiveLog/>}/>
                 <Route path="/log/:logId" element={<Log/>}/>
                 <Route path="/logs/:uploaderId" element={<Logs/>}/>
+                <Route path="/dev/logs-header-variants" element={<LogsPageHeaderVariants/>}/>
             </Routes>
             </main>
         </div>
