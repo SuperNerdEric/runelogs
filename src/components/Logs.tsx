@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Link as RouterLink, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
     Alert,
     Box,
@@ -28,6 +28,16 @@ import {closeSnackbar, SnackbarKey, useSnackbar} from "notistack";
 import {colors, contentColumnSx, logNameTextSx, accountTextSx, media} from "../theme";
 import {displayUsername} from "../utils/utils";
 import {logTableRowProps, stopRowClick} from "../utils/encounterTableRow";
+import FilterSelect from './filters/FilterSelect';
+import FilterToolbar from './filters/FilterToolbar';
+import {filterFieldCompactSx} from './filters/filterStyles';
+import {
+    buildUploaderLogsHref,
+    isRecentEncountersAllContent,
+    RECENT_ENCOUNTERS_CONTENT_OPTIONS,
+    RecentEncountersContentOption,
+    resolveRecentEncountersContent,
+} from '../utils/leaderboardContent';
 
 interface LogItem {
     id: string;
@@ -85,6 +95,69 @@ const pageHeaderIconBoxSx = {
     bgcolor: colors.background.surfaceAlt,
     border: `1px solid ${colors.border.default}`,
 } as const;
+
+function resolvePlayerCount(
+    content: RecentEncountersContentOption,
+    playerCountParam: number,
+): number {
+    if (isRecentEncountersAllContent(content.value) || content.defaultPlayerCount == null) {
+        return content.defaultPlayerCount ?? 1;
+    }
+    return content.playerCounts.includes(playerCountParam)
+        ? playerCountParam
+        : content.defaultPlayerCount;
+}
+
+function toSearchParams(
+    uploaderId: string,
+    content: RecentEncountersContentOption,
+    playerCount: number,
+): Record<string, string> {
+    return Object.fromEntries(
+        new URLSearchParams(
+            buildUploaderLogsHref(uploaderId, {
+                content: content.value,
+                playerCount: isRecentEncountersAllContent(content.value)
+                    ? undefined
+                    : playerCount,
+            }).split('?')[1] ?? '',
+        ),
+    );
+}
+
+const getComparator = (order: Order, orderBy: SortKey) => {
+    return (a: LogItem, b: LogItem) => {
+        let valA: number | string = '';
+        let valB: number | string = '';
+
+        switch (orderBy) {
+            case 'name':
+                valA = a.name ?? '';
+                valB = b.name ?? '';
+                break;
+            case 'uploadedAt':
+                valA = new Date(a.uploadedAt).getTime();
+                valB = new Date(b.uploadedAt).getTime();
+                break;
+            case 'fights':
+                valA = a._count.fights;
+                valB = b._count.fights;
+                break;
+            case 'fightGroups':
+                valA = a._count.fightGroups;
+                valB = b._count.fightGroups;
+                break;
+        }
+
+        if (valA < valB) {
+            return order === 'asc' ? -1 : 1;
+        }
+        if (valA > valB) {
+            return order === 'asc' ? 1 : -1;
+        }
+        return 0;
+    };
+};
 
 interface LogNameCellProps {
     log: LogItem;
@@ -229,8 +302,17 @@ const LogsPageHeader: React.FC<LogsPageHeaderProps> = ({ uploaderId }) => (
 const Logs: React.FC = () => {
     const { uploaderId } = useParams<{ uploaderId: string }>();
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
     const { user, getAccessTokenSilently } = useAuth0();
     const {enqueueSnackbar} = useSnackbar();
+
+    const contentParam = searchParams.get('content');
+    const playerCountParam = parseInt(searchParams.get('playerCount') || '', 10);
+    const initialContent = resolveRecentEncountersContent(contentParam);
+    const initialPlayerCount = resolvePlayerCount(initialContent, playerCountParam);
+
+    const [content, setContent] = useState(initialContent);
+    const [playerCount, setPlayerCount] = useState(initialPlayerCount);
     const [logs, setLogs] = useState<LogItem[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -239,6 +321,31 @@ const Logs: React.FC = () => {
     const [orderBy, setOrderBy] = useState<SortKey>('uploadedAt');
     const [order, setOrder] = useState<Order>('desc');
     const canEditLogs = user?.username === uploaderId;
+    const isAllContent = isRecentEncountersAllContent(content.value);
+
+    useEffect(() => {
+        const newContent = resolveRecentEncountersContent(searchParams.get('content'));
+        const newPlayerCount = resolvePlayerCount(
+            newContent,
+            parseInt(searchParams.get('playerCount') || '', 10),
+        );
+
+        setContent(newContent);
+        setPlayerCount(newPlayerCount);
+    }, [searchParams]);
+
+    const updateSearchParams = (updates: {
+        content?: RecentEncountersContentOption;
+        playerCount?: number;
+    }) => {
+        if (!uploaderId) {
+            return;
+        }
+
+        const nextContent = updates.content ?? content;
+        const nextPlayerCount = updates.playerCount ?? playerCount;
+        setSearchParams(toSearchParams(uploaderId, nextContent, nextPlayerCount));
+    };
 
     const action = (snackbarId: SnackbarKey) => (
         <IconButton
@@ -251,34 +358,42 @@ const Logs: React.FC = () => {
         </IconButton>
     );
 
-    useEffect(() => {
+    const fetchLogs = useCallback(async () => {
         if (!uploaderId) {
             setError('No uploader ID provided in URL.');
             setLoading(false);
             return;
         }
 
-        const fetchLogs = async () => {
-            setLoading(true);
-            setError(null);
+        setLoading(true);
+        setError(null);
 
-            try {
-                const resp = await fetch(`${import.meta.env.VITE_API_URL}/logs/${uploaderId}`);
-                if (!resp.ok) {
-                    throw new Error(`Server returned ${resp.status}`);
-                }
-                const data: LogsResponse = await resp.json();
-                setLogs(data.logs);
-            } catch (err: any) {
-                console.error('Failed to fetch logs:', err);
-                setError(err.message || 'Unknown error');
-            } finally {
-                setLoading(false);
+        try {
+            const params = new URLSearchParams();
+            if (!isRecentEncountersAllContent(content.value)) {
+                params.set('content', content.value);
+                params.set('playerCount', String(playerCount));
             }
-        };
 
-        fetchLogs();
-    }, [uploaderId]);
+            const query = params.toString();
+            const url = `${import.meta.env.VITE_API_URL}/logs/${uploaderId}${query ? `?${query}` : ''}`;
+            const resp = await fetch(url);
+            if (!resp.ok) {
+                throw new Error(`Server returned ${resp.status}`);
+            }
+            const data: LogsResponse = await resp.json();
+            setLogs(data.logs);
+        } catch (err: any) {
+            console.error('Failed to fetch logs:', err);
+            setError(err.message || 'Unknown error');
+        } finally {
+            setLoading(false);
+        }
+    }, [content.value, playerCount, uploaderId]);
+
+    useEffect(() => {
+        void fetchLogs();
+    }, [fetchLogs]);
 
     const handleRename = async (logId: string, name: string) => {
         try {
@@ -333,81 +448,98 @@ const Logs: React.FC = () => {
         }
     };
 
-    if (loading) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-                <CircularProgress color="inherit" />
-            </Box>
-        );
-    }
-
-    if (error) {
-        return (
-            <Box m={2}>
-                <Alert severity="error">{error}</Alert>
-            </Box>
-        );
-    }
-
-    if (!logs || logs.length === 0) {
-        return (
-            <Box sx={pageContainerSx}>
-                <LogsPageHeader uploaderId={uploaderId} />
-                <Typography variant="h6" sx={{ color: colors.text.primary }}>
-                    No logs found for this uploader.
-                </Typography>
-            </Box>
-        );
-    }
-
-    // Sorting helper functions
-    const getComparator = (order: Order, orderBy: SortKey) => {
-        return (a: LogItem, b: LogItem) => {
-            let valA: number | string = '';
-            let valB: number | string = '';
-
-            switch (orderBy) {
-                case 'name':
-                    valA = a.name ?? '';
-                    valB = b.name ?? '';
-                    break;
-                case 'uploadedAt':
-                    // Compare as timestamps
-                    valA = new Date(a.uploadedAt).getTime();
-                    valB = new Date(b.uploadedAt).getTime();
-                    break;
-                case 'fights':
-                    valA = a._count.fights;
-                    valB = b._count.fights;
-                    break;
-                case 'fightGroups':
-                    valA = a._count.fightGroups;
-                    valB = b._count.fightGroups;
-                    break;
-            }
-
-            if (valA < valB) {
-                return order === 'asc' ? -1 : 1;
-            }
-            if (valA > valB) {
-                return order === 'asc' ? 1 : -1;
-            }
-            return 0;
-        };
-    };
-
-    const sortedLogs = logs.slice().sort(getComparator(order, orderBy));
-
-    // Handler when a header is clicked
     const handleRequestSort = (property: SortKey) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
     };
 
+    const renderFilters = () => (
+        <FilterToolbar sx={{ mb: 2 }}>
+            <FilterSelect
+                field="content"
+                value={content.value}
+                options={RECENT_ENCOUNTERS_CONTENT_OPTIONS.map((option) => ({
+                    value: option.value,
+                    label: option.label,
+                }))}
+                sx={{minWidth: {xs: 100, sm: 140}}}
+                onChange={(nextContentValue) => {
+                    const selectedContent = RECENT_ENCOUNTERS_CONTENT_OPTIONS.find(
+                        (option) => option.value === nextContentValue,
+                    )!;
+                    const newPlayerCount = selectedContent.defaultPlayerCount ?? 1;
+                    setContent(selectedContent);
+                    setPlayerCount(newPlayerCount);
+                    updateSearchParams({
+                        content: selectedContent,
+                        playerCount: newPlayerCount,
+                    });
+                }}
+            />
+
+            {!isAllContent && content.defaultPlayerCount != null && (
+                <FilterSelect
+                    field="team"
+                    value={playerCount}
+                    compact
+                    sx={filterFieldCompactSx}
+                    options={content.playerCounts.map((pc) => ({
+                        value: pc,
+                        label: pc,
+                    }))}
+                    onChange={(count) => {
+                        setPlayerCount(count);
+                        updateSearchParams({playerCount: count});
+                    }}
+                />
+            )}
+        </FilterToolbar>
+    );
+
+    if (loading) {
+        return (
+            <Box sx={pageContainerSx}>
+                <LogsPageHeader uploaderId={uploaderId} />
+                <Box display="flex" justifyContent="center" alignItems="center" py={6}>
+                    <CircularProgress color="inherit" />
+                </Box>
+            </Box>
+        );
+    }
+
+    if (error) {
+        return (
+            <Box sx={pageContainerSx}>
+                <LogsPageHeader uploaderId={uploaderId} />
+                <Alert severity="error">{error}</Alert>
+            </Box>
+        );
+    }
+
+    const hasActiveFilter = !isAllContent;
+    const emptyMessage = hasActiveFilter
+        ? 'No logs found matching this filter.'
+        : 'No logs found for this uploader.';
+
+    if (!logs || logs.length === 0) {
+        return (
+            <Box sx={pageContainerSx}>
+                <LogsPageHeader uploaderId={uploaderId} />
+                {renderFilters()}
+                <Typography variant="h6" sx={{ color: colors.text.primary }}>
+                    {emptyMessage}
+                </Typography>
+            </Box>
+        );
+    }
+
+    const sortedLogs = logs.slice().sort(getComparator(order, orderBy));
+
     return (
         <Box sx={pageContainerSx}>
             <LogsPageHeader uploaderId={uploaderId} />
+            {renderFilters()}
 
             <TableContainer component={Paper} sx={{ backgroundColor: 'transparent', boxShadow: 'none', width: '100%' }}>
                 <Table sx={{ tableLayout: 'auto', width: '100%' }}>
