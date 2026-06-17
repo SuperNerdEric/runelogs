@@ -45,7 +45,7 @@ export type RecentEncountersContentOption = {
 };
 
 export const RECENT_ENCOUNTERS_CONTENT_OPTIONS: RecentEncountersContentOption[] = [
-    {label: 'All', value: RECENT_ENCOUNTERS_ALL_CONTENT, playerCounts: RECENT_ENCOUNTERS_PARTY_SIZES},
+    {label: 'All Content', value: RECENT_ENCOUNTERS_ALL_CONTENT, playerCounts: RECENT_ENCOUNTERS_PARTY_SIZES},
     ...LEADERBOARD_CONTENT_OPTIONS,
 ];
 
@@ -78,6 +78,24 @@ export function buildRecentEncountersHref(params: {
     }
     const query = search.toString();
     return query ? `/recent-encounters?${query}` : '/recent-encounters';
+}
+
+export function buildUploaderLogsHref(
+    uploaderId: string,
+    params: {
+        content?: string;
+        playerCount?: number;
+    } = {},
+): string {
+    const search = new URLSearchParams();
+    if (params.content && !isRecentEncountersAllContent(params.content)) {
+        search.set('content', params.content);
+    }
+    if (params.playerCount != null) {
+        search.set('playerCount', String(params.playerCount));
+    }
+    const query = search.toString();
+    return query ? `/logs/${uploaderId}?${query}` : `/logs/${uploaderId}`;
 }
 
 export type LeaderboardMode = 'time' | 'dps';
