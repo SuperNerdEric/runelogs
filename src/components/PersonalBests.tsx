@@ -3,8 +3,6 @@ import {
     Box,
     CircularProgress,
     Link,
-    MenuItem,
-    Select,
     Table,
     TableBody,
     TableCell,
@@ -26,6 +24,8 @@ import {CrownIcon} from "./CrownIcon";
 import MedalIcon from "./MedalIcon";
 import TrophyIcon from "./TrophyIcon";
 import DurationDpsModeSelector from './DurationDpsModeSelector';
+import FilterSelect from './filters/FilterSelect';
+import FilterToolbar from './filters/FilterToolbar';
 
 const partySizeColumnSx = {
     color: 'white',
@@ -275,7 +275,7 @@ const PersonalBests: React.FC = () => {
                 </Typography>
             </Box>
 
-            <DurationDpsModeSelector value={mode} onChange={setMode} />
+            <FilterToolbar modeSelector={<DurationDpsModeSelector value={mode} onChange={setMode} />}/>
 
             {isBusy && (
                 <Box display="flex" justifyContent="center" py={4}>
@@ -394,27 +394,28 @@ const PersonalBests: React.FC = () => {
 
                 return (
                     <Box key={content.value} mb={3}>
-                        <Box display="flex" alignItems="center" gap={1} flexWrap="wrap" mb={1}>
+                        <Box display="flex" alignItems="center" gap={1.5} flexWrap="wrap" mb={1.5}>
                             <Typography variant="h6" color="white" sx={{m: 0}}>
                                 {content.label}
                             </Typography>
                             {availableFights.length > 1 && (
-                                <Select
-                                    value={selectedFight}
-                                    onChange={(e) => {
-                                        setSelectedFights((prev) => ({
-                                            ...prev,
-                                            [content.value]: e.target.value,
-                                        }));
-                                    }}
-                                    size="small"
-                                >
-                                    {availableFights.map((fight) => (
-                                        <MenuItem key={fight} value={fight}>
-                                            {fight}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
+                                <Box sx={{minWidth: {xs: '100%', sm: 220}, flex: {sm: '0 0 220px'}}}>
+                                    <FilterSelect
+                                        field="fight"
+                                        value={selectedFight}
+                                        options={availableFights.map((fight) => ({
+                                            value: fight,
+                                            label: fight,
+                                        }))}
+                                        sx={{minWidth: 120}}
+                                        onChange={(fight) => {
+                                            setSelectedFights((prev) => ({
+                                                ...prev,
+                                                [content.value]: fight,
+                                            }));
+                                        }}
+                                    />
+                                </Box>
                             )}
                         </Box>
 
