@@ -32,6 +32,7 @@ export const colors = {
         rune: '#A9CAD3',
         player: '#abd473',
         other: '#b4bdff',
+        unknown: '#d8c48a',
         dps: '#d1fa99',
         damage: 'rgb(92%, 27%, 38%)',
         heal: 'rgb(0, 255, 4)',

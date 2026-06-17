@@ -172,7 +172,7 @@
 }
 
 .unknown-text {
-    color: var(--color-text-damage);
+    color: var(--color-text-unknown) !important;
 }
 
 .dps-text {

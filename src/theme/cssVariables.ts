@@ -32,6 +32,7 @@ export const cssVariables: Record<string, string> = {
     '--color-text-account': colors.text.rune,
     '--color-text-player': colors.text.player,
     '--color-text-other': colors.text.other,
+    '--color-text-unknown': colors.text.unknown,
     '--color-text-dps': colors.text.dps,
     '--color-text-damage': colors.text.damage,
     '--color-text-heal': colors.text.heal,

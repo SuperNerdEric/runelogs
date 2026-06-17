@@ -2,6 +2,7 @@ import React, {useMemo} from 'react';
 import PercentileRankBadge from './PercentileRankBadge';
 import RankBadgeCallout from './RankBadgeCallout';
 import {displayUsername} from '../../utils/utils';
+import {isUnknownPlayer} from '../../utils/actorUtils';
 import {buildFightDpsRankLeaderboardHref} from '../../utils/leaderboardContent';
 
 interface EncounterDpsRankBadgesProps {
@@ -24,6 +25,7 @@ const EncounterDpsRankBadges: React.FC<EncounterDpsRankBadgesProps> = ({
     const badges = useMemo(
         () =>
             Object.entries(dpsRanks)
+                .filter(([playerId]) => !isUnknownPlayer(playerId))
                 .map(([playerId, rank]) => ({
                     playerId,
                     rank,

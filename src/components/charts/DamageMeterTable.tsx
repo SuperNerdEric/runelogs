@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 import {colors} from '../../theme';
+import {isUnknownPlayer} from '../../utils/actorUtils';
 
 export interface DamageMeterRow {
     key: string;
@@ -9,6 +10,7 @@ export interface DamageMeterRow {
     dps: number;
     dpsColor?: string;
     useDpsTextClass?: boolean;
+    nameClassName?: string;
 }
 
 interface DamageMeterTableProps {
@@ -70,6 +72,7 @@ const DamageMeterTable: React.FC<DamageMeterTableProps> = ({rows}) => {
                         const damagePercentage = totalDamage > 0
                             ? Number(((row.damageDealt / totalDamage) * 100).toFixed(2))
                             : 0;
+                        const unknown = isUnknownPlayer(row.key);
 
                         return (
                             <TableRow
@@ -81,7 +84,7 @@ const DamageMeterTable: React.FC<DamageMeterTableProps> = ({rows}) => {
                             >
                                 <TableCell
                                     style={{width: '100px', textAlign: 'left'}}
-                                    className="other-text"
+                                    className={unknown ? 'unknown-text' : (row.nameClassName ?? 'other-text')}
                                 >
                                     {row.name}
                                 </TableCell>
@@ -98,7 +101,9 @@ const DamageMeterTable: React.FC<DamageMeterTableProps> = ({rows}) => {
                                         </span>
                                         <div
                                             style={{
-                                                backgroundColor: colors.dpsMeter.playerHighlight,
+                                                backgroundColor: unknown
+                                                    ? colors.text.unknown
+                                                    : colors.dpsMeter.playerHighlight,
                                                 height: '14px',
                                                 marginRight: '10px',
                                                 marginTop: '3px',
@@ -113,9 +118,9 @@ const DamageMeterTable: React.FC<DamageMeterTableProps> = ({rows}) => {
                                     style={{
                                         width: '70px',
                                         textAlign: 'right',
-                                        color: row.dpsColor,
+                                        color: unknown ? colors.text.unknown : row.dpsColor,
                                     }}
-                                    className={row.useDpsTextClass ? 'dps-text' : undefined}
+                                    className={!unknown && row.useDpsTextClass ? 'dps-text' : undefined}
                                 >
                                     {row.dps.toFixed(3)}
                                 </TableCell>
