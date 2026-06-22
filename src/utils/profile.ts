@@ -405,3 +405,11 @@ export function getContactDisplayText(key: ContactLinkKey, value: string): strin
 
     return getGenericUrlDisplay(value);
 }
+
+export function getContactFormValue(key: ContactLinkKey, value: string | null | undefined): string {
+    if (!value) {
+        return '';
+    }
+
+    return getContactDisplayText(key, value);
+}

@@ -14,6 +14,7 @@ import {
     BIO_MAX_LENGTH,
     CONTACT_FIELDS,
     ContactLinkKey,
+    getContactFormValue,
     normalizeContactValue,
     ProfileDetailsInput,
 } from '../utils/profile';
@@ -89,12 +90,12 @@ interface ProfileDetailsFormProps {
 
 function getContactsFromProfile(profile: UserProfile): Record<ContactLinkKey, string> {
     return {
-        rsn: profile.rsn ?? '',
-        discord: profile.discord ?? '',
-        twitter: profile.twitter ?? '',
-        youtube: profile.youtube ?? '',
-        twitch: profile.twitch ?? '',
-        kick: profile.kick ?? '',
+        rsn: getContactFormValue('rsn', profile.rsn),
+        discord: getContactFormValue('discord', profile.discord),
+        twitter: getContactFormValue('twitter', profile.twitter),
+        youtube: getContactFormValue('youtube', profile.youtube),
+        twitch: getContactFormValue('twitch', profile.twitch),
+        kick: getContactFormValue('kick', profile.kick),
     };
 }
 
@@ -115,7 +116,7 @@ const ProfileDetailsForm: React.FC<ProfileDetailsFormProps> = ({profile, onSave}
 
     const bioDirty = bio !== (profile.bio ?? '');
     const contactsDirty = CONTACT_FIELDS.some(
-        (field) => contacts[field.key] !== (profile[field.key] ?? ''),
+        (field) => contacts[field.key] !== getContactFormValue(field.key, profile[field.key]),
     );
 
     const handleContactChange = (key: ContactLinkKey, value: string) => {

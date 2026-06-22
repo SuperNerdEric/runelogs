@@ -1,6 +1,7 @@
 import {describe, expect, it} from 'vitest';
 import {
     getContactDisplayText,
+    getContactFormValue,
     getContactLinkHref,
     isContactLink,
     normalizeContactValue,
@@ -120,6 +121,20 @@ describe('discord contact helpers', () => {
 
     it('normalizes discord invites on save', () => {
         expect(normalizeContactValue('discord', 'discord.gg/abc123')).toBe('https://discord.gg/abc123');
+    });
+});
+
+describe('getContactFormValue', () => {
+    it('returns shortened values for stored profile URLs', () => {
+        expect(getContactFormValue('twitch', 'https://www.twitch.tv/honorable_mention')).toBe('honorable_mention');
+        expect(getContactFormValue('youtube', 'https://www.youtube.com/@MyChannel')).toBe('MyChannel');
+        expect(getContactFormValue('kick', 'https://kick.com/streamer')).toBe('streamer');
+        expect(getContactFormValue('twitter', 'https://x.com/PiesMillion')).toBe('@PiesMillion');
+    });
+
+    it('returns an empty string for missing values', () => {
+        expect(getContactFormValue('twitch', null)).toBe('');
+        expect(getContactFormValue('twitch', undefined)).toBe('');
     });
 });
 
