@@ -9,8 +9,6 @@ import {
     ListItemIcon,
     ListItemText,
     Typography,
-    useMediaQuery,
-    useTheme,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -57,28 +55,18 @@ type TopBarNavMenuProps = {
 };
 
 const TopBarNavMenu: React.FC<TopBarNavMenuProps> = ({iconButtonSx, onOpenChange}) => {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [open, setOpen] = useState(false);
     const [leaderboardsExpanded, setLeaderboardsExpanded] = useState(false);
-    const leaderboardsToggledByUser = React.useRef(false);
 
     const openMenu = () => {
+        setLeaderboardsExpanded(false);
         setOpen(true);
         onOpenChange?.(true);
-        if (!leaderboardsToggledByUser.current && !isMobile) {
-            setLeaderboardsExpanded(true);
-        }
     };
 
     const closeMenu = () => {
         setOpen(false);
         onOpenChange?.(false);
-    };
-
-    const toggleLeaderboards = () => {
-        leaderboardsToggledByUser.current = true;
-        setLeaderboardsExpanded((prev) => !prev);
     };
 
     const leaderboardLinks = LEADERBOARD_CONTENT_OPTIONS.map((option) => ({
@@ -169,7 +157,7 @@ const TopBarNavMenu: React.FC<TopBarNavMenuProps> = ({iconButtonSx, onOpenChange
 
                     <List sx={{py: 0.5, flex: 1}}>
                         <ListItemButton
-                            onClick={toggleLeaderboards}
+                            onClick={() => setLeaderboardsExpanded((prev) => !prev)}
                             sx={navItemSx}
                         >
                             <ListItemIcon sx={menuItemIconSx}>
