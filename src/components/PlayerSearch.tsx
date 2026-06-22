@@ -5,9 +5,10 @@ import {colors} from '../theme';
 
 interface PlayerSearchProps {
     onSelect?: () => void;
+    fullWidth?: boolean;
 }
 
-const PlayerSearch: React.FC<PlayerSearchProps> = ({ onSelect }) => {
+const PlayerSearch: React.FC<PlayerSearchProps> = ({ onSelect, fullWidth = false }) => {
     const [input, setInput] = useState('');
     const [results, setResults] = useState<string[]>([]);
     const [open, setOpen] = useState(false);
@@ -66,7 +67,15 @@ const PlayerSearch: React.FC<PlayerSearchProps> = ({ onSelect }) => {
     };
 
     return (
-        <Box position="relative" sx={{ height: '40px' }}>
+        <Box
+            position="relative"
+            sx={{
+                height: '40px',
+                width: fullWidth ? '100%' : undefined,
+                maxWidth: fullWidth ? '100%' : undefined,
+                boxSizing: 'border-box',
+            }}
+        >
             <TextField
                 inputRef={anchorRef}
                 value={input}
@@ -74,14 +83,23 @@ const PlayerSearch: React.FC<PlayerSearchProps> = ({ onSelect }) => {
                 onKeyDown={handleKeyDown}
                 placeholder="Search for a player"
                 size="small"
+                fullWidth={fullWidth}
                 sx={{
-                    input: {color: 'white'},
+                    input: {color: 'white', textAlign: 'left'},
                     backgroundColor: colors.background.surface,
-                    width: 200,
+                    width: fullWidth ? '100%' : 200,
+                    maxWidth: '100%',
+                    boxSizing: 'border-box',
+                    ...(fullWidth ? {m: 0} : {}),
                 }}
             />
-            <Popper open={open && results.length > 0} anchorEl={anchorRef.current} placement="bottom-start">
-                <Paper sx={{backgroundColor: colors.background.surfaceDropdown, width: 250}}>
+            <Popper
+                open={open && results.length > 0}
+                anchorEl={anchorRef.current}
+                placement="bottom-start"
+                sx={{width: fullWidth ? '100%' : undefined, maxWidth: fullWidth ? '100%' : undefined, zIndex: 1300, boxSizing: 'border-box'}}
+            >
+                <Paper sx={{backgroundColor: colors.background.surfaceDropdown, width: fullWidth ? '100%' : 250, maxWidth: '100%', boxSizing: 'border-box'}}>
                     <List>
                         {results.map((name, idx) => (
                             <ListItem
