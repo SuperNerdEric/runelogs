@@ -23,9 +23,11 @@ import RecentEncountersPage from "./components/RecentEncountersPage";
 import LiveLog from "./components/LiveLog";
 import Login from "./components/Login";
 import Logout from "./components/Logout";
+import MyProfile from "./components/MyProfile";
 import {initGA} from "./Analytics";
 import usePageTracking from "./hooks/usePageTracking";
 import SessionGuard from "./components/SessionGuard";
+import {UserProfileProvider} from "./hooks/useUserProfile";
 import {getRunSummaryHref, RUN_SUMMARY_PATH} from "./utils/encounterTableRow";
 
 const domain = "auth.runelogs.com";
@@ -63,6 +65,8 @@ function AppRoutes() {
                 <Route path="/leaderboards" element={<LeaderboardsPage/>}/>
                 <Route path="/recent-encounters" element={<RecentEncountersPage/>}/>
                 <Route path="/live-log" element={<LiveLog/>}/>
+                <Route path="/profile" element={<MyProfile/>}/>
+                <Route path="/profile/:profileId" element={<MyProfile/>}/>
                 <Route path="/log/:logId" element={<Log/>}/>
                 <Route path="/logs/:uploaderId" element={<Logs/>}/>
                 <Route path="/dev/logs-header-variants" element={<LogsPageHeaderVariants/>}/>
@@ -90,7 +94,9 @@ root.render(
                     <ThemeVariables />
                     <BrowserRouter>
                         <SessionGuard />
-                        <AppRoutes />
+                        <UserProfileProvider>
+                            <AppRoutes />
+                        </UserProfileProvider>
                     </BrowserRouter>
                 </ThemeProvider>
             </Auth0Provider>

@@ -237,6 +237,7 @@ const FightGroupSummary: React.FC = () => {
             />
 
             <RunInfoBox
+                uploaderId={data.log.uploaderId}
                 startTime={data.startTime}
                 players={data.players}
             />
