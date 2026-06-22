@@ -7,7 +7,7 @@ import {
     CONTACT_FIELDS,
     getContactDisplayText,
     getContactLinkHref,
-    isExternalUrl,
+    isContactLink,
 } from '../utils/profile';
 import {colors, fontSizes} from '../theme';
 
@@ -18,13 +18,39 @@ const sectionTitleSx = {
     mb: 1.5,
 } as const;
 
-const readOnlyOutlinedSx = {
-    backgroundColor: colors.background.surface,
+const readOnlyFieldSx = {
+    backgroundColor: colors.background.tableHead,
     border: `1px solid ${colors.border.default}`,
     borderRadius: 1,
     boxSizing: 'border-box',
-    userSelect: 'none',
     cursor: 'default',
+    userSelect: 'text',
+    WebkitUserSelect: 'text',
+} as const;
+
+const readOnlyTextSx = {
+    fontSize: fontSizes.base,
+    lineHeight: 1.5,
+    color: colors.text.primary,
+    cursor: 'default',
+    userSelect: 'text',
+    WebkitUserSelect: 'text',
+} as const;
+
+const contactIconContainerSx = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 22,
+    height: 22,
+    flexShrink: 0,
+    userSelect: 'none',
+    WebkitUserSelect: 'none',
+} as const;
+
+const contactTextSx = {
+    fontSize: fontSizes.base,
+    lineHeight: 1,
 } as const;
 
 const PUBLIC_BIO_PLACEHOLDER = "This user hasn't added a bio yet.";
@@ -40,7 +66,7 @@ const ProfileDetailsView: React.FC<ProfileDetailsViewProps> = ({profile}) => {
                 <Typography sx={sectionTitleSx}>Bio</Typography>
                 <Box
                     sx={{
-                        ...readOnlyOutlinedSx,
+                        ...readOnlyFieldSx,
                         px: 1.75,
                         py: 1.5,
                         minHeight: 118,
@@ -50,10 +76,8 @@ const ProfileDetailsView: React.FC<ProfileDetailsViewProps> = ({profile}) => {
                         <Typography
                             component="p"
                             sx={{
+                                ...readOnlyTextSx,
                                 m: 0,
-                                color: colors.text.primary,
-                                fontSize: fontSizes.base,
-                                lineHeight: 1.5,
                                 whiteSpace: 'pre-wrap',
                             }}
                         >
@@ -62,9 +86,10 @@ const ProfileDetailsView: React.FC<ProfileDetailsViewProps> = ({profile}) => {
                     ) : (
                         <Typography
                             sx={{
+                                ...readOnlyTextSx,
                                 color: colors.text.muted,
-                                fontSize: fontSizes.base,
-                                lineHeight: 1.5,
+                                userSelect: 'none',
+                                WebkitUserSelect: 'none',
                             }}
                         >
                             {PUBLIC_BIO_PLACEHOLDER}
@@ -81,13 +106,13 @@ const ProfileDetailsView: React.FC<ProfileDetailsViewProps> = ({profile}) => {
                         const href = value ? getContactLinkHref(field.key, value) : '';
                         const label = value ? getContactDisplayText(field.key, value) : '';
                         const isRsn = field.key === 'rsn';
-                        const isLink = !!value && (isRsn || isExternalUrl(value));
+                        const isLink = !!value && isContactLink(field.key, value);
 
                         return (
                             <Box
                                 key={field.key}
                                 sx={{
-                                    ...readOnlyOutlinedSx,
+                                    ...readOnlyFieldSx,
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: 1,
@@ -101,24 +126,33 @@ const ProfileDetailsView: React.FC<ProfileDetailsViewProps> = ({profile}) => {
                                         src={field.imageSrc}
                                         alt=""
                                         sx={{
-                                            width: 22,
-                                            height: 22,
-                                            flexShrink: 0,
+                                            ...contactIconContainerSx,
                                             borderRadius: '4px',
                                             objectFit: 'cover',
                                         }}
                                     />
                                 ) : (
-                                    <Icon
-                                        icon={field.icon!}
-                                        style={{
-                                            width: 22,
-                                            height: 22,
-                                            flexShrink: 0,
-                                        }}
-                                    />
+                                    <Box sx={contactIconContainerSx}>
+                                        <Icon
+                                            icon={field.icon!}
+                                            style={{
+                                                width: 22,
+                                                height: 22,
+                                            }}
+                                        />
+                                    </Box>
                                 )}
-                                <Box sx={{flex: 1, minWidth: 0, py: 1.25}}>
+                                <Box
+                                    sx={{
+                                        flex: 1,
+                                        minWidth: 0,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        cursor: 'default',
+                                        userSelect: 'text',
+                                        WebkitUserSelect: 'text',
+                                    }}
+                                >
                                     {isLink ? (
                                         isRsn ? (
                                             <Link
@@ -126,10 +160,9 @@ const ProfileDetailsView: React.FC<ProfileDetailsViewProps> = ({profile}) => {
                                                 to={href}
                                                 underline="hover"
                                                 sx={{
+                                                    ...contactTextSx,
                                                     color: colors.text.link,
-                                                    fontSize: fontSizes.base,
                                                     cursor: 'pointer',
-                                                    userSelect: 'auto',
                                                 }}
                                             >
                                                 {label}
@@ -141,10 +174,9 @@ const ProfileDetailsView: React.FC<ProfileDetailsViewProps> = ({profile}) => {
                                                 rel="noopener noreferrer"
                                                 underline="hover"
                                                 sx={{
+                                                    ...contactTextSx,
                                                     color: colors.text.link,
-                                                    fontSize: fontSizes.base,
                                                     cursor: 'pointer',
-                                                    userSelect: 'auto',
                                                 }}
                                             >
                                                 {label}
@@ -153,9 +185,9 @@ const ProfileDetailsView: React.FC<ProfileDetailsViewProps> = ({profile}) => {
                                     ) : value ? (
                                         <Typography
                                             sx={{
-                                                color: colors.text.primary,
-                                                fontSize: fontSizes.base,
-                                                lineHeight: 1.5,
+                                                ...contactTextSx,
+                                                ...readOnlyTextSx,
+                                                lineHeight: 1,
                                             }}
                                         >
                                             {label}
@@ -163,9 +195,11 @@ const ProfileDetailsView: React.FC<ProfileDetailsViewProps> = ({profile}) => {
                                     ) : (
                                         <Typography
                                             sx={{
+                                                ...contactTextSx,
                                                 color: colors.text.muted,
-                                                fontSize: fontSizes.base,
-                                                lineHeight: 1.5,
+                                                cursor: 'default',
+                                                userSelect: 'none',
+                                                WebkitUserSelect: 'none',
                                             }}
                                         >
                                             {field.placeholder}

@@ -14,6 +14,7 @@ import {
     BIO_MAX_LENGTH,
     CONTACT_FIELDS,
     ContactLinkKey,
+    normalizeContactValue,
     ProfileDetailsInput,
 } from '../utils/profile';
 import {colors, fontSizes} from '../theme';
@@ -155,12 +156,12 @@ const ProfileDetailsForm: React.FC<ProfileDetailsFormProps> = ({profile, onSave}
 
         try {
             await onSave({
-                rsn: contacts.rsn.trim() || null,
-                discord: contacts.discord.trim() || null,
-                twitter: contacts.twitter.trim() || null,
-                youtube: contacts.youtube.trim() || null,
-                twitch: contacts.twitch.trim() || null,
-                kick: contacts.kick.trim() || null,
+                rsn: normalizeContactValue('rsn', contacts.rsn),
+                discord: normalizeContactValue('discord', contacts.discord),
+                twitter: normalizeContactValue('twitter', contacts.twitter),
+                youtube: normalizeContactValue('youtube', contacts.youtube),
+                twitch: normalizeContactValue('twitch', contacts.twitch),
+                kick: normalizeContactValue('kick', contacts.kick),
             });
             setContactSuccess(true);
         } catch (err) {
