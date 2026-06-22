@@ -3,26 +3,34 @@ import {AppBar, Box, Button, ListItemIcon, ListItemText, Menu, MenuItem, Toolbar
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SensorsIcon from '@mui/icons-material/Sensors';
 import {Icon} from '@iconify/react';
 import {useAuth0} from '@auth0/auth0-react';
-import logo from '../assets/Logo.png';
+import logoImage from '../assets/Logo.png';
 import {Link} from "react-router-dom";
 import PlayerSearch from "./PlayerSearch";
+import TopBarNavMenu from './TopBarNavMenu';
 import {displayUsername} from "../utils/utils";
-import {colors, fontSizes, accountTextSx} from "../theme";
+import {colors, fontSizes, accountTextSx, layout} from "../theme";
 
 const menuItemIconSx = {
     minWidth: 36,
     color: colors.upload.dragActive,
 };
 
+const logoLinkSx = {
+    display: 'flex',
+    alignItems: 'center',
+    textDecoration: 'none',
+    color: 'inherit',
+} as const;
+
 const TopBar: React.FC = () => {
     const {isAuthenticated, user, loginWithRedirect, logout} = useAuth0();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [searchOpen, setSearchOpen] = useState(false);
+    const [navMenuOpen, setNavMenuOpen] = useState(false);
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -35,59 +43,76 @@ const TopBar: React.FC = () => {
         setAnchorEl(null);
     }
 
+    const logoLink = (
+        <Box
+            component={Link}
+            to="/"
+            sx={{
+                ...logoLinkSx,
+                marginRight: isMobile ? 0 : 2,
+            }}
+        >
+            <img
+                src={logoImage}
+                alt="Runelogs.com"
+                style={{
+                    marginRight: '5px',
+                    height: '25px',
+                    verticalAlign: 'middle'
+                }}
+            />
+            <Typography
+                variant="h6"
+                sx={{ margin: 0, color: colors.text.primary, fontSize: fontSizes.topBarLogo }}
+            >
+                <Box component="span" sx={{color: colors.text.rune}}>Rune</Box>
+                <Box component="span" sx={{color: colors.text.logs}}>logs</Box>
+            </Typography>
+        </Box>
+    );
+
     return (
         <AppBar position="static" style={{background: colors.background.topBar}}>
             <Toolbar
-                style={{
-                    display: 'flex',
-                    justifyContent: 'space-between'
+                sx={{
+                    display: isMobile ? 'grid' : 'flex',
+                    gridTemplateColumns: isMobile ? '1fr auto 1fr' : undefined,
+                    alignItems: 'center',
+                    justifyContent: isMobile ? undefined : 'space-between',
+                    minHeight: layout.topBarHeight,
+                    pl: 2,
+                    pr: 2,
                 }}
             >
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Box
-                        component={Link}
-                        to="/"
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            textDecoration: 'none',
-                            color: 'inherit',
-                            marginRight: 2
-                        }}
-                    >
-                        <img
-                            src={logo}
-                            alt="Runelogs.com"
-                            style={{
-                                marginRight: '5px',
-                                height: '25px',
-                                verticalAlign: 'middle'
-                            }}
-                        />
-                        <Typography
-                            variant="h6"
-                            sx={{ margin: 0, color: colors.text.primary, fontSize: fontSizes.topBarLogo }}
-                        >
-                            <Box component="span" sx={{color: colors.text.rune}}>Rune</Box>
-                            <Box component="span" sx={{color: colors.text.logs}}>logs</Box>
-                        </Typography>
-                    </Box>
-                    {isMobile ? (
-                        <>
+                {isMobile ? (
+                    <>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <TopBarNavMenu
+                                iconButtonSx={{ml: -1.5, mr: 0}}
+                                onOpenChange={setNavMenuOpen}
+                            />
                             <Icon
                                 icon="ic:baseline-search"
                                 onClick={() => setSearchOpen((prev) => !prev)}
                                 style={{ fontSize: fontSizes.topBarIcon, color: colors.text.primary, cursor: 'pointer' }}
                             />
-                        </>
-                    ) : (
+                        </Box>
+                        {/* Hide the top-bar logo while the nav drawer is open — the drawer header already shows it. */}
+                        <Box sx={{ justifySelf: 'center', visibility: navMenuOpen ? 'hidden' : 'visible' }}>
+                            {logoLink}
+                        </Box>
+                    </>
+                ) : (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <TopBarNavMenu iconButtonSx={{ml: -1.5, mr: 0}}/>
+                        {logoLink}
                         <Box sx={{ display: 'flex', alignItems: 'center', height: '40px' }}>
                             <PlayerSearch />
                         </Box>
-                    )}
-                </Box>
+                    </Box>
+                )}
 
-                <div style={{display: 'flex', alignItems: 'center'}}>
+                <div style={{display: 'flex', alignItems: 'center', justifySelf: isMobile ? 'end' : undefined}}>
                     {!isMobile && (
                         <>
                             <a
@@ -235,16 +260,6 @@ const TopBar: React.FC = () => {
                                     <ListItemText>Upload Log</ListItemText>
                                 </MenuItem>
                                 <MenuItem
-                                    component={Link}
-                                    to="/help"
-                                    onClick={handleMenuClose}
-                                >
-                                    <ListItemIcon sx={menuItemIconSx}>
-                                        <HelpOutlineIcon fontSize="small"/>
-                                    </ListItemIcon>
-                                    <ListItemText>Help</ListItemText>
-                                </MenuItem>
-                                <MenuItem
                                     onClick={() => {
                                         handleMenuClose();
                                         logout({logoutParams: {returnTo: window.location.origin}});
@@ -261,8 +276,8 @@ const TopBar: React.FC = () => {
                 </div>
             </Toolbar>
             {isMobile && searchOpen && (
-                <Box sx={{ px: 2, pb: 1 }}>
-                    <PlayerSearch onSelect={() => setSearchOpen(false)} />
+                <Box sx={{ width: '100%', px: 2, pb: 1, boxSizing: 'border-box' }}>
+                    <PlayerSearch fullWidth onSelect={() => setSearchOpen(false)} />
                 </Box>
             )}
         </AppBar>

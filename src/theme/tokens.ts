@@ -104,6 +104,8 @@ export const colors = {
 export const layout = {
     contentMaxWidth: 1440,
     desktopMinWidth: 1280,
+    /** Shared height for the app top bar and nav drawer header. */
+    topBarHeight: 50,
 } as const;
 
 export const fonts = {

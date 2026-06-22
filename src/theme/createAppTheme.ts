@@ -50,9 +50,9 @@ const theme = createTheme({
         MuiToolbar: {
             styleOverrides: {
                 root: {
-                    minHeight: '50px',
+                    minHeight: layout.topBarHeight,
                     '@media (min-width:600px)': {
-                        minHeight: '50px',
+                        minHeight: layout.topBarHeight,
                     },
                 },
             },
