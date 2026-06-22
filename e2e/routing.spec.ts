@@ -5,8 +5,12 @@ test.describe('Client routing', () => {
     test('help page loads without API calls', async ({page}) => {
         await page.goto('/help');
 
+        await expect(page.getByRole('heading', {name: /^help$/i})).toBeVisible();
         await expect(page.getByRole('heading', {name: /frequently asked questions/i})).toBeVisible();
         await expect(page.getByRole('button', {name: 'What is Runelogs?'})).toBeVisible();
+        await expect(page.getByRole('heading', {name: /^support$/i})).toBeVisible();
+        await expect(page.getByRole('link', {name: /discord/i})).toBeVisible();
+        await expect(page.getByRole('link', {name: /github/i})).toBeVisible();
     });
 
     test('home page shell renders with mocked leaderboard APIs', async ({page}) => {
