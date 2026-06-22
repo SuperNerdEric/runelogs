@@ -9,8 +9,8 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import {Icon} from '@iconify/react';
 import {useLocation} from 'react-router-dom';
-import SectionBox from './SectionBox';
 import FindCombatLogIcon from '../assets/help/find_combat_log.png';
 import BrightHitsplat from '../assets/help/bright_hitsplat.png';
 import TintedHitsplat from '../assets/help/tinted_hitsplat.png';
@@ -37,6 +37,7 @@ const bodyTextSx = {
 
 const accordionSx = {
     bgcolor: colors.background.surfaceAlt,
+    backgroundImage: 'none',
     border: `1px solid ${colors.border.default}`,
     borderRadius: '5px !important',
     boxShadow: 'none',
@@ -68,6 +69,22 @@ const accordionDetailsSx = {
                 color: colors.text.link,
             },
         },
+    },
+};
+
+const supportLinkIconStyle = {
+    width: '1em',
+    height: '1em',
+    verticalAlign: '-0.125em',
+    marginRight: '0.25em',
+} as const;
+
+const supportLinkSx = {
+    color: colors.text.link,
+    textDecoration: 'none',
+    '&:hover': {
+        color: colors.text.link,
+        textDecoration: 'underline',
     },
 };
 
@@ -113,29 +130,81 @@ const Help: React.FC = () => {
                     <HelpOutlineIcon sx={{fontSize: 32, color: colors.upload.dragActive}}/>
                 </Box>
                 <Typography variant="h4" sx={{m: 0, fontWeight: 600, color: colors.text.primary}}>
-                    Frequently Asked Questions
+                    Help
                 </Typography>
             </Box>
 
-            <SectionBox sx={{p: {xs: 2.5, md: 4}}}>
-                {faq.map(({id, title, body}) => (
-                    <Accordion
-                        key={id}
-                        id={id}
-                        expanded={expandedId === id}
-                        onChange={(_, isExpanded) => setExpandedId(isExpanded ? id : false)}
-                        disableGutters
-                        sx={accordionSx}
+            <Box sx={{px: 0.5}}>
+            <Typography
+                variant="h5"
+                sx={{mb: 2, fontWeight: 600, color: colors.text.primary}}
+            >
+                Frequently Asked Questions
+            </Typography>
+
+            {faq.map(({id, title, body}) => (
+                <Accordion
+                    key={id}
+                    id={id}
+                    elevation={0}
+                    expanded={expandedId === id}
+                    onChange={(_, isExpanded) => setExpandedId(isExpanded ? id : false)}
+                    disableGutters
+                    sx={accordionSx}
+                >
+                    <AccordionSummary expandIcon={<ExpandMoreIcon/>} sx={accordionSummarySx}>
+                        <Typography variant="h6" sx={{fontWeight: 600, color: colors.text.primary}}>
+                            {title}
+                        </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails sx={accordionDetailsSx}>{body}</AccordionDetails>
+                </Accordion>
+            ))}
+
+            <Box sx={{mt: 5}}>
+                <Typography
+                    variant="h6"
+                    sx={{mb: 1, fontWeight: 600, color: colors.text.primary}}
+                >
+                    Support
+                </Typography>
+                <Typography
+                    variant="subtitle1"
+                    sx={{mb: 1.5, color: colors.text.muted}}
+                >
+                    Still need help?
+                </Typography>
+                <Typography variant="body1" sx={{...bodyTextSx, mb: 1.5}}>
+                    Runelogs is a community-driven project, and we&apos;re happy to help if you
+                    run into any issues.
+                    Our Discord is usually the quickest way to get answers, while GitHub is best for
+                    reporting bugs or suggesting features.
+                </Typography>
+                <Typography variant="body1" sx={{color: colors.text.primary, lineHeight: 1.6}}>
+                    Reach out to us on{' '}
+                    <Link
+                        href="https://discord.gg/ZydwX7AJEd"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={supportLinkSx}
                     >
-                        <AccordionSummary expandIcon={<ExpandMoreIcon/>} sx={accordionSummarySx}>
-                            <Typography variant="h6" sx={{fontWeight: 600, color: colors.text.primary}}>
-                                {title}
-                            </Typography>
-                        </AccordionSummary>
-                        <AccordionDetails sx={accordionDetailsSx}>{body}</AccordionDetails>
-                    </Accordion>
-                ))}
-            </SectionBox>
+                        <Icon icon="logos:discord-icon" style={supportLinkIconStyle}/>
+                        Discord
+                    </Link>
+                    {' '}or open an issue on{' '}
+                    <Link
+                        href="https://github.com/SuperNerdEric/runelogs"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={supportLinkSx}
+                    >
+                        <Icon icon="bi:github" style={supportLinkIconStyle}/>
+                        GitHub
+                    </Link>
+                    .
+                </Typography>
+            </Box>
+            </Box>
         </Box>
     );
 };
