@@ -143,6 +143,14 @@ const theme = createTheme({
                 root: { backgroundColor: colors.background.transparent, boxShadow: 'none' },
             },
         },
+        MuiDialog: {
+            styleOverrides: {
+                paper: {
+                    backgroundColor: colors.background.surface,
+                    backgroundImage: 'none',
+                },
+            },
+        },
         MuiCircularProgress: {
             styleOverrides: {
                 root: { color: colors.text.primary },

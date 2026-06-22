@@ -27,6 +27,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import {closeSnackbar, SnackbarKey, useSnackbar} from "notistack";
 import {colors, contentColumnSx, logNameTextSx, accountTextSx, media} from "../theme";
 import {displayUsername} from "../utils/utils";
+import {buildProfileHref} from '../utils/profile';
 import {logTableRowProps, stopRowClick} from "../utils/encounterTableRow";
 import FilterSelect from './filters/FilterSelect';
 import FilterToolbar from './filters/FilterToolbar';
@@ -273,9 +274,12 @@ const LogsPageHeader: React.FC<LogsPageHeaderProps> = ({ uploaderId }) => (
             <FolderOpenOutlinedIcon sx={{ fontSize: 32, color: colors.upload.dragActive }} />
         </Box>
         <Box>
-            <Typography
-                variant="h4"
+            <Link
+                component={RouterLink}
+                to={buildProfileHref(uploaderId || '')}
+                underline="hover"
                 sx={{
+                    display: 'inline-block',
                     m: 0,
                     fontWeight: 600,
                     textTransform: 'capitalize',
@@ -283,8 +287,20 @@ const LogsPageHeader: React.FC<LogsPageHeaderProps> = ({ uploaderId }) => (
                     ...accountTextSx,
                 }}
             >
-                {displayUsername(uploaderId || 'Unknown User')}
-            </Typography>
+                <Typography
+                    component="span"
+                    variant="h4"
+                    sx={{
+                        fontWeight: 600,
+                        fontSize: 'inherit',
+                        textTransform: 'inherit',
+                        lineHeight: 'inherit',
+                        color: 'inherit',
+                    }}
+                >
+                    {displayUsername(uploaderId || 'Unknown User')}
+                </Typography>
+            </Link>
             <Typography sx={{ color: colors.text.muted, fontSize: '0.875rem', lineHeight: 1.15, mt: 0 }}>
                 Uploaded logs
             </Typography>

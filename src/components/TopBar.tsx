@@ -4,6 +4,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import SensorsIcon from '@mui/icons-material/Sensors';
 import {Icon} from '@iconify/react';
 import {useAuth0} from '@auth0/auth0-react';
@@ -13,6 +14,9 @@ import PlayerSearch from "./PlayerSearch";
 import TopBarNavMenu from './TopBarNavMenu';
 import {displayUsername} from "../utils/utils";
 import {colors, fontSizes, accountTextSx, layout} from "../theme";
+import AvatarIcon from './AvatarIcon';
+import {useUserProfile} from '../hooks/useUserProfile';
+import {AvatarId, isAvatarId} from '../utils/avatars';
 
 const menuItemIconSx = {
     minWidth: 36,
@@ -34,6 +38,9 @@ const TopBar: React.FC = () => {
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const {profile} = useUserProfile();
+    const avatarId: AvatarId | null =
+        profile?.avatarId && isAvatarId(profile.avatarId) ? profile.avatarId : null;
 
     const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -179,9 +186,14 @@ const TopBar: React.FC = () => {
                                 }}
                             >
                                 {isMobile ? (
-                                    <Icon icon="mdi:account-circle" style={{ width: 35, height: 35, color: colors.text.primary }} />
+                                    avatarId ? (
+                                        <AvatarIcon avatarId={avatarId} size={35} />
+                                    ) : (
+                                        <Icon icon="mdi:account-circle" style={{ width: 35, height: 35, color: colors.text.primary }} />
+                                    )
                                 ) : (
                                     <>
+                                        {avatarId && <AvatarIcon avatarId={avatarId} size={32} sx={{ mr: 1 }} />}
                                         <Typography variant="body1" sx={{ ...accountTextSx, textTransform: 'capitalize', fontWeight: 600 }}>
                                             {displayUsername(user?.username) || 'User'}
                                         </Typography>
@@ -228,6 +240,17 @@ const TopBar: React.FC = () => {
                                     }
                                 }}
                             >
+                                <MenuItem
+                                    component={Link}
+                                    to="/profile"
+                                    onClick={handleMenuClose}
+                                >
+                                    <ListItemIcon sx={menuItemIconSx}>
+                                        <PersonOutlineIcon fontSize="small"/>
+                                    </ListItemIcon>
+                                    <ListItemText>My Profile</ListItemText>
+                                </MenuItem>
+
                                 <MenuItem
                                     component={Link}
                                     to={`/logs/${user?.username}`}
