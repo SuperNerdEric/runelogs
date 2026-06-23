@@ -39,7 +39,8 @@ type Encounter = {
     mainEnemyName?: string;
     leaderboardName?: string;
     startTime: string;
-    officialDurationTicks: number;
+    officialDurationTicks: number | null;
+    inProgress?: boolean;
     success: boolean;
     logId: string;
     uploadedAt: string;
@@ -274,11 +275,17 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
                                             </Link>
                                         </TableCell>
                                         <TableCell sx={{
-                                            color: row.success
-                                                ? colors.fight.success
-                                                : colors.fight.failure,
+                                            color: row.inProgress
+                                                ? 'white'
+                                                : row.success
+                                                    ? colors.fight.success
+                                                    : colors.fight.failure,
                                         }}>
-                                            {ticksToTime(row.officialDurationTicks)}
+                                            {row.inProgress
+                                                ? 'In Progress'
+                                                : row.officialDurationTicks != null
+                                                    ? ticksToTime(row.officialDurationTicks)
+                                                    : '-'}
                                         </TableCell>
                                         <TableCell sx={{color: 'white'}}>
                                             {row.players.map((p, i) => (
