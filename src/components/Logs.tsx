@@ -25,10 +25,17 @@ import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
 import { format } from 'date-fns';
 import { useAuth0 } from '@auth0/auth0-react';
 import {closeSnackbar, SnackbarKey, useSnackbar} from "notistack";
-import {colors, contentColumnSx, logNameTextSx, accountTextSx, media} from "../theme";
+import {colors, contentColumnSx, logNameTextSx, media} from "../theme";
 import {displayUsername} from "../utils/utils";
 import {buildProfileHref} from '../utils/profile';
 import {logTableRowProps, stopRowClick} from "../utils/encounterTableRow";
+import {
+    pageHeaderContainerSx,
+    pageHeaderIconBoxSx,
+    pageHeaderSubtitleSx,
+    pageHeaderTitleTypographySx,
+    pageHeaderTitleWrapperSx,
+} from './pageHeaderStyles';
 import FilterSelect from './filters/FilterSelect';
 import FilterToolbar from './filters/FilterToolbar';
 import {filterFieldCompactSx} from './filters/filterStyles';
@@ -89,17 +96,6 @@ const pageContainerSx = {
     px: 2,
     pb: 4,
     [media.mobileDown]: { px: 1 },
-} as const;
-
-const pageHeaderIconBoxSx = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 56,
-    height: 56,
-    borderRadius: 2,
-    bgcolor: colors.background.surfaceAlt,
-    border: `1px solid ${colors.border.default}`,
 } as const;
 
 function toSearchParams(
@@ -261,15 +257,7 @@ interface LogsPageHeaderProps {
 }
 
 const LogsPageHeader: React.FC<LogsPageHeaderProps> = ({ uploaderId }) => (
-    <Box
-        sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1.5,
-            mb: 3,
-            pt: 1,
-        }}
-    >
+    <Box sx={pageHeaderContainerSx}>
         <Box sx={pageHeaderIconBoxSx}>
             <FolderOpenOutlinedIcon sx={{ fontSize: 32, color: colors.upload.dragActive }} />
         </Box>
@@ -278,30 +266,17 @@ const LogsPageHeader: React.FC<LogsPageHeaderProps> = ({ uploaderId }) => (
                 component={RouterLink}
                 to={buildProfileHref(uploaderId || '')}
                 underline="hover"
-                sx={{
-                    display: 'inline-block',
-                    m: 0,
-                    fontWeight: 600,
-                    textTransform: 'capitalize',
-                    lineHeight: 1.15,
-                    ...accountTextSx,
-                }}
+                sx={pageHeaderTitleWrapperSx}
             >
                 <Typography
                     component="span"
                     variant="h4"
-                    sx={{
-                        fontWeight: 600,
-                        fontSize: 'inherit',
-                        textTransform: 'inherit',
-                        lineHeight: 'inherit',
-                        color: 'inherit',
-                    }}
+                    sx={pageHeaderTitleTypographySx}
                 >
                     {displayUsername(uploaderId || 'Unknown User')}
                 </Typography>
             </Link>
-            <Typography sx={{ color: colors.text.muted, fontSize: '0.875rem', lineHeight: 1.15, mt: 0 }}>
+            <Typography sx={pageHeaderSubtitleSx}>
                 Uploaded logs
             </Typography>
         </Box>

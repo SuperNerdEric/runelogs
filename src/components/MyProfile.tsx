@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import {Link as RouterLink, useNavigate, useParams} from 'react-router-dom';
 import {useAuth0} from '@auth0/auth0-react';
 import {
     Alert,
@@ -19,6 +19,13 @@ import EditIcon from '@mui/icons-material/Edit';
 import AvatarIcon from './AvatarIcon';
 import ProfileDetailsForm from './ProfileDetailsForm';
 import ProfileDetailsView from './ProfileDetailsView';
+import {
+    PAGE_HEADER_ICON_SIZE,
+    pageHeaderContainerSx,
+    pageHeaderSubtitleLinkSx,
+    pageHeaderTitleTypographySx,
+    pageHeaderTitleWrapperSx,
+} from './pageHeaderStyles';
 import {useUserProfile} from '../hooks/useUserProfile';
 import {
     AvatarId,
@@ -28,7 +35,8 @@ import {
     isAvatarId,
     PublicUserProfile,
 } from '../utils/avatars';
-import {accountTextSx, colors, contentColumnSx, fontSizes, typography} from '../theme';
+import {colors, contentColumnSx, fontSizes} from '../theme';
+import {buildUploaderLogsHref} from '../utils/leaderboardContent';
 import {displayUsername} from '../utils/utils';
 
 const PROFILE_AVATAR_SIZE = 60;
@@ -126,6 +134,7 @@ const MyProfile: React.FC = () => {
     const pageLoading = isOwnProfile ? (isLoading || loading) : publicLoading;
     const pageError = isOwnProfile ? error : publicError;
     const displayName = profileId || user?.username || 'User';
+    const logsUsername = profileId || user?.username;
     const currentAvatarId = activeProfile?.avatarId;
 
     const handleSelectAvatar = async (avatarId: AvatarId, locked: boolean) => {
@@ -166,7 +175,7 @@ const MyProfile: React.FC = () => {
 
     return (
         <Box sx={{...contentColumnSx, py: 2, px: 2}}>
-            <Box sx={{display: 'flex', alignItems: 'center', gap: 1.5, mb: 2}}>
+            <Box sx={pageHeaderContainerSx}>
                 {currentAvatarId && (
                     isOwnProfile && profile ? (
                         <Tooltip title="Change Avatar" arrow placement="bottom">
@@ -186,6 +195,8 @@ const MyProfile: React.FC = () => {
                                     bgcolor: 'transparent',
                                     cursor: 'pointer',
                                     flexShrink: 0,
+                                    width: PAGE_HEADER_ICON_SIZE,
+                                    height: PAGE_HEADER_ICON_SIZE,
                                     '&:hover .avatar-edit-overlay': {
                                         opacity: 1,
                                     },
@@ -195,7 +206,7 @@ const MyProfile: React.FC = () => {
                                     },
                                 }}
                             >
-                                <AvatarIcon avatarId={currentAvatarId} size={PROFILE_AVATAR_SIZE} />
+                                <AvatarIcon avatarId={currentAvatarId} size={PAGE_HEADER_ICON_SIZE} />
                                 <Box
                                     className="avatar-edit-overlay"
                                     sx={{
@@ -216,22 +227,37 @@ const MyProfile: React.FC = () => {
                             </Box>
                         </Tooltip>
                     ) : (
-                        <AvatarIcon avatarId={currentAvatarId} size={PROFILE_AVATAR_SIZE} />
+                        <Box
+                            sx={{
+                                flexShrink: 0,
+                                width: PAGE_HEADER_ICON_SIZE,
+                                height: PAGE_HEADER_ICON_SIZE,
+                            }}
+                        >
+                            <AvatarIcon avatarId={currentAvatarId} size={PAGE_HEADER_ICON_SIZE} />
+                        </Box>
                     )
                 )}
-                <Typography
-                    variant="h4"
-                    sx={{
-                        m: 0,
-                        fontWeight: 600,
-                        fontSize: typography.h4,
-                        textTransform: 'capitalize',
-                        lineHeight: 1.15,
-                        ...accountTextSx,
-                    }}
-                >
-                    {displayUsername(displayName)}
-                </Typography>
+                <Box>
+                    <Box sx={pageHeaderTitleWrapperSx}>
+                        <Typography
+                            component="span"
+                            variant="h4"
+                            sx={pageHeaderTitleTypographySx}
+                        >
+                            {displayUsername(displayName)}
+                        </Typography>
+                    </Box>
+                    {logsUsername && (
+                        <Typography
+                            component={RouterLink}
+                            to={buildUploaderLogsHref(logsUsername)}
+                            sx={pageHeaderSubtitleLinkSx}
+                        >
+                            View logs {'->'}
+                        </Typography>
+                    )}
+                </Box>
             </Box>
 
             {pageError && (
