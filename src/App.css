@@ -614,3 +614,443 @@ a.encounter-title-bar.encounter-title-bar--clickable:hover {
         max-width: 100%;
     }
 }
+
+.colosseum-modifiers-section {
+    --colosseum-modifiers-inset: 20px;
+}
+
+.colosseum-modifiers-section .encounter-title-bar {
+    border-bottom: 1px solid var(--color-border-default);
+}
+
+.colosseum-modifiers-section__body {
+    padding: 16px 0 0;
+    text-align: left;
+    overflow-x: clip;
+}
+
+.colosseum-modifiers-active {
+    padding-left: var(--colosseum-modifiers-inset);
+    padding-right: var(--colosseum-modifiers-inset);
+}
+
+.colosseum-modifiers-section__body:not(:has(.colosseum-modifiers-waves)) {
+    padding-bottom: 20px;
+}
+
+
+.colosseum-modifiers-active + .colosseum-modifiers-waves {
+    margin-top: 0;
+}
+
+.colosseum-modifiers-active__grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+}
+
+.colosseum-modifier-item {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 96px;
+}
+
+.colosseum-modifier-item__text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    width: 100%;
+}
+
+.colosseum-modifier-item--compact {
+    flex: 1 1 120px;
+    max-width: 160px;
+    width: auto;
+}
+
+.colosseum-modifier-item--with-description {
+    align-items: center;
+}
+
+.colosseum-modifier-item--with-description .colosseum-modifier-item__name {
+    text-align: center;
+}
+
+.colosseum-modifier-item--with-description .colosseum-modifier-item__description {
+    text-align: left;
+    width: 100%;
+}
+
+.colosseum-modifier-item__description {
+    color: var(--color-text-muted);
+    font-size: 0.72rem;
+    line-height: 1.35;
+    margin: 0;
+}
+
+.colosseum-modifier-item--dimmed {
+    opacity: 0.55;
+}
+
+.colosseum-modifier-item__name {
+    color: var(--color-text-primary);
+    font-size: 0.75rem;
+    line-height: 1.2;
+    margin: 0;
+    text-align: center;
+}
+
+.colosseum-modifier-icon__tooltip-anchor {
+    cursor: help;
+    display: inline-flex;
+}
+
+.colosseum-modifier-tooltip {
+    max-width: 320px;
+    white-space: pre-wrap;
+}
+
+.colosseum-modifier-icon {
+    position: relative;
+    display: inline-flex;
+}
+
+.colosseum-modifier-icon img {
+    border-radius: 6px;
+    display: block;
+    image-rendering: pixelated;
+}
+
+.colosseum-modifier-icon--dimmed img {
+    filter: grayscale(1) opacity(0.45);
+}
+
+.colosseum-modifier-icon__level {
+    background: rgba(13, 17, 23, 0.9);
+    border: 1px solid var(--color-border-default);
+    border-radius: 4px;
+    bottom: -4px;
+    color: var(--color-text-gold);
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 1;
+    padding: 2px 4px;
+    position: absolute;
+    right: -4px;
+}
+
+.colosseum-modifiers-waves__control {
+    align-items: center;
+    background: transparent;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    display: flex;
+    font-family: inherit;
+    gap: 12px;
+    margin: 0;
+    padding: 16px var(--colosseum-modifiers-inset) 20px;
+    width: 100%;
+}
+
+.colosseum-modifiers-waves:first-child .colosseum-modifiers-waves__control {
+    padding-top: 0;
+}
+
+.colosseum-modifiers-waves__control--expanded {
+    padding-bottom: 12px;
+}
+
+.colosseum-modifiers-waves__control::before,
+.colosseum-modifiers-waves__control::after {
+    background: linear-gradient(
+        to right,
+        transparent,
+        var(--color-border-default) 20%,
+        var(--color-border-default) 80%,
+        transparent
+    );
+    content: '';
+    flex: 1;
+    height: 1px;
+    transition: background 0.15s ease;
+}
+
+.colosseum-modifiers-waves__control:hover::before,
+.colosseum-modifiers-waves__control:hover::after,
+.colosseum-modifiers-waves__control--expanded::before,
+.colosseum-modifiers-waves__control--expanded::after {
+    background: linear-gradient(
+        to right,
+        transparent,
+        var(--color-text-gold) 20%,
+        var(--color-text-gold) 80%,
+        transparent
+    );
+}
+
+.colosseum-modifiers-waves__control:focus-visible {
+    outline: 2px solid var(--color-text-link);
+    outline-offset: -2px;
+}
+
+.colosseum-modifiers-waves__chip {
+    align-items: center;
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-default);
+    border-radius: 999px;
+    color: var(--color-text-muted);
+    display: inline-flex;
+    flex-shrink: 0;
+    gap: 0;
+    min-width: 13.5rem;
+    padding: 8px 16px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+}
+
+.colosseum-modifiers-waves__control:hover .colosseum-modifiers-waves__chip,
+.colosseum-modifiers-waves__control--expanded .colosseum-modifiers-waves__chip {
+    border-color: var(--color-text-gold);
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.08);
+    color: var(--color-text-gold);
+}
+
+.colosseum-modifiers-waves__chip-icon,
+.colosseum-modifiers-waves__chip-chevron {
+    flex-shrink: 0;
+    font-size: 1rem;
+}
+
+.colosseum-modifiers-waves__chip-label {
+    flex: 1;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    padding: 0 1.75rem;
+    text-align: center;
+}
+
+.colosseum-modifiers-waves__chip-chevron {
+    transition: transform 0.2s ease;
+}
+
+.colosseum-modifiers-waves__chip-chevron--expanded {
+    transform: rotate(180deg);
+}
+
+.colosseum-modifiers-waves__list {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding-bottom: 20px;
+    width: 100%;
+}
+
+.colosseum-modifiers-wave {
+    align-items: stretch;
+    box-sizing: border-box;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 72px repeat(3, minmax(0, 1fr));
+    isolation: isolate;
+    max-width: 100%;
+    min-width: 0;
+    padding: 16px var(--colosseum-modifiers-inset);
+    position: relative;
+    width: 100%;
+}
+
+.colosseum-modifiers-wave > * {
+    min-width: 0;
+}
+
+.colosseum-modifiers-wave::before {
+    bottom: 0;
+    content: '';
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: -1;
+}
+
+.colosseum-modifiers-wave:nth-child(odd)::before {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.colosseum-modifiers-wave:nth-child(even)::before {
+    background: rgba(255, 255, 255, 0.045);
+}
+
+.colosseum-modifiers-wave:nth-child(odd):first-child::before {
+    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.02) 55%);
+}
+
+.colosseum-modifiers-wave:nth-child(even):first-child::before {
+    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.045) 55%);
+}
+
+.colosseum-modifiers-wave:nth-child(odd):last-child:not(:first-child)::before {
+    background: linear-gradient(to top, transparent, rgba(255, 255, 255, 0.02) 55%);
+}
+
+.colosseum-modifiers-wave:nth-child(even):last-child:not(:first-child)::before {
+    background: linear-gradient(to top, transparent, rgba(255, 255, 255, 0.045) 55%);
+}
+
+.colosseum-modifiers-wave:nth-child(odd):first-child:last-child::before {
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(255, 255, 255, 0.02) 35%,
+        rgba(255, 255, 255, 0.02) 65%,
+        transparent
+    );
+}
+
+.colosseum-modifiers-wave:nth-child(even):first-child:last-child::before {
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(255, 255, 255, 0.045) 35%,
+        rgba(255, 255, 255, 0.045) 65%,
+        transparent
+    );
+}
+
+.colosseum-modifiers-wave__title {
+    align-self: center;
+    color: var(--color-text-gold);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin: 0;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.colosseum-modifiers-wave__options {
+    display: contents;
+}
+
+.colosseum-modifiers-wave .colosseum-modifier-item--compact {
+    align-items: center;
+    box-sizing: border-box;
+    height: 100%;
+    max-width: 100%;
+    min-width: 0;
+    width: 100%;
+}
+
+.colosseum-modifiers-wave .colosseum-modifier-item__text {
+    max-width: 100%;
+    min-width: 0;
+    width: 100%;
+}
+
+.colosseum-modifiers-wave .colosseum-modifier-item__description {
+    max-width: 100%;
+}
+
+@media (min-width: 769px) {
+    .colosseum-modifiers-waves__list {
+        --colosseum-modifier-description-line-height: calc(0.72rem * 1.35);
+    }
+
+    .colosseum-modifiers-waves__control--expanded {
+        padding-bottom: 16px;
+    }
+
+    .colosseum-modifiers-wave {
+        gap: 16px;
+        grid-template-columns: 80px repeat(3, minmax(0, 1fr));
+        padding: 18px var(--colosseum-modifiers-inset);
+    }
+
+    .colosseum-modifiers-wave .colosseum-modifier-item__description {
+        min-height: calc(
+            var(--colosseum-modifier-description-lines, 1) *
+            var(--colosseum-modifier-description-line-height)
+        );
+    }
+}
+
+@media (max-width: 768px) {
+    .colosseum-modifiers-section {
+        --colosseum-modifiers-inset: 16px;
+    }
+
+    .colosseum-modifiers-section__body {
+        padding-top: 12px;
+    }
+
+    .colosseum-modifiers-section__body:not(:has(.colosseum-modifiers-waves)) {
+        padding-bottom: 12px;
+    }
+
+    .colosseum-modifiers-active__grid {
+        gap: 12px;
+    }
+
+    .colosseum-modifiers-waves:first-child .colosseum-modifiers-waves__control {
+        padding-top: 0;
+    }
+
+    .colosseum-modifiers-waves__control {
+        gap: 8px;
+        padding: 12px var(--colosseum-modifiers-inset) 12px;
+    }
+
+    .colosseum-modifiers-waves__control--expanded {
+        padding-bottom: 8px;
+    }
+
+    .colosseum-modifiers-waves__list {
+        padding-bottom: 12px;
+    }
+
+    .colosseum-modifiers-waves__chip {
+        min-width: 11.5rem;
+        padding: 7px 12px;
+    }
+
+    .colosseum-modifiers-waves__chip-label {
+        font-size: 0.72rem;
+        padding: 0 1.25rem;
+    }
+
+    .colosseum-modifiers-wave {
+        gap: 8px;
+        grid-template-columns: 52px repeat(3, minmax(0, 1fr));
+        padding: 12px var(--colosseum-modifiers-inset);
+    }
+
+    .colosseum-modifiers-wave__title {
+        font-size: 0.75rem;
+    }
+
+    .colosseum-modifiers-wave .colosseum-modifier-item--compact {
+        gap: 4px;
+    }
+
+    .colosseum-modifiers-wave .colosseum-modifier-item--compact .colosseum-modifier-item__name {
+        display: -webkit-box;
+        font-size: 0.6rem;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-height: 1.15;
+        overflow: hidden;
+    }
+
+    .colosseum-modifiers-wave .colosseum-modifier-icon img {
+        height: 32px;
+        width: 32px;
+    }
+}

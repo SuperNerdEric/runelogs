@@ -18,6 +18,9 @@ import {getEncounterHref} from '../utils/encounterTableRow';
 import {isUnknownPlayer, UNKNOWN_PLAYER_NAME} from '../utils/actorUtils';
 import {getPlayerDpsDisplayColor} from '../utils/percentile';
 import RunSummaryRankBadges from './badges/RunSummaryRankBadges';
+import ColosseumModifiers from './ColosseumModifiers';
+import {hasColosseumModifierData} from '../utils/colosseumModifiers';
+import {FightGroupExtraInfo} from '../utils/fightGroupExtraInfo';
 import {resolvePlayerRankPercentile} from './badges/playerRankPercentile';
 import '../App.css';
 
@@ -72,6 +75,7 @@ interface FightGroupSummaryData {
     overallDps: PlayerDpsRow[];
     playerRanks: PlayerRank[];
     fights: FightGroupFight[];
+    extraInfo?: FightGroupExtraInfo | null;
 }
 
 const TOP_RANK_CATEGORIES = new Set(['Duration', 'Overall DPS']);
@@ -241,6 +245,10 @@ const FightGroupSummary: React.FC = () => {
                 startTime={data.startTime}
                 players={data.players}
             />
+
+            {hasColosseumModifierData(data.extraInfo?.colosseum) && (
+                <ColosseumModifiers modifiers={data.extraInfo!.colosseum} />
+            )}
 
             {data.overallDps.length > 0 && (
                 <Box className="damage-done-container fight-group-dps-table" sx={{mb: 2}}>
