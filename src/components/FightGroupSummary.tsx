@@ -59,6 +59,7 @@ interface FightGroupSummaryData {
     name: string;
     leaderboardName: string | null;
     officialDurationTicks: number | null;
+    displayDurationTicks?: number | null;
     success: boolean;
     startTime: string;
     log: {
@@ -178,7 +179,8 @@ const FightGroupSummary: React.FC = () => {
         );
     }
 
-    const displayDurationTicks = data.officialDurationTicks
+    const displayDurationTicks = data.displayDurationTicks
+        ?? data.officialDurationTicks
         ?? data.fights.reduce((sum, fight) => sum + fight.fightDurationTicks, 0);
 
     const topRankLabel = (entry: PlayerRank) => {

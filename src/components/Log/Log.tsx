@@ -33,6 +33,7 @@ interface ApiFightGroup {
     name: string;
     leaderboardName: string;
     officialDurationTicks: number | null;
+    displayDurationTicks?: number | null;
     success: boolean;
     order: number;
     fights: ApiFight[];
@@ -141,7 +142,9 @@ const Log: React.FC = () => {
 
                     const fgMeta = {
                         name: enc.name,
-                        officialDurationTicks: enc.officialDurationTicks ?? (totalDurationTicks > 0 ? totalDurationTicks : undefined),
+                        officialDurationTicks: enc.displayDurationTicks
+                            ?? enc.officialDurationTicks
+                            ?? (totalDurationTicks > 0 ? totalDurationTicks : undefined),
                         success: enc.success,
                         fights: childFights,
                         id: enc.id,
