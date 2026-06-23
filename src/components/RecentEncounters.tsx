@@ -27,6 +27,7 @@ interface RecentEncounter {
     leaderboardName?: string;
     success?: boolean;
     officialDurationTicks: number | null;
+    inProgress?: boolean;
     uploadedAt: string;
     players?: string[];
 }
@@ -130,7 +131,11 @@ const RecentEncounters: React.FC = () => {
                                     </Link>
                                 </TableCell>
                                 <TableCell sx={{color: 'white', whiteSpace: 'nowrap'}}>
-                                    {enc.officialDurationTicks != null ? ticksToTime(enc.officialDurationTicks) : '-'}
+                                    {enc.inProgress
+                                        ? 'In Progress'
+                                        : enc.officialDurationTicks != null
+                                            ? ticksToTime(enc.officialDurationTicks)
+                                            : '-'}
                                 </TableCell>
                                 <TableCell sx={{color: 'white'}}>
                                     {enc.players?.length ? enc.players.map((p, i) => (
