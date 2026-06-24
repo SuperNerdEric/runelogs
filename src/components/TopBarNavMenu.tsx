@@ -12,16 +12,21 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
+import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HistoryIcon from '@mui/icons-material/History';
+import {Icon} from '@iconify/react';
 import {Link as RouterLink} from 'react-router-dom';
 import logoImage from '../assets/Logo.png';
 import TrophyIcon from './TrophyIcon';
 import {
     buildLeaderboardHref,
+    buildRecentEncountersHref,
     LEADERBOARD_CONTENT_OPTIONS,
+    RECENT_ENCOUNTERS_CONTENT_OPTIONS,
 } from '../utils/leaderboardContent';
 import {colors, fontSizes, layout} from '../theme';
 
@@ -35,11 +40,45 @@ const navItemSx = {
     '&:hover': {backgroundColor: colors.background.hover},
 };
 
+const submenuItemTextSx = {
+    '& .MuiListItemText-primary': {
+        fontSize: '0.875rem',
+        color: colors.text.primary,
+    },
+};
+
+const SUBMENU_INDENT_PX = 52;
+const SUBMENU_LINE_LEFT_PX = 24;
+
 const submenuItemSx = {
     ...navItemSx,
-    pl: 4,
-    fontSize: '0.95rem',
+    pl: `${SUBMENU_INDENT_PX}px`,
+    ...submenuItemTextSx,
 };
+
+const NAV_SECTION_LINE_COLORS = {
+    leaderboards: colors.medal.gold,
+    recentEncounters: colors.text.rune,
+    community: colors.upload.dragActive,
+} as const;
+
+const createSubmenuListSx = (lineColor: string) => ({
+    position: 'relative',
+    py: 0.5,
+    '&::before': {
+        content: '""',
+        position: 'absolute',
+        left: `${SUBMENU_LINE_LEFT_PX}px`,
+        top: 8,
+        bottom: 8,
+        width: '2px',
+        borderRadius: '999px',
+        backgroundColor: lineColor,
+        opacity: 0.35,
+        zIndex: 1,
+        pointerEvents: 'none',
+    },
+});
 
 const drawerPaperSx = {
     backgroundColor: colors.background.black,
@@ -54,12 +93,21 @@ type TopBarNavMenuProps = {
     onOpenChange?: (open: boolean) => void;
 };
 
+const COMMUNITY_LINKS = [
+    {label: 'Discord', href: 'https://discord.gg/ZydwX7AJEd', icon: 'logos:discord-icon'},
+    {label: 'GitHub', href: 'https://github.com/SuperNerdEric/runelogs', icon: 'bi:github'},
+] as const;
+
 const TopBarNavMenu: React.FC<TopBarNavMenuProps> = ({iconButtonSx, onOpenChange}) => {
     const [open, setOpen] = useState(false);
     const [leaderboardsExpanded, setLeaderboardsExpanded] = useState(false);
+    const [recentEncountersExpanded, setRecentEncountersExpanded] = useState(false);
+    const [communityExpanded, setCommunityExpanded] = useState(false);
 
     const openMenu = () => {
         setLeaderboardsExpanded(false);
+        setRecentEncountersExpanded(false);
+        setCommunityExpanded(false);
         setOpen(true);
         onOpenChange?.(true);
     };
@@ -76,6 +124,11 @@ const TopBarNavMenu: React.FC<TopBarNavMenuProps> = ({iconButtonSx, onOpenChange
             leaderboard: option.value,
             playerCount: option.defaultPlayerCount,
         }),
+    }));
+
+    const recentEncountersLinks = RECENT_ENCOUNTERS_CONTENT_OPTIONS.map((option) => ({
+        label: option.label,
+        to: buildRecentEncountersHref({content: option.value}),
     }));
 
     return (
@@ -171,7 +224,7 @@ const TopBarNavMenu: React.FC<TopBarNavMenuProps> = ({iconButtonSx, onOpenChange
                             )}
                         </ListItemButton>
                         <Collapse in={leaderboardsExpanded} timeout="auto" unmountOnExit>
-                            <List disablePadding>
+                            <List disablePadding sx={createSubmenuListSx(NAV_SECTION_LINE_COLORS.leaderboards)}>
                                 {leaderboardLinks.map((item) => (
                                     <ListItemButton
                                         key={item.to}
@@ -187,16 +240,80 @@ const TopBarNavMenu: React.FC<TopBarNavMenuProps> = ({iconButtonSx, onOpenChange
                         </Collapse>
 
                         <ListItemButton
-                            component={RouterLink}
-                            to="/recent-encounters"
-                            onClick={closeMenu}
+                            onClick={() => setRecentEncountersExpanded((prev) => !prev)}
                             sx={navItemSx}
                         >
                             <ListItemIcon sx={menuItemIconSx}>
                                 <HistoryIcon fontSize="small" sx={{color: colors.text.rune}}/>
                             </ListItemIcon>
                             <ListItemText primary="Recent Encounters"/>
+                            {recentEncountersExpanded ? (
+                                <ExpandLess sx={{color: colors.text.primary}}/>
+                            ) : (
+                                <ExpandMore sx={{color: colors.text.primary}}/>
+                            )}
                         </ListItemButton>
+                        <Collapse in={recentEncountersExpanded} timeout="auto" unmountOnExit>
+                            <List disablePadding sx={createSubmenuListSx(NAV_SECTION_LINE_COLORS.recentEncounters)}>
+                                {recentEncountersLinks.map((item) => (
+                                    <ListItemButton
+                                        key={item.to}
+                                        component={RouterLink}
+                                        to={item.to}
+                                        onClick={closeMenu}
+                                        sx={submenuItemSx}
+                                    >
+                                        <ListItemText primary={item.label}/>
+                                    </ListItemButton>
+                                ))}
+                            </List>
+                        </Collapse>
+
+                        <ListItemButton
+                            onClick={() => setCommunityExpanded((prev) => !prev)}
+                            sx={navItemSx}
+                        >
+                            <ListItemIcon sx={menuItemIconSx}>
+                                <GroupsOutlinedIcon fontSize="small"/>
+                            </ListItemIcon>
+                            <ListItemText primary="Community"/>
+                            {communityExpanded ? (
+                                <ExpandLess sx={{color: colors.text.primary}}/>
+                            ) : (
+                                <ExpandMore sx={{color: colors.text.primary}}/>
+                            )}
+                        </ListItemButton>
+                        <Collapse in={communityExpanded} timeout="auto" unmountOnExit>
+                            <List disablePadding sx={createSubmenuListSx(NAV_SECTION_LINE_COLORS.community)}>
+                                {COMMUNITY_LINKS.map((item) => (
+                                    <ListItemButton
+                                        key={item.href}
+                                        component="a"
+                                        href={item.href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={closeMenu}
+                                        sx={submenuItemSx}
+                                    >
+                                        <Icon
+                                            icon={item.icon}
+                                            style={{
+                                                width: 20,
+                                                height: 20,
+                                                flexShrink: 0,
+                                                marginRight: 8,
+                                                color: item.icon === 'bi:github' ? colors.text.primary : undefined,
+                                            }}
+                                        />
+                                        <ListItemText
+                                            primary={item.label}
+                                            sx={{flex: '0 0 auto', m: 0}}
+                                        />
+                                        <OpenInNewIcon sx={{fontSize: 14, color: colors.text.iconHover, flexShrink: 0, ml: 1}}/>
+                                    </ListItemButton>
+                                ))}
+                            </List>
+                        </Collapse>
 
                         <ListItemButton
                             component={RouterLink}

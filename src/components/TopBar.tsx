@@ -120,45 +120,6 @@ const TopBar: React.FC = () => {
                 )}
 
                 <div style={{display: 'flex', alignItems: 'center', justifySelf: isMobile ? 'end' : undefined}}>
-                    {!isMobile && (
-                        <>
-                            <a
-                                href="https://discord.gg/ZydwX7AJEd"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{
-                                    textDecoration: 'none',
-                                    color: 'inherit',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    marginRight: '15px'
-                                }}
-                            >
-                                <Icon
-                                    icon="logos:discord-icon"
-                                    style={{ width: '35px', height: '35px' }}
-                                />
-                            </a>
-                            <a
-                                href="https://github.com/SuperNerdEric/runelogs"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{
-                                    textDecoration: 'none',
-                                    color: 'inherit',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}
-                            >
-                                <Icon
-                                    icon="bi:github"
-                                    style={{ width: '35px', height: '33px' }}
-                                />
-                            </a>
-                        </>
-                    )}
                     {!isAuthenticated && (
                         <Button
                             color="inherit"
