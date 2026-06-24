@@ -19,6 +19,7 @@ import {isUnknownPlayer, UNKNOWN_PLAYER_NAME} from '../utils/actorUtils';
 import {getPlayerDpsDisplayColor} from '../utils/percentile';
 import RunSummaryRankBadges from './badges/RunSummaryRankBadges';
 import ColosseumModifiers from './ColosseumModifiers';
+import ToaRaidLevel from './ToaRaidLevel';
 import {hasColosseumModifierData} from '../utils/colosseumModifiers';
 import {FightGroupExtraInfo} from '../utils/fightGroupExtraInfo';
 import {resolvePlayerRankPercentile} from './badges/playerRankPercentile';
@@ -232,6 +233,7 @@ const FightGroupSummary: React.FC = () => {
                         {ticksToTime(displayDurationTicks)}
                     </Typography>
                 )}
+                <ToaRaidLevel toa={data.extraInfo?.toa} />
             </Box>
 
             <RunSummaryRankBadges
