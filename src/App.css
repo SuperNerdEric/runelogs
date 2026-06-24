@@ -619,6 +619,81 @@ a.encounter-title-bar.encounter-title-bar--clickable:hover {
     --colosseum-modifiers-inset: 20px;
 }
 
+.toa-raid-level {
+    --toa-accent: #ffd049;
+    --toa-accent-soft: rgba(255, 208, 73, 0.12);
+    --toa-accent-glow: rgba(255, 208, 73, 0.28);
+
+    display: inline-flex;
+    margin-top: 20px;
+    max-width: 100%;
+    padding: 2px;
+    border-radius: 10px;
+    background: linear-gradient(
+        145deg,
+        var(--toa-accent) 0%,
+        color-mix(in srgb, var(--toa-accent) 35%, transparent) 45%,
+        var(--toa-accent) 100%
+    );
+    box-shadow:
+        0 0 24px var(--toa-accent-glow),
+        0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.toa-raid-level--entry {
+    --toa-accent: #ffd049;
+    --toa-accent-soft: rgba(255, 208, 73, 0.14);
+    --toa-accent-glow: rgba(255, 208, 73, 0.3);
+}
+
+.toa-raid-level--normal {
+    --toa-accent: #5b7fd4;
+    --toa-accent-soft: rgba(91, 127, 212, 0.14);
+    --toa-accent-glow: rgba(91, 127, 212, 0.32);
+}
+
+.toa-raid-level--expert {
+    --toa-accent: #d63a47;
+    --toa-accent-soft: rgba(214, 58, 71, 0.14);
+    --toa-accent-glow: rgba(214, 58, 71, 0.34);
+}
+
+.toa-raid-level__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 168px;
+    padding: 14px 22px 16px;
+    border-radius: 8px;
+    background:
+        linear-gradient(180deg, var(--toa-accent-soft) 0%, transparent 42%),
+        var(--color-bg-surface);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.toa-raid-level__icon {
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
+    image-rendering: pixelated;
+}
+
+.toa-raid-level__level {
+    color: var(--color-text-primary);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    margin: 0;
+}
+
+.toa-raid-level__mode {
+    color: var(--color-text-primary);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin: 0;
+    text-transform: uppercase;
+}
+
 .colosseum-modifiers-section .encounter-title-bar {
     border-bottom: 1px solid var(--color-border-default);
 }
