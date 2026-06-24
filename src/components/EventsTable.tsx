@@ -1,5 +1,5 @@
-import React, {useMemo, useState} from 'react';
-import {Box, Chip, Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip} from '@mui/material';
+import React, {useEffect, useState} from 'react';
+import {Box, Chip, CircularProgress, Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip} from '@mui/material';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import {Fight} from "../models/Fight";
 import {LogLine, LogTypes} from "../models/LogLine";
@@ -123,48 +123,57 @@ const EventsTable: React.FC<EventsTableProps> = ({
     onSelectEventTypeFilter,
     onClearEventTypeFilter,
 }) => {
-    const equipmentTimelines = useMemo(
-        () => buildEquipmentTimelines(allLogs ?? fight.data),
-        [allLogs, fight.data]
-    );
-
-    const prayerTimelines = useMemo(
-        () => buildPrayerTimelines(allLogs ?? fight.data),
-        [allLogs, fight.data]
-    );
-
-    const logs = fight.data.filter((log) => {
-        if (!matchesLogActorFilters(log, sourceFilter, targetFilter)) {
-            return false;
-        }
-        if (!matchesEquipmentFilter(log, equipmentTimelines, equipmentFilter, sourceFilter, targetFilter)) {
-            return false;
-        }
-        if (!matchesPrayerFilter(log, prayerTimelines, prayerFilter, sourceFilter, targetFilter)) {
-            return false;
-        }
-        if (eventTypeFilter && log.type !== eventTypeFilter) {
-            return false;
-        }
-        return true;
-    });
     const loggedInPlayer = fight.loggedInPlayer;
     const [sourceMenuAnchor, setSourceMenuAnchor] = useState<null | HTMLElement>(null);
     const [targetMenuAnchor, setTargetMenuAnchor] = useState<null | HTMLElement>(null);
+    const [logs, setLogs] = useState<LogLine[] | null>(null);
+    const [sourceSpecificIds, setSourceSpecificIds] = useState<number[]>([]);
+    const [targetSpecificIds, setTargetSpecificIds] = useState<number[]>([]);
 
-    const sourceSpecificIds = useMemo(() => {
-        if (!sourceFilter) {
-            return [];
-        }
-        return getActorSpecificIds(fight.data, 'source', sourceFilter.name);
-    }, [fight.data, sourceFilter]);
+    useEffect(() => {
+        setLogs(null);
 
-    const targetSpecificIds = useMemo(() => {
-        if (!targetFilter) {
-            return [];
-        }
-        return getActorSpecificIds(fight.data, 'target', targetFilter.name);
-    }, [fight.data, targetFilter]);
+        const timeoutId = window.setTimeout(() => {
+            const dataSource = allLogs ?? fight.data;
+            const equipmentTimelines = buildEquipmentTimelines(dataSource);
+            const prayerTimelines = buildPrayerTimelines(dataSource);
+            const filteredLogs = fight.data.filter((log) => {
+                if (!matchesLogActorFilters(log, sourceFilter, targetFilter)) {
+                    return false;
+                }
+                if (!matchesEquipmentFilter(log, equipmentTimelines, equipmentFilter, sourceFilter, targetFilter)) {
+                    return false;
+                }
+                if (!matchesPrayerFilter(log, prayerTimelines, prayerFilter, sourceFilter, targetFilter)) {
+                    return false;
+                }
+                if (eventTypeFilter && log.type !== eventTypeFilter) {
+                    return false;
+                }
+                return true;
+            });
+
+            setLogs(filteredLogs);
+            setSourceSpecificIds(
+                sourceFilter ? getActorSpecificIds(fight.data, 'source', sourceFilter.name) : []
+            );
+            setTargetSpecificIds(
+                targetFilter ? getActorSpecificIds(fight.data, 'target', targetFilter.name) : []
+            );
+        }, 0);
+
+        return () => window.clearTimeout(timeoutId);
+    }, [
+        allLogs,
+        fight.data,
+        sourceFilter,
+        targetFilter,
+        equipmentFilter,
+        prayerFilter,
+        eventTypeFilter,
+    ]);
+
+    const isLoading = logs === null;
 
     const renderPrayerImages = (prayers: string[]) => {
         return (
@@ -510,7 +519,18 @@ const EventsTable: React.FC<EventsTableProps> = ({
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {logs.map((log, index) => {
+                            {isLoading ? (
+                                <TableRow>
+                                    <TableCell
+                                        colSpan={5}
+                                        align="center"
+                                        sx={{py: 8, borderBottom: 'none'}}
+                                    >
+                                        <CircularProgress color="inherit"/>
+                                    </TableCell>
+                                </TableRow>
+                            ) : (
+                            logs.map((log, index) => {
                                 const source = getActorName(log, 'source');
                                 const target = getActorName(log, 'target');
                                 return (
@@ -635,7 +655,8 @@ const EventsTable: React.FC<EventsTableProps> = ({
                                         </TableCell>
                                     </TableRow>
                                 );
-                            })}
+                            })
+                            )}
                         </TableBody>
 
                     </Table>
