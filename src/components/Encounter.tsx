@@ -1,7 +1,9 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {flushSync} from 'react-dom';
 import {useNavigate, useParams, useSearchParams} from 'react-router-dom';
 import {Box, CircularProgress, Tab, Tabs, Typography, Alert} from '@mui/material';
-import {BoostsTab, DamageDoneTab, DamageTakenTab, EventsTab, ReplayTab, TabsEnum,} from './Tabs';
+import {TabsEnum} from './Tabs';
+import EncounterTabContent from './EncounterTabContent';
 import {Fight, FightMetaData, isFight} from '../models/Fight';
 import * as semver from 'semver';
 import '../App.css';
@@ -75,18 +77,37 @@ const Encounter: React.FC = () => {
     const prayerFilter = useMemo(() => deserializePrayerFilter(searchParams.get('prayer')), [searchParams]);
     const eventTypeFilter = searchParams.get('eventType');
     const isValidTab = Object.values(TabsEnum).includes(tabParam as TabsEnum);
-    const [selectedTab, setSelectedTab] = useState<TabsEnum>(
-        isValidTab ? (tabParam as TabsEnum) : TabsEnum.DAMAGE_DONE
-    );
+    const tabFromUrl: TabsEnum = isValidTab ? (tabParam as TabsEnum) : TabsEnum.DAMAGE_DONE;
+    const [optimisticTab, setOptimisticTab] = useState<TabsEnum | null>(null);
+    const displayTab = optimisticTab ?? tabFromUrl;
+    const [renderedTab, setRenderedTab] = useState<TabsEnum>(tabFromUrl);
+    const [showTabContent, setShowTabContent] = useState(true);
+    const isTabLoading = displayTab !== renderedTab || !showTabContent;
 
-    // Sync tab state with URL (back/forward buttons)
     useEffect(() => {
-        const currentTab = searchParams.get('tab') as TabsEnum | null;
-        const isValid = Object.values(TabsEnum).includes(currentTab as TabsEnum);
-        if (isValid && currentTab !== selectedTab) {
-            setSelectedTab(currentTab as TabsEnum);
+        if (optimisticTab !== null && tabFromUrl === optimisticTab) {
+            setOptimisticTab(null);
         }
-    }, [searchParams, selectedTab]);
+    }, [tabFromUrl, optimisticTab]);
+
+    // Defer mounting tab content so the spinner can paint before heavy renders.
+    useEffect(() => {
+        if (displayTab === renderedTab && showTabContent) {
+            return;
+        }
+
+        setShowTabContent(false);
+
+        const timeoutId = window.setTimeout(() => {
+            if (displayTab !== renderedTab) {
+                setRenderedTab(displayTab);
+            } else {
+                setShowTabContent(true);
+            }
+        }, 0);
+
+        return () => window.clearTimeout(timeoutId);
+    }, [displayTab, renderedTab, showTabContent]);
 
     // Ensure ?tab= is always present
     useEffect(() => {
@@ -221,6 +242,44 @@ const Encounter: React.FC = () => {
         [navigate, searchParams]
     );
 
+    const onSelectSourceFilter = useCallback(
+        (filter: ActorFilter) => updateActorFilter('source', filter),
+        [updateActorFilter]
+    );
+    const onSelectTargetFilter = useCallback(
+        (filter: ActorFilter) => updateActorFilter('target', filter),
+        [updateActorFilter]
+    );
+    const onClearSourceFilter = useCallback(
+        () => updateActorFilter('source', null),
+        [updateActorFilter]
+    );
+    const onClearTargetFilter = useCallback(
+        () => updateActorFilter('target', null),
+        [updateActorFilter]
+    );
+    const onSelectEventTypeFilter = useCallback(
+        (eventType: string) => {
+            const newParams = new URLSearchParams(searchParams);
+            newParams.set('eventType', eventType);
+            navigate(`${window.location.pathname}?${newParams.toString()}`);
+        },
+        [navigate, searchParams]
+    );
+    const onClearEventTypeFilter = useCallback(() => {
+        const newParams = new URLSearchParams(searchParams);
+        newParams.delete('eventType');
+        navigate(`${window.location.pathname}?${newParams.toString()}`);
+    }, [navigate, searchParams]);
+    const onClearEquipmentFilter = useCallback(
+        () => updateEquipmentFilter(null),
+        [updateEquipmentFilter]
+    );
+    const onClearPrayerFilter = useCallback(
+        () => updatePrayerFilter(null),
+        [updatePrayerFilter]
+    );
+
     useEffect(() => {
         if (id) {
             setGroup(null);
@@ -231,9 +290,17 @@ const Encounter: React.FC = () => {
             setDpsLeaderboardKey(null);
             setPlayerCount(0);
             setLeaderboardName(null);
+            setOptimisticTab(null);
+            setShowTabContent(true);
             fetchEncounter(id, true, true);
         }
     }, [id, fetchEncounter]);
+
+    useEffect(() => {
+        setOptimisticTab(null);
+        setRenderedTab(tabFromUrl);
+        setShowTabContent(true);
+    }, [id]);
 
     useEffect(() => {
         if (!id || !receivingData || isAggregate) {
@@ -261,6 +328,9 @@ const Encounter: React.FC = () => {
     const TAB_COUNT = availableTabs.length;
     const widthPerTab = 95 / TAB_COUNT;
     const fontSize = `${widthPerTab * 0.14}vw`;
+
+    const showTabShell = displayTab === TabsEnum.EVENTS || (showTabContent && displayTab === renderedTab);
+    const showParentSpinner = isTabLoading && displayTab !== TabsEnum.EVENTS;
 
     if (loading)
         return (
@@ -350,16 +420,21 @@ const Encounter: React.FC = () => {
                 />
 
                 <Tabs
-                    value={selectedTab}
+                    value={displayTab}
                     onChange={(_, newTab: TabsEnum) => {
                         const newParams = new URLSearchParams(searchParams);
                         newParams.set('tab', newTab);
+                        flushSync(() => {
+                            setOptimisticTab(newTab);
+                        });
                         navigate(`${window.location.pathname}?${newParams.toString()}`);
                     }}
                     indicatorColor="primary"
                     textColor="primary"
                     variant="fullWidth"
                     style={{marginBottom: '20px'}}
+                    TabIndicatorProps={{style: {transition: 'none'}}}
+                    sx={{contain: 'layout'}}
                 >
                     {availableTabs.map((tab) => (
                         <Tab
@@ -367,7 +442,7 @@ const Encounter: React.FC = () => {
                             label={tab}
                             value={tab}
                             sx={{
-                                color: selectedTab === tab ? 'lightblue' : 'white',
+                                color: displayTab === tab ? 'lightblue' : 'white',
                                 minWidth: 0, // prevent MUI from enforcing a default min width
                                 '@media (max-width:500px)': {
                                     padding: '6px 6px',
@@ -378,71 +453,41 @@ const Encounter: React.FC = () => {
                     ))}
                 </Tabs>
 
-                {selectedTab === TabsEnum.DAMAGE_DONE && (
-                    <DamageDoneTab
-                        selectedLogs={fight}
-                        dpsPercentiles={dpsPercentiles}
-                        sourceFilter={sourceFilter}
-                        targetFilter={targetFilter}
-                        equipmentFilter={equipmentFilter}
-                        prayerFilter={prayerFilter}
-                        onSelectSourceFilter={(filter) => updateActorFilter('source', filter)}
-                        onSelectTargetFilter={(filter) => updateActorFilter('target', filter)}
-                        onSelectEquipmentFilter={updateEquipmentFilter}
-                        onSelectPrayerFilter={updatePrayerFilter}
-                        onClearSourceFilter={() => updateActorFilter('source', null)}
-                        onClearTargetFilter={() => updateActorFilter('target', null)}
-                        onClearEquipmentFilter={() => updateEquipmentFilter(null)}
-                        onClearPrayerFilter={() => updatePrayerFilter(null)}
-                    />
-                )}
-                {selectedTab === TabsEnum.DAMAGE_TAKEN && (
-                    <DamageTakenTab
-                        selectedLogs={fight}
-                        sourceFilter={sourceFilter}
-                        targetFilter={targetFilter}
-                        equipmentFilter={equipmentFilter}
-                        prayerFilter={prayerFilter}
-                        onSelectSourceFilter={(filter) => updateActorFilter('source', filter)}
-                        onSelectTargetFilter={(filter) => updateActorFilter('target', filter)}
-                        onSelectEquipmentFilter={updateEquipmentFilter}
-                        onSelectPrayerFilter={updatePrayerFilter}
-                        onClearSourceFilter={() => updateActorFilter('source', null)}
-                        onClearTargetFilter={() => updateActorFilter('target', null)}
-                        onClearEquipmentFilter={() => updateEquipmentFilter(null)}
-                        onClearPrayerFilter={() => updatePrayerFilter(null)}
-                    />
-                )}
-                {selectedTab === TabsEnum.BOOSTS && <BoostsTab selectedLogs={fight}/>}
-                {selectedTab === TabsEnum.EVENTS && (
-                    <EventsTab
-                        selectedLogs={fight}
-                        sourceFilter={sourceFilter}
-                        targetFilter={targetFilter}
-                        equipmentFilter={equipmentFilter}
-                        prayerFilter={prayerFilter}
-                        onSelectSourceFilter={(filter) => updateActorFilter('source', filter)}
-                        onSelectTargetFilter={(filter) => updateActorFilter('target', filter)}
-                        onSelectEquipmentFilter={updateEquipmentFilter}
-                        onSelectPrayerFilter={updatePrayerFilter}
-                        onClearSourceFilter={() => updateActorFilter('source', null)}
-                        onClearTargetFilter={() => updateActorFilter('target', null)}
-                        onClearEquipmentFilter={() => updateEquipmentFilter(null)}
-                        onClearPrayerFilter={() => updatePrayerFilter(null)}
-                        eventTypeFilter={eventTypeFilter}
-                        onSelectEventTypeFilter={(eventType) => {
-                            const newParams = new URLSearchParams(searchParams);
-                            newParams.set('eventType', eventType);
-                            navigate(`${window.location.pathname}?${newParams.toString()}`);
-                        }}
-                        onClearEventTypeFilter={() => {
-                            const newParams = new URLSearchParams(searchParams);
-                            newParams.delete('eventType');
-                            navigate(`${window.location.pathname}?${newParams.toString()}`);
-                        }}
-                    />
-                )}
-                {selectedTab === TabsEnum.REPLAY && <ReplayTab selectedLogs={fight}/>}
+                <Box sx={{minHeight: '40vh', position: 'relative'}}>
+                    {showParentSpinner && (
+                        <Box
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            py={8}
+                            sx={showTabContent ? undefined : {position: 'absolute', inset: 0, zIndex: 1}}
+                        >
+                            <CircularProgress color="inherit"/>
+                        </Box>
+                    )}
+                    {showTabShell && (
+                        <EncounterTabContent
+                            renderedTab={displayTab}
+                            fight={fight}
+                            dpsPercentiles={dpsPercentiles}
+                            sourceFilter={sourceFilter}
+                            targetFilter={targetFilter}
+                            equipmentFilter={equipmentFilter}
+                            prayerFilter={prayerFilter}
+                            eventTypeFilter={eventTypeFilter}
+                            onSelectSourceFilter={onSelectSourceFilter}
+                            onSelectTargetFilter={onSelectTargetFilter}
+                            onSelectEquipmentFilter={updateEquipmentFilter}
+                            onSelectPrayerFilter={updatePrayerFilter}
+                            onClearSourceFilter={onClearSourceFilter}
+                            onClearTargetFilter={onClearTargetFilter}
+                            onClearEquipmentFilter={onClearEquipmentFilter}
+                            onClearPrayerFilter={onClearPrayerFilter}
+                            onSelectEventTypeFilter={onSelectEventTypeFilter}
+                            onClearEventTypeFilter={onClearEventTypeFilter}
+                        />
+                    )}
+                </Box>
             </div>
         </div>
     );
