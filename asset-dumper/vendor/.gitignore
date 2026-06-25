@@ -1,0 +1,4 @@
+# RuneLite cache library used by asset-dumper.
+# Obtain via setup.ps1 / setup.sh, or copy manually from a RuneLite build:
+#   runelite/cache/build/libs/cache-*-SNAPSHOT.jar  ->  vendor/cache.jar
+cache.jar

@@ -2,7 +2,7 @@ import React from 'react';
 import {ImageOverlay, Popup, Rectangle, useMap} from 'react-leaflet';
 import {Position} from "../../utils/Position";
 import {NPC, npcIdMap} from "../../lib/npcIdMap";
-import {graphicObjectIdMap} from "../../lib/graphicObjectIdMap";
+import {graphicObjectIdMap, getGraphicObjectFrameIndex} from "../../lib/graphicObjectIdMap";
 import {gameObjectIdMap} from "../../lib/gameObjectIdMap";
 import {GameObjectState, GamePosition, GraphicsObjectState} from "./GameState";
 import {groundObjectIdMap} from "../../lib/groundObjectIdMap";
@@ -144,10 +144,9 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
                 const ticksElapsed = currentTick - spawnTick;
 
                 // 3. If multiple frames exist, pick the correct frame
-                let displayImage = definition.imageUrl; // default single image
+                let displayImage = definition.imageUrl;
                 if (definition.frames && definition.frames.length > 0) {
-                    // clamp to the number of frames - 1
-                    const frameIndex = Math.min(ticksElapsed, definition.frames.length - 1);
+                    const frameIndex = getGraphicObjectFrameIndex(ticksElapsed, definition);
                     displayImage = definition.frames[frameIndex];
                 }
 

@@ -1,0 +1,72 @@
+{
+  "cacheDir": "c:\\Users\\Eric\\.qodat\\downloads\\2026-06-17-rev238\\cache",
+  "cacheFormat": "DISK",
+  "gameObjectsDir": "C:\\Users\\Eric\\Runelogs\\runelogs\\asset-dumper\\..\\src\\assets\\gameObjects",
+  "graphicObjectsDir": "C:\\Users\\Eric\\Runelogs\\runelogs\\asset-dumper\\..\\src\\assets\\graphicObjects",
+  "graphicObjects": {
+    "3405": {
+      "animationId": 12443,
+      "frameCount": 10,
+      "frameLengths": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ]
+    },
+    "3406": {
+      "animationId": 12444,
+      "frameCount": 10,
+      "frameLengths": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ]
+    },
+    "3407": {
+      "animationId": 12445,
+      "frameCount": 10,
+      "frameLengths": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ]
+    },
+    "3408": {
+      "animationId": 12446,
+      "frameCount": 10,
+      "frameLengths": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ]
+    }
+  }
+}
