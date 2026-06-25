@@ -21,7 +21,8 @@
     { "id": 3422, "animated": true, "comment": "Doom grub explosion 5" },
     { "id": 3423, "animated": true, "comment": "Doom grub explosion 6" },
     { "id": 3424, "animated": true, "comment": "Doom grub explosion 7" },
-    { "id": 3425, "animated": true, "comment": "Doom grub explosion 8" }
+    { "id": 3425, "animated": true, "comment": "Doom grub explosion 8" },
+    { "id": 3426, "animated": true, "comment": "Doom grub player impact" }
   ],
   "render": {
     "gameObject": {

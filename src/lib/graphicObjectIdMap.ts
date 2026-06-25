@@ -25,6 +25,7 @@ import o1595 from '../assets/graphicObjects/1595.png';
 const DOOM_SHOCKWAVE_FRAME_LENGTHS = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3];
 
 
+
 import o3405_0 from '../assets/graphicObjects/3405_0.png';
 import o3405_1 from '../assets/graphicObjects/3405_1.png';
 import o3405_2 from '../assets/graphicObjects/3405_2.png';
@@ -209,6 +210,19 @@ import o3425_14 from '../assets/graphicObjects/3425_14.png';
 import o3425_15 from '../assets/graphicObjects/3425_15.png';
 import o3425_16 from '../assets/graphicObjects/3425_16.png';
 import o3425_17 from '../assets/graphicObjects/3425_17.png';
+import o3426_0 from '../assets/graphicObjects/3426_0.png';
+import o3426_1 from '../assets/graphicObjects/3426_1.png';
+import o3426_2 from '../assets/graphicObjects/3426_2.png';
+import o3426_3 from '../assets/graphicObjects/3426_3.png';
+import o3426_4 from '../assets/graphicObjects/3426_4.png';
+import o3426_5 from '../assets/graphicObjects/3426_5.png';
+import o3426_6 from '../assets/graphicObjects/3426_6.png';
+import o3426_7 from '../assets/graphicObjects/3426_7.png';
+import o3426_8 from '../assets/graphicObjects/3426_8.png';
+import o3426_9 from '../assets/graphicObjects/3426_9.png';
+import o3426_10 from '../assets/graphicObjects/3426_10.png';
+import o3426_11 from '../assets/graphicObjects/3426_11.png';
+import o3426_12 from '../assets/graphicObjects/3426_12.png';
 
 export interface GraphicObject {
     name: string;
@@ -347,5 +361,10 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
         name: "Doom grub explosion 8",
         frameLengths: [2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5],
         frames: [o3425_0, o3425_1, o3425_2, o3425_3, o3425_4, o3425_5, o3425_6, o3425_7, o3425_8, o3425_9, o3425_10, o3425_11, o3425_12, o3425_13, o3425_14, o3425_15, o3425_16, o3425_17],
+    },
+    3426: {
+        name: "Doom grub player impact",
+        frameLengths: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+        frames: [o3426_0, o3426_1, o3426_2, o3426_3, o3426_4, o3426_5, o3426_6, o3426_7, o3426_8, o3426_9, o3426_10, o3426_11, o3426_12],
     },
 };
