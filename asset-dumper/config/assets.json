@@ -1,0 +1,36 @@
+{
+  "output": {
+    "gameObjects": "../src/assets/gameObjects",
+    "graphicObjects": "../src/assets/graphicObjects"
+  },
+  "gameObjects": [
+    { "id": 57283, "comment": "DOM_ACIDPOOL" },
+    { "id": 57284, "comment": "DOM_ACIDPOOL_DIAGONAL" },
+    { "id": 57286, "comment": "DOM_ROCK" },
+    { "id": 57287, "comment": "DOM_ROCK_BLOCKRANGE" }
+  ],
+  "graphicObjects": [
+    { "id": 3405, "animated": true, "comment": "VFX_AREA_SLAM_01" },
+    { "id": 3406, "animated": true, "comment": "VFX_AREA_SLAM_02" },
+    { "id": 3407, "animated": true, "comment": "VFX_AREA_SLAM_03" },
+    { "id": 3408, "animated": true, "comment": "VFX_AREA_SLAM_04" }
+  ],
+  "render": {
+    "gameObject": {
+      "width": 512,
+      "height": 384,
+      "zoom": 900,
+      "xan": 512,
+      "yan": 512,
+      "zan": 0
+    },
+    "graphicObject": {
+      "width": 384,
+      "height": 384,
+      "zoom": 700,
+      "xan": 512,
+      "yan": 512,
+      "zan": 0
+    }
+  }
+}

@@ -7,6 +7,10 @@ import o45573 from '../assets/gameObjects/45573.png';
 import o45574 from '../assets/gameObjects/45574.png';
 import o45575 from '../assets/gameObjects/45575.png';
 import o45576 from '../assets/gameObjects/45576.png';
+import o57283 from '../assets/gameObjects/57283.png';
+import o57284 from '../assets/gameObjects/57284.png';
+import o57286 from '../assets/gameObjects/57286.png';
+import o57287 from '../assets/gameObjects/57287.png';
 export interface GameObject {
     name: string;
     imageUrl: string;
@@ -22,4 +26,8 @@ export const gameObjectIdMap: Record<number, GameObject> = {
     45574: { name: "Zebak poison", imageUrl: o45574 },
     45575: { name: "Zebak poison", imageUrl: o45575 },
     45576: { name: "Zebak poison", imageUrl: o45576 },
+    57283: { name: "Doom venom splat", imageUrl: o57283 },
+    57284: { name: "Doom venom splat (diagonal)", imageUrl: o57284 },
+    57286: { name: "Doom rock", imageUrl: o57286 },
+    57287: { name: "Doom rock (blocks range)", imageUrl: o57287 },
 };
