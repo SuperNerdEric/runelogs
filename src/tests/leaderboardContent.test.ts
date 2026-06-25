@@ -4,7 +4,10 @@ import {
     browsePlayerCountToApiParam,
     buildBrowsePlayerCountOptions,
     buildLeaderboardPlayerCountOptions,
+    buildPlayerRankLeaderboardHref,
     LEADERBOARD_CONTENT_OPTIONS,
+    MOKHAIOTL_CONTENT_NAME,
+    MOKHAIOTL_HIGH_SCORE_MODE_LABEL,
     resolveBrowsePlayerCount,
 } from '../utils/leaderboardContent';
 
@@ -33,5 +36,15 @@ describe('leaderboard player count filters', () => {
             expect(options.some((option) => option.value === BROWSE_ANY_PLAYER_COUNT)).toBe(false);
             expect(options.map((option) => option.value)).toEqual([...content.playerCounts]);
         }
+    });
+});
+
+describe('buildPlayerRankLeaderboardHref', () => {
+    it('links deep delve rank badges to the high-score leaderboard', () => {
+        expect(buildPlayerRankLeaderboardHref(
+            {category: MOKHAIOTL_HIGH_SCORE_MODE_LABEL, rank: 4},
+            MOKHAIOTL_CONTENT_NAME,
+            1,
+        )).toBe('/leaderboards?mode=high-score&leaderboard=Doom+of+Mokhaiotl&playerCount=1&highlightRank=4');
     });
 });

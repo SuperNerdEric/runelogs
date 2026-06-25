@@ -135,16 +135,9 @@ const Log: React.FC = () => {
                             };
                         });
 
-                    const totalDurationTicks = childFights.reduce(
-                        (sum, f) => sum + f.fightDurationTicks,
-                        0,
-                    );
-
                     const fgMeta = {
                         name: enc.name,
-                        officialDurationTicks: enc.displayDurationTicks
-                            ?? enc.officialDurationTicks
-                            ?? (totalDurationTicks > 0 ? totalDurationTicks : undefined),
+                        officialDurationTicks: enc.displayDurationTicks ?? undefined,
                         success: enc.success,
                         fights: childFights,
                         id: enc.id,

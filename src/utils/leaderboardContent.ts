@@ -9,7 +9,15 @@ export const LEADERBOARD_FIGHT_GROUP_NAMES = [
     'Fortis Colosseum',
     'The Gauntlet',
     'Corrupted Gauntlet',
+    'Doom of Mokhaiotl',
 ] as const;
+
+export const MOKHAIOTL_CONTENT_NAME = 'Doom of Mokhaiotl';
+export const MOKHAIOTL_DELVE_1_8_KEY = 'Delve level 1 - 8';
+/** User-facing label for the high-score leaderboard on Doom of Mokhaiotl. */
+export const MOKHAIOTL_HIGH_SCORE_MODE_LABEL = 'Deep Delve';
+
+export const LEADERBOARD_MODE_HIGH_SCORE = 'high-score' as const;
 
 export type LeaderboardContentOption = {
     label: string;
@@ -28,6 +36,7 @@ export const LEADERBOARD_CONTENT_OPTIONS: LeaderboardContentOption[] = [
     {label: 'Fortis Colosseum', value: 'Fortis Colosseum', playerCounts: [1], defaultPlayerCount: 1},
     {label: 'The Gauntlet', value: 'The Gauntlet', playerCounts: [1], defaultPlayerCount: 1},
     {label: 'Corrupted Gauntlet', value: 'Corrupted Gauntlet', playerCounts: [1], defaultPlayerCount: 1},
+    {label: 'Doom of Mokhaiotl', value: MOKHAIOTL_CONTENT_NAME, playerCounts: [1], defaultPlayerCount: 1},
 ];
 
 /** @deprecated Use LEADERBOARD_CONTENT_OPTIONS */
@@ -139,7 +148,37 @@ export function buildUploaderLogsHref(
     return query ? `/logs/${uploaderId}?${query}` : `/logs/${uploaderId}`;
 }
 
-export type LeaderboardMode = 'time' | 'dps';
+export type LeaderboardMode = 'time' | 'dps' | typeof LEADERBOARD_MODE_HIGH_SCORE;
+
+export function isMokhaiotlLeaderboardContent(contentName: string): boolean {
+    return contentName === MOKHAIOTL_CONTENT_NAME;
+}
+
+export function getLeaderboardModesForContent(contentName: string): LeaderboardMode[] {
+    if (isMokhaiotlLeaderboardContent(contentName)) {
+        return ['time', 'dps', LEADERBOARD_MODE_HIGH_SCORE];
+    }
+    return ['time', 'dps'];
+}
+
+export function getLeaderboardModeLabel(contentName: string, mode: LeaderboardMode): string {
+    if (mode === LEADERBOARD_MODE_HIGH_SCORE) {
+        return isMokhaiotlLeaderboardContent(contentName)
+            ? MOKHAIOTL_HIGH_SCORE_MODE_LABEL
+            : 'High score';
+    }
+    if (mode === 'dps') {
+        return 'DPS';
+    }
+    return 'Time';
+}
+
+export function getHighScoreLevelColumnLabel(contentName: string): string {
+    if (isMokhaiotlLeaderboardContent(contentName)) {
+        return 'Delve';
+    }
+    return 'Level';
+}
 
 export function buildLeaderboardHref(params: {
     mode: LeaderboardMode;
@@ -173,6 +212,14 @@ export function buildPlayerRankLeaderboardHref(
     if (entry.category === 'Duration') {
         return buildLeaderboardHref({
             mode: 'time',
+            leaderboard: leaderboardName,
+            playerCount,
+            highlightRank: entry.rank,
+        });
+    }
+    if (entry.category === MOKHAIOTL_HIGH_SCORE_MODE_LABEL) {
+        return buildLeaderboardHref({
+            mode: LEADERBOARD_MODE_HIGH_SCORE,
             leaderboard: leaderboardName,
             playerCount,
             highlightRank: entry.rank,

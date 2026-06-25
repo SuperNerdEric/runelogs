@@ -41,6 +41,10 @@ function buildBadgeTooltip(
         return `Ranked #${rank} on the Time leaderboard`;
     }
 
+    if (category === 'high-score') {
+        return `Ranked #${rank} on the Deep Delve leaderboard`;
+    }
+
     if (label.includes('Overall')) {
         const playerName = label.replace(/\s*—\s*Overall$/, '').trim();
         return playerName
@@ -69,7 +73,11 @@ const PercentileRankBadge: React.FC<PercentileRankBadgeProps> = ({
     const accentColor = getPercentileAccentColor(percentile);
     const showGlow = !compact && percentile !== undefined && percentile >= 99;
     const categoryIconSize = compact ? 16 : 24;
-    const categoryLabel = category === 'time' ? 'Time' : 'DPS';
+    const categoryLabel = category === 'time'
+        ? 'Time'
+        : category === 'high-score'
+            ? 'Deep Delve'
+            : 'DPS';
 
     const inner = compact ? (
         <>

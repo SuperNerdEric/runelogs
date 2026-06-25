@@ -1,7 +1,11 @@
 import React from 'react';
 import {Box, Tab, Tabs, SxProps, Theme, useMediaQuery, useTheme} from '@mui/material';
 import {SystemStyleObject} from '@mui/material/styles';
-import {LeaderboardMode} from '../utils/leaderboardContent';
+import {
+    getLeaderboardModeLabel,
+    getLeaderboardModesForContent,
+    LeaderboardMode,
+} from '../utils/leaderboardContent';
 import RankBadgeCategoryIcon from './badges/RankBadgeCategoryIcon';
 import {
     FILTER_TAB_ICON_SIZE,
@@ -14,13 +18,9 @@ import {
     filterModeTabSx,
 } from './filters/filterStyles';
 
-const MODE_OPTIONS: { label: string; value: LeaderboardMode }[] = [
-    {label: 'Time', value: 'time'},
-    {label: 'DPS', value: 'dps'},
-];
-
 interface DurationDpsModeSelectorProps {
     value: LeaderboardMode;
+    contentName: string;
     onChange: (mode: LeaderboardMode) => void;
     embeddedEndCap?: boolean;
     sx?: SxProps<Theme>;
@@ -28,6 +28,7 @@ interface DurationDpsModeSelectorProps {
 
 const DurationDpsModeSelector: React.FC<DurationDpsModeSelectorProps> = ({
     value,
+    contentName,
     onChange,
     embeddedEndCap = false,
     sx,
@@ -35,6 +36,10 @@ const DurationDpsModeSelector: React.FC<DurationDpsModeSelectorProps> = ({
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const tabIconSize = isMobile ? FILTER_TAB_ICON_SIZE_MOBILE : FILTER_TAB_ICON_SIZE;
+    const modeOptions = getLeaderboardModesForContent(contentName).map((mode) => ({
+        value: mode,
+        label: getLeaderboardModeLabel(contentName, mode),
+    }));
 
     return (
         <Box sx={[filterModeTabsContainerSx, ...(Array.isArray(sx) ? sx : sx ? [sx] : [])]}>
@@ -44,7 +49,7 @@ const DurationDpsModeSelector: React.FC<DurationDpsModeSelectorProps> = ({
                 scrollButtons={false}
                 sx={filterModeTabsSx}
             >
-                {MODE_OPTIONS.map((option) => (
+                {modeOptions.map((option) => (
                     <Tab
                         key={option.value}
                         label={(

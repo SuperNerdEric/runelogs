@@ -19,8 +19,13 @@ import {encounterTableRowProps, getEncounterHref, stopRowClick} from '../utils/e
 import {
     buildLeaderboardHref,
     buildLeaderboardPlayerCountOptions,
+    getLeaderboardModesForContent,
+    getHighScoreLevelColumnLabel,
+    isMokhaiotlLeaderboardContent,
     LEADERBOARD_CONTENT_OPTIONS,
+    LEADERBOARD_MODE_HIGH_SCORE,
     LeaderboardMode,
+    MOKHAIOTL_DELVE_1_8_KEY,
 } from '../utils/leaderboardContent';
 import {getDpsPercentileColor} from "../utils/TickActivity";
 import {getPercentileAccentColor} from "../utils/percentile";
@@ -37,6 +42,7 @@ type DurationEntry = {
     duration: number;
     players: string[];
     percentile?: number;
+    highScoreLevel?: number;
 };
 
 type DpsEntry = {
@@ -93,7 +99,13 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const modeParam = searchParams.get('mode') as LeaderboardMode | null;
-    const mode: LeaderboardMode = modeParam === 'dps' ? 'dps' : 'time';
+    const allowedModes = getLeaderboardModesForContent(
+        LEADERBOARD_CONTENT_OPTIONS.find(o => o.value === searchParams.get('leaderboard'))?.value
+        ?? LEADERBOARD_CONTENT_OPTIONS[0].value,
+    );
+    const mode: LeaderboardMode = modeParam && allowedModes.includes(modeParam)
+        ? modeParam
+        : 'time';
 
     const contentParam = searchParams.get('leaderboard');
     const playerCountParam = parseInt(searchParams.get('playerCount') || '', 10);
@@ -146,12 +158,25 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
         const fightsForContent = dpsConfig.find((group) => group.contentName === newContent.value)?.fights ?? [];
         if (newFightParam && fightsForContent.includes(newFightParam)) {
             setSelectedFight(newFightParam);
+        } else if (isMokhaiotlLeaderboardContent(newContent.value) && fightsForContent.includes(MOKHAIOTL_DELVE_1_8_KEY)) {
+            setSelectedFight(MOKHAIOTL_DELVE_1_8_KEY);
         } else if (fightsForContent.includes('Overall')) {
             setSelectedFight('Overall');
         } else if (fightsForContent.length > 0) {
             setSelectedFight(fightsForContent[0]);
         }
     }, [searchParams, dpsConfig]);
+
+    const fetchHighScoreData = useCallback(async () => {
+        const url = `${import.meta.env.VITE_API_URL}/high-score-leaderboard?content=${encodeURIComponent(
+            content.value,
+        )}&playerCount=${playerCount}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const data = await res.json();
+        setDurationEntries(data.leaderboard);
+        setDurationResultType('fightGroup');
+    }, [content, playerCount]);
 
     const fetchDurationData = useCallback(async () => {
         const url = `${import.meta.env.VITE_API_URL}/leaderboard?content=${encodeURIComponent(
@@ -180,6 +205,8 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
         try {
             if (mode === 'dps') {
                 await fetchDpsData();
+            } else if (mode === LEADERBOARD_MODE_HIGH_SCORE) {
+                await fetchHighScoreData();
             } else {
                 await fetchDurationData();
             }
@@ -188,7 +215,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
         } finally {
             setLoading(false);
         }
-    }, [mode, fetchDpsData, fetchDurationData]);
+    }, [mode, fetchDpsData, fetchDurationData, fetchHighScoreData]);
 
     useEffect(() => {
         fetchData();
@@ -254,6 +281,9 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
         </TableRow>
     );
 
+    const isHighScoreMode = mode === LEADERBOARD_MODE_HIGH_SCORE;
+    const highScoreLevelColumn = getHighScoreLevelColumnLabel(content.value);
+
     const renderDurationTable = () => (
         <Box>
             <TableContainer>
@@ -261,16 +291,21 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{color: 'white'}}>Rank</TableCell>
-                            <TableCell sx={{color: 'white'}}>Duration</TableCell>
+                            {isHighScoreMode && (
+                                <TableCell sx={{color: 'white'}}>{highScoreLevelColumn}</TableCell>
+                            )}
+                            <TableCell sx={{color: 'white'}}>
+                                {isHighScoreMode ? 'Time' : 'Duration'}
+                            </TableCell>
                             <TableCell sx={{color: 'white'}}>Players</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {loading && renderTableStatusRow(3, <CircularProgress color="inherit" size={28}/>)}
-                        {!loading && error && renderTableStatusRow(3, (
+                        {loading && renderTableStatusRow(isHighScoreMode ? 4 : 3, <CircularProgress color="inherit" size={28}/>)}
+                        {!loading && error && renderTableStatusRow(isHighScoreMode ? 4 : 3, (
                             <Typography color="error">{error}</Typography>
                         ))}
-                        {!loading && !error && durationRows.length === 0 && renderTableStatusRow(3, (
+                        {!loading && !error && durationRows.length === 0 && renderTableStatusRow(isHighScoreMode ? 4 : 3, (
                             <Typography color="white">No records yet.</Typography>
                         ))}
                         {!loading && !error && durationRows
@@ -306,6 +341,9 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
                                                 </Box>
                                             </Link>
                                         </TableCell>
+                                        {isHighScoreMode && (
+                                            <TableCell sx={{color: 'white'}}>{row.highScoreLevel ?? '—'}</TableCell>
+                                        )}
                                         <TableCell sx={{color: 'white'}}>{ticksToTime(row.duration)}</TableCell>
                                         <TableCell sx={{color: 'white'}}>
                                             {row.players.map((player, i) => (
@@ -423,56 +461,84 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
     );
 
     const renderLeaderboardContent = () => (
-        mode === 'time' ? renderDurationTable() : renderDpsTable()
+        mode === 'dps' ? renderDpsTable() : renderDurationTable()
     );
 
     return (
         <Box m={0}>
             <FilterToolbar
+                leadingFilters={(
+                    <>
+                        <FilterSelect
+                            field="content"
+                            value={content.value}
+                            options={LEADERBOARD_CONTENT_OPTIONS.map((option) => ({
+                                value: option.value,
+                                label: option.label,
+                            }))}
+                            sx={{minWidth: {xs: 120, sm: 160}}}
+                            onChange={(nextContentValue) => {
+                                const selectedContent = LEADERBOARD_CONTENT_OPTIONS.find(
+                                    (option) => option.value === nextContentValue,
+                                )!;
+                                setContent(selectedContent);
+                                const newDefault = selectedContent.defaultPlayerCount;
+                                setPlayerCount(newDefault);
+                                const fights = dpsConfig.find(
+                                    (group) => group.contentName === selectedContent.value,
+                                )?.fights ?? [];
+                                const nextFight = isMokhaiotlLeaderboardContent(selectedContent.value) && fights.includes(MOKHAIOTL_DELVE_1_8_KEY)
+                                    ? MOKHAIOTL_DELVE_1_8_KEY
+                                    : fights.includes('Overall')
+                                        ? 'Overall'
+                                        : (fights[0] ?? 'Overall');
+                                const nextMode = getLeaderboardModesForContent(selectedContent.value).includes(mode)
+                                    ? mode
+                                    : 'time';
+                                setSelectedFight(nextFight);
+                                setLeaderboardSearchParams({
+                                    mode: nextMode,
+                                    leaderboard: selectedContent.value,
+                                    playerCount: newDefault,
+                                    fight: nextMode === 'dps' ? nextFight : undefined,
+                                });
+                            }}
+                        />
+
+                        <FilterSelect
+                            field="team"
+                            value={playerCount}
+                            compact
+                            sx={filterFieldCompactSx}
+                            options={buildLeaderboardPlayerCountOptions(content.playerCounts)}
+                            onChange={(count) => {
+                                setPlayerCount(count);
+                                updateSearchParams({playerCount: count.toString()});
+                            }}
+                        />
+                    </>
+                )}
                 modeSelector={(
                     <DurationDpsModeSelector
                         value={mode}
+                        contentName={content.value}
                         onChange={(nextMode) => {
+                            const fights = dpsConfig.find(
+                                (group) => group.contentName === content.value,
+                            )?.fights ?? [];
+                            const nextFight = isMokhaiotlLeaderboardContent(content.value) && fights.includes(MOKHAIOTL_DELVE_1_8_KEY)
+                                ? MOKHAIOTL_DELVE_1_8_KEY
+                                : selectedFight;
                             setLeaderboardSearchParams({
                                 mode: nextMode,
                                 leaderboard: content.value,
                                 playerCount,
-                                fight: nextMode === 'dps' ? selectedFight : undefined,
+                                fight: nextMode === 'dps' ? nextFight : undefined,
                             });
                         }}
                     />
                 )}
-            >
-                <FilterSelect
-                    field="content"
-                    value={content.value}
-                    options={LEADERBOARD_CONTENT_OPTIONS.map((option) => ({
-                        value: option.value,
-                        label: option.label,
-                    }))}
-                    sx={{minWidth: {xs: 120, sm: 160}}}
-                    onChange={(nextContentValue) => {
-                        const selectedContent = LEADERBOARD_CONTENT_OPTIONS.find(
-                            (option) => option.value === nextContentValue,
-                        )!;
-                        setContent(selectedContent);
-                        const newDefault = selectedContent.defaultPlayerCount;
-                        setPlayerCount(newDefault);
-                        const fights = dpsConfig.find(
-                            (group) => group.contentName === selectedContent.value,
-                        )?.fights ?? [];
-                        const nextFight = fights.includes('Overall') ? 'Overall' : (fights[0] ?? 'Overall');
-                        setSelectedFight(nextFight);
-                        setLeaderboardSearchParams({
-                            mode,
-                            leaderboard: selectedContent.value,
-                            playerCount: newDefault,
-                            fight: mode === 'dps' ? nextFight : undefined,
-                        });
-                    }}
-                />
-
-                {mode === 'dps' && availableFights.length > 0 && (
+                trailingFilters={mode === 'dps' && availableFights.length > 0 ? (
                     <FilterSelect
                         field="fight"
                         value={selectedFight}
@@ -486,20 +552,8 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
                             updateSearchParams({fight});
                         }}
                     />
-                )}
-
-                <FilterSelect
-                    field="team"
-                    value={playerCount}
-                    compact
-                    sx={filterFieldCompactSx}
-                    options={buildLeaderboardPlayerCountOptions(content.playerCounts)}
-                    onChange={(count) => {
-                        setPlayerCount(count);
-                        updateSearchParams({playerCount: count.toString()});
-                    }}
-                />
-            </FilterToolbar>
+                ) : undefined}
+            />
 
             {renderLeaderboardContent()}
         </Box>
