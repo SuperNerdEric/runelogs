@@ -5,7 +5,7 @@ export const MAP_HEIGHT_MAX_ZOOM_PX: number = 364544;
 export const MAP_WIDTH_MAX_ZOOM_PX: number = 104448;
 export const RS_TILE_WIDTH_PX: number = 32; // Width in px of an RS tile at max zoom level
 export const RS_TILE_HEIGHT_PX: number = 32; // Height in px of an RS tile at max zoom level
-export const RS_OFFSET_X: number = 1024; // Amount to offset x coordinate to get correct value
+export const RS_OFFSET_X: number = 960; // Amount to offset x coordinate to get correct value (1024 - 64)
 export const RS_OFFSET_Y: number = 6208; // Amount to offset y coordinate to get correct value
 
 export class Position {
