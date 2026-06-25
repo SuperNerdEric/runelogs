@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
     Alert,
@@ -57,6 +57,24 @@ interface LogItem {
     name: string | null;
     uploadedAt: string;
     eligible: boolean;
+    saveStatus?: 'saving' | 'complete' | 'failed';
+    processingProgress?: number;
+    _count: {
+        fights: number;
+        fightGroups: number;
+    };
+}
+
+function isParsingLog(log: LogItem): boolean {
+    return log.saveStatus === 'saving';
+}
+
+interface LogStatusResponse {
+    id: string;
+    name: string | null;
+    eligible: boolean;
+    saveStatus: 'saving' | 'complete' | 'failed';
+    processingProgress: number;
     _count: {
         fights: number;
         fightGroups: number;
@@ -65,6 +83,17 @@ interface LogItem {
 
 interface LogsResponse {
     logs: LogItem[];
+}
+
+async function fetchLogStatus(logId: string): Promise<LogStatusResponse | null> {
+    const resp = await fetch(`${import.meta.env.VITE_API_URL}/log/${logId}/status`);
+    if (resp.status === 404) {
+        return null;
+    }
+    if (!resp.ok) {
+        throw new Error(`Server returned ${resp.status}`);
+    }
+    return resp.json() as Promise<LogStatusResponse>;
 }
 
 // Define the possible columns to sort by
@@ -378,9 +407,72 @@ const Logs: React.FC = () => {
         }
     }, [content.value, playerCount, uploaderId]);
 
+    const parsingLogIds = useMemo(
+        () => logs?.filter(isParsingLog).map((log) => log.id) ?? [],
+        [logs],
+    );
+
     useEffect(() => {
         void fetchLogs();
     }, [fetchLogs]);
+
+    useEffect(() => {
+        if (parsingLogIds.length === 0) {
+            return;
+        }
+
+        const refreshParsingLogs = async () => {
+            try {
+                const results = await Promise.all(
+                    parsingLogIds.map((logId) => fetchLogStatus(logId)),
+                );
+
+                setLogs((prev) => {
+                    if (!prev) {
+                        return prev;
+                    }
+
+                    const updates = new Map(
+                        results
+                            .filter((result): result is LogStatusResponse => result != null)
+                            .map((result) => [result.id, result]),
+                    );
+
+                    if (updates.size === 0) {
+                        return prev;
+                    }
+
+                    return prev
+                        .map((log) => {
+                            const update = updates.get(log.id);
+                            if (!update) {
+                                return log;
+                            }
+
+                            return {
+                                ...log,
+                                name: update.name,
+                                eligible: update.eligible,
+                                saveStatus: update.saveStatus,
+                                processingProgress: update.processingProgress,
+                                _count: update._count,
+                            };
+                        })
+                        .filter((log) => log.saveStatus !== 'failed');
+                });
+            } catch (err) {
+                console.error('Failed to refresh parsing logs:', err);
+            }
+        };
+
+        const intervalId = window.setInterval(() => {
+            void refreshParsingLogs();
+        }, 5000);
+
+        void refreshParsingLogs();
+
+        return () => window.clearInterval(intervalId);
+    }, [parsingLogIds]);
 
     const handleRename = async (logId: string, name: string) => {
         try {
@@ -586,10 +678,29 @@ const Logs: React.FC = () => {
                     </TableHead>
 
                     <TableBody>
-                        {sortedLogs.map((log) => (
-                            <TableRow key={log.id} {...logTableRowProps(navigate, log.id)}>
+                        {sortedLogs.map((log) => {
+                            const parsing = isParsingLog(log);
+
+                            return (
+                            <TableRow
+                                key={log.id}
+                                {...(parsing ? {} : logTableRowProps(navigate, log.id))}
+                                sx={parsing ? {
+                                    cursor: 'default',
+                                    '&:hover': {backgroundColor: 'transparent'},
+                                } : undefined}
+                            >
                                 <TableCell sx={{ ...nameColumnSx, ...tableCellPaddingSx }}>
-                                    <LogNameCell log={log} canEdit={canEditLogs} onRename={handleRename} />
+                                    {parsing ? (
+                                        <Box sx={{display: 'flex', alignItems: 'center', gap: 1, color: colors.text.muted}}>
+                                            <CircularProgress size={14} sx={{color: colors.upload.dragActive}}/>
+                                            <Typography sx={{...logNameTextSx, color: colors.text.muted}}>
+                                                Parsing {log.processingProgress ?? 0}%
+                                            </Typography>
+                                        </Box>
+                                    ) : (
+                                        <LogNameCell log={log} canEdit={canEditLogs} onRename={handleRename} />
+                                    )}
                                 </TableCell>
 
                                 <TableCell sx={{ ...shrinkColumnSx, ...tableCellPaddingSx }}>
@@ -602,15 +713,16 @@ const Logs: React.FC = () => {
                                 </TableCell>
 
                                 <TableCell align="right" sx={{ ...shrinkColumnSx, ...tableCellPaddingSx, [media.mobileDown]: { display: 'none' } }}>
-                                    {log._count.fights}
+                                    {parsing ? '—' : log._count.fights}
                                 </TableCell>
 
                                 <TableCell align="right" sx={{ ...shrinkColumnSx, ...tableCellPaddingSx, [media.mobileDown]: { display: 'none' } }}>
-                                    {log._count.fightGroups}
+                                    {parsing ? '—' : log._count.fightGroups}
                                 </TableCell>
 
                                 {canEditLogs && (
                                     <TableCell align="center" sx={{ ...shrinkColumnSx, ...tableCellPaddingSx }}>
+                                        {!parsing && (
                                         <IconButton
                                             aria-label="delete"
                                             onClick={(e) => {
@@ -621,10 +733,12 @@ const Logs: React.FC = () => {
                                         >
                                             <DeleteIcon fontSize="small" sx={{ color: 'white' }} />
                                         </IconButton>
+                                        )}
                                     </TableCell>
                                 )}
                             </TableRow>
-                        ))}
+                            );
+                        })}
                     </TableBody>
                 </Table>
             </TableContainer>

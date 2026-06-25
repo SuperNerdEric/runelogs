@@ -11,6 +11,82 @@ import {flushSync} from 'react-dom';
 import SectionBox from "./SectionBox";
 import {useStableDropzone} from "../hooks/useStableDropzone";
 import {colors, contentColumnSx, fonts, fontSizes, media, typography} from "../theme";
+import {
+    combineOverallUploadProgress,
+} from '../utils/uploadProgress';
+
+type UploadProgressPayload = {
+    progress?: number;
+    logId?: string;
+    error?: string;
+};
+
+async function pollLogUntilReadable(
+    logId: string,
+    token: string,
+): Promise<boolean> {
+    const maxAttempts = 180;
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/log/${logId}`, {
+            headers: {Authorization: `Bearer ${token}`},
+        });
+
+        if (response.status === 200) {
+            return true;
+        }
+        if (response.status === 410) {
+            return false;
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+    }
+
+    return false;
+}
+
+function parseSseChunk(chunk: string): Array<{eventType: string; dataText: string}> {
+    const events: Array<{eventType: string; dataText: string}> = [];
+
+    for (const part of chunk.split('\n\n')) {
+        const lines = part.split('\n').map((line) => line.trim());
+        let eventType: string | null = null;
+        let dataText: string | null = null;
+
+        for (const line of lines) {
+            if (line.startsWith('event:')) {
+                eventType = line.replace(/^event:\s*/, '');
+            } else if (line.startsWith('data:')) {
+                dataText = line.replace(/^data:\s*/, '');
+            }
+        }
+
+        if (eventType && dataText) {
+            events.push({eventType, dataText});
+        }
+    }
+
+    return events;
+}
+
+function extractCompleteLogId(responseText: string): string | null {
+    for (const {eventType, dataText} of parseSseChunk(responseText)) {
+        if (eventType !== 'complete') {
+            continue;
+        }
+
+        try {
+            const payload = JSON.parse(dataText) as UploadProgressPayload;
+            if (payload.logId) {
+                return payload.logId;
+            }
+        } catch {
+            continue;
+        }
+    }
+
+    return null;
+}
 
 const STEP_LINE_HEIGHT = 1.4;
 
@@ -47,26 +123,21 @@ const stepTextSx = {
     lineHeight: 'inherit',
 };
 
-const UPLOAD_OVERALL_WEIGHT = 35;
-const PARSE_OVERALL_WEIGHT = 65;
-
-function getOverallProgress(uploadPercent: number, parsePercent: number | null): number {
-    if (parsePercent !== null) {
-        return UPLOAD_OVERALL_WEIGHT + (parsePercent / 100) * PARSE_OVERALL_WEIGHT;
-    }
-    return (uploadPercent / 100) * UPLOAD_OVERALL_WEIGHT;
-}
-
 function UploadProgressIndicator({
     uploadPercent,
     parsePercent,
+    parseStarted,
+    recovering,
 }: {
     uploadPercent: number;
     parsePercent: number | null;
+    parseStarted: boolean;
+    recovering: boolean;
 }) {
     const isParsing = parsePercent !== null;
-    const overallProgress = getOverallProgress(uploadPercent, parsePercent);
-    const phasePercent = isParsing ? parsePercent : uploadPercent;
+    const overallProgress = combineOverallUploadProgress(uploadPercent, parsePercent);
+    const uploadComplete = isParsing || uploadPercent >= 100;
+    const parseWaiting = uploadComplete && !parseStarted;
 
     return (
         <Box
@@ -79,62 +150,27 @@ function UploadProgressIndicator({
             }}
         >
             <Typography
+                component="h3"
                 sx={{
                     m: 0,
-                    fontSize: fontSizes.base,
-                    fontWeight: 600,
+                    mb: 1.25,
+                    fontSize: typography.h6,
+                    fontWeight: 700,
+                    letterSpacing: '-0.01em',
                     color: colors.text.primary,
-                }}
-            >
-                {isParsing ? 'Parsing log' : 'Uploading file'}
-            </Typography>
-            <Typography
-                sx={{
-                    m: 0,
-                    mt: 0.25,
-                    fontSize: fontSizes.sm,
-                    color: colors.text.muted,
                 }}
             >
                 Step {isParsing ? 2 : 1} of 2
             </Typography>
 
-            <Box sx={{display: 'flex', alignItems: 'center', gap: 1.5, mt: 2}}>
-                <LinearProgress
-                    variant="determinate"
-                    value={Math.min(Math.max(overallProgress, 0), 100)}
-                    sx={{
-                        flex: 1,
-                        height: 6,
-                        borderRadius: 3,
-                        backgroundColor: colors.background.progress,
-                        '& .MuiLinearProgress-bar': {
-                            backgroundColor: colors.upload.dragActive,
-                            borderRadius: 3,
-                        },
-                    }}
-                />
-                <Typography
-                    sx={{
-                        minWidth: 40,
-                        fontSize: fontSizes.sm,
-                        fontWeight: 600,
-                        color: colors.text.primary,
-                        fontVariantNumeric: 'tabular-nums',
-                        textAlign: 'right',
-                    }}
-                >
-                    {Math.round(overallProgress)}%
-                </Typography>
-            </Box>
-
             <Box
                 sx={{
                     display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    mt: 1.25,
-                    fontSize: fontSizes.sm,
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    gap: 0.75,
+                    mb: 1.5,
+                    fontSize: fontSizes.base,
                 }}
             >
                 <Box
@@ -142,34 +178,79 @@ function UploadProgressIndicator({
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: 0.5,
-                        color: isParsing ? colors.text.muted : colors.text.primary,
-                        fontWeight: isParsing ? 400 : 500,
+                        color: colors.text.primary,
+                        fontWeight: uploadComplete ? 400 : 600,
                     }}
                 >
-                    {isParsing && (
-                        <CheckIcon sx={{fontSize: 16, color: colors.upload.dragActive}}/>
+                    {uploadComplete && (
+                        <CheckIcon sx={{fontSize: 18, color: colors.upload.dragActive}}/>
                     )}
                     Upload
-                    {!isParsing && (
-                        <Box component="span" sx={{color: colors.text.muted}}>
-                            · {Math.round(uploadPercent)}%
-                        </Box>
-                    )}
+                    <Box component="span" sx={{fontWeight: 500}}>
+                        · {Math.round(uploadPercent)}%
+                    </Box>
                 </Box>
                 <Box
                     sx={{
-                        color: isParsing ? colors.text.primary : colors.text.muted,
-                        fontWeight: isParsing ? 500 : 400,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 0.5,
+                        color: colors.text.primary,
+                        fontWeight: isParsing && !parseWaiting ? 600 : 400,
                     }}
                 >
                     Parse
-                    {isParsing && (
-                        <Box component="span" sx={{color: colors.text.muted}}>
-                            {' '}· {Math.round(phasePercent)}%
-                        </Box>
-                    )}
+                    <Box component="span" sx={{fontWeight: 500}}>
+                        · {parseWaiting ? 'Waiting' : isParsing ? `${Math.round(parsePercent)}%` : 'Waiting'}
+                    </Box>
                 </Box>
             </Box>
+
+            <Box sx={{display: 'flex', alignItems: 'center', gap: 1.5}}>
+                <LinearProgress
+                    variant={recovering ? 'indeterminate' : 'determinate'}
+                    value={recovering ? undefined : Math.min(Math.max(overallProgress, 0), 100)}
+                    sx={{
+                        flex: 1,
+                        height: 12,
+                        borderRadius: 6,
+                        backgroundColor: colors.background.progress,
+                        '& .MuiLinearProgress-bar': {
+                            backgroundColor: colors.upload.dragActive,
+                            borderRadius: 6,
+                        },
+                    }}
+                />
+                {!recovering && (
+                    <Typography
+                        sx={{
+                            minWidth: 40,
+                            fontSize: fontSizes.sm,
+                            fontWeight: 600,
+                            color: colors.text.primary,
+                            fontVariantNumeric: 'tabular-nums',
+                            textAlign: 'right',
+                        }}
+                    >
+                        {Math.round(overallProgress)}%
+                    </Typography>
+                )}
+            </Box>
+
+            {isParsing && (
+                <Typography
+                    sx={{
+                        m: 0,
+                        mt: 1.25,
+                        fontSize: fontSizes.sm,
+                        color: colors.text.muted,
+                    }}
+                >
+                    {recovering
+                        ? 'Connection lost — still parsing in the background. You can leave this page and check your logs list.'
+                        : 'You can leave this page while parsing finishes. Check your logs list for progress.'}
+                </Typography>
+            )}
         </Box>
     );
 }
@@ -184,6 +265,8 @@ const Upload: React.FC = () => {
     const [errorText, setErrorText] = useState<string | null>(null);
     const [uploadPercent, setUploadPercent] = useState<number | null>(null);
     const [parsePercent, setParsePercent] = useState<number | null>(null);
+    const [parseStarted, setParseStarted] = useState(false);
+    const [recovering, setRecovering] = useState(false);
 
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {
@@ -198,6 +281,8 @@ const Upload: React.FC = () => {
         if (files.length) {
             setUploadPercent(null);
             setParsePercent(null);
+            setParseStarted(false);
+            setRecovering(false);
             setSelectedFile(files[0]);
         }
     }, []);
@@ -218,6 +303,7 @@ const Upload: React.FC = () => {
         setErrorText(null);
         setUploadPercent(null);
         setParsePercent(null);
+        setParseStarted(false);
         setSelectedFile(e.target.files?.[0] ?? null);
     };
 
@@ -232,6 +318,8 @@ const Upload: React.FC = () => {
         setErrorText(null);
         setUploadPercent(0);
         setParsePercent(null);
+        setParseStarted(false);
+        setRecovering(false);
 
         try {
             const token = await getAccessTokenSilently();
@@ -253,6 +341,77 @@ const Upload: React.FC = () => {
                 }
             };
 
+            let pendingLogId: string | null = null;
+
+            const resetUploadState = () => {
+                setIsSubmitting(false);
+                setUploadPercent(null);
+                setParsePercent(null);
+                setParseStarted(false);
+                setRecovering(false);
+            };
+
+            const finishUpload = (logId: string) => {
+                resetUploadState();
+                navigate(`/log/${logId}`);
+            };
+
+            const handleUploadEvent = (eventType: string, dataText: string): 'stop' | 'continue' => {
+                let payload: UploadProgressPayload;
+                try {
+                    payload = JSON.parse(dataText);
+                } catch {
+                    return 'continue';
+                }
+
+                if (eventType === 'error') {
+                    setErrorText(payload.error || 'Upload failed');
+                    resetUploadState();
+                    return 'stop';
+                }
+
+                if (eventType === 'progress' && typeof payload.progress === 'number') {
+                    if (payload.logId || payload.progress > 0) {
+                        setParseStarted(true);
+                    }
+                    if (payload.logId) {
+                        pendingLogId = payload.logId;
+                    }
+                    flushSync(() => {
+                        setParsePercent(payload.progress!);
+                    });
+                }
+
+                if (eventType === 'complete' && payload.logId) {
+                    finishUpload(payload.logId);
+                    return 'stop';
+                }
+
+                return 'continue';
+            };
+
+            const recoverAfterDisconnect = async () => {
+                const logId = pendingLogId ?? extractCompleteLogId(xhr.responseText);
+                if (!logId) {
+                    setErrorText('Upload failed due to a network error.');
+                    resetUploadState();
+                    return;
+                }
+
+                setRecovering(true);
+                setErrorText(null);
+                setParsePercent((current) => current ?? 0);
+
+                const ready = await pollLogUntilReadable(logId, token);
+                if (ready) {
+                    finishUpload(logId);
+                    return;
+                }
+
+                setErrorText('Upload failed before the log could be saved.');
+                resetUploadState();
+            };
+
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === XMLHttpRequest.HEADERS_RECEIVED) {
                     setUploadPercent(100);
@@ -261,8 +420,7 @@ const Upload: React.FC = () => {
             };
 
             xhr.onerror = () => {
-                setErrorText('Upload failed due to a network error.');
-                setIsSubmitting(false);
+                void recoverAfterDisconnect();
             };
 
             xhr.onabort = () => {
@@ -270,57 +428,32 @@ const Upload: React.FC = () => {
                 setIsSubmitting(false);
             };
 
-            const resetUploadState = () => {
-                setIsSubmitting(false);
-                setUploadPercent(null);
-                setParsePercent(null);
-            };
-
             xhr.onprogress = () => {
                 const newText = xhr.responseText.substring(lastResponseLength);
                 lastResponseLength = xhr.responseText.length;
 
-                const events = newText.split('\n\n');
-                for (const part of events) {
-                    const lines = part.split('\n').map((l) => l.trim());
-                    let eventType: string | null = null;
-                    let dataText: string | null = null;
-
-                    for (const line of lines) {
-                        if (line.startsWith('event:')) {
-                            eventType = line.replace(/^event:\s*/, '');
-                        } else if (line.startsWith('data:')) {
-                            dataText = line.replace(/^data:\s*/, '');
-                        }
-                    }
-
-                    if (!eventType || !dataText) continue;
-
-                    let payload: { progress?: number; logId?: string; error?: string };
-                    try {
-                        payload = JSON.parse(dataText);
-                    } catch {
-                        continue;
-                    }
-
-                    if (eventType === 'error') {
-                        setErrorText(payload.error || 'Upload failed');
-                        resetUploadState();
-                        return;
-                    }
-
-                    if (eventType === 'progress' && typeof payload.progress === 'number') {
-                        flushSync(() => setParsePercent(payload.progress!));
-                    }
-
-                    if (eventType === 'complete' && payload.logId) {
-                        navigate(`/log/${payload.logId}`);
+                for (const {eventType, dataText} of parseSseChunk(newText)) {
+                    if (handleUploadEvent(eventType, dataText) === 'stop') {
                         return;
                     }
                 }
             };
 
             xhr.onload = () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    for (const {eventType, dataText} of parseSseChunk(xhr.responseText)) {
+                        if (handleUploadEvent(eventType, dataText) === 'stop') {
+                            return;
+                        }
+                    }
+
+                    const completedLogId = extractCompleteLogId(xhr.responseText);
+                    if (completedLogId) {
+                        finishUpload(completedLogId);
+                        return;
+                    }
+                }
+
                 if (xhr.status >= 400) {
                     resetUploadState();
                 }
@@ -333,6 +466,7 @@ const Upload: React.FC = () => {
             setErrorText(err.message || 'An unexpected error occurred.');
             setUploadPercent(null);
             setParsePercent(null);
+            setRecovering(false);
             setIsSubmitting(false);
         }
     };
@@ -527,6 +661,8 @@ const Upload: React.FC = () => {
                         <UploadProgressIndicator
                             uploadPercent={uploadPercent}
                             parsePercent={parsePercent}
+                            parseStarted={parseStarted}
+                            recovering={recovering}
                         />
                     )}
 
