@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {ImageOverlay, Popup, Rectangle, useMap} from 'react-leaflet';
 import {Position} from "../../utils/Position";
 import {NPC, npcIdMap} from "../../lib/npcIdMap";
@@ -6,7 +6,8 @@ import {graphicObjectIdMap, getGraphicObjectFrameIndex} from "../../lib/graphicO
 import {gameObjectIdMap} from "../../lib/gameObjectIdMap";
 import {GameObjectState, GamePosition, GraphicsObjectState} from "./GameState";
 import {groundObjectIdMap} from "../../lib/groundObjectIdMap";
-import L, {LatLngBoundsExpression} from "leaflet";
+import {computeSolLaserBeams, isSolLaserGraphic, SolLaserBeam} from "../../lib/solLaserBeams";
+import L, {LatLngBounds, LatLngBoundsExpression} from "leaflet";
 import {colors} from "../../theme";
 
 const TORNADO_IDS = new Set([8386, 10863, 10846]);
@@ -31,6 +32,10 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
                                                     currentTick,
                                                }) => {
     const map = useMap();
+    const solLaserBeams = useMemo(
+        () => computeSolLaserBeams(graphicsObjectPositions),
+        [graphicsObjectPositions],
+    );
 
     const npcRectangleOptions = {
         color: colors.replay.marker,
@@ -127,8 +132,38 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
 
 
             })}
+            {/* Render Sol laser beams as stretched overlays (per-tile segments do not align). */}
+            {solLaserBeams.map((beam, index) => {
+                const definition = graphicObjectIdMap[beam.textureId];
+                if (!definition) {
+                    return null;
+                }
+
+                const ticksElapsed = currentTick - beam.spawnTick;
+                let displayImage = definition.imageUrl;
+                if (definition.frames && definition.frames.length > 0) {
+                    const frameIndex = getGraphicObjectFrameIndex(ticksElapsed, definition);
+                    displayImage = definition.frames[frameIndex];
+                }
+
+                return (
+                    <ImageOverlay
+                        key={`sol-laser-${beam.spawnTick}-${beam.orientation}-${beam.fixedCoord}-${index}`}
+                        url={displayImage!}
+                        bounds={solLaserBeamToBounds(map, beam)}
+                        opacity={beam.phase === 'shot' ? 1 : 0.85}
+                        interactive={false}
+                        pane="objects"
+                    />
+                );
+            })}
+
             {/* Render Graphics Object Markers */}
             {Object.entries(graphicsObjectPositions).map(([objectKey, positionData]) => {
+                if (isSolLaserGraphic(positionData.id)) {
+                    return null;
+                }
+
                 const objectPosition = new Position(positionData.position.x, positionData.position.y, positionData.position.plane);
                 const rectangle = objectPosition.toLeaflet(map, npcRectangleOptions);
 
@@ -211,6 +246,18 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
         </>
     );
 };
+
+function solLaserBeamToBounds(map: L.Map, beam: SolLaserBeam): LatLngBounds {
+    if (beam.orientation === 'horizontal') {
+        const southWest = Position.toLatLng(map, beam.startVar, beam.fixedCoord);
+        const northEast = Position.toLatLng(map, beam.endVar + 1, beam.fixedCoord + 1);
+        return L.latLngBounds(southWest, northEast);
+    }
+
+    const southWest = Position.toLatLng(map, beam.fixedCoord, beam.startVar);
+    const northEast = Position.toLatLng(map, beam.fixedCoord + 1, beam.endVar + 1);
+    return L.latLngBounds(southWest, northEast);
+}
 
 export function formatActorKey(key: string): string {
     const parts = key.split('|');
