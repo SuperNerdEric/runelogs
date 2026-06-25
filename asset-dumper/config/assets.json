@@ -13,7 +13,15 @@
     { "id": 3405, "animated": true, "comment": "VFX_AREA_SLAM_01" },
     { "id": 3406, "animated": true, "comment": "VFX_AREA_SLAM_02" },
     { "id": 3407, "animated": true, "comment": "VFX_AREA_SLAM_03" },
-    { "id": 3408, "animated": true, "comment": "VFX_AREA_SLAM_04" }
+    { "id": 3408, "animated": true, "comment": "VFX_AREA_SLAM_04" },
+    { "id": 3418, "animated": true, "comment": "Doom grub explosion 1" },
+    { "id": 3419, "animated": true, "comment": "Doom grub explosion 2" },
+    { "id": 3420, "animated": true, "comment": "Doom grub explosion 3" },
+    { "id": 3421, "animated": true, "comment": "Doom grub explosion 4" },
+    { "id": 3422, "animated": true, "comment": "Doom grub explosion 5" },
+    { "id": 3423, "animated": true, "comment": "Doom grub explosion 6" },
+    { "id": 3424, "animated": true, "comment": "Doom grub explosion 7" },
+    { "id": 3425, "animated": true, "comment": "Doom grub explosion 8" }
   ],
   "render": {
     "gameObject": {
