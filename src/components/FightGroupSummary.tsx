@@ -21,6 +21,7 @@ import RunSummaryRankBadges from './badges/RunSummaryRankBadges';
 import ColosseumModifiers from './ColosseumModifiers';
 import ToaRaidLevel from './ToaRaidLevel';
 import {hasColosseumModifierData} from '../utils/colosseumModifiers';
+import {MOKHAIOTL_HIGH_SCORE_MODE_LABEL} from '../utils/leaderboardContent';
 import {FightGroupExtraInfo} from '../utils/fightGroupExtraInfo';
 import {resolvePlayerRankPercentile} from './badges/playerRankPercentile';
 import '../App.css';
@@ -60,7 +61,8 @@ interface FightGroupSummaryData {
     name: string;
     leaderboardName: string | null;
     officialDurationTicks: number | null;
-    displayDurationTicks?: number | null;
+    displayDurationTicks: number | null;
+    delve1to8DisplayDurationTicks?: number | null;
     success: boolean;
     startTime: string;
     log: {
@@ -80,7 +82,7 @@ interface FightGroupSummaryData {
     extraInfo?: FightGroupExtraInfo | null;
 }
 
-const TOP_RANK_CATEGORIES = new Set(['Duration', 'Overall DPS']);
+const TOP_RANK_CATEGORIES = new Set(['Duration', 'Overall DPS', MOKHAIOTL_HIGH_SCORE_MODE_LABEL]);
 
 const FightGroupSummary: React.FC = () => {
     const {id} = useParams<{ id: string }>();
@@ -154,15 +156,21 @@ const FightGroupSummary: React.FC = () => {
         return map;
     }, [data]);
 
-    const percentileContext = useMemo(() => ({
-        overallDps: data?.overallDps ?? [],
-        fights: data?.fights.map((fight) => ({
-            dpsLeaderboardKey: fight.dpsLeaderboardKey,
-            name: fight.name,
-            playerDps: fight.playerDps ?? [],
-        })),
-        durationPercentile: data?.durationPercentile,
-    }), [data]);
+    const percentileContext = useMemo(() => {
+        const deepDelveRank = data?.playerRanks.find(
+            (entry) => entry.category === MOKHAIOTL_HIGH_SCORE_MODE_LABEL,
+        );
+        return {
+            overallDps: data?.overallDps ?? [],
+            fights: data?.fights.map((fight) => ({
+                dpsLeaderboardKey: fight.dpsLeaderboardKey,
+                name: fight.name,
+                playerDps: fight.playerDps ?? [],
+            })),
+            durationPercentile: data?.durationPercentile,
+            highScorePercentile: deepDelveRank?.percentile,
+        };
+    }, [data]);
 
     if (loading) {
         return (
@@ -180,12 +188,11 @@ const FightGroupSummary: React.FC = () => {
         );
     }
 
-    const displayDurationTicks = data.displayDurationTicks
-        ?? data.officialDurationTicks
-        ?? data.fights.reduce((sum, fight) => sum + fight.fightDurationTicks, 0);
+    const {displayDurationTicks, delve1to8DisplayDurationTicks} = data;
+    const durationColor = data.success ? colors.fight.success : colors.fight.failure;
 
     const topRankLabel = (entry: PlayerRank) => {
-        if (entry.category === 'Duration') {
+        if (entry.category === 'Duration' || entry.category === MOKHAIOTL_HIGH_SCORE_MODE_LABEL) {
             return '';
         }
         return `${displayUsername(entry.playerId)} — Overall`;
@@ -215,23 +222,39 @@ const FightGroupSummary: React.FC = () => {
                     variant="h4"
                     sx={{
                         ...pageHeroTitleSx,
-                        mb: displayDurationTicks > 0 ? 0.5 : 0,
+                        mb: displayDurationTicks != null && displayDurationTicks > 0 ? 0.5 : 0,
                     }}
                 >
                     {data.name}
                 </Typography>
-                {displayDurationTicks > 0 && (
-                    <Typography
-                        component="p"
-                        sx={{
-                            color: data.success ? colors.fight.success : colors.fight.failure,
-                            fontWeight: 700,
-                            fontSize: {xs: '1.25rem', sm: '1.75rem'},
-                            m: 0,
-                        }}
-                    >
-                        {ticksToTime(displayDurationTicks)}
-                    </Typography>
+                {displayDurationTicks != null && displayDurationTicks > 0 && (
+                    <Box sx={{m: 0}}>
+                        <Typography
+                            component="p"
+                            sx={{
+                                color: durationColor,
+                                fontWeight: 700,
+                                fontSize: {xs: '1.25rem', sm: '1.75rem'},
+                                m: 0,
+                            }}
+                        >
+                            {ticksToTime(displayDurationTicks)}
+                        </Typography>
+                        {delve1to8DisplayDurationTicks != null && (
+                            <Typography
+                                component="p"
+                                variant="body2"
+                                sx={{
+                                    color: 'text.secondary',
+                                    fontWeight: 600,
+                                    mt: 0.5,
+                                    mb: 0,
+                                }}
+                            >
+                                Delves 1–8: {ticksToTime(delve1to8DisplayDurationTicks)}
+                            </Typography>
+                        )}
+                    </Box>
                 )}
                 <ToaRaidLevel toa={data.extraInfo?.toa} />
             </Box>

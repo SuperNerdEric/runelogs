@@ -22,6 +22,9 @@ import o1579 from '../assets/graphicObjects/1579.png';
 import o1595 from '../assets/graphicObjects/1595.png';
 
 
+
+
+
 import o505_0 from '../assets/graphicObjects/505_0.png';
 import o505_1 from '../assets/graphicObjects/505_1.png';
 import o505_2 from '../assets/graphicObjects/505_2.png';
@@ -330,6 +333,60 @@ import o2698_46 from '../assets/graphicObjects/2698_46.png';
 import o2698_47 from '../assets/graphicObjects/2698_47.png';
 import o2698_48 from '../assets/graphicObjects/2698_48.png';
 import o2698_49 from '../assets/graphicObjects/2698_49.png';
+import o2380_0 from '../assets/graphicObjects/2380_0.png';
+import o2380_1 from '../assets/graphicObjects/2380_1.png';
+import o2380_2 from '../assets/graphicObjects/2380_2.png';
+import o2380_3 from '../assets/graphicObjects/2380_3.png';
+import o2380_4 from '../assets/graphicObjects/2380_4.png';
+import o2380_5 from '../assets/graphicObjects/2380_5.png';
+import o2380_6 from '../assets/graphicObjects/2380_6.png';
+import o2380_7 from '../assets/graphicObjects/2380_7.png';
+import o2380_8 from '../assets/graphicObjects/2380_8.png';
+import o2380_9 from '../assets/graphicObjects/2380_9.png';
+import o2380_10 from '../assets/graphicObjects/2380_10.png';
+import o2380_11 from '../assets/graphicObjects/2380_11.png';
+import o2380_12 from '../assets/graphicObjects/2380_12.png';
+import o3373_0 from '../assets/graphicObjects/3373_0.png';
+import o3373_1 from '../assets/graphicObjects/3373_1.png';
+import o3373_2 from '../assets/graphicObjects/3373_2.png';
+import o3373_3 from '../assets/graphicObjects/3373_3.png';
+import o3373_4 from '../assets/graphicObjects/3373_4.png';
+import o3373_5 from '../assets/graphicObjects/3373_5.png';
+import o3373_6 from '../assets/graphicObjects/3373_6.png';
+import o3373_7 from '../assets/graphicObjects/3373_7.png';
+import o3373_8 from '../assets/graphicObjects/3373_8.png';
+import o3373_9 from '../assets/graphicObjects/3373_9.png';
+import o3373_10 from '../assets/graphicObjects/3373_10.png';
+import o3373_11 from '../assets/graphicObjects/3373_11.png';
+import o3373_12 from '../assets/graphicObjects/3373_12.png';
+import o3373_13 from '../assets/graphicObjects/3373_13.png';
+import o3373_14 from '../assets/graphicObjects/3373_14.png';
+import o3373_15 from '../assets/graphicObjects/3373_15.png';
+import o3373_16 from '../assets/graphicObjects/3373_16.png';
+import o3373_17 from '../assets/graphicObjects/3373_17.png';
+import o3373_18 from '../assets/graphicObjects/3373_18.png';
+import o3373_19 from '../assets/graphicObjects/3373_19.png';
+import o3373_20 from '../assets/graphicObjects/3373_20.png';
+import o3373_21 from '../assets/graphicObjects/3373_21.png';
+import o3373_22 from '../assets/graphicObjects/3373_22.png';
+import o3373_23 from '../assets/graphicObjects/3373_23.png';
+import o3373_24 from '../assets/graphicObjects/3373_24.png';
+import o3373_25 from '../assets/graphicObjects/3373_25.png';
+import o3373_26 from '../assets/graphicObjects/3373_26.png';
+import o3373_27 from '../assets/graphicObjects/3373_27.png';
+import o3373_28 from '../assets/graphicObjects/3373_28.png';
+import o3373_29 from '../assets/graphicObjects/3373_29.png';
+import o3374_0 from '../assets/graphicObjects/3374_0.png';
+import o3374_1 from '../assets/graphicObjects/3374_1.png';
+import o3374_2 from '../assets/graphicObjects/3374_2.png';
+import o3374_3 from '../assets/graphicObjects/3374_3.png';
+import o3374_4 from '../assets/graphicObjects/3374_4.png';
+import o3374_5 from '../assets/graphicObjects/3374_5.png';
+import o3374_6 from '../assets/graphicObjects/3374_6.png';
+import o3374_7 from '../assets/graphicObjects/3374_7.png';
+import o3374_8 from '../assets/graphicObjects/3374_8.png';
+import o3374_9 from '../assets/graphicObjects/3374_9.png';
+import o3374_10 from '../assets/graphicObjects/3374_10.png';
 import o3404_0 from '../assets/graphicObjects/3404_0.png';
 import o3404_1 from '../assets/graphicObjects/3404_1.png';
 import o3404_2 from '../assets/graphicObjects/3404_2.png';
@@ -729,6 +786,21 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
         name: "Colosseum Sol sunfire pool",
         frameLengths: [2, 2, 2, 2, 2, 2, 2, 2, 14, 30, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
         frames: [o2698_0, o2698_1, o2698_2, o2698_3, o2698_4, o2698_5, o2698_6, o2698_7, o2698_8, o2698_9, o2698_10, o2698_11, o2698_12, o2698_13, o2698_14, o2698_15, o2698_16, o2698_17, o2698_18, o2698_19, o2698_20, o2698_21, o2698_22, o2698_23, o2698_24, o2698_25, o2698_26, o2698_27, o2698_28, o2698_29, o2698_30, o2698_31, o2698_32, o2698_33, o2698_34, o2698_35, o2698_36, o2698_37, o2698_38, o2698_39, o2698_40, o2698_41, o2698_42, o2698_43, o2698_44, o2698_45, o2698_46, o2698_47, o2698_48, o2698_49],
+    },
+    2380: {
+        name: "Doom rock throw shadow",
+        frameLengths: [5, 5, 5, 5, 5, 5, 7, 7, 7, 7, 9, 10, 13],
+        frames: [o2380_0, o2380_1, o2380_2, o2380_3, o2380_4, o2380_5, o2380_6, o2380_7, o2380_8, o2380_9, o2380_10, o2380_11, o2380_12],
+    },
+    3373: {
+        name: "Doom grub burrowed explosion",
+        frameLengths: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+        frames: [o3373_0, o3373_1, o3373_2, o3373_3, o3373_4, o3373_5, o3373_6, o3373_7, o3373_8, o3373_9, o3373_10, o3373_11, o3373_12, o3373_13, o3373_14, o3373_15, o3373_16, o3373_17, o3373_18, o3373_19, o3373_20, o3373_21, o3373_22, o3373_23, o3373_24, o3373_25, o3373_26, o3373_27, o3373_28, o3373_29],
+    },
+    3374: {
+        name: "Doom grub death explosion",
+        frameLengths: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+        frames: [o3374_0, o3374_1, o3374_2, o3374_3, o3374_4, o3374_5, o3374_6, o3374_7, o3374_8, o3374_9, o3374_10],
     },
     3404: {
         name: "Doom rock shadow impact",

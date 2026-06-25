@@ -1,3 +1,5 @@
+import {MOKHAIOTL_HIGH_SCORE_MODE_LABEL} from '../../utils/leaderboardContent';
+
 export interface PlayerRankEntry {
     playerId: string;
     category: string;
@@ -26,6 +28,7 @@ export interface PlayerRankPercentileContext {
     overallDps: OverallDpsEntry[];
     fights?: FightDpsSource[];
     durationPercentile?: number | null;
+    highScorePercentile?: number | null;
 }
 
 function fightKey(fight: FightDpsSource): string {
@@ -61,11 +64,18 @@ export function resolvePlayerRankPercentile(
     }
 
     if (entry.category === 'Duration') {
-        if (entry.percentile !== undefined) {
-            return entry.percentile;
-        }
         if (ctx.durationPercentile != null) {
             return ctx.durationPercentile;
+        }
+        if (entry.rank === 1) {
+            return 100;
+        }
+        return undefined;
+    }
+
+    if (entry.category === MOKHAIOTL_HIGH_SCORE_MODE_LABEL) {
+        if (ctx.highScorePercentile != null) {
+            return ctx.highScorePercentile;
         }
         if (entry.rank === 1) {
             return 100;

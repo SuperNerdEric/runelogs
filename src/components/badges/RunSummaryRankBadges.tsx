@@ -1,7 +1,7 @@
 import React from 'react';
 import PercentileRankBadge from './PercentileRankBadge';
 import RankBadgeCallout from './RankBadgeCallout';
-import {buildPlayerRankLeaderboardHref} from '../../utils/leaderboardContent';
+import {buildPlayerRankLeaderboardHref, MOKHAIOTL_HIGH_SCORE_MODE_LABEL} from '../../utils/leaderboardContent';
 import {
     PlayerRankEntry,
     PlayerRankPercentileContext,
@@ -18,7 +18,13 @@ interface RunSummaryRankBadgesProps {
 }
 
 function categoryForEntry(entry: PlayerRankEntry): RankBadgeCategory {
-    return entry.category === 'Duration' ? 'time' : 'dps';
+    if (entry.category === 'Duration') {
+        return 'time';
+    }
+    if (entry.category === MOKHAIOTL_HIGH_SCORE_MODE_LABEL) {
+        return 'high-score';
+    }
+    return 'dps';
 }
 
 const RunSummaryRankBadges: React.FC<RunSummaryRankBadgesProps> = ({

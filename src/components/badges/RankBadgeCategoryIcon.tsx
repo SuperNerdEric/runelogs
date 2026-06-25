@@ -2,11 +2,12 @@ import React from 'react';
 import {Icon} from '@iconify/react';
 import {colors} from '../../theme';
 
-export type RankBadgeCategory = 'time' | 'dps';
+export type RankBadgeCategory = 'time' | 'dps' | 'high-score';
 
 const CATEGORY_ICONS: Record<RankBadgeCategory, string> = {
     time: 'mdi:clock-outline',
     dps: 'mdi:sword',
+    'high-score': 'mdi:stairs-down',
 };
 
 interface RankBadgeCategoryIconProps {
@@ -26,6 +27,7 @@ const RankBadgeCategoryIcon: React.FC<RankBadgeCategoryIconProps> = ({category, 
             flexShrink: 0,
             display: 'inline-block',
             verticalAlign: 'middle',
+            ...(category === 'high-score' ? {transform: 'scaleX(-1)'} : {}),
         }}
         aria-hidden
     />

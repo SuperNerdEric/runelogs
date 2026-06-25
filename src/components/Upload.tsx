@@ -6,6 +6,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
+import CheckIcon from '@mui/icons-material/Check';
 import {flushSync} from 'react-dom';
 import SectionBox from "./SectionBox";
 import {useStableDropzone} from "../hooks/useStableDropzone";
@@ -46,6 +47,133 @@ const stepTextSx = {
     lineHeight: 'inherit',
 };
 
+const UPLOAD_OVERALL_WEIGHT = 35;
+const PARSE_OVERALL_WEIGHT = 65;
+
+function getOverallProgress(uploadPercent: number, parsePercent: number | null): number {
+    if (parsePercent !== null) {
+        return UPLOAD_OVERALL_WEIGHT + (parsePercent / 100) * PARSE_OVERALL_WEIGHT;
+    }
+    return (uploadPercent / 100) * UPLOAD_OVERALL_WEIGHT;
+}
+
+function UploadProgressIndicator({
+    uploadPercent,
+    parsePercent,
+}: {
+    uploadPercent: number;
+    parsePercent: number | null;
+}) {
+    const isParsing = parsePercent !== null;
+    const overallProgress = getOverallProgress(uploadPercent, parsePercent);
+    const phasePercent = isParsing ? parsePercent : uploadPercent;
+
+    return (
+        <Box
+            sx={{
+                my: 1,
+                p: 2,
+                borderRadius: 1.5,
+                bgcolor: colors.background.surfaceAlt,
+                border: `1px solid ${colors.border.default}`,
+            }}
+        >
+            <Typography
+                sx={{
+                    m: 0,
+                    fontSize: fontSizes.base,
+                    fontWeight: 600,
+                    color: colors.text.primary,
+                }}
+            >
+                {isParsing ? 'Parsing log' : 'Uploading file'}
+            </Typography>
+            <Typography
+                sx={{
+                    m: 0,
+                    mt: 0.25,
+                    fontSize: fontSizes.sm,
+                    color: colors.text.muted,
+                }}
+            >
+                Step {isParsing ? 2 : 1} of 2
+            </Typography>
+
+            <Box sx={{display: 'flex', alignItems: 'center', gap: 1.5, mt: 2}}>
+                <LinearProgress
+                    variant="determinate"
+                    value={Math.min(Math.max(overallProgress, 0), 100)}
+                    sx={{
+                        flex: 1,
+                        height: 6,
+                        borderRadius: 3,
+                        backgroundColor: colors.background.progress,
+                        '& .MuiLinearProgress-bar': {
+                            backgroundColor: colors.upload.dragActive,
+                            borderRadius: 3,
+                        },
+                    }}
+                />
+                <Typography
+                    sx={{
+                        minWidth: 40,
+                        fontSize: fontSizes.sm,
+                        fontWeight: 600,
+                        color: colors.text.primary,
+                        fontVariantNumeric: 'tabular-nums',
+                        textAlign: 'right',
+                    }}
+                >
+                    {Math.round(overallProgress)}%
+                </Typography>
+            </Box>
+
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    mt: 1.25,
+                    fontSize: fontSizes.sm,
+                }}
+            >
+                <Box
+                    sx={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 0.5,
+                        color: isParsing ? colors.text.muted : colors.text.primary,
+                        fontWeight: isParsing ? 400 : 500,
+                    }}
+                >
+                    {isParsing && (
+                        <CheckIcon sx={{fontSize: 16, color: colors.upload.dragActive}}/>
+                    )}
+                    Upload
+                    {!isParsing && (
+                        <Box component="span" sx={{color: colors.text.muted}}>
+                            · {Math.round(uploadPercent)}%
+                        </Box>
+                    )}
+                </Box>
+                <Box
+                    sx={{
+                        color: isParsing ? colors.text.primary : colors.text.muted,
+                        fontWeight: isParsing ? 500 : 400,
+                    }}
+                >
+                    Parse
+                    {isParsing && (
+                        <Box component="span" sx={{color: colors.text.muted}}>
+                            {' '}· {Math.round(phasePercent)}%
+                        </Box>
+                    )}
+                </Box>
+            </Box>
+        </Box>
+    );
+}
+
 const Upload: React.FC = () => {
     const {isAuthenticated, isLoading, getAccessTokenSilently} = useAuth0();
     const navigate = useNavigate();
@@ -54,8 +182,8 @@ const Upload: React.FC = () => {
     const [logName, setLogName] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorText, setErrorText] = useState<string | null>(null);
-    const [uploadPhase, setUploadPhase] = useState<'upload' | 'parse' | null>(null);
-    const [progress, setProgress] = useState<number | null>(null);
+    const [uploadPercent, setUploadPercent] = useState<number | null>(null);
+    const [parsePercent, setParsePercent] = useState<number | null>(null);
 
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {
@@ -68,7 +196,8 @@ const Upload: React.FC = () => {
             setErrorText('Only one file can be uploaded at a time.');
         }
         if (files.length) {
-            setProgress(null);
+            setUploadPercent(null);
+            setParsePercent(null);
             setSelectedFile(files[0]);
         }
     }, []);
@@ -87,7 +216,8 @@ const Upload: React.FC = () => {
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         setErrorText(null);
-        setProgress(null);
+        setUploadPercent(null);
+        setParsePercent(null);
         setSelectedFile(e.target.files?.[0] ?? null);
     };
 
@@ -100,8 +230,8 @@ const Upload: React.FC = () => {
 
         setIsSubmitting(true);
         setErrorText(null);
-        setProgress(0);
-        setUploadPhase('upload');
+        setUploadPercent(0);
+        setParsePercent(null);
 
         try {
             const token = await getAccessTokenSilently();
@@ -119,14 +249,14 @@ const Upload: React.FC = () => {
             xhr.upload.onprogress = (e) => {
                 if (e.lengthComputable) {
                     const percent = (e.loaded / e.total) * 100;
-                    flushSync(() => setProgress(percent));
+                    flushSync(() => setUploadPercent(percent));
                 }
             };
 
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === XMLHttpRequest.HEADERS_RECEIVED) {
-                    setUploadPhase('parse');
-                    setProgress(0);
+                    setUploadPercent(100);
+                    setParsePercent(0);
                 }
             };
 
@@ -142,8 +272,8 @@ const Upload: React.FC = () => {
 
             const resetUploadState = () => {
                 setIsSubmitting(false);
-                setProgress(null);
-                setUploadPhase(null);
+                setUploadPercent(null);
+                setParsePercent(null);
             };
 
             xhr.onprogress = () => {
@@ -180,7 +310,7 @@ const Upload: React.FC = () => {
                     }
 
                     if (eventType === 'progress' && typeof payload.progress === 'number') {
-                        flushSync(() => setProgress(payload.progress));
+                        flushSync(() => setParsePercent(payload.progress!));
                     }
 
                     if (eventType === 'complete' && payload.logId) {
@@ -201,7 +331,8 @@ const Upload: React.FC = () => {
         } catch (err: any) {
             console.error(err);
             setErrorText(err.message || 'An unexpected error occurred.');
-            setProgress(null);
+            setUploadPercent(null);
+            setParsePercent(null);
             setIsSubmitting(false);
         }
     };
@@ -392,26 +523,11 @@ const Upload: React.FC = () => {
 
                     {errorText && <Alert severity="error">{errorText}</Alert>}
 
-                    {progress !== null && (
-                        <Box width="100%" sx={{my: 1}}>
-                            <LinearProgress
-                                key={uploadPhase}
-                                variant="determinate"
-                                value={Math.min(Math.max(progress, 0), 100)}
-                                sx={{
-                                    height: 8,
-                                    borderRadius: 4,
-                                    backgroundColor: colors.background.progress,
-                                    '& .MuiLinearProgress-bar': {
-                                        backgroundColor: colors.upload.dragActive,
-                                        borderRadius: 4,
-                                    },
-                                }}
-                            />
-                            <Typography variant="body2" align="center" sx={{color: colors.text.primary, mt: 1}}>
-                                {uploadPhase === 'parse' ? 'Parsing' : 'Uploading'}: {progress.toFixed(0)}%
-                            </Typography>
-                        </Box>
+                    {uploadPercent !== null && (
+                        <UploadProgressIndicator
+                            uploadPercent={uploadPercent}
+                            parsePercent={parsePercent}
+                        />
                     )}
 
                     <Box display="flex" justifyContent="flex-end" sx={{[media.mobileDown]: {justifyContent: 'center'}}}>
