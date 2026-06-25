@@ -11,6 +11,7 @@ import o57283 from '../assets/gameObjects/57283.png';
 import o57284 from '../assets/gameObjects/57284.png';
 import o57286 from '../assets/gameObjects/57286.png';
 import o57287 from '../assets/gameObjects/57287.png';
+import o50743 from '../assets/gameObjects/50743.png';
 export interface GameObject {
     name: string;
     imageUrl: string;
@@ -30,4 +31,5 @@ export const gameObjectIdMap: Record<number, GameObject> = {
     57284: { name: "Doom venom splat (diagonal)", imageUrl: o57284 },
     57286: { name: "Doom rock", imageUrl: o57286 },
     57287: { name: "Doom rock (blocks range)", imageUrl: o57287 },
+    50743: { name: "Colosseum reentry pool", imageUrl: o50743 },
 };
