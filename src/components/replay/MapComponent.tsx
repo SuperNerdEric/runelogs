@@ -39,7 +39,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
             attributionControl={false}
         >
             <TileLayer
-                url={`https://raw.githubusercontent.com/SuperNerdEric/osrs_map_tiles/refs/heads/master/${plane}/{z}/{x}/{y}.png`}
+                url={`https://raw.githubusercontent.com/SuperNerdEric/osrs_map_tiles/master/${plane}/{z}/{x}/{y}.png`}
                 minZoom={4}
                 maxZoom={11}
                 noWrap={true}
