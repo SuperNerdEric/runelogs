@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
 import {Link as RouterLink, useNavigate, useSearchParams} from 'react-router-dom';
 import {
@@ -24,8 +24,10 @@ import {
     isMokhaiotlLeaderboardContent,
     LEADERBOARD_CONTENT_OPTIONS,
     LEADERBOARD_MODE_HIGH_SCORE,
+    LeaderboardDpsConfigGroup,
     LeaderboardMode,
     MOKHAIOTL_DELVE_1_8_KEY,
+    resolveLeaderboardStateFromSearchParams,
 } from '../utils/leaderboardContent';
 import {getDpsPercentileColor} from "../utils/TickActivity";
 import {getPercentileAccentColor} from "../utils/percentile";
@@ -53,9 +55,7 @@ type DpsEntry = {
     encounterType: 'fight' | 'fightGroup';
 };
 
-type DpsConfigGroup = {
-    contentName: string;
-    fights: string[];
+type DpsConfigGroup = LeaderboardDpsConfigGroup & {
     hasOverall: boolean;
 };
 
@@ -98,32 +98,18 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const modeParam = searchParams.get('mode') as LeaderboardMode | null;
-    const allowedModes = getLeaderboardModesForContent(
-        LEADERBOARD_CONTENT_OPTIONS.find(o => o.value === searchParams.get('leaderboard'))?.value
-        ?? LEADERBOARD_CONTENT_OPTIONS[0].value,
-    );
-    const mode: LeaderboardMode = modeParam && allowedModes.includes(modeParam)
-        ? modeParam
-        : 'time';
-
-    const contentParam = searchParams.get('leaderboard');
-    const playerCountParam = parseInt(searchParams.get('playerCount') || '', 10);
-    const fightParam = searchParams.get('fight');
-    const highlightRankParam = parseInt(searchParams.get('highlightRank') || '', 10);
-    const highlightRank = Number.isFinite(highlightRankParam) && highlightRankParam > 0
-        ? highlightRankParam
-        : null;
-
-    const initialContent = LEADERBOARD_CONTENT_OPTIONS.find(o => o.value === contentParam) ?? LEADERBOARD_CONTENT_OPTIONS[0];
-    const initialPlayerCount = initialContent.playerCounts.includes(playerCountParam)
-        ? playerCountParam
-        : initialContent.defaultPlayerCount;
-
-    const [content, setContent] = useState(initialContent);
-    const [playerCount, setPlayerCount] = useState(initialPlayerCount);
     const [dpsConfig, setDpsConfig] = useState<DpsConfigGroup[]>([]);
-    const [selectedFight, setSelectedFight] = useState<string>('Overall');
+
+    const {
+        mode,
+        content,
+        playerCount,
+        selectedFight,
+        highlightRank,
+    } = useMemo(
+        () => resolveLeaderboardStateFromSearchParams(searchParams, dpsConfig),
+        [searchParams, dpsConfig],
+    );
 
     const [durationEntries, setDurationEntries] = useState<DurationEntry[] | null>(null);
     const [durationResultType, setDurationResultType] = useState<'fight' | 'fightGroup'>('fight');
@@ -141,31 +127,6 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
             .then((data) => setDpsConfig(data.fightGroups ?? []))
             .catch(() => setDpsConfig([]));
     }, []);
-
-    useEffect(() => {
-        const newContentParam = searchParams.get('leaderboard');
-        const newPlayerCountParam = parseInt(searchParams.get('playerCount') || '', 10);
-        const newFightParam = searchParams.get('fight');
-
-        const newContent = LEADERBOARD_CONTENT_OPTIONS.find(o => o.value === newContentParam) ?? LEADERBOARD_CONTENT_OPTIONS[0];
-        const newPlayerCount = newContent.playerCounts.includes(newPlayerCountParam)
-            ? newPlayerCountParam
-            : newContent.defaultPlayerCount;
-
-        setContent(newContent);
-        setPlayerCount(newPlayerCount);
-
-        const fightsForContent = dpsConfig.find((group) => group.contentName === newContent.value)?.fights ?? [];
-        if (newFightParam && fightsForContent.includes(newFightParam)) {
-            setSelectedFight(newFightParam);
-        } else if (isMokhaiotlLeaderboardContent(newContent.value) && fightsForContent.includes(MOKHAIOTL_DELVE_1_8_KEY)) {
-            setSelectedFight(MOKHAIOTL_DELVE_1_8_KEY);
-        } else if (fightsForContent.includes('Overall')) {
-            setSelectedFight('Overall');
-        } else if (fightsForContent.length > 0) {
-            setSelectedFight(fightsForContent[0]);
-        }
-    }, [searchParams, dpsConfig]);
 
     const fetchHighScoreData = useCallback(async () => {
         const url = `${import.meta.env.VITE_API_URL}/high-score-leaderboard?content=${encodeURIComponent(
@@ -481,9 +442,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
                                 const selectedContent = LEADERBOARD_CONTENT_OPTIONS.find(
                                     (option) => option.value === nextContentValue,
                                 )!;
-                                setContent(selectedContent);
                                 const newDefault = selectedContent.defaultPlayerCount;
-                                setPlayerCount(newDefault);
                                 const fights = dpsConfig.find(
                                     (group) => group.contentName === selectedContent.value,
                                 )?.fights ?? [];
@@ -495,7 +454,6 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
                                 const nextMode = getLeaderboardModesForContent(selectedContent.value).includes(mode)
                                     ? mode
                                     : 'time';
-                                setSelectedFight(nextFight);
                                 setLeaderboardSearchParams({
                                     mode: nextMode,
                                     leaderboard: selectedContent.value,
@@ -512,7 +470,6 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
                             sx={filterFieldCompactSx}
                             options={buildLeaderboardPlayerCountOptions(content.playerCounts)}
                             onChange={(count) => {
-                                setPlayerCount(count);
                                 updateSearchParams({playerCount: count.toString()});
                             }}
                         />
@@ -548,7 +505,6 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
                         }))}
                         sx={{minWidth: {xs: 100, sm: 120}}}
                         onChange={(fight) => {
-                            setSelectedFight(fight);
                             updateSearchParams({fight});
                         }}
                     />
