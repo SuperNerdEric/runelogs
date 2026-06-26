@@ -180,6 +180,84 @@ export function getHighScoreLevelColumnLabel(contentName: string): string {
     return 'Level';
 }
 
+export type LeaderboardDpsConfigGroup = {
+    contentName: string;
+    fights: string[];
+};
+
+export function resolveLeaderboardContent(contentParam: string | null): LeaderboardContentOption {
+    return LEADERBOARD_CONTENT_OPTIONS.find((option) => option.value === contentParam)
+        ?? LEADERBOARD_CONTENT_OPTIONS[0];
+}
+
+export function resolveLeaderboardPlayerCount(
+    content: LeaderboardContentOption,
+    playerCountParam: string | null,
+): number {
+    const parsed = parseInt(playerCountParam || '', 10);
+    return content.playerCounts.includes(parsed) ? parsed : content.defaultPlayerCount;
+}
+
+export function resolveLeaderboardMode(
+    contentValue: string,
+    modeParam: string | null,
+): LeaderboardMode {
+    const allowedModes = getLeaderboardModesForContent(contentValue);
+    const mode = modeParam as LeaderboardMode | null;
+    return mode && allowedModes.includes(mode) ? mode : 'time';
+}
+
+/** Trust the URL fight param before DPS config has loaded so badge links fetch once. */
+export function resolveLeaderboardSelectedFight(
+    contentValue: string,
+    fightParam: string | null,
+    dpsConfig: LeaderboardDpsConfigGroup[],
+): string {
+    const fightsForContent = dpsConfig.find((group) => group.contentName === contentValue)?.fights ?? [];
+    if (fightParam && (fightsForContent.length === 0 || fightsForContent.includes(fightParam))) {
+        return fightParam;
+    }
+    if (isMokhaiotlLeaderboardContent(contentValue) && fightsForContent.includes(MOKHAIOTL_DELVE_1_8_KEY)) {
+        return MOKHAIOTL_DELVE_1_8_KEY;
+    }
+    if (fightsForContent.includes('Overall')) {
+        return 'Overall';
+    }
+    if (fightsForContent.length > 0) {
+        return fightsForContent[0];
+    }
+    return fightParam ?? 'Overall';
+}
+
+export function resolveLeaderboardHighlightRank(highlightRankParam: string | null): number | null {
+    const parsed = parseInt(highlightRankParam || '', 10);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
+export function resolveLeaderboardStateFromSearchParams(
+    searchParams: URLSearchParams,
+    dpsConfig: LeaderboardDpsConfigGroup[],
+): {
+    mode: LeaderboardMode;
+    content: LeaderboardContentOption;
+    playerCount: number;
+    selectedFight: string;
+    highlightRank: number | null;
+} {
+    const content = resolveLeaderboardContent(searchParams.get('leaderboard'));
+    return {
+        mode: resolveLeaderboardMode(content.value, searchParams.get('mode')),
+        content,
+        playerCount: resolveLeaderboardPlayerCount(content, searchParams.get('playerCount')),
+        selectedFight: resolveLeaderboardSelectedFight(
+            content.value,
+            searchParams.get('fight'),
+            dpsConfig,
+        ),
+        highlightRank: resolveLeaderboardHighlightRank(searchParams.get('highlightRank')),
+    };
+}
+
 export function buildLeaderboardHref(params: {
     mode: LeaderboardMode;
     leaderboard: string;
