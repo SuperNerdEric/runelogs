@@ -41,6 +41,18 @@ describe('leaderboard player count filters', () => {
     });
 });
 
+describe('Yama leaderboard content', () => {
+    it('includes solo and duo player counts', () => {
+        const yama = LEADERBOARD_CONTENT_OPTIONS.find((option) => option.value === 'Yama');
+        expect(yama).toEqual({
+            label: 'Yama',
+            value: 'Yama',
+            playerCounts: [1, 2],
+            defaultPlayerCount: 2,
+        });
+    });
+});
+
 describe('buildPlayerRankLeaderboardHref', () => {
     it('links deep delve rank badges to the high-score leaderboard', () => {
         expect(buildPlayerRankLeaderboardHref(

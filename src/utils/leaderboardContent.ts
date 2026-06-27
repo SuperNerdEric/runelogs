@@ -13,6 +13,7 @@ export const LEADERBOARD_FIGHT_GROUP_NAMES = [
 ] as const;
 
 export const MOKHAIOTL_CONTENT_NAME = 'Doom of Mokhaiotl';
+export const YAMA_CONTENT_NAME = 'Yama';
 export const MOKHAIOTL_DELVE_1_8_KEY = 'Delve level 1 - 8';
 /** User-facing label for the high-score leaderboard on Doom of Mokhaiotl. */
 export const MOKHAIOTL_HIGH_SCORE_MODE_LABEL = 'Deep Delve';
@@ -37,6 +38,7 @@ export const LEADERBOARD_CONTENT_OPTIONS: LeaderboardContentOption[] = [
     {label: 'The Gauntlet', value: 'The Gauntlet', playerCounts: [1], defaultPlayerCount: 1},
     {label: 'Corrupted Gauntlet', value: 'Corrupted Gauntlet', playerCounts: [1], defaultPlayerCount: 1},
     {label: 'Doom of Mokhaiotl', value: MOKHAIOTL_CONTENT_NAME, playerCounts: [1], defaultPlayerCount: 1},
+    {label: 'Yama', value: YAMA_CONTENT_NAME, playerCounts: [1, 2], defaultPlayerCount: 2},
 ];
 
 /** @deprecated Use LEADERBOARD_CONTENT_OPTIONS */
@@ -284,7 +286,7 @@ export function buildPlayerRankLeaderboardHref(
     leaderboardName: string | null | undefined,
     playerCount: number,
 ): string | undefined {
-    if (!leaderboardName || !isLeaderboardFightGroup(leaderboardName)) {
+    if (!leaderboardName || !isLeaderboardContent(leaderboardName)) {
         return undefined;
     }
     if (entry.category === 'Duration') {
@@ -319,7 +321,7 @@ export function buildFightDpsRankLeaderboardHref(
     playerCount: number,
     fightKey: string | null | undefined,
 ): string | undefined {
-    if (!leaderboardName || !fightKey || !isLeaderboardFightGroup(leaderboardName)) {
+    if (!leaderboardName || !fightKey || !isLeaderboardContent(leaderboardName)) {
         return undefined;
     }
     return buildLeaderboardHref({
@@ -336,6 +338,19 @@ export function isLeaderboardFightGroup(leaderboardName: string | null | undefin
         leaderboardName &&
         LEADERBOARD_FIGHT_GROUP_NAMES.includes(leaderboardName as typeof LEADERBOARD_FIGHT_GROUP_NAMES[number]),
     );
+}
+
+/** Maps standalone boss fights (no fight group) to their leaderboard content name. */
+export function inferStandaloneLeaderboardContent(mainEnemyName: string | null | undefined): string | null {
+    if (mainEnemyName === YAMA_CONTENT_NAME) {
+        return YAMA_CONTENT_NAME;
+    }
+    return null;
+}
+
+export function isLeaderboardContent(leaderboardName: string | null | undefined): boolean {
+    return isLeaderboardFightGroup(leaderboardName)
+        || inferStandaloneLeaderboardContent(leaderboardName) !== null;
 }
 
 /** Infer leaderboard content from a fight group display name (e.g. "Theatre of Blood - 1"). */
