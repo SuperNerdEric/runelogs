@@ -15,6 +15,11 @@ import {Link as RouterLink, useNavigate, useParams} from 'react-router-dom';
 import {format} from 'date-fns';
 import {encounterTableRowProps, getEncounterHref, stopRowClick} from '../utils/encounterTableRow';
 import {buildLeaderboardHref, LeaderboardMode, LEADERBOARD_CONTENT_OPTIONS} from '../utils/leaderboardContent';
+import {
+    buildDurationPersonalBestEntries,
+    DurationPersonalBestEntry,
+    DurationStandaloneFightPersonalBest,
+} from '../utils/personalBests';
 import {media} from "../theme";
 import {colors} from "../theme";
 import {getDpsPercentileColor} from "../utils/TickActivity";
@@ -35,17 +40,9 @@ const partySizeColumnSx = {
     },
 } as const;
 
-interface DurationFightGroup {
-    id: string;
-    name: string;
-    leaderboardName: string;
-    officialDurationTicks: number;
-    playerCount: number;
-    rank?: number;
-    percentile?: number;
-    startTime?: string;
-    players?: string[];
-}
+interface DurationFightGroup extends DurationPersonalBestEntry {}
+
+interface DurationStandaloneFight extends DurationStandaloneFightPersonalBest {}
 
 interface DpsPersonalBest {
     contentName: string;
@@ -69,8 +66,8 @@ type DpsConfigGroup = {
 interface PersonalBestsResponse {
     player: string;
     personalBests: {
-        fights: unknown[];
-        fightGroups: DurationFightGroup[];
+        fights: DurationStandaloneFight[];
+        fightGroups: Omit<DurationFightGroup, 'resultType'>[];
     };
 }
 
@@ -173,6 +170,11 @@ const PersonalBests: React.FC = () => {
         return availableFights[0] ?? 'Overall';
     };
 
+    const durationEntries = useMemo(
+        () => buildDurationPersonalBestEntries(durationData?.personalBests),
+        [durationData],
+    );
+
     if (loading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" height="50vh">
@@ -189,10 +191,9 @@ const PersonalBests: React.FC = () => {
         );
     }
 
-    const durationFightGroups = durationData?.personalBests.fightGroups ?? [];
     const dpsEntries = dpsData?.entries ?? [];
     const isBusy = mode === 'dps' && dpsLoading;
-    const hasDuration = durationFightGroups.length > 0;
+    const hasDuration = durationEntries.length > 0;
     const hasDps = dpsEntries.length > 0;
 
     const renderPlayers = (players: string[] | undefined, highlightPlayer?: string) => {
@@ -296,7 +297,7 @@ const PersonalBests: React.FC = () => {
             )}
 
             {!isBusy && mode === 'time' && LEADERBOARD_CONTENT_OPTIONS.map((content) => {
-                const relevantFights = durationFightGroups
+                const relevantFights = durationEntries
                     .filter((f) => f.leaderboardName === content.value)
                     .sort((a, b) => a.playerCount - b.playerCount);
 
@@ -326,12 +327,19 @@ const PersonalBests: React.FC = () => {
                                         const match = relevantFights.find((f) => f.playerCount === count);
 
                                         return (
-                                            <TableRow key={count} {...encounterTableRowProps(navigate, match?.id, {durationResultType: 'fightGroup'})}>
+                                            <TableRow
+                                                key={count}
+                                                {...encounterTableRowProps(navigate, match?.id, {
+                                                    durationResultType: match?.resultType,
+                                                })}
+                                            >
                                                 <TableCell sx={partySizeColumnSx}>
                                                     {match ? (
                                                         <Link
                                                             component={RouterLink}
-                                                            to={getEncounterHref(match.id, {durationResultType: 'fightGroup'})}
+                                                            to={getEncounterHref(match.id, {
+                                                                durationResultType: match.resultType,
+                                                            })}
                                                             underline="hover"
                                                             onClick={stopRowClick}
                                                         >
