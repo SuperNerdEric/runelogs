@@ -10,7 +10,7 @@ import '../App.css';
 import EncounterFightTitle from './EncounterFightTitle';
 import PageBreadcrumbs, {BreadcrumbSegment} from './PageBreadcrumbs';
 import EncounterDpsRankBadges from './badges/EncounterDpsRankBadges';
-import {inferLeaderboardFightGroupName} from '../utils/leaderboardContent';
+import {inferLeaderboardFightGroupName, inferStandaloneLeaderboardContent} from '../utils/leaderboardContent';
 import {getRunSummaryHref} from '../utils/encounterTableRow';
 import {ActorFilter, deserializeActorFilter, serializeActorFilter} from "../utils/actorFilter";
 import {deserializeEquipmentFilter, EquipmentFilter, serializeEquipmentFilter} from "../utils/equipmentFilter";
@@ -160,7 +160,8 @@ const Encounter: React.FC = () => {
                         data.meta.fightGroup?.leaderboardName
                             ?? (data.meta.fightGroup?.name
                                 ? inferLeaderboardFightGroupName(data.meta.fightGroup.name)
-                                : null),
+                                : null)
+                            ?? inferStandaloneLeaderboardContent(data.meta.mainEnemyName),
                     );
 
                     if (asInitial && data.meta.fightGroup?.id) {

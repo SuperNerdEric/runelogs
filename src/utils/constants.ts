@@ -258,6 +258,7 @@ export const BOSS_IDS: number[] = [
     12827, // COLOSSEUM_BOSS_SEATED
     494, // SLAYER_KRAKEN_BOSS
     496, // SLAYER_KRAKEN_BOSS_WHIRLPOOL
+    14176, // YAMA
 ]
 
 export const BOSS_TO_MINIONS = {
