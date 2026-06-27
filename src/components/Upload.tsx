@@ -1,7 +1,8 @@
 import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
 import {Link as RouterLink, useNavigate} from 'react-router-dom';
 import {useAuth0} from '@auth0/auth0-react';
-import {Alert, Box, CircularProgress, LinearProgress, Link, TextField, Tooltip, Typography} from '@mui/material';
+import {Alert, Box, CircularProgress, Link, TextField, Typography} from '@mui/material';
+import AppTooltip from './AppTooltip';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
@@ -550,7 +551,7 @@ const Upload: React.FC = () => {
                                 .runelite/combat_log
                             </Box>
                             .
-                            <Tooltip title="Help" placement="top">
+                            <AppTooltip title="Help" placement="top" disableTouch>
                                 <Link
                                     component={RouterLink}
                                     to="/help#find-combat-log"
@@ -560,7 +561,7 @@ const Upload: React.FC = () => {
                                 >
                                     <HelpOutlineIcon fontSize="inherit"/>
                                 </Link>
-                            </Tooltip>
+                            </AppTooltip>
                         </Box>
                     </Box>
 

@@ -11,9 +11,9 @@ import {
     Divider,
     Grid,
     IconButton,
-    Tooltip,
     Typography,
 } from '@mui/material';
+import AppTooltip from './AppTooltip';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import AvatarIcon from './AvatarIcon';
@@ -178,7 +178,7 @@ const MyProfile: React.FC = () => {
             <Box sx={pageHeaderContainerSx}>
                 {currentAvatarId && (
                     isOwnProfile && profile ? (
-                        <Tooltip title="Change Avatar" arrow placement="bottom">
+                        <AppTooltip title="Change Avatar" arrow placement="bottom" disableTouch>
                             <Box
                                 component="button"
                                 type="button"
@@ -225,7 +225,7 @@ const MyProfile: React.FC = () => {
                                     <EditIcon sx={{color: colors.text.primary, fontSize: 24}} />
                                 </Box>
                             </Box>
-                        </Tooltip>
+                        </AppTooltip>
                     ) : (
                         <Box
                             sx={{
@@ -337,7 +337,8 @@ const MyProfile: React.FC = () => {
                                     key={avatar.id}
                                     sx={{display: 'flex', justifyContent: 'center'}}
                                 >
-                                    <Tooltip
+                                    <AppTooltip
+                                        disableTouch
                                         slotProps={{
                                             tooltip: {
                                                 sx: {
@@ -460,7 +461,7 @@ const MyProfile: React.FC = () => {
                                                 />
                                             )}
                                         </Box>
-                                    </Tooltip>
+                                    </AppTooltip>
                                 </Grid>
                             );
                         })}

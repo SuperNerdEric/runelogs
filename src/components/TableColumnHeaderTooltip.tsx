@@ -1,5 +1,5 @@
 import React from 'react';
-import {Tooltip} from '@mui/material';
+import AppTooltip from './AppTooltip';
 
 interface TableColumnHeaderTooltipProps {
     label: string;
@@ -7,17 +7,11 @@ interface TableColumnHeaderTooltipProps {
 }
 
 const TableColumnHeaderTooltip: React.FC<TableColumnHeaderTooltipProps> = ({label, tooltip}) => (
-    <Tooltip
-        title={tooltip}
-        arrow
-        placement="top"
-        enterDelay={200}
-        enterTouchDelay={0}
-    >
+    <AppTooltip title={tooltip} arrow placement="top">
         <span style={{cursor: 'help', borderBottom: '1px dotted currentColor'}}>
             {label}
         </span>
-    </Tooltip>
+    </AppTooltip>
 );
 
 export default TableColumnHeaderTooltip;

@@ -10,9 +10,9 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    Tooltip,
     Typography,
 } from '@mui/material';
+import AppTooltip from './AppTooltip';
 import {format} from 'date-fns';
 import {Link as RouterLink, useNavigate, useSearchParams} from 'react-router-dom';
 import {encounterTableRowProps, getEncounterHref, stopRowClick} from '../utils/encounterTableRow';
@@ -305,14 +305,14 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
                                             ))}
                                         </TableCell>
                                         <TableCell sx={{color: 'white'}}>
-                                            <Tooltip
+                                            <AppTooltip
                                                 title={format(new Date(row.startTime), 'MMM d, yyyy, h:mm a')}
                                                 arrow
                                                 placement="top"
-                                                enterDelay={200}
+                                                disableTouch
                                             >
                                                 <span>{getRelativeTime(new Date(row.startTime))}</span>
-                                            </Tooltip>
+                                            </AppTooltip>
                                         </TableCell>
                                     </TableRow>
                                 );
