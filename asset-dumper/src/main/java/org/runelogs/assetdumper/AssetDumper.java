@@ -2,6 +2,8 @@ package org.runelogs.assetdumper;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileReader;
@@ -204,7 +206,82 @@ public class AssetDumper
 		merged.xan = overrides.xan != 0 ? overrides.xan : defaults.xan;
 		merged.yan = overrides.yan != 0 ? overrides.yan : defaults.yan;
 		merged.zan = overrides.zan;
+		merged.postRotateDegrees = overrides.postRotateDegrees != null
+			? overrides.postRotateDegrees
+			: defaults.postRotateDegrees;
+		merged.cropToContent = overrides.cropToContent != null
+			? overrides.cropToContent
+			: defaults.cropToContent;
+		merged.cropPadding = overrides.cropPadding != null
+			? overrides.cropPadding
+			: defaults.cropPadding;
 		return merged;
+	}
+
+	private static BufferedImage cropToOpaqueBounds(BufferedImage image, int padding)
+	{
+		int width = image.getWidth();
+		int height = image.getHeight();
+		int minX = width;
+		int minY = height;
+		int maxX = 0;
+		int maxY = 0;
+
+		for (int y = 0; y < height; y++)
+		{
+			for (int x = 0; x < width; x++)
+			{
+				if ((image.getRGB(x, y) >>> 24) != 0)
+				{
+					minX = Math.min(minX, x);
+					minY = Math.min(minY, y);
+					maxX = Math.max(maxX, x);
+					maxY = Math.max(maxY, y);
+				}
+			}
+		}
+
+		if (maxX < minX)
+		{
+			return image;
+		}
+
+		minX = Math.max(0, minX - padding);
+		minY = Math.max(0, minY - padding);
+		maxX = Math.min(width - 1, maxX + padding);
+		maxY = Math.min(height - 1, maxY + padding);
+
+		int cropWidth = maxX - minX + 1;
+		int cropHeight = maxY - minY + 1;
+		BufferedImage cropped = new BufferedImage(cropWidth, cropHeight, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D graphics = cropped.createGraphics();
+		graphics.drawImage(
+			image,
+			0,
+			0,
+			cropWidth,
+			cropHeight,
+			minX,
+			minY,
+			maxX + 1,
+			maxY + 1,
+			null
+		);
+		graphics.dispose();
+		return cropped;
+	}
+
+	private static BufferedImage rotateImageClockwise(BufferedImage image, int degrees)
+	{
+		int width = image.getWidth();
+		int height = image.getHeight();
+		BufferedImage rotated = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D graphics = rotated.createGraphics();
+		graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		graphics.rotate(Math.toRadians(degrees), width / 2.0, height / 2.0);
+		graphics.drawImage(image, 0, 0, null);
+		graphics.dispose();
+		return rotated;
 	}
 
 	private static void dumpGameObject(
@@ -253,6 +330,17 @@ public class AssetDumper
 		{
 			System.err.println("Could not render object " + entry.id);
 			return;
+		}
+
+		if (render.postRotateDegrees != null && render.postRotateDegrees != 0)
+		{
+			image = rotateImageClockwise(image, render.postRotateDegrees);
+		}
+
+		if (Boolean.TRUE.equals(render.cropToContent))
+		{
+			int padding = render.cropPadding != null ? render.cropPadding : 2;
+			image = cropToOpaqueBounds(image, padding);
 		}
 
 		File out = new File(outputDir, entry.id + ".png");

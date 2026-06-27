@@ -488,6 +488,51 @@ a.encounter-title-bar.encounter-title-bar--clickable:hover {
     fill: var(--color-text-icon-hover);
 }
 
+.replay-root:fullscreen {
+    display: flex;
+    flex-direction: column;
+    max-width: none !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    border: none !important;
+    background: var(--color-bg-map);
+}
+
+.replay-root:fullscreen .replay-map-section {
+    flex: 1;
+    min-height: 0;
+}
+
+.replay-root:fullscreen .replay-map-section .leaflet-container {
+    height: 100% !important;
+}
+
+.replay-map-section {
+    position: relative;
+}
+
+.replay-fullscreen-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid rgba(0, 0, 0, 0.35);
+    border-radius: 4px;
+    background: rgba(20, 20, 20, 0.75);
+    color: #fff;
+    cursor: pointer;
+}
+
+.replay-fullscreen-button:hover {
+    background: rgba(40, 40, 40, 0.9);
+}
+
 .mouse-hover-tooltip {
     position: absolute;
     pointer-events: none;

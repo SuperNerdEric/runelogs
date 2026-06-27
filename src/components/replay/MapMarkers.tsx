@@ -2,15 +2,28 @@ import React, {useMemo} from 'react';
 import {ImageOverlay, Popup, Rectangle, useMap} from 'react-leaflet';
 import {Position} from "../../utils/Position";
 import {NPC, npcIdMap} from "../../lib/npcIdMap";
-import {graphicObjectIdMap, getGraphicObjectFrameIndex} from "../../lib/graphicObjectIdMap";
-import {gameObjectIdMap} from "../../lib/gameObjectIdMap";
+import {graphicObjectIdMap, getGraphicObjectFrameIndex, getGraphicObjectTotalCycles} from "../../lib/graphicObjectIdMap";
+import {gameObjectIdMap, getGameObjectAnchorOffset, getGameObjectTileSize} from "../../lib/gameObjectIdMap";
 import {GameObjectState, GamePosition, GraphicsObjectState} from "./GameState";
 import {groundObjectIdMap} from "../../lib/groundObjectIdMap";
 import {computeSolLaserBeams, isSolLaserGraphic, SolLaserBeam} from "../../lib/solLaserBeams";
-import L, {LatLngBounds, LatLngBoundsExpression} from "leaflet";
+import {
+    getYamaShadowWallFadeOpacity,
+    getYamaShadowWallImageUrl,
+    getYamaShadowWallPhase,
+    getYamaShadowWallTileBounds,
+    getYamaShadowWallTileCyclesElapsed,
+    getYamaWallDiagonal,
+    isYamaShadowWallGraphic,
+    isYamaShadowWallVisible,
+} from "../../lib/yamaShadowWall";
+import {
+    getGraphicObjectAnimationCyclesElapsed,
+    isGraphicObjectVisible,
+} from "../../lib/replayTiming";
+import L, {LatLngBounds} from "leaflet";
 import {colors} from "../../theme";
-
-const TORNADO_IDS = new Set([8386, 10863, 10846]);
+import NpcImageOverlay from './NpcImageOverlay';
 
 interface MapMarkersProps {
     playerPositions: { [playerName: string]: GamePosition };
@@ -19,7 +32,9 @@ interface MapMarkersProps {
     gameObjectPositions: { [key: string]: GameObjectState };
     groundObjectPositions: { [key: string]: GameObjectState };
     selectedPlayerName?: string;
-    currentTick: number;
+    currentTime: number;
+    initialTick: number;
+    fightEpochCycle?: number;
 }
 
 const MapMarkers: React.FC<MapMarkersProps> = ({
@@ -29,7 +44,9 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
                                                    gameObjectPositions,
                                                    groundObjectPositions,
                                                    selectedPlayerName,
-                                                    currentTick,
+                                                   currentTime,
+                                                   initialTick,
+                                                   fightEpochCycle,
                                                }) => {
     const map = useMap();
     const solLaserBeams = useMemo(
@@ -94,31 +111,13 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
                 const npcPosition = new Position(positionData.x, positionData.y, positionData.plane);
                 const rectangle = npcPosition.toLeaflet(map, npcRectangleOptions, size);
 
-                const isTornado = TORNADO_IDS.has(npcId);
-                const imageUrl = `https://chisel.weirdgloop.org/static/img/osrs-npc/${npcId}_128.png`;
-
-                const baseBounds = rectangle.getBounds();
-
-                // If it's a tornado, stretch the bounds vertically
-                // This is pretty hacky, but it works for now.
-                let adjustedBounds: LatLngBoundsExpression = baseBounds;
-                if (isTornado) {
-                    const height = baseBounds.getNorth() - baseBounds.getSouth();
-                    const sw = baseBounds.getSouthWest();
-                    const ne = baseBounds.getNorthEast();
-                    const stretchedNE = L.latLng(ne.lat + height, ne.lng);
-                    adjustedBounds = L.latLngBounds(sw, stretchedNE);
-                }
-
                 return (
                     <React.Fragment key={`npc-${npcKey}`}>
-                        {/* Render the image overlay representing the full size of the NPC */}
-                        <ImageOverlay
-                            url={imageUrl}
-                            bounds={adjustedBounds}
-                            opacity={1}
-                            interactive={false} // Set to false if you don't want the image to be clickable
-                            pane="npcs"
+                        <NpcImageOverlay
+                            npcId={npcId}
+                            x={positionData.x}
+                            y={positionData.y}
+                            size={size}
                         />
 
                         <Rectangle
@@ -139,10 +138,15 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
                     return null;
                 }
 
-                const ticksElapsed = currentTick - beam.spawnTick;
+                const cyclesElapsed = getGraphicObjectAnimationCyclesElapsed(
+                    currentTime,
+                    {spawnTick: beam.spawnTick},
+                    initialTick,
+                    fightEpochCycle,
+                );
                 let displayImage = definition.imageUrl;
                 if (definition.frames && definition.frames.length > 0) {
-                    const frameIndex = getGraphicObjectFrameIndex(ticksElapsed, definition);
+                    const frameIndex = getGraphicObjectFrameIndex(cyclesElapsed, definition);
                     displayImage = definition.frames[frameIndex];
                 }
 
@@ -158,9 +162,60 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
                 );
             })}
 
+            {/* Yama shadow walls — see yamaShadowWall.ts for wave/phase timing. */}
+            {Object.entries(graphicsObjectPositions).map(([objectKey, positionData]) => {
+                if (!isYamaShadowWallGraphic(positionData.id)) {
+                    return null;
+                }
+
+                const spawnTick = positionData.spawnTick ?? 0;
+                const cycleTiming = {
+                    startCycle: positionData.startCycle,
+                    endCycle: positionData.endCycle,
+                    spawnTick,
+                };
+                if (!isYamaShadowWallVisible(currentTime, cycleTiming, initialTick, fightEpochCycle)) {
+                    return null;
+                }
+
+                const cyclesElapsed = getYamaShadowWallTileCyclesElapsed(
+                    currentTime,
+                    positionData,
+                    initialTick,
+                    fightEpochCycle,
+                );
+                const phase = getYamaShadowWallPhase(cyclesElapsed);
+                if (!phase) {
+                    return null;
+                }
+
+                const diagonal = getYamaWallDiagonal(positionData.id);
+                const displayImage = getYamaShadowWallImageUrl(phase, diagonal);
+                const opacity = phase === 'active' ? 1 : getYamaShadowWallFadeOpacity(cyclesElapsed);
+
+                return (
+                    <ImageOverlay
+                        key={`yama-shadow-wall-${objectKey}`}
+                        url={displayImage}
+                        bounds={getYamaShadowWallTileBounds(
+                            map,
+                            positionData.position.x,
+                            positionData.position.y,
+                            diagonal,
+                        )}
+                        opacity={opacity}
+                        interactive={false}
+                        pane="objects"
+                    />
+                );
+            })}
+
             {/* Render Graphics Object Markers */}
             {Object.entries(graphicsObjectPositions).map(([objectKey, positionData]) => {
                 if (isSolLaserGraphic(positionData.id)) {
+                    return null;
+                }
+                if (isYamaShadowWallGraphic(positionData.id)) {
                     return null;
                 }
 
@@ -174,49 +229,67 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
                     return null;
                 }
 
-                // 2. Determine how many ticks have elapsed since spawn
+                // 2. Determine animation age in client cycles
                 const spawnTick = positionData.spawnTick ?? 0;
-                const ticksElapsed = currentTick - spawnTick;
+                const cycleTiming = {
+                    startCycle: positionData.startCycle,
+                    endCycle: positionData.endCycle,
+                    spawnTick,
+                };
+                const totalCycles = getGraphicObjectTotalCycles(definition);
+                if (!isGraphicObjectVisible(currentTime, cycleTiming, initialTick, fightEpochCycle, totalCycles)) {
+                    return null;
+                }
+
+                const cyclesElapsed = getGraphicObjectAnimationCyclesElapsed(
+                    currentTime,
+                    cycleTiming,
+                    initialTick,
+                    fightEpochCycle,
+                );
 
                 // 3. If multiple frames exist, pick the correct frame
                 let displayImage = definition.imageUrl;
                 if (definition.frames && definition.frames.length > 0) {
-                    const frameIndex = getGraphicObjectFrameIndex(ticksElapsed, definition);
+                    const frameIndex = getGraphicObjectFrameIndex(cyclesElapsed, definition);
                     displayImage = definition.frames[frameIndex];
                 }
 
                 // 4. Render the overlay with the chosen frame
                 return (
-                    <React.Fragment key={`graphics-object-${objectKey}`}>
-                        <ImageOverlay
-                            url={displayImage!}
-                            bounds={rectangle.getBounds()}
-                            opacity={1}
-                            interactive={false}
-                            pane="objects"
-                        />
-                    </React.Fragment>
+                    <ImageOverlay
+                        key={`graphics-object-${objectKey}`}
+                        url={displayImage!}
+                        bounds={rectangle.getBounds()}
+                        opacity={1}
+                        interactive={false}
+                        pane="objects"
+                    />
                 );
             })}
 
             {/* Render Game Object Markers */}
             {Object.entries(gameObjectPositions).map(([objectKey, positionData]) => {
-                const objectPosition = new Position(positionData.position.x, positionData.position.y, positionData.position.plane);
-                const rectangle = objectPosition.toLeaflet(map, npcRectangleOptions);
-
-                return (
-                    <React.Fragment key={`game-object-${objectKey}`}>
-                        {gameObjectIdMap[positionData.id] && (
-                            <ImageOverlay
-                                url={gameObjectIdMap[positionData.id].imageUrl}
-                                bounds={rectangle.getBounds()}
-                                opacity={1}
-                                interactive={false}
-                                pane="objects"
-                            />
-                        )}
-                    </React.Fragment>
+                const tileSize = getGameObjectTileSize(positionData.id);
+                const anchorOffset = getGameObjectAnchorOffset(positionData.id);
+                const objectPosition = new Position(
+                    positionData.position.x - anchorOffset,
+                    positionData.position.y - anchorOffset,
+                    positionData.position.plane,
                 );
+                const rectangle = objectPosition.toLeaflet(map, npcRectangleOptions, tileSize);
+                const definition = gameObjectIdMap[positionData.id];
+
+                return definition ? (
+                    <ImageOverlay
+                        key={`game-object-${objectKey}`}
+                        url={definition.imageUrl}
+                        bounds={rectangle.getBounds()}
+                        opacity={1}
+                        interactive={false}
+                        pane="objects"
+                    />
+                ) : null;
             })}
 
             {/* Render Ground Object Markers */}
@@ -227,20 +300,18 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
                     positionData.position.plane
                 );
                 const rectangle = objectPosition.toLeaflet(map, npcRectangleOptions);
+                const definition = groundObjectIdMap[positionData.id];
 
-                return (
-                    <React.Fragment key={`ground-object-${objectKey}`}>
-                        {groundObjectIdMap[positionData.id] && (
-                            <ImageOverlay
-                                url={groundObjectIdMap[positionData.id].imageUrl}
-                                bounds={rectangle.getBounds()}
-                                opacity={1}
-                                interactive={false}
-                                pane="objects"
-                            />
-                        )}
-                    </React.Fragment>
-                );
+                return definition ? (
+                    <ImageOverlay
+                        key={`ground-object-${objectKey}`}
+                        url={definition.imageUrl}
+                        bounds={rectangle.getBounds()}
+                        opacity={1}
+                        interactive={false}
+                        pane="objects"
+                    />
+                ) : null;
             })}
 
         </>

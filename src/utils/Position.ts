@@ -3,6 +3,8 @@ import {colors} from '../theme';
 
 export const MAP_HEIGHT_MAX_ZOOM_PX: number = 364544;
 export const MAP_WIDTH_MAX_ZOOM_PX: number = 104448;
+/** Native tile zoom — RS coordinate math is calibrated to this level. */
+export const RS_MAP_NATIVE_MAX_ZOOM: number = 11;
 export const RS_TILE_WIDTH_PX: number = 32; // Width in px of an RS tile at max zoom level
 export const RS_TILE_HEIGHT_PX: number = 32; // Height in px of an RS tile at max zoom level
 export const RS_OFFSET_X: number = 960; // Amount to offset x coordinate to get correct value (1024 - 64)
@@ -20,7 +22,7 @@ export class Position {
     }
 
     static fromLatLng(map: LeafletMap, latLng: LatLng, z: number): Position {
-        const point = map.project(latLng, map.getMaxZoom());
+        const point = map.project(latLng, RS_MAP_NATIVE_MAX_ZOOM);
         let y = MAP_HEIGHT_MAX_ZOOM_PX - point.y + RS_TILE_HEIGHT_PX / 4;
         y = Math.round((y - RS_TILE_HEIGHT_PX) / RS_TILE_HEIGHT_PX) + RS_OFFSET_Y;
         let x = Math.round((point.x - RS_TILE_WIDTH_PX) / RS_TILE_WIDTH_PX) + RS_OFFSET_X;
@@ -38,7 +40,7 @@ export class Position {
     static toLatLng(map: LeafletMap, x: number, y: number): LatLng {
         x = (x - RS_OFFSET_X) * RS_TILE_WIDTH_PX + RS_TILE_WIDTH_PX / 4;
         y = MAP_HEIGHT_MAX_ZOOM_PX - (y - RS_OFFSET_Y) * RS_TILE_HEIGHT_PX;
-        return map.unproject(L.point(x, y), map.getMaxZoom());
+        return map.unproject(L.point(x, y), RS_MAP_NATIVE_MAX_ZOOM);
     }
 
     getDistance(position: Position): number {

@@ -15,7 +15,9 @@ interface MapComponentProps {
     groundObjectPositions: { [key: string]: GameObjectState };
     plane: number;
     selectedPlayerName?: string;
-    currentTick: number;
+    currentTime: number;
+    initialTick: number;
+    fightEpochCycle?: number;
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({
@@ -27,21 +29,24 @@ const MapComponent: React.FC<MapComponentProps> = ({
                                                        groundObjectPositions,
                                                        plane,
                                                        selectedPlayerName,
-                                                       currentTick
+                                                       currentTime,
+                                                       initialTick,
+                                                       fightEpochCycle,
                                                    }) => {
     return (
         <MapContainer
             center={[-79, -137]} // Use default center; MapCenterSetter will adjust it
             zoom={10}
             minZoom={8}
-            maxZoom={11}
+            maxZoom={12}
             style={{height: '60vh'}}
             attributionControl={false}
         >
             <TileLayer
                 url={`https://raw.githubusercontent.com/SuperNerdEric/osrs_map_tiles/master/${plane}/{z}/{x}/{y}.png`}
                 minZoom={4}
-                maxZoom={11}
+                maxZoom={12}
+                maxNativeZoom={11}
                 noWrap={true}
                 tms={true}
             />
@@ -54,7 +59,9 @@ const MapComponent: React.FC<MapComponentProps> = ({
                         gameObjectPositions={gameObjectPositions}
                         groundObjectPositions={groundObjectPositions}
                         selectedPlayerName={selectedPlayerName}
-                        currentTick={currentTick}
+                        currentTime={currentTime}
+                        initialTick={initialTick}
+                        fightEpochCycle={fightEpochCycle}
             />
             <MouseHover plane={plane}/>
         </MapContainer>
