@@ -1,5 +1,6 @@
 import React, {useMemo, useState} from 'react';
-import {Box, Tooltip, Typography, useMediaQuery} from '@mui/material';
+import {Box, Typography, useMediaQuery} from '@mui/material';
+import AppTooltip from './AppTooltip';
 import {Icon} from '@iconify/react';
 import {
     ColosseumModifierData,
@@ -51,11 +52,10 @@ const ModifierIcon: React.FC<ModifierIconProps> = ({
     }
 
     return (
-        <Tooltip
+        <AppTooltip
             title={description}
             placement="top"
             arrow
-            enterDelay={200}
             slotProps={{
                 tooltip: {
                     className: 'colosseum-modifier-tooltip',
@@ -65,7 +65,7 @@ const ModifierIcon: React.FC<ModifierIconProps> = ({
             <Box component="span" className="colosseum-modifier-icon__tooltip-anchor">
                 {icon}
             </Box>
-        </Tooltip>
+        </AppTooltip>
     );
 };
 

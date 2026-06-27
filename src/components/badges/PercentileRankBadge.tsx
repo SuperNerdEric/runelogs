@@ -1,6 +1,7 @@
 import React from 'react';
 import {Link as RouterLink} from 'react-router-dom';
-import {Box, Tooltip, Typography} from '@mui/material';
+import {Box, Typography} from '@mui/material';
+import AppTooltip from '../AppTooltip';
 import {colors} from '../../theme';
 import {getPercentileAccentColor} from '../../utils/percentile';
 import {CrownIcon} from '../CrownIcon';
@@ -161,11 +162,11 @@ const PercentileRankBadge: React.FC<PercentileRankBadgeProps> = ({
     }
 
     return (
-        <Tooltip title={buildBadgeTooltip(category, rank, label, tooltipFightName)} arrow placement="top">
+        <AppTooltip title={buildBadgeTooltip(category, rank, label, tooltipFightName)} arrow placement="top" disableTouch>
             <Box component="span" sx={{display: 'inline-flex'}}>
                 {badge}
             </Box>
-        </Tooltip>
+        </AppTooltip>
     );
 };
 

@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {Box, Chip, CircularProgress, Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip} from '@mui/material';
+import {Box, Chip, CircularProgress, Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
+import AppTooltip from './AppTooltip';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import {Fight} from "../models/Fight";
 import {LogLine, LogTypes} from "../models/LogLine";
@@ -377,7 +378,7 @@ const EventsTable: React.FC<EventsTableProps> = ({
                             label={`Equipment: ${equipmentFilter.name || itemIdMap[equipmentFilter.id] || equipmentFilter.id}`}
                             onDelete={onClearEquipmentFilter}
                             icon={
-                                <Tooltip
+                                <AppTooltip
                                     title="Equipment filter is based on when an event was recorded. However, some actions, such as projectile damage, may have been initiated while different equipment was equipped."
                                     arrow
                                 >
@@ -387,7 +388,7 @@ const EventsTable: React.FC<EventsTableProps> = ({
                                             fontSize: '1.05rem',
                                         }}
                                     />
-                                </Tooltip>
+                                </AppTooltip>
                             }
                             size="small"
                             sx={{
@@ -419,7 +420,7 @@ const EventsTable: React.FC<EventsTableProps> = ({
                             label={`Prayer: ${prayerFilter.name || prayerIdMap[prayerFilter.id] || prayerFilter.id}`}
                             onDelete={onClearPrayerFilter}
                             icon={
-                                <Tooltip
+                                <AppTooltip
                                     title="Prayer filter is based on when an event was recorded. Active prayers and overhead prayers are tracked separately in the log."
                                     arrow
                                 >
@@ -429,7 +430,7 @@ const EventsTable: React.FC<EventsTableProps> = ({
                                             fontSize: '1.05rem',
                                         }}
                                     />
-                                </Tooltip>
+                                </AppTooltip>
                             }
                             size="small"
                             sx={{
