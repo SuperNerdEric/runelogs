@@ -10,8 +10,10 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    Tooltip,
     Typography,
 } from '@mui/material';
+import {format} from 'date-fns';
 import {Link as RouterLink, useNavigate, useSearchParams} from 'react-router-dom';
 import {encounterTableRowProps, getEncounterHref, stopRowClick} from '../utils/encounterTableRow';
 import {
@@ -303,7 +305,14 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
                                             ))}
                                         </TableCell>
                                         <TableCell sx={{color: 'white'}}>
-                                            {getRelativeTime(new Date(row.startTime))}
+                                            <Tooltip
+                                                title={format(new Date(row.startTime), 'MMM d, yyyy, h:mm a')}
+                                                arrow
+                                                placement="top"
+                                                enterDelay={200}
+                                            >
+                                                <span>{getRelativeTime(new Date(row.startTime))}</span>
+                                            </Tooltip>
                                         </TableCell>
                                     </TableRow>
                                 );
