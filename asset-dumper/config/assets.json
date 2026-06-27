@@ -12,7 +12,14 @@
     { "id": 33034, "comment": "Sotetseg maze inactive tile" },
     { "id": 33035, "comment": "Sotetseg maze active tile" },
     { "id": 50743, "comment": "Colosseum reentry pool" },
-    { "id": 50744, "comment": "Colosseum reentry pool secondary" }
+    { "id": 50744, "comment": "Colosseum reentry pool secondary" },
+    { "id": 56335, "comment": "Yama glyph (full 1)", "overrides": { "width": 384, "height": 384, "zoom": 1500, "postRotateDegrees": 18, "cropToContent": true } },
+    { "id": 56336, "comment": "Yama glyph (full 2)", "overrides": { "width": 384, "height": 384, "zoom": 1500, "postRotateDegrees": 18, "cropToContent": true } },
+    { "id": 56337, "comment": "Yama glyph (inactive)", "overrides": { "width": 384, "height": 384, "zoom": 1500, "postRotateDegrees": 18, "cropToContent": true } },
+    { "id": 56338, "comment": "Yama glyph (full 1 deactivate)", "overrides": { "width": 384, "height": 384, "zoom": 1500, "postRotateDegrees": 18, "cropToContent": true } },
+    { "id": 56339, "comment": "Yama glyph (full 2 deactivate)", "overrides": { "width": 384, "height": 384, "zoom": 1500, "postRotateDegrees": 18, "cropToContent": true } },
+    { "id": 56369, "comment": "Yama COF firewall" },
+    { "id": 56370, "comment": "Yama COF firewall (active)" }
   ],
   "graphicObjects": [
     { "id": 505, "animated": true, "comment": "Sotetseg maze rag" },
@@ -46,7 +53,12 @@
     { "id": 3425, "animated": true, "comment": "Doom grub explosion 8" },
     { "id": 3426, "animated": true, "comment": "Doom grub player impact" },
     { "id": 3427, "animated": true, "comment": "Doom grub absorption splat" },
-    { "id": 3428, "animated": true, "comment": "Doom grub absorption splat (diagonal)" }
+    { "id": 3428, "animated": true, "comment": "Doom grub absorption splat (diagonal)" },
+    { "id": 3263, "animated": true, "comment": "Yama shadow wall (small)" },
+    { "id": 3267, "animated": true, "comment": "Yama fire wall 1" },
+    { "id": 3268, "animated": true, "comment": "Yama fire wall 2" },
+    { "id": 3269, "animated": true, "comment": "Yama fire wall 3" },
+    { "id": 3280, "animated": true, "comment": "Yama fire immunity" }
   ],
   "render": {
     "gameObject": {

@@ -25,6 +25,8 @@ import o1595 from '../assets/graphicObjects/1595.png';
 
 
 
+
+
 import o505_0 from '../assets/graphicObjects/505_0.png';
 import o505_1 from '../assets/graphicObjects/505_1.png';
 import o505_2 from '../assets/graphicObjects/505_2.png';
@@ -648,6 +650,67 @@ import o3428_15 from '../assets/graphicObjects/3428_15.png';
 import o3428_16 from '../assets/graphicObjects/3428_16.png';
 import o3428_17 from '../assets/graphicObjects/3428_17.png';
 import o3428_18 from '../assets/graphicObjects/3428_18.png';
+import o3263_0 from '../assets/graphicObjects/3263_0.png';
+import o3263_1 from '../assets/graphicObjects/3263_1.png';
+import o3263_2 from '../assets/graphicObjects/3263_2.png';
+import o3263_3 from '../assets/graphicObjects/3263_3.png';
+import o3263_4 from '../assets/graphicObjects/3263_4.png';
+import o3263_5 from '../assets/graphicObjects/3263_5.png';
+import o3263_6 from '../assets/graphicObjects/3263_6.png';
+import o3263_7 from '../assets/graphicObjects/3263_7.png';
+import o3263_8 from '../assets/graphicObjects/3263_8.png';
+import o3263_9 from '../assets/graphicObjects/3263_9.png';
+import o3263_10 from '../assets/graphicObjects/3263_10.png';
+import o3263_11 from '../assets/graphicObjects/3263_11.png';
+import o3267_0 from '../assets/graphicObjects/3267_0.png';
+import o3267_1 from '../assets/graphicObjects/3267_1.png';
+import o3267_2 from '../assets/graphicObjects/3267_2.png';
+import o3267_3 from '../assets/graphicObjects/3267_3.png';
+import o3267_4 from '../assets/graphicObjects/3267_4.png';
+import o3267_5 from '../assets/graphicObjects/3267_5.png';
+import o3267_6 from '../assets/graphicObjects/3267_6.png';
+import o3267_7 from '../assets/graphicObjects/3267_7.png';
+import o3267_8 from '../assets/graphicObjects/3267_8.png';
+import o3267_9 from '../assets/graphicObjects/3267_9.png';
+import o3267_10 from '../assets/graphicObjects/3267_10.png';
+import o3267_11 from '../assets/graphicObjects/3267_11.png';
+import o3267_12 from '../assets/graphicObjects/3267_12.png';
+import o3268_0 from '../assets/graphicObjects/3268_0.png';
+import o3268_1 from '../assets/graphicObjects/3268_1.png';
+import o3268_2 from '../assets/graphicObjects/3268_2.png';
+import o3268_3 from '../assets/graphicObjects/3268_3.png';
+import o3268_4 from '../assets/graphicObjects/3268_4.png';
+import o3268_5 from '../assets/graphicObjects/3268_5.png';
+import o3268_6 from '../assets/graphicObjects/3268_6.png';
+import o3268_7 from '../assets/graphicObjects/3268_7.png';
+import o3268_8 from '../assets/graphicObjects/3268_8.png';
+import o3268_9 from '../assets/graphicObjects/3268_9.png';
+import o3268_10 from '../assets/graphicObjects/3268_10.png';
+import o3268_11 from '../assets/graphicObjects/3268_11.png';
+import o3268_12 from '../assets/graphicObjects/3268_12.png';
+import o3269_0 from '../assets/graphicObjects/3269_0.png';
+import o3269_1 from '../assets/graphicObjects/3269_1.png';
+import o3269_2 from '../assets/graphicObjects/3269_2.png';
+import o3269_3 from '../assets/graphicObjects/3269_3.png';
+import o3269_4 from '../assets/graphicObjects/3269_4.png';
+import o3269_5 from '../assets/graphicObjects/3269_5.png';
+import o3269_6 from '../assets/graphicObjects/3269_6.png';
+import o3269_7 from '../assets/graphicObjects/3269_7.png';
+import o3269_8 from '../assets/graphicObjects/3269_8.png';
+import o3269_9 from '../assets/graphicObjects/3269_9.png';
+import o3269_10 from '../assets/graphicObjects/3269_10.png';
+import o3269_11 from '../assets/graphicObjects/3269_11.png';
+import o3269_12 from '../assets/graphicObjects/3269_12.png';
+import o3280_0 from '../assets/graphicObjects/3280_0.png';
+import o3280_1 from '../assets/graphicObjects/3280_1.png';
+import o3280_2 from '../assets/graphicObjects/3280_2.png';
+import o3280_3 from '../assets/graphicObjects/3280_3.png';
+import o3280_4 from '../assets/graphicObjects/3280_4.png';
+import o3280_5 from '../assets/graphicObjects/3280_5.png';
+import o3280_6 from '../assets/graphicObjects/3280_6.png';
+import o3280_7 from '../assets/graphicObjects/3280_7.png';
+import o3280_8 from '../assets/graphicObjects/3280_8.png';
+import o3280_9 from '../assets/graphicObjects/3280_9.png';
 
 export interface GraphicObject {
     name: string;
@@ -657,19 +720,30 @@ export interface GraphicObject {
     imageUrl?: string;
 }
 
-/** OSRS client cycles per game tick (~600ms / 20ms). */
-export const CLIENT_CYCLES_PER_TICK = 30;
+import {
+    CLIENT_CYCLES_PER_TICK,
+} from './replayTiming';
 
-export function getGraphicObjectFrameIndex(ticksElapsed: number, definition: GraphicObject): number {
+/** Total client cycles for one playthrough, or null when unknown. */
+export function getGraphicObjectTotalCycles(definition: GraphicObject): number | null {
+    if (!definition.frameLengths || definition.frameLengths.length === 0) {
+        return null;
+    }
+
+    return definition.frameLengths.reduce((sum, length) => sum + length, 0);
+}
+
+export function getGraphicObjectFrameIndex(cyclesElapsed: number, definition: GraphicObject): number {
     if (!definition.frames || definition.frames.length === 0) {
         return 0;
     }
 
     if (!definition.frameLengths || definition.frameLengths.length === 0) {
-        return Math.min(Math.max(ticksElapsed, 0), definition.frames.length - 1);
+        const ticksElapsed = Math.max(cyclesElapsed, 0) / CLIENT_CYCLES_PER_TICK;
+        return Math.min(Math.floor(ticksElapsed), definition.frames.length - 1);
     }
 
-    let cycles = Math.max(ticksElapsed, 0) * CLIENT_CYCLES_PER_TICK;
+    let cycles = Math.max(cyclesElapsed, 0);
     for (let i = 0; i < definition.frameLengths.length && i < definition.frames.length; i++) {
         cycles -= definition.frameLengths[i];
         if (cycles < 0) {
@@ -886,6 +960,31 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
         name: "Doom grub absorption splat (diagonal)",
         frameLengths: [3, 3, 3, 3, 3, 15, 30, 30, 30, 30, 30, 30, 30, 30, 14, 4, 4, 4, 4],
         frames: [o3428_0, o3428_1, o3428_2, o3428_3, o3428_4, o3428_5, o3428_6, o3428_7, o3428_8, o3428_9, o3428_10, o3428_11, o3428_12, o3428_13, o3428_14, o3428_15, o3428_16, o3428_17, o3428_18],
+    },
+    3263: {
+        name: "Yama shadow wall (small)",
+        frameLengths: [2, 2, 2, 3, 3, 3, 3, 3, 3, 2, 2, 2],
+        frames: [o3263_0, o3263_1, o3263_2, o3263_3, o3263_4, o3263_5, o3263_6, o3263_7, o3263_8, o3263_9, o3263_10, o3263_11],
+    },
+    3267: {
+        name: "Yama fire wall 1",
+        frameLengths: [2, 2, 2, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2],
+        frames: [o3267_0, o3267_1, o3267_2, o3267_3, o3267_4, o3267_5, o3267_6, o3267_7, o3267_8, o3267_9, o3267_10, o3267_11, o3267_12],
+    },
+    3268: {
+        name: "Yama fire wall 2",
+        frameLengths: [2, 2, 2, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2],
+        frames: [o3268_0, o3268_1, o3268_2, o3268_3, o3268_4, o3268_5, o3268_6, o3268_7, o3268_8, o3268_9, o3268_10, o3268_11, o3268_12],
+    },
+    3269: {
+        name: "Yama fire wall 3",
+        frameLengths: [2, 2, 2, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2],
+        frames: [o3269_0, o3269_1, o3269_2, o3269_3, o3269_4, o3269_5, o3269_6, o3269_7, o3269_8, o3269_9, o3269_10, o3269_11, o3269_12],
+    },
+    3280: {
+        name: "Yama fire immunity",
+        frameLengths: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+        frames: [o3280_0, o3280_1, o3280_2, o3280_3, o3280_4, o3280_5, o3280_6, o3280_7, o3280_8, o3280_9],
     },
 };
 

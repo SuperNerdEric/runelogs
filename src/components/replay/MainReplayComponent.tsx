@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import MapComponent from './MapComponent';
 import PlaybackControls from './PlaybackControls';
 import PlayerSelector from './PlayerSelector';
@@ -12,6 +12,7 @@ import TickChart from './TickChart';
 import {useMediaQuery} from "@mui/material";
 import theme from "../../theme";
 import {colors} from "../../theme";
+import {CLIENT_CYCLE_DURATION_SECONDS, computeFightEpochCycle, TICK_DURATION_SECONDS} from '../../lib/replayTiming';
 import EquipmentIcon from "../../assets/replay-icons/equipment.png";
 import PrayerIcon from "../../assets/replay-icons/prayer.png";
 import StatsIcon from "../../assets/replay-icons/stats.png";
@@ -21,6 +22,8 @@ interface MainReplayComponentProps {
 }
 
 const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
+    const replayContainerRef = useRef<HTMLDivElement>(null);
+    const [isFullscreen, setIsFullscreen] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [initialPlayerPosition, setInitialPlayerPosition] = useState<GamePosition | undefined>(undefined);
     const [gameStates, setGameStates] = useState<GameState[]>([]);
@@ -33,7 +36,11 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
     // Calculate max time based on fight length
     const maxTick = Math.max(...fight.data.map((log) => log.tick || 0));
     const initialTick = fight.data[0].tick || 0;
-    const maxTime = (maxTick - initialTick) * 0.6;
+    const maxTime = (maxTick - initialTick) * TICK_DURATION_SECONDS;
+    const fightEpochCycle = useMemo(
+        () => computeFightEpochCycle(fight.data, initialTick),
+        [fight.data, initialTick],
+    );
 
     // Preprocess fight data into game states for easier playback
     useEffect(() => {
@@ -60,10 +67,10 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
         if (isPlaying) {
             interval = setInterval(() => {
                 setCurrentTime((prevTime) => {
-                    const newTime = prevTime + 0.6;
+                    const newTime = prevTime + CLIENT_CYCLE_DURATION_SECONDS;
                     return newTime >= maxTime ? maxTime : newTime;
                 });
-            }, 600);
+            }, CLIENT_CYCLE_DURATION_SECONDS * 1000);
         }
         return () => {
             if (interval) clearInterval(interval);
@@ -96,6 +103,34 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
         };
     }, []);
 
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        };
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        return () => {
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+        };
+    }, []);
+
+    const toggleFullscreen = async () => {
+        const container = replayContainerRef.current;
+        if (!container) {
+            return;
+        }
+
+        try {
+            if (document.fullscreenElement) {
+                await document.exitFullscreen();
+            } else {
+                await container.requestFullscreen();
+            }
+        } catch (error) {
+            console.error('Failed to toggle replay fullscreen', error);
+        }
+    };
+
     const getTabButtonStyle = (tab: 'levels' | 'equipment' | 'prayers'): React.CSSProperties => ({
         backgroundColor: activeTab === tab ? colors.replay.tabActive : colors.replay.tabInactive,
         border: '1px solid black',
@@ -109,7 +144,7 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
 
     // @ts-ignore
     return (
-        <div style={{position: 'relative', maxWidth: '1500px', width: '98vw', border: '3px solid grey'}}>
+        <div ref={replayContainerRef} className="replay-root" style={{position: 'relative', maxWidth: '1500px', width: '98vw', border: '3px solid grey'}}>
             <TickChart
                 fight={fight}
                 currentTime={currentTime}
@@ -123,7 +158,31 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
             />
             {currentGameState && initialPlayerPosition && (
                 <>
-                    <MapComponent
+                    <div className="replay-map-section">
+                        <button
+                            type="button"
+                            className="replay-fullscreen-button"
+                            onClick={toggleFullscreen}
+                            aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+                            title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+                        >
+                            {isFullscreen ? (
+                                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path
+                                        fill="currentColor"
+                                        d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"
+                                    />
+                                </svg>
+                            ) : (
+                                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path
+                                        fill="currentColor"
+                                        d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"
+                                    />
+                                </svg>
+                            )}
+                        </button>
+                        <MapComponent
                         playerPositions={Object.fromEntries(
                             Object.entries(currentGameState.players)
                                 .filter(([name, state]) => state.position !== undefined)
@@ -140,8 +199,11 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
                         groundObjectPositions={currentGameState.groundObjects}
                         plane={initialPlayerPosition?.plane ?? 0}
                         selectedPlayerName={selectedPlayerName}
-                        currentTick={currentGameState.tick}
+                        currentTime={currentTime}
+                        initialTick={initialTick}
+                        fightEpochCycle={fightEpochCycle}
                     />
+                    </div>
                     {fight.logVersion && semver.gte(fight.logVersion, "1.3.0") &&
                         <div
                             style={{

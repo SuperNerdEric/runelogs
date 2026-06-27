@@ -35,6 +35,12 @@ public class AssetDumperConfig
 		public int xan = 512;
 		public int yan = 512;
 		public int zan = 0;
+		/** Clockwise rotation applied to the rendered PNG before saving. */
+		public Integer postRotateDegrees;
+		/** Trim transparent margins after other post-processing. */
+		public Boolean cropToContent;
+		/** Pixels of padding kept around cropped content (default 2). */
+		public Integer cropPadding;
 	}
 
 	public static class RenderConfig

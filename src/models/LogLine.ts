@@ -139,12 +139,16 @@ export interface GraphicsObjectSpawned extends BaseLog {
     type: LogTypes.GRAPHICS_OBJECT_SPAWNED;
     id: number;
     position: GamePosition;
+    /** Absolute client game cycle when animation became visible (1.6.2+). */
+    startCycle?: number;
 }
 
 export interface GraphicsObjectDespawned extends BaseLog {
     type: LogTypes.GRAPHICS_OBJECT_DESPAWNED;
     id: number;
     position: GamePosition;
+    /** Absolute client game cycle when animation finished (1.6.2+). */
+    endCycle?: number;
 }
 
 export interface GameObjectSpawned extends BaseLog {

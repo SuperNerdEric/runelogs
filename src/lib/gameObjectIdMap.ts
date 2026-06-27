@@ -12,9 +12,36 @@ import o57284 from '../assets/gameObjects/57284.png';
 import o57286 from '../assets/gameObjects/57286.png';
 import o57287 from '../assets/gameObjects/57287.png';
 import o50743 from '../assets/gameObjects/50743.png';
+import o56335 from '../assets/gameObjects/56335.png';
+import o56336 from '../assets/gameObjects/56336.png';
+import o56337 from '../assets/gameObjects/56337.png';
+import o56338 from '../assets/gameObjects/56338.png';
+import o56339 from '../assets/gameObjects/56339.png';
+import o56369 from '../assets/gameObjects/56369.png';
+import o56370 from '../assets/gameObjects/56370.png';
 export interface GameObject {
     name: string;
     imageUrl: string;
+}
+
+/** FLOORKIT_SUMMONING03 — logged position is the center tile of a 3x3 object. */
+export const YAMA_GLYPH_IDS: ReadonlySet<number> = new Set([
+    56335, 56336, 56337, 56338, 56339,
+]);
+
+const YAMA_GLYPH_TILE_SIZE = 3;
+
+export function getGameObjectTileSize(objectId: number): number {
+    return YAMA_GLYPH_IDS.has(objectId) ? YAMA_GLYPH_TILE_SIZE : 1;
+}
+
+/** Offset from logged position to south-west anchor tile (NPCs use 0). */
+export function getGameObjectAnchorOffset(objectId: number): number {
+    return isCenterAnchoredGameObject(objectId) ? Math.floor(getGameObjectTileSize(objectId) / 2) : 0;
+}
+
+export function isCenterAnchoredGameObject(objectId: number): boolean {
+    return YAMA_GLYPH_IDS.has(objectId);
 }
 
 export const gameObjectIdMap: Record<number, GameObject> = {
@@ -32,4 +59,11 @@ export const gameObjectIdMap: Record<number, GameObject> = {
     57286: { name: "Doom rock", imageUrl: o57286 },
     57287: { name: "Doom rock (blocks range)", imageUrl: o57287 },
     50743: { name: "Colosseum reentry pool", imageUrl: o50743 },
+    56335: { name: "Yama glyph (full 1)", imageUrl: o56335 },
+    56336: { name: "Yama glyph (full 2)", imageUrl: o56336 },
+    56337: { name: "Yama glyph (inactive)", imageUrl: o56337 },
+    56338: { name: "Yama glyph (full 1 deactivate)", imageUrl: o56338 },
+    56339: { name: "Yama glyph (full 2 deactivate)", imageUrl: o56339 },
+    56369: { name: "Yama COF firewall", imageUrl: o56369 },
+    56370: { name: "Yama COF firewall (active)", imageUrl: o56370 },
 };

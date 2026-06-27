@@ -1,8 +1,8 @@
 {
   "cacheDir": "C:\\Users\\Eric\\.qodat\\downloads\\2026-06-17-rev238\\cache",
   "cacheFormat": "DISK",
-  "gameObjectsDir": "c:\\Users\\Eric\\Runelogs\\runelogs\\asset-dumper\\..\\src\\assets\\gameObjects",
-  "graphicObjectsDir": "c:\\Users\\Eric\\Runelogs\\runelogs\\asset-dumper\\..\\src\\assets\\graphicObjects",
+  "gameObjectsDir": "C:\\Users\\Eric\\Runelogs\\runelogs\\asset-dumper\\..\\src\\assets\\gameObjects",
+  "graphicObjectsDir": "C:\\Users\\Eric\\Runelogs\\runelogs\\asset-dumper\\..\\src\\assets\\graphicObjects",
   "graphicObjects": {
     "505": {
       "animationId": 693,
@@ -817,6 +817,147 @@
         4,
         4,
         4
+      ]
+    },
+    "3263": {
+      "animationId": 12122,
+      "frameCount": 12,
+      "frameLengths": [
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        2,
+        2,
+        2
+      ]
+    },
+    "3264": {
+      "animationId": 12122,
+      "frameCount": 12,
+      "frameLengths": [
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        2,
+        2,
+        2
+      ]
+    },
+    "3265": {
+      "animationId": 12123,
+      "frameCount": 10,
+      "frameLengths": [
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ]
+    },
+    "3266": {
+      "animationId": 12124,
+      "frameCount": 10,
+      "frameLengths": [
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ]
+    },
+    "3267": {
+      "animationId": 12125,
+      "frameCount": 13,
+      "frameLengths": [
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "3268": {
+      "animationId": 12126,
+      "frameCount": 13,
+      "frameLengths": [
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "3269": {
+      "animationId": 12127,
+      "frameCount": 13,
+      "frameLengths": [
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "3280": {
+      "animationId": 12176,
+      "frameCount": 10,
+      "frameLengths": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
       ]
     }
   }

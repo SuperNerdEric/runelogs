@@ -14,6 +14,7 @@ import {
     PrayerLog
 } from '../../models/LogLine';
 import {Levels} from "../../models/Levels";
+import {TICK_DURATION_SECONDS} from '../../lib/replayTiming';
 
 export interface GamePosition {
     x: number;
@@ -38,6 +39,12 @@ export interface GraphicsObjectState {
     id: number;
     position: GamePosition;
     spawnTick: number;
+    /** Absolute client game cycle when animation became visible (1.6.2+). */
+    startCycle?: number;
+    /** Absolute client game cycle when animation finished (1.6.2+). */
+    endCycle?: number;
+    /** Game tick of the despawn log; object stays in state through this tick. */
+    despawnTick?: number;
 }
 
 export interface GameObjectState {
@@ -103,6 +110,13 @@ export function createGameStates(fight: Fight): GameState[] {
                 };
                 gameStates.push(stateToPush);
             }
+
+            for (const [key, objectState] of Object.entries(currentState.graphicsObjects)) {
+                if (objectState.despawnTick != null && objectState.despawnTick < tick) {
+                    delete currentState.graphicsObjects[key];
+                }
+            }
+
             currentTick = tick;
         }
 
@@ -213,11 +227,14 @@ export function createGameStates(fight: Fight): GameState[] {
             case LogTypes.GRAPHICS_OBJECT_SPAWNED: {
                 const graphicsObjectSpawnedLog = log as GraphicsObjectSpawned;
                 const objectKey = `${graphicsObjectSpawnedLog.id}-${graphicsObjectSpawnedLog.position.x}-${graphicsObjectSpawnedLog.position.y}-${graphicsObjectSpawnedLog.position.plane}`;
-                const objectState = {
+                const objectState: GraphicsObjectState = {
                     id: graphicsObjectSpawnedLog.id,
                     position: graphicsObjectSpawnedLog.position,
                     spawnTick: tick,
                 };
+                if (graphicsObjectSpawnedLog.startCycle != null) {
+                    objectState.startCycle = graphicsObjectSpawnedLog.startCycle;
+                }
                 currentState.graphicsObjects[objectKey] = objectState;
                 break;
             }
@@ -225,7 +242,15 @@ export function createGameStates(fight: Fight): GameState[] {
             case LogTypes.GRAPHICS_OBJECT_DESPAWNED: {
                 const graphicsObjectDespawnedLog = log as GraphicsObjectDespawned;
                 const objectKey = `${graphicsObjectDespawnedLog.id}-${graphicsObjectDespawnedLog.position.x}-${graphicsObjectDespawnedLog.position.y}-${graphicsObjectDespawnedLog.position.plane}`;
-                delete currentState.graphicsObjects[objectKey];
+                const objectState = currentState.graphicsObjects[objectKey];
+                if (objectState) {
+                    if (graphicsObjectDespawnedLog.endCycle != null) {
+                        objectState.endCycle = graphicsObjectDespawnedLog.endCycle;
+                    }
+                    objectState.despawnTick = tick;
+                } else {
+                    delete currentState.graphicsObjects[objectKey];
+                }
                 break;
             }
 
@@ -296,7 +321,7 @@ export function createGameStates(fight: Fight): GameState[] {
 }
 
 export function getCurrentGameState(gameStates: GameState[], currentTime: number, initialTick: number): GameState | undefined {
-    const targetTick = Math.floor(currentTime / 0.6) + initialTick;
+    const targetTick = Math.floor(currentTime / TICK_DURATION_SECONDS) + initialTick;
 
     // Find the last gameState with tick <= targetTick
     let index = gameStates.findIndex((gs) => gs.tick > targetTick);
