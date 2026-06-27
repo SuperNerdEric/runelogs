@@ -30,6 +30,8 @@ import {
     resolveLeaderboardStateFromSearchParams,
 } from '../utils/leaderboardContent';
 import {getDpsPercentileColor} from "../utils/TickActivity";
+import {COLUMN_TOOLTIPS} from '../utils/columnTooltips';
+import TableColumnHeaderTooltip from './TableColumnHeaderTooltip';
 import {getPercentileAccentColor} from "../utils/percentile";
 import {ticksToTime} from "../utils/utils";
 import {CrownIcon} from "./CrownIcon";
@@ -344,7 +346,12 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
                         <TableRow>
                             <TableCell sx={{color: 'white'}}>Rank</TableCell>
                             <TableCell sx={{color: 'white'}}>Player</TableCell>
-                            <TableCell sx={{color: 'white'}}>DPS</TableCell>
+                            <TableCell sx={{color: 'white'}}>
+                                <TableColumnHeaderTooltip
+                                    label="DPS"
+                                    tooltip={COLUMN_TOOLTIPS.dps}
+                                />
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
