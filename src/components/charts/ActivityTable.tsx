@@ -1,6 +1,8 @@
 import {Fight} from "../../models/Fight";
 import React from "react";
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, useMediaQuery,} from "@mui/material";
+import TableColumnHeaderTooltip from "../TableColumnHeaderTooltip";
+import {COLUMN_TOOLTIPS} from "../../utils/columnTooltips";
 import {FightPerformance, getFightPerformanceByPlayer, getPercentColor} from "../../utils/TickActivity";
 import {calculateWeightedAveragesByPlayer} from "./Boosts";
 import {Levels} from "../../models/Levels";
@@ -46,7 +48,12 @@ const ActivityTable: React.FC<ActivityTableProps> = ({fight}) => {
                 <TableHead>
                     <TableRow>
                         <TableCell style={{width: '100px', textAlign: 'center'}}>Name</TableCell>
-                        <TableCell style={{width: '100px', textAlign: 'center'}}>Activity</TableCell>
+                        <TableCell style={{width: '100px', textAlign: 'center'}}>
+                            <TableColumnHeaderTooltip
+                                label="Activity"
+                                tooltip={COLUMN_TOOLTIPS.activity}
+                            />
+                        </TableCell>
                         <TableCell style={{width: '100px', textAlign: 'center'}}>Boosted Hits</TableCell>
                         <TableCell colSpan={Object.keys(statImages).length} style={{textAlign: 'center'}}>
                             Averages

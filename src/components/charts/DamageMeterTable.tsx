@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
+import TableColumnHeaderTooltip from '../TableColumnHeaderTooltip';
+import {COLUMN_TOOLTIPS} from '../../utils/columnTooltips';
 import {colors} from '../../theme';
 import {isUnknownPlayer} from '../../utils/actorUtils';
 
@@ -64,7 +66,12 @@ const DamageMeterTable: React.FC<DamageMeterTableProps> = ({rows}) => {
                     <TableRow>
                         <TableCell style={{width: '100px', textAlign: 'center'}}>Name</TableCell>
                         <TableCell style={{textAlign: 'center', paddingBottom: '2px'}}>Amount</TableCell>
-                        <TableCell style={{width: '70px', textAlign: 'center'}}>DPS</TableCell>
+                        <TableCell style={{width: '70px', textAlign: 'center'}}>
+                            <TableColumnHeaderTooltip
+                                label="DPS"
+                                tooltip={COLUMN_TOOLTIPS.dps}
+                            />
+                        </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>

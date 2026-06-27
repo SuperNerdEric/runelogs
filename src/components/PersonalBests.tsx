@@ -23,6 +23,8 @@ import {
 import {media} from "../theme";
 import {colors} from "../theme";
 import {getDpsPercentileColor} from "../utils/TickActivity";
+import {COLUMN_TOOLTIPS} from '../utils/columnTooltips';
+import TableColumnHeaderTooltip from './TableColumnHeaderTooltip';
 import {getPercentileAccentColor, rankToPercentile} from "../utils/percentile";
 import {ticksToTime} from "../utils/utils";
 import {CrownIcon} from "./CrownIcon";
@@ -433,7 +435,12 @@ const PersonalBests: React.FC = () => {
                                     <TableRow>
                                         <TableCell sx={partySizeColumnSx}>#</TableCell>
                                         <TableCell sx={{color: 'white'}}>Rank</TableCell>
-                                        <TableCell sx={{color: 'white'}}>DPS</TableCell>
+                                        <TableCell sx={{color: 'white'}}>
+                                            <TableColumnHeaderTooltip
+                                                label="DPS"
+                                                tooltip={COLUMN_TOOLTIPS.dps}
+                                            />
+                                        </TableCell>
                                         <TableCell sx={{color: 'white', whiteSpace: 'nowrap', [media.mobileDown]: {display: 'none'}}}>Date</TableCell>
                                     </TableRow>
                                 </TableHead>

@@ -2,6 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {Fight} from "../models/Fight";
 import {calculateDPS} from "../CalculateDPS";
 import {Table, TableBody, TableCell, TableContainer, TableRow} from '@mui/material';
+import TableColumnHeaderTooltip from './TableColumnHeaderTooltip';
+import {COLUMN_TOOLTIPS} from '../utils/columnTooltips';
 import {calculateAccuracy, formatHHmmss} from "../utils/utils";
 import {LogLine, LogTypes} from "../models/LogLine";
 
@@ -50,7 +52,10 @@ const Results: React.FC<ResultsProps> = ({fight}) => {
                     </TableRow>
                     <TableRow>
                         <TableCell>
-                            <strong>DPS</strong>
+                            <TableColumnHeaderTooltip
+                                label="DPS"
+                                tooltip={COLUMN_TOOLTIPS.dps}
+                            />
                         </TableCell>
                         <TableCell>
                             {isNaN(dps) || !isFinite(dps) ? 'N/A' : dps.toFixed(3)}
@@ -58,7 +63,10 @@ const Results: React.FC<ResultsProps> = ({fight}) => {
                     </TableRow>
                     <TableRow>
                         <TableCell>
-                            <strong>Accuracy</strong>
+                            <TableColumnHeaderTooltip
+                                label="Accuracy"
+                                tooltip={COLUMN_TOOLTIPS.accuracy}
+                            />
                         </TableCell>
                         <TableCell>
                             {accuracy.toFixed(2)}%

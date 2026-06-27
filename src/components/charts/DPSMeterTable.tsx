@@ -1,6 +1,8 @@
 import {Fight} from "../../models/Fight";
 import React, {useEffect, useState} from "react";
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
+import TableColumnHeaderTooltip from "../TableColumnHeaderTooltip";
+import {COLUMN_TOOLTIPS} from "../../utils/columnTooltips";
 import {DamageLog, LogTypes} from "../../models/LogLine";
 import {getFightPerformanceByPlayer, getPercentColor} from "../../utils/TickActivity";
 import {isUnknownPlayer} from "../../utils/actorUtils";
@@ -179,10 +181,25 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
                         <TableCell style={{width: '100px', textAlign: 'center'}}>Name</TableCell>
                         <TableCell style={{textAlign: 'center', paddingBottom: '2px'}}>Amount</TableCell>
                         {type === "damage-done" && (
-                            <TableCell style={{width: '100px', textAlign: 'center'}}>Activity</TableCell>
+                            <TableCell style={{width: '100px', textAlign: 'center'}}>
+                                <TableColumnHeaderTooltip
+                                    label="Activity"
+                                    tooltip={COLUMN_TOOLTIPS.activity}
+                                />
+                            </TableCell>
                         )}
-                        <TableCell style={{width: '100px', textAlign: 'center'}}>Accuracy</TableCell>
-                        <TableCell style={{width: '70px', textAlign: 'center'}}>DPS</TableCell>
+                        <TableCell style={{width: '100px', textAlign: 'center'}}>
+                            <TableColumnHeaderTooltip
+                                label="Accuracy"
+                                tooltip={COLUMN_TOOLTIPS.accuracy}
+                            />
+                        </TableCell>
+                        <TableCell style={{width: '70px', textAlign: 'center'}}>
+                            <TableColumnHeaderTooltip
+                                label="DPS"
+                                tooltip={COLUMN_TOOLTIPS.dps}
+                            />
+                        </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
