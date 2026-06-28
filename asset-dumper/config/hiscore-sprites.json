@@ -1,0 +1,524 @@
+{
+  "output": "../src/assets/hiscoreSprites",
+  "defaults": {
+    "padToSize": 25,
+    "scaleToSize": 20
+  },
+  "icons": [
+    {
+      "archiveId": 168,
+      "name": "combat",
+      "comment": "SideIcons.COMBAT"
+    },
+    {
+      "archiveId": 222,
+      "name": "overall",
+      "comment": "Staticons2.TOTAL"
+    },
+    {
+      "archiveId": 197,
+      "name": "attack",
+      "comment": "Staticons.ATTACK"
+    },
+    {
+      "archiveId": 199,
+      "name": "defence",
+      "comment": "Staticons.DEFENCE"
+    },
+    {
+      "archiveId": 198,
+      "name": "strength",
+      "comment": "Staticons.STRENGTH"
+    },
+    {
+      "archiveId": 203,
+      "name": "hitpoints",
+      "comment": "Staticons.HITPOINTS"
+    },
+    {
+      "archiveId": 200,
+      "name": "ranged",
+      "comment": "Staticons.RANGED"
+    },
+    {
+      "archiveId": 204,
+      "name": "agility",
+      "comment": "Staticons.AGILITY"
+    },
+    {
+      "archiveId": 209,
+      "name": "mining",
+      "comment": "Staticons.MINING"
+    },
+    {
+      "archiveId": 210,
+      "name": "smithing",
+      "comment": "Staticons.SMITHING"
+    },
+    {
+      "archiveId": 205,
+      "name": "herblore",
+      "comment": "Staticons.HERBLORE"
+    },
+    {
+      "archiveId": 211,
+      "name": "fishing",
+      "comment": "Staticons.FISHING"
+    },
+    {
+      "archiveId": 206,
+      "name": "thieving",
+      "comment": "Staticons.THIEVING"
+    },
+    {
+      "archiveId": 201,
+      "name": "prayer",
+      "comment": "Staticons.PRAYER"
+    },
+    {
+      "archiveId": 207,
+      "name": "crafting",
+      "comment": "Staticons.CRAFTING"
+    },
+    {
+      "archiveId": 212,
+      "name": "cooking",
+      "comment": "Staticons.COOKING"
+    },
+    {
+      "archiveId": 213,
+      "name": "firemaking",
+      "comment": "Staticons.FIREMAKING"
+    },
+    {
+      "archiveId": 202,
+      "name": "magic",
+      "comment": "Staticons.MAGIC"
+    },
+    {
+      "archiveId": 208,
+      "name": "fletching",
+      "comment": "Staticons.FLETCHING"
+    },
+    {
+      "archiveId": 214,
+      "name": "woodcutting",
+      "comment": "Staticons.WOODCUTTING"
+    },
+    {
+      "archiveId": 215,
+      "name": "runecraft",
+      "comment": "Staticons2.RUNECRAFT"
+    },
+    {
+      "archiveId": 216,
+      "name": "slayer",
+      "comment": "Staticons2.SLAYER"
+    },
+    {
+      "archiveId": 217,
+      "name": "farming",
+      "comment": "Staticons2.FARMING"
+    },
+    {
+      "archiveId": 220,
+      "name": "hunter",
+      "comment": "Staticons2.HUNTER"
+    },
+    {
+      "archiveId": 221,
+      "name": "construction",
+      "comment": "Staticons2.CONSTRUCTION"
+    },
+    {
+      "archiveId": 228,
+      "name": "sailing",
+      "comment": "Staticons2.SAILING"
+    },
+    {
+      "archiveId": 5857,
+      "name": "league_points",
+      "comment": "IconActivities25x25.LEAGUE_POINTS"
+    },
+    {
+      "archiveId": 5854,
+      "name": "bounty_hunter_hunter",
+      "comment": "IconActivities25x25.BOUNTY_HUNTER_HUNTER"
+    },
+    {
+      "archiveId": 5855,
+      "name": "bounty_hunter_rogue",
+      "comment": "IconActivities25x25.BOUNTY_HUNTER_ROGUE"
+    },
+    {
+      "archiveId": 5853,
+      "name": "clue_scroll_all",
+      "comment": "IconActivities25x25.CLUE_SCROLL_ALL"
+    },
+    {
+      "archiveId": 5856,
+      "name": "last_man_standing",
+      "comment": "IconActivities25x25.LAST_MAN_STANDING"
+    },
+    {
+      "archiveId": 5859,
+      "name": "pvp_arena_rank",
+      "comment": "IconActivities25x25.PVP_ARENA_RANK"
+    },
+    {
+      "archiveId": 5858,
+      "name": "soul_wars_zeal",
+      "comment": "IconActivities25x25.SOUL_WARS_ZEAL"
+    },
+    {
+      "archiveId": 5860,
+      "name": "rifts_closed",
+      "comment": "IconActivities25x25.RIFTS_CLOSED"
+    },
+    {
+      "archiveId": 5862,
+      "name": "colosseum_glory",
+      "comment": "IconActivities25x25.COLOSSEUM_GLORY"
+    },
+    {
+      "archiveId": 6390,
+      "name": "collections_logged",
+      "comment": "IconActivities25x25.COLLECTIONS_LOGGED"
+    },
+    {
+      "archiveId": 4276,
+      "name": "abyssal_sire",
+      "comment": "IconBoss25x25.ABYSSAL_SIRE"
+    },
+    {
+      "archiveId": 4289,
+      "name": "alchemical_hydra",
+      "comment": "IconBoss25x25.ALCHEMICAL_HYDRA"
+    },
+    {
+      "archiveId": 5658,
+      "name": "amoxliatl",
+      "comment": "IconBoss25x25.AMOXLIATL"
+    },
+    {
+      "archiveId": 5657,
+      "name": "araxxor",
+      "comment": "IconBoss25x25.ARAXXOR"
+    },
+    {
+      "archiveId": 5641,
+      "name": "artio",
+      "comment": "IconBoss25x25.ARTIO_CALLISTO"
+    },
+    {
+      "archiveId": 4267,
+      "name": "barrows_chests",
+      "comment": "IconBoss25x25.BARROWS_CHESTS"
+    },
+    {
+      "archiveId": 6352,
+      "name": "brutus",
+      "comment": "IconBoss25x25.BRUTUS"
+    },
+    {
+      "archiveId": 4262,
+      "name": "bryophyta",
+      "comment": "IconBoss25x25.BRYOPHYTA"
+    },
+    {
+      "archiveId": 5641,
+      "name": "callisto",
+      "comment": "IconBoss25x25.ARTIO_CALLISTO"
+    },
+    {
+      "archiveId": 5642,
+      "name": "calvarion",
+      "comment": "IconBoss25x25.CALVARION_VETION"
+    },
+    {
+      "archiveId": 4280,
+      "name": "cerberus",
+      "comment": "IconBoss25x25.CERBERUS"
+    },
+    {
+      "archiveId": 4288,
+      "name": "chambers_of_xeric",
+      "comment": "IconBoss25x25.CHAMBERS_OF_XERIC"
+    },
+    {
+      "archiveId": 4296,
+      "name": "chambers_of_xeric_challenge_mode",
+      "comment": "IconBoss25x25.CHAMBERS_OF_XERIC_CHALLENGE_MODE"
+    },
+    {
+      "archiveId": 5621,
+      "name": "chaos_elemental",
+      "comment": "IconBoss25x25.CHAOS_ELEMENTAL"
+    },
+    {
+      "archiveId": 5644,
+      "name": "chaos_fanatic",
+      "comment": "IconBoss25x25.CHAOS_FANATIC"
+    },
+    {
+      "archiveId": 4284,
+      "name": "commander_zilyana",
+      "comment": "IconBoss25x25.COMMANDER_ZILYANA"
+    },
+    {
+      "archiveId": 4287,
+      "name": "corporeal_beast",
+      "comment": "IconBoss25x25.CORPOREAL_BEAST"
+    },
+    {
+      "archiveId": 5645,
+      "name": "crazy_archaeologist",
+      "comment": "IconBoss25x25.CRAZY_ARCHAEOLOGIST"
+    },
+    {
+      "archiveId": 4294,
+      "name": "dagannoth_prime",
+      "comment": "IconBoss25x25.DAGANNOTH_PRIME"
+    },
+    {
+      "archiveId": 4293,
+      "name": "dagannoth_rex",
+      "comment": "IconBoss25x25.DAGANNOTH_REX"
+    },
+    {
+      "archiveId": 4292,
+      "name": "dagannoth_supreme",
+      "comment": "IconBoss25x25.DAGANNOTH_SUPREME"
+    },
+    {
+      "archiveId": 5646,
+      "name": "deranged_archaeologist",
+      "comment": "IconBoss25x25.DERANGED_ARCHAEOLOGIST"
+    },
+    {
+      "archiveId": 6347,
+      "name": "doom_of_mokhaiotl",
+      "comment": "IconBoss25x25.DOOM_OF_MOKHAIOTL"
+    },
+    {
+      "archiveId": 5651,
+      "name": "duke_sucellus",
+      "comment": "IconBoss25x25.DUKE_SUCELLUS"
+    },
+    {
+      "archiveId": 4282,
+      "name": "general_graardor",
+      "comment": "IconBoss25x25.GENERAL_GRAARDOR"
+    },
+    {
+      "archiveId": 4263,
+      "name": "giant_mole",
+      "comment": "IconBoss25x25.GIANT_MOLE"
+    },
+    {
+      "archiveId": 4264,
+      "name": "grotesque_guardians",
+      "comment": "IconBoss25x25.GROTESQUE_GUARDIANS"
+    },
+    {
+      "archiveId": 4271,
+      "name": "hespori",
+      "comment": "IconBoss25x25.HESPORI"
+    },
+    {
+      "archiveId": 4270,
+      "name": "kalphite_queen",
+      "comment": "IconBoss25x25.KALPHITE_QUEEN"
+    },
+    {
+      "archiveId": 4274,
+      "name": "king_black_dragon",
+      "comment": "IconBoss25x25.KING_BLACK_DRAGON"
+    },
+    {
+      "archiveId": 4275,
+      "name": "kraken",
+      "comment": "IconBoss25x25.KRAKEN"
+    },
+    {
+      "archiveId": 4285,
+      "name": "kreearra",
+      "comment": "IconBoss25x25.KREEARRA"
+    },
+    {
+      "archiveId": 4283,
+      "name": "kril_tsutsaroth",
+      "comment": "IconBoss25x25.KRIL_TSUTSAROTH"
+    },
+    {
+      "archiveId": 5656,
+      "name": "lunar_chests",
+      "comment": "IconBoss25x25.LUNAR_CHESTS"
+    },
+    {
+      "archiveId": 4260,
+      "name": "mimic",
+      "comment": "IconBoss25x25.MIMIC"
+    },
+    {
+      "archiveId": 4291,
+      "name": "nex",
+      "comment": "IconBoss25x25.NEX"
+    },
+    {
+      "archiveId": 4286,
+      "name": "nightmare",
+      "comment": "IconBoss25x25.NIGHTMARE"
+    },
+    {
+      "archiveId": 4261,
+      "name": "obor",
+      "comment": "IconBoss25x25.OBOR"
+    },
+    {
+      "archiveId": 5639,
+      "name": "phantom_muspah",
+      "comment": "IconBoss25x25.PHANTOM_MUSPAH"
+    },
+    {
+      "archiveId": 4269,
+      "name": "sarachnis",
+      "comment": "IconBoss25x25.SARACHNIS"
+    },
+    {
+      "archiveId": 5647,
+      "name": "scorpia",
+      "comment": "IconBoss25x25.SCORPIA"
+    },
+    {
+      "archiveId": 5654,
+      "name": "scurrius",
+      "comment": "IconBoss25x25.SCURRIUS"
+    },
+    {
+      "archiveId": 6349,
+      "name": "shellbane_gryphon",
+      "comment": "IconBoss25x25.SHELLBANE_GRYPHON"
+    },
+    {
+      "archiveId": 4272,
+      "name": "skotizo",
+      "comment": "IconBoss25x25.SKOTIZO"
+    },
+    {
+      "archiveId": 5655,
+      "name": "sol_heredit",
+      "comment": "IconBoss25x25.SOL_HEREDIT"
+    },
+    {
+      "archiveId": 5643,
+      "name": "spindel",
+      "comment": "IconBoss25x25.SPINDEL_VENENATIS"
+    },
+    {
+      "archiveId": 4265,
+      "name": "tempoross",
+      "comment": "IconBoss25x25.TEMPOROSS"
+    },
+    {
+      "archiveId": 4278,
+      "name": "the_gauntlet",
+      "comment": "IconBoss25x25.THE_GAUNTLET"
+    },
+    {
+      "archiveId": 4295,
+      "name": "the_corrupted_gauntlet",
+      "comment": "IconBoss25x25.THE_CORRUPTED_GAUNTLET"
+    },
+    {
+      "archiveId": 5659,
+      "name": "the_hueycoatl",
+      "comment": "IconBoss25x25.THE_HUEYCOATL"
+    },
+    {
+      "archiveId": 5652,
+      "name": "the_leviathan",
+      "comment": "IconBoss25x25.THE_LEVIATHAN"
+    },
+    {
+      "archiveId": 6345,
+      "name": "the_royal_titans",
+      "comment": "IconBoss25x25.ROYAL_TITANS"
+    },
+    {
+      "archiveId": 5650,
+      "name": "the_whisperer",
+      "comment": "IconBoss25x25.THE_WHISPERER"
+    },
+    {
+      "archiveId": 4290,
+      "name": "theatre_of_blood",
+      "comment": "IconBoss25x25.THEATRE_OF_BLOOD"
+    },
+    {
+      "archiveId": 4277,
+      "name": "thermonuclear_smoke_devil",
+      "comment": "IconBoss25x25.THERMONUCLEAR_SMOKE_DEVIL"
+    },
+    {
+      "archiveId": 4297,
+      "name": "tombs_of_amascut",
+      "comment": "IconBoss25x25.TOMBS_OF_AMASCUT"
+    },
+    {
+      "archiveId": 4298,
+      "name": "tombs_of_amascut_expert",
+      "comment": "IconBoss25x25.TOMBS_OF_AMASCUT_EXPERT"
+    },
+    {
+      "archiveId": 5649,
+      "name": "tzkal_zuk",
+      "comment": "IconBoss25x25.TZKAL_ZUK"
+    },
+    {
+      "archiveId": 5648,
+      "name": "tztok_jad",
+      "comment": "IconBoss25x25.TZTOK_JAD"
+    },
+    {
+      "archiveId": 5653,
+      "name": "vardorvis",
+      "comment": "IconBoss25x25.VARDORVIS"
+    },
+    {
+      "archiveId": 5643,
+      "name": "venenatis",
+      "comment": "IconBoss25x25.SPINDEL_VENENATIS"
+    },
+    {
+      "archiveId": 5642,
+      "name": "vetion",
+      "comment": "IconBoss25x25.CALVARION_VETION"
+    },
+    {
+      "archiveId": 4281,
+      "name": "vorkath",
+      "comment": "IconBoss25x25.VORKATH"
+    },
+    {
+      "archiveId": 4266,
+      "name": "wintertodt",
+      "comment": "IconBoss25x25.WINTERTODT"
+    },
+    {
+      "archiveId": 6348,
+      "name": "yama",
+      "comment": "IconBoss25x25.YAMA"
+    },
+    {
+      "archiveId": 4273,
+      "name": "zalcano",
+      "comment": "IconBoss25x25.ZALCANO"
+    },
+    {
+      "archiveId": 4279,
+      "name": "zulrah",
+      "comment": "IconBoss25x25.ZULRAH"
+    }
+  ]
+}
