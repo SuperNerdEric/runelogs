@@ -20,6 +20,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import DownloadIcon from "@mui/icons-material/Download";
 import EditIcon from "@mui/icons-material/Edit";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { useSnackbar } from "notistack";
 import { format } from "date-fns";
 import SectionBox from "./SectionBox";
@@ -157,6 +158,28 @@ const secondaryButtonSx = {
   },
   "&:disabled": {
     color: colors.text.muted,
+    cursor: "not-allowed",
+  },
+} as const;
+
+const WARNING_COLOR = "#d29922";
+
+const warningButtonSx = {
+  ...secondaryButtonSx,
+  minWidth: 140,
+  px: 3,
+  py: 1.25,
+  border: `3px solid ${WARNING_COLOR}`,
+  bgcolor: alpha(WARNING_COLOR, 0.1),
+  color: WARNING_COLOR,
+  "&:hover:not(:disabled)": {
+    bgcolor: alpha(WARNING_COLOR, 0.2),
+    borderColor: WARNING_COLOR,
+  },
+  "&:disabled": {
+    bgcolor: colors.background.progress,
+    color: "rgba(255, 255, 255, 0.5)",
+    borderColor: colors.border.default,
     cursor: "not-allowed",
   },
 } as const;
@@ -704,12 +727,15 @@ const Admin: React.FC = () => {
             reparseStarting ||
             (reparseStatus != null && isReparseJobActive(reparseStatus.status))
           }
-          sx={primaryButtonSx}
+          sx={warningButtonSx}
         >
           {reparseStarting ? (
             <CircularProgress size={24} sx={{ color: "inherit" }} />
           ) : (
-            "Start Reparse All"
+            <>
+              <WarningAmberIcon sx={{ fontSize: 20 }} />
+              Start Reparse All
+            </>
           )}
         </Box>
 
