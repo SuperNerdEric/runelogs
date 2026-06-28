@@ -28,6 +28,8 @@ import {
     LEADERBOARD_CONTENT_OPTIONS,
     RECENT_ENCOUNTERS_CONTENT_OPTIONS,
 } from '../utils/leaderboardContent';
+import {resolveContentSpriteKey} from '../lib/hiscoreSprites';
+import HiscoreSpriteIcon from './HiscoreSpriteIcon';
 import {colors, fontSizes, layout} from '../theme';
 
 const menuItemIconSx = {
@@ -119,6 +121,7 @@ const TopBarNavMenu: React.FC<TopBarNavMenuProps> = ({iconButtonSx, onOpenChange
 
     const leaderboardLinks = LEADERBOARD_CONTENT_OPTIONS.map((option) => ({
         label: option.label,
+        value: option.value,
         to: buildLeaderboardHref({
             mode: 'time',
             leaderboard: option.value,
@@ -128,6 +131,7 @@ const TopBarNavMenu: React.FC<TopBarNavMenuProps> = ({iconButtonSx, onOpenChange
 
     const recentEncountersLinks = RECENT_ENCOUNTERS_CONTENT_OPTIONS.map((option) => ({
         label: option.label,
+        value: option.value,
         to: buildRecentEncountersHref({content: option.value}),
     }));
 
@@ -233,6 +237,12 @@ const TopBarNavMenu: React.FC<TopBarNavMenuProps> = ({iconButtonSx, onOpenChange
                                         onClick={closeMenu}
                                         sx={submenuItemSx}
                                     >
+                                        <ListItemIcon sx={{...menuItemIconSx, minWidth: 32}}>
+                                            <HiscoreSpriteIcon
+                                                spriteKey={resolveContentSpriteKey(item.value)}
+                                                height={18}
+                                            />
+                                        </ListItemIcon>
                                         <ListItemText primary={item.label}/>
                                     </ListItemButton>
                                 ))}
@@ -263,6 +273,12 @@ const TopBarNavMenu: React.FC<TopBarNavMenuProps> = ({iconButtonSx, onOpenChange
                                         onClick={closeMenu}
                                         sx={submenuItemSx}
                                     >
+                                        <ListItemIcon sx={{...menuItemIconSx, minWidth: 32}}>
+                                            <HiscoreSpriteIcon
+                                                spriteKey={resolveContentSpriteKey(item.value)}
+                                                height={18}
+                                            />
+                                        </ListItemIcon>
                                         <ListItemText primary={item.label}/>
                                     </ListItemButton>
                                 ))}

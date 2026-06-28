@@ -4,6 +4,8 @@ import {FightMetaData} from '../../models/Fight';
 import {EncounterMetaData} from '../../models/LogLine';
 import {isFightGroupMetadata} from '../../models/FightGroup';
 import {isLeaderboardFightGroup, inferLeaderboardFightGroupName} from '../../utils/leaderboardContent';
+import {resolveFightGroupSpriteKey} from '../../lib/hiscoreSprites';
+import HiscoreSpriteIcon from '../HiscoreSpriteIcon';
 import {Typography, Box} from '@mui/material';
 import {colors} from '../../theme';
 import {formatHHmmss, ticksToTime} from '../../utils/utils';
@@ -173,6 +175,7 @@ export const FightGroupFightRows: React.FC<FightGroupFightRowsProps> = ({
 
 export interface EncounterTitleBarProps {
     name: string;
+    leaderboardName?: string | null;
     officialDurationTicks?: number;
     success?: boolean;
     href?: string;
@@ -181,6 +184,7 @@ export interface EncounterTitleBarProps {
 
 export const EncounterTitleBar: React.FC<EncounterTitleBarProps> = ({
     name,
+    leaderboardName,
     officialDurationTicks,
     success,
     href,
@@ -188,9 +192,13 @@ export const EncounterTitleBar: React.FC<EncounterTitleBarProps> = ({
 }) => {
     const className = `encounter-title-bar${href || onClick ? ' encounter-title-bar--clickable' : ''}`;
     const durationColor = success ? colors.fight.success : colors.fight.failure;
+    const spriteKey = resolveFightGroupSpriteKey(name, leaderboardName);
     const content = (
         <>
-            <span className="encounter-title-bar-name">{name}</span>
+            <span className="encounter-title-bar-heading">
+                <HiscoreSpriteIcon spriteKey={spriteKey} height="1em" alt="" />
+                <span className="encounter-title-bar-name">{name}</span>
+            </span>
             {officialDurationTicks != null && (
                 <Typography component="span" variant="body2" sx={{color: durationColor}} display="block">
                     Overall - ({ticksToTime(officialDurationTicks)})
@@ -221,6 +229,7 @@ type FightGroupMap = {
         success?: boolean;
         fightGroupId?: string;
         isLeaderboardContent?: boolean;
+        leaderboardName?: string | null;
         fights: {
             fight: FightMetaData;
             index: number;
@@ -267,14 +276,15 @@ const LogFightList: React.FC<LogFightListProps> = ({
 
         fights.forEach((fight, index) => {
             if (isFightGroupMetadata(fight)) {
+                const resolvedLeaderboardName = fight.leaderboardName
+                    ?? inferLeaderboardFightGroupName(fight.name);
                 tempGroupedFights[fight.name] = {
                     isRaid: true,
                     officialDurationTicks: fight.officialDurationTicks,
                     success: fight.success,
                     fightGroupId: fight.id,
-                    isLeaderboardContent: isLeaderboardFightGroup(
-                        fight.leaderboardName ?? inferLeaderboardFightGroupName(fight.name),
-                    ),
+                    leaderboardName: resolvedLeaderboardName,
+                    isLeaderboardContent: isLeaderboardFightGroup(resolvedLeaderboardName),
                     fights: fight.fights.map((f, i) => ({fight: f, index, fightGroupIndex: i})),
                 };
             } else {
@@ -316,6 +326,7 @@ const LogFightList: React.FC<LogFightListProps> = ({
                         <div className="damage-done-container" key={name}>
                             <EncounterTitleBar
                                 name={name}
+                                leaderboardName={fightGroup.leaderboardName}
                                 officialDurationTicks={fightGroup.officialDurationTicks}
                                 success={fightGroup.success}
                                 href={fightGroupHref}

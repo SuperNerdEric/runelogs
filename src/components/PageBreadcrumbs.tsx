@@ -3,6 +3,7 @@ import {Link as RouterLink} from 'react-router-dom';
 import {Box, Breadcrumbs, Link, Typography} from '@mui/material';
 import {Icon} from '@iconify/react';
 import {media} from '../theme/layout';
+import ContentLabel from './ContentLabel';
 
 export type BreadcrumbSelectOption = {
     value: number;
@@ -12,6 +13,7 @@ export type BreadcrumbSelectOption = {
 export type BreadcrumbSegment = {
     label: string;
     href?: string;
+    spriteKey?: string | null;
     select?: {
         options: BreadcrumbSelectOption[];
         value: number;
@@ -65,6 +67,19 @@ const ellipsisSx = {
     whiteSpace: 'nowrap',
     minWidth: 0,
 } as const;
+
+function renderSegmentLabel(segment: BreadcrumbSegment) {
+    if (segment.spriteKey) {
+        return (
+            <ContentLabel
+                label={segment.label}
+                spriteKey={segment.spriteKey}
+                iconHeight="1.25em"
+            />
+        );
+    }
+    return segment.label;
+}
 
 const chevronRightIcon = (
     <Icon
@@ -167,7 +182,7 @@ const PageBreadcrumbs: React.FC<PageBreadcrumbsProps> = ({segments, sx}) => {
                                     color: 'var(--color-text-primary)',
                                 }}
                             >
-                                {segment.label}
+                                {renderSegmentLabel(segment)}
                             </Typography>
                         );
                     }
@@ -185,7 +200,7 @@ const PageBreadcrumbs: React.FC<PageBreadcrumbsProps> = ({segments, sx}) => {
                                 lineHeight: 1.4,
                             }}
                         >
-                            {segment.label}
+                            {renderSegmentLabel(segment)}
                         </Link>
                     );
                 })}
@@ -232,7 +247,7 @@ const PageBreadcrumbs: React.FC<PageBreadcrumbsProps> = ({segments, sx}) => {
                                 }}
                             />
                             <Box component="span" sx={ellipsisSx}>
-                                {parent.label}
+                                {renderSegmentLabel(parent)}
                             </Box>
                         </Link>
                     ) : (
@@ -248,7 +263,7 @@ const PageBreadcrumbs: React.FC<PageBreadcrumbsProps> = ({segments, sx}) => {
                                 color: 'var(--color-text-muted)',
                             }}
                         >
-                            {parent.label}
+                            {renderSegmentLabel(parent)}
                         </Typography>
                     )}
 

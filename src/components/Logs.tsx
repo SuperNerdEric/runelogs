@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
-    Alert,
     Box,
     CircularProgress,
     IconButton,
@@ -39,6 +38,7 @@ import {
 import FilterSelect from './filters/FilterSelect';
 import FilterToolbar from './filters/FilterToolbar';
 import {filterFieldCompactSx} from './filters/filterStyles';
+import {mapContentFilterOptions} from '../utils/contentFilterOptions';
 import {
     BROWSE_ANY_PLAYER_COUNT,
     BrowsePlayerCount,
@@ -118,6 +118,14 @@ const tableCellPaddingSx = {
     paddingY: 1,
     [media.mobileDown]: { px: 1 },
 } as const;
+
+const tableStatusCellSx = {
+    py: 4,
+    color: 'white',
+    borderBottom: 'none',
+} as const;
+
+const logsTableColumnCount = (canEdit: boolean) => (canEdit ? 5 : 4);
 
 const pageContainerSx = {
     ...contentColumnSx,
@@ -538,10 +546,7 @@ const Logs: React.FC = () => {
             <FilterSelect
                 field="content"
                 value={content.value}
-                options={RECENT_ENCOUNTERS_CONTENT_OPTIONS.map((option) => ({
-                    value: option.value,
-                    label: option.label,
-                }))}
+                options={mapContentFilterOptions(RECENT_ENCOUNTERS_CONTENT_OPTIONS)}
                 sx={{minWidth: {xs: 100, sm: 140}}}
                 onChange={(nextContentValue) => {
                     const selectedContent = RECENT_ENCOUNTERS_CONTENT_OPTIONS.find(
@@ -573,44 +578,21 @@ const Logs: React.FC = () => {
         </FilterToolbar>
     );
 
-    if (loading) {
-        return (
-            <Box sx={pageContainerSx}>
-                <LogsPageHeader uploaderId={uploaderId} />
-                <Box display="flex" justifyContent="center" alignItems="center" py={6}>
-                    <CircularProgress color="inherit" />
-                </Box>
-            </Box>
-        );
-    }
-
-    if (error) {
-        return (
-            <Box sx={pageContainerSx}>
-                <LogsPageHeader uploaderId={uploaderId} />
-                <Alert severity="error">{error}</Alert>
-            </Box>
-        );
-    }
-
     const hasActiveFilter = !isAllContent;
     const emptyMessage = hasActiveFilter
         ? 'No logs found matching this filter.'
         : 'No logs found for this uploader.';
 
-    if (!logs || logs.length === 0) {
-        return (
-            <Box sx={pageContainerSx}>
-                <LogsPageHeader uploaderId={uploaderId} />
-                {renderFilters()}
-                <Typography variant="h6" sx={{ color: colors.text.primary }}>
-                    {emptyMessage}
-                </Typography>
-            </Box>
-        );
-    }
+    const sortedLogs = logs?.slice().sort(getComparator(order, orderBy)) ?? [];
+    const tableColumnCount = logsTableColumnCount(canEditLogs);
 
-    const sortedLogs = logs.slice().sort(getComparator(order, orderBy));
+    const renderTableStatusRow = (content: React.ReactNode) => (
+        <TableRow>
+            <TableCell colSpan={tableColumnCount} align="center" sx={tableStatusCellSx}>
+                {content}
+            </TableCell>
+        </TableRow>
+    );
 
     return (
         <Box sx={pageContainerSx}>
@@ -678,7 +660,16 @@ const Logs: React.FC = () => {
                     </TableHead>
 
                     <TableBody>
-                        {sortedLogs.map((log) => {
+                        {loading && renderTableStatusRow(
+                            <CircularProgress color="inherit" size={28} />,
+                        )}
+                        {!loading && error && renderTableStatusRow(
+                            <Typography color="error">{error}</Typography>,
+                        )}
+                        {!loading && !error && sortedLogs.length === 0 && renderTableStatusRow(
+                            <Typography color="white">{emptyMessage}</Typography>,
+                        )}
+                        {!loading && !error && sortedLogs.map((log) => {
                             const parsing = isParsingLog(log);
 
                             return (

@@ -22,6 +22,7 @@ import ColosseumModifiers from './ColosseumModifiers';
 import ToaRaidLevel from './ToaRaidLevel';
 import {hasColosseumModifierData} from '../utils/colosseumModifiers';
 import {MOKHAIOTL_HIGH_SCORE_MODE_LABEL} from '../utils/leaderboardContent';
+import {resolveFightGroupSpriteKey} from '../lib/hiscoreSprites';
 import {FightGroupExtraInfo} from '../utils/fightGroupExtraInfo';
 import {resolvePlayerRankPercentile} from './badges/playerRankPercentile';
 import '../App.css';
@@ -212,7 +213,10 @@ const FightGroupSummary: React.FC = () => {
                         label: data.log.name ?? 'Unnamed',
                         href: `/log/${data.log.id}`,
                     },
-                    {label: data.name},
+                    {
+                        label: data.name,
+                        spriteKey: resolveFightGroupSpriteKey(data.name, data.leaderboardName),
+                    },
                 ]}
             />
 

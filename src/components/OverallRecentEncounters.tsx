@@ -33,6 +33,9 @@ import {ticksToTime} from '../utils/utils';
 import FilterSelect from './filters/FilterSelect';
 import FilterToolbar from './filters/FilterToolbar';
 import {filterFieldCompactSx} from './filters/filterStyles';
+import ContentLabel from './ContentLabel';
+import {mapContentFilterOptions} from '../utils/contentFilterOptions';
+import {resolveEncounterRowSpriteKey} from '../lib/hiscoreSprites';
 
 type Encounter = {
     type: 'fight' | 'fightGroup';
@@ -196,10 +199,7 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
                     <FilterSelect
                         field="content"
                         value={content.value}
-                        options={RECENT_ENCOUNTERS_CONTENT_OPTIONS.map((option) => ({
-                            value: option.value,
-                            label: option.label,
-                        }))}
+                        options={mapContentFilterOptions(RECENT_ENCOUNTERS_CONTENT_OPTIONS)}
                         sx={{minWidth: {xs: 100, sm: 140}}}
                         onChange={(nextContentValue) => {
                             const selectedContent = RECENT_ENCOUNTERS_CONTENT_OPTIONS.find(
@@ -266,15 +266,24 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
                                         {...encounterTableRowProps(navigate, row.id, encounterOptions)}
                                     >
                                         <TableCell sx={{color: 'white'}}>
-                                            <Link
-                                                component={RouterLink}
-                                                to={getEncounterHref(row.id, encounterOptions)}
-                                                underline="hover"
-                                                title={row.id}
-                                                onClick={stopRowClick}
-                                            >
-                                                {row.type === 'fight' ? row.mainEnemyName : row.leaderboardName}
-                                            </Link>
+                                            <ContentLabel
+                                                spriteKey={resolveEncounterRowSpriteKey(
+                                                    row.type,
+                                                    row.mainEnemyName,
+                                                    row.leaderboardName,
+                                                )}
+                                                label={(
+                                                    <Link
+                                                        component={RouterLink}
+                                                        to={getEncounterHref(row.id, encounterOptions)}
+                                                        underline="hover"
+                                                        title={row.id}
+                                                        onClick={stopRowClick}
+                                                    >
+                                                        {row.type === 'fight' ? row.mainEnemyName : row.leaderboardName}
+                                                    </Link>
+                                                )}
+                                            />
                                         </TableCell>
                                         <TableCell sx={{
                                             color: row.inProgress

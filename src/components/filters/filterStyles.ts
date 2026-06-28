@@ -12,6 +12,15 @@ export const FILTER_CONTROL_FONT_SIZE_MOBILE = '0.84375rem';
 
 export const FILTER_FIELD_ICON_SIZE = 31;
 export const FILTER_FIELD_ICON_SIZE_MOBILE = 24;
+/** Space before prefix icon and between icon and select (matched for symmetry). */
+export const FILTER_DROPDOWN_PREFIX_INSET = {xs: 0.9375, sm: 1.25} as const;
+/** Selected-value sprite beside a filter dropdown (closed state). */
+export const FILTER_DROPDOWN_SELECTED_SPRITE_SIZE = 40;
+export const FILTER_DROPDOWN_SELECTED_SPRITE_SIZE_MOBILE = 32;
+/** Sprite height in open dropdown menu rows. */
+export const FILTER_DROPDOWN_MENU_SPRITE_HEIGHT = '1.4em';
+/** Space between icon and label in open dropdown menu rows. */
+export const FILTER_DROPDOWN_MENU_LABEL_GAP = 1;
 export const FILTER_TAB_ICON_SIZE = FILTER_FIELD_ICON_SIZE;
 export const FILTER_TAB_ICON_SIZE_MOBILE = FILTER_FIELD_ICON_SIZE_MOBILE;
 
