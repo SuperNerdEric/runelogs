@@ -1,9 +1,7 @@
 import React from 'react';
 import {Link as RouterLink} from 'react-router-dom';
-import {Box, Link, Typography} from '@mui/material';
 import {format} from 'date-fns';
 import {displayUsername} from '../utils/utils';
-import {accountTextSx} from '../theme';
 
 interface RunInfoBoxProps {
     uploaderId: string;
@@ -17,42 +15,35 @@ const RunInfoBox: React.FC<RunInfoBoxProps> = ({
     players,
 }) => {
     return (
-        <Box className="log-info-box">
-            <Typography className="log-info-label">Uploader</Typography>
-            <Link
-                component={RouterLink}
-                style={{textTransform: 'capitalize'}}
+        <div className="log-info-box">
+            <span className="log-info-label">Uploader</span>
+            <RouterLink
                 to={`/logs/${uploaderId}`}
-                underline="hover"
-                variant="body1"
-                sx={accountTextSx}
+                className="link link-account capitalize"
             >
                 {displayUsername(uploaderId)}
-            </Link>
+            </RouterLink>
 
-            <Typography className="log-info-label">Started</Typography>
-            <Typography className="log-info-value">
+            <span className="log-info-label">Started</span>
+            <span className="log-info-value">
                 {format(new Date(startTime), 'PPp')}
-            </Typography>
+            </span>
 
-            <Typography className="log-info-label">Players</Typography>
-            <Typography component="div" className="log-info-value">
+            <span className="log-info-label">Players</span>
+            <div className="log-info-value">
                 {players.map((player, i) => (
                     <React.Fragment key={player}>
-                        <Link
-                            component={RouterLink}
+                        <RouterLink
                             to={`/player/${player}`}
-                            underline="hover"
-                            color="primary"
-                            sx={{fontSize: 'inherit'}}
+                            className="link"
                         >
                             {displayUsername(player)}
-                        </Link>
+                        </RouterLink>
                         {i < players.length - 1 ? ', ' : ''}
                     </React.Fragment>
                 ))}
-            </Typography>
-        </Box>
+            </div>
+        </div>
     );
 };
 

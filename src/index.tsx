@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import './App.css';
 import {SnackbarProvider} from 'notistack';
+import {TooltipProvider} from '@/components/ui/tooltip';
 import {Auth0Provider} from "@auth0/auth0-react";
 import {BrowserRouter, Navigate, Route, Routes, useParams} from 'react-router-dom';
 import TopBar from "./components/TopBar";
@@ -10,9 +11,7 @@ import Upload from "./components/Upload";
 import Log from "./components/Log/Log";
 import Logs from "./components/Logs";
 import LogsPageHeaderVariants from "./components/dev/LogsPageHeaderVariants";
-import theme from './theme';
 import ThemeVariables from './theme/ThemeVariables';
-import {ThemeProvider} from "@mui/material";
 import Encounter from "./components/Encounter";
 import FightGroupSummary from "./components/FightGroupSummary";
 import Player from "./components/Player";
@@ -79,6 +78,7 @@ function AppRoutes() {
 root.render(
     <React.StrictMode>
         <SnackbarProvider anchorOrigin={{vertical: 'top', horizontal: 'center'}}>
+            <TooltipProvider delayDuration={200}>
             <Auth0Provider
                 domain={domain}
                 clientId={clientId}
@@ -90,16 +90,15 @@ root.render(
                 cacheLocation="localstorage"
                 useRefreshTokens={true}
             >
-                <ThemeProvider theme={theme}>
-                    <ThemeVariables />
+                <ThemeVariables />
                     <BrowserRouter>
                         <SessionGuard />
                         <UserProfileProvider>
                             <AppRoutes />
                         </UserProfileProvider>
                     </BrowserRouter>
-                </ThemeProvider>
             </Auth0Provider>
+            </TooltipProvider>
         </SnackbarProvider>
     </React.StrictMode>
 );

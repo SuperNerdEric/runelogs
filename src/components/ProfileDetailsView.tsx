@@ -1,6 +1,5 @@
 import React from 'react';
 import {Link as RouterLink} from 'react-router-dom';
-import {Box, Link, Typography} from '@mui/material';
 import {Icon} from '@iconify/react';
 import {PublicUserProfile} from '../utils/avatars';
 import {
@@ -9,49 +8,6 @@ import {
     getContactLinkHref,
     isContactLink,
 } from '../utils/profile';
-import {colors, fontSizes} from '../theme';
-
-const sectionTitleSx = {
-    color: colors.text.primary,
-    fontWeight: 600,
-    fontSize: fontSizes.lg,
-    mb: 1.5,
-} as const;
-
-const readOnlyFieldSx = {
-    backgroundColor: colors.background.tableHead,
-    border: `1px solid ${colors.border.default}`,
-    borderRadius: 1,
-    boxSizing: 'border-box',
-    cursor: 'default',
-    userSelect: 'text',
-    WebkitUserSelect: 'text',
-} as const;
-
-const readOnlyTextSx = {
-    fontSize: fontSizes.base,
-    lineHeight: 1.5,
-    color: colors.text.primary,
-    cursor: 'default',
-    userSelect: 'text',
-    WebkitUserSelect: 'text',
-} as const;
-
-const contactIconContainerSx = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 22,
-    height: 22,
-    flexShrink: 0,
-    userSelect: 'none',
-    WebkitUserSelect: 'none',
-} as const;
-
-const contactTextSx = {
-    fontSize: fontSizes.base,
-    lineHeight: 1,
-} as const;
 
 const PUBLIC_BIO_PLACEHOLDER = "This user hasn't added a bio yet.";
 
@@ -61,46 +17,23 @@ interface ProfileDetailsViewProps {
 
 const ProfileDetailsView: React.FC<ProfileDetailsViewProps> = ({profile}) => {
     return (
-        <Box sx={{display: 'flex', flexDirection: 'column', gap: 4, width: '100%'}}>
-            <Box sx={{width: '100%'}}>
-                <Typography sx={sectionTitleSx}>Bio</Typography>
-                <Box
-                    sx={{
-                        ...readOnlyFieldSx,
-                        px: 1.75,
-                        py: 1.5,
-                        minHeight: 118,
-                    }}
-                >
+        <div className="profile-details-form">
+            <div className="w-full">
+                <h2 className="profile-section-title">Bio</h2>
+                <div className="profile-readonly-field px-3.5 py-3 min-h-[118px]">
                     {profile.bio ? (
-                        <Typography
-                            component="p"
-                            sx={{
-                                ...readOnlyTextSx,
-                                m: 0,
-                                whiteSpace: 'pre-wrap',
-                            }}
-                        >
+                        <p className="m-0 whitespace-pre-wrap text-[var(--color-text-primary)] leading-normal">
                             {profile.bio}
-                        </Typography>
+                        </p>
                     ) : (
-                        <Typography
-                            sx={{
-                                ...readOnlyTextSx,
-                                color: colors.text.muted,
-                                userSelect: 'none',
-                                WebkitUserSelect: 'none',
-                            }}
-                        >
-                            {PUBLIC_BIO_PLACEHOLDER}
-                        </Typography>
+                        <p className="m-0 text-muted select-none">{PUBLIC_BIO_PLACEHOLDER}</p>
                     )}
-                </Box>
-            </Box>
+                </div>
+            </div>
 
-            <Box sx={{width: '100%', maxWidth: 560}}>
-                <Typography sx={sectionTitleSx}>Contact</Typography>
-                <Box sx={{display: 'flex', flexDirection: 'column', gap: 1.5}}>
+            <div className="w-full max-w-[560px]">
+                <h2 className="profile-section-title">Contact</h2>
+                <div className="flex flex-col gap-3">
                     {CONTACT_FIELDS.map((field) => {
                         const value = profile[field.key];
                         const href = value ? getContactLinkHref(field.key, value) : '';
@@ -109,109 +42,56 @@ const ProfileDetailsView: React.FC<ProfileDetailsViewProps> = ({profile}) => {
                         const isLink = !!value && isContactLink(field.key, value);
 
                         return (
-                            <Box
+                            <div
                                 key={field.key}
-                                sx={{
-                                    ...readOnlyFieldSx,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 1,
-                                    px: 1.75,
-                                    minHeight: 56,
-                                }}
+                                className="profile-readonly-field flex min-h-14 items-center gap-2 px-3.5"
                             >
                                 {field.imageSrc ? (
-                                    <Box
-                                        component="img"
+                                    <img
                                         src={field.imageSrc}
                                         alt=""
-                                        sx={{
-                                            ...contactIconContainerSx,
-                                            borderRadius: '4px',
-                                            objectFit: 'cover',
-                                        }}
+                                        className="profile-contact-icon rounded object-cover"
                                     />
                                 ) : (
-                                    <Box sx={contactIconContainerSx}>
-                                        <Icon
-                                            icon={field.icon!}
-                                            style={{
-                                                width: 22,
-                                                height: 22,
-                                            }}
-                                        />
-                                    </Box>
+                                    <span className="profile-contact-icon">
+                                        <Icon icon={field.icon!} style={{width: 22, height: 22}}/>
+                                    </span>
                                 )}
-                                <Box
-                                    sx={{
-                                        flex: 1,
-                                        minWidth: 0,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        cursor: 'default',
-                                        userSelect: 'text',
-                                        WebkitUserSelect: 'text',
-                                    }}
-                                >
+                                <div className="flex min-w-0 flex-1 items-center">
                                     {isLink ? (
                                         isRsn ? (
-                                            <Link
-                                                component={RouterLink}
+                                            <RouterLink
                                                 to={href}
-                                                underline="hover"
-                                                sx={{
-                                                    ...contactTextSx,
-                                                    color: colors.text.link,
-                                                    cursor: 'pointer',
-                                                }}
+                                                className="link text-[length:inherit] leading-none"
                                             >
                                                 {label}
-                                            </Link>
+                                            </RouterLink>
                                         ) : (
-                                            <Link
+                                            <a
                                                 href={href}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                underline="hover"
-                                                sx={{
-                                                    ...contactTextSx,
-                                                    color: colors.text.link,
-                                                    cursor: 'pointer',
-                                                }}
+                                                className="link text-[length:inherit] leading-none"
                                             >
                                                 {label}
-                                            </Link>
+                                            </a>
                                         )
                                     ) : value ? (
-                                        <Typography
-                                            sx={{
-                                                ...contactTextSx,
-                                                ...readOnlyTextSx,
-                                                lineHeight: 1,
-                                            }}
-                                        >
+                                        <span className="text-[length:inherit] leading-none text-[var(--color-text-primary)]">
                                             {label}
-                                        </Typography>
+                                        </span>
                                     ) : (
-                                        <Typography
-                                            sx={{
-                                                ...contactTextSx,
-                                                color: colors.text.muted,
-                                                cursor: 'default',
-                                                userSelect: 'none',
-                                                WebkitUserSelect: 'none',
-                                            }}
-                                        >
+                                        <span className="text-muted text-[length:inherit] leading-none select-none">
                                             {field.placeholder}
-                                        </Typography>
+                                        </span>
                                     )}
-                                </Box>
-                            </Box>
+                                </div>
+                            </div>
                         );
                     })}
-                </Box>
-            </Box>
-        </Box>
+                </div>
+            </div>
+        </div>
     );
 };
 

@@ -1,11 +1,9 @@
 import React from 'react';
-import {Box, Typography} from '@mui/material';
-import {SvgIconProps} from '@mui/material/SvgIcon';
-import QueryStatsIcon from '@mui/icons-material/QueryStats';
-import {colors, media} from '../theme';
+import {BarChart3, type LucideIcon} from 'lucide-react';
+import {colors} from '../theme';
 
 export type HomeHeroProps = {
-    icon?: React.ElementType<SvgIconProps>;
+    icon?: LucideIcon;
     iconColor: string;
     iconBg?: string;
     iconBorder?: string;
@@ -13,82 +11,56 @@ export type HomeHeroProps = {
     subtitle: React.ReactNode;
 };
 
-export function HomeHero({icon: Icon = QueryStatsIcon, iconColor, iconBg, iconBorder, tagline, subtitle}: HomeHeroProps) {
-    const iconWrapperSx = iconBg || iconBorder ? {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 110,
-        height: 110,
-        borderRadius: 2,
-        bgcolor: iconBg,
-        border: iconBorder
-            ? iconBorder.includes('gradient')
-                ? '2px solid transparent'
-                : `2px solid ${iconBorder}`
-            : undefined,
-        background: iconBorder?.includes('gradient')
-            ? `linear-gradient(${colors.background.page}, ${colors.background.page}) padding-box, ${iconBorder} border-box`
-            : iconBg,
-        [media.desktopUp]: {width: 96, height: 96},
-    } : undefined;
+export function HomeHero({
+    icon: Icon = BarChart3,
+    iconColor,
+    iconBg,
+    iconBorder,
+    tagline,
+    subtitle,
+}: HomeHeroProps) {
+    const hasIconFrame = Boolean(iconBg || iconBorder);
+    const iconFrameStyle: React.CSSProperties | undefined = hasIconFrame
+        ? {
+            backgroundColor: iconBg,
+            border: iconBorder
+                ? iconBorder.includes('gradient')
+                    ? '2px solid transparent'
+                    : `2px solid ${iconBorder}`
+                : undefined,
+            background: iconBorder?.includes('gradient')
+                ? `linear-gradient(${colors.background.page}, ${colors.background.page}) padding-box, ${iconBorder} border-box`
+                : iconBg,
+        }
+        : undefined;
 
     const icon = (
-        <Icon sx={{
-            fontSize: 64,
-            color: iconColor,
-            [media.desktopUp]: {fontSize: 56},
-        }}/>
+        <Icon
+            className="home-hero__icon"
+            style={{color: iconColor}}
+            strokeWidth={1.75}
+            aria-hidden
+        />
     );
 
     return (
-        <Box sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 2,
-            mb: 2,
-            pt: 2,
-            pb: 0.5,
-            userSelect: 'none',
-            [media.desktopUp]: {gap: 1.25, pt: 0.5},
-        }}>
-            <Box sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 2,
-                [media.desktopUp]: {gap: 0.5},
-            }}>
-                <Box sx={{display: 'none', [media.desktopUp]: {display: 'block'}}}>
-                    {iconWrapperSx ? <Box sx={iconWrapperSx}>{icon}</Box> : icon}
-                </Box>
-                <Typography
-                    variant="h4"
-                    sx={{
-                        textAlign: 'center',
-                        lineHeight: 1.3,
-                        fontWeight: 600,
-                        m: 0,
-                        fontSize: '1.625rem',
-                        [media.desktopUp]: {fontSize: '2.125rem'},
-                    }}
-                >
-                    {tagline}
-                </Typography>
-            </Box>
-            <Typography
-                variant="h6"
-                sx={{
-                    display: 'none',
-                    textAlign: 'center',
-                    fontWeight: 400,
-                    m: 0,
-                    [media.desktopUp]: {display: 'block', fontSize: '1.25rem'},
-                }}
-            >
-                {subtitle}
-            </Typography>
-        </Box>
+        <div className="home-hero">
+            <div className="home-hero__inner">
+                <div className="home-hero__icon-wrap">
+                    {hasIconFrame ? (
+                        <div
+                            className="home-hero__icon-wrap--framed"
+                            style={iconFrameStyle}
+                        >
+                            {icon}
+                        </div>
+                    ) : (
+                        icon
+                    )}
+                </div>
+                <h1 className="home-hero__tagline">{tagline}</h1>
+            </div>
+            <p className="home-hero__subtitle">{subtitle}</p>
+        </div>
     );
 }

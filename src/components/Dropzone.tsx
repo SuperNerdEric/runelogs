@@ -1,14 +1,14 @@
 import React, {useCallback} from 'react';
 import {useDropzone} from 'react-dropzone';
-import {Button} from "@mui/material";
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import {CloudUpload} from 'lucide-react';
+import {Button} from '@/components/ui/button';
 
 interface DropzoneProps {
     onParse: (fileContent: string) => void;
 }
 
 const Dropzone: React.FC<DropzoneProps> = ({onParse}) => {
-    const onDrop = useCallback((acceptedFiles: any) => {
+    const onDrop = useCallback((acceptedFiles: File[]) => {
         acceptedFiles.forEach((file: File) => {
             const reader = new FileReader();
 
@@ -18,7 +18,6 @@ const Dropzone: React.FC<DropzoneProps> = ({onParse}) => {
                     onParse(fileContent);
                 };
 
-                // Read the file as text
                 reader.readAsText(file);
             } else {
                 console.log(`${file.name} is not a text file. Skipping.`);
@@ -32,13 +31,15 @@ const Dropzone: React.FC<DropzoneProps> = ({onParse}) => {
         <div {...getRootProps()} style={{marginTop: '20px', textAlign: 'center'}}>
             <input {...getInputProps()} />
             <Button
-                variant="contained"
-                color="primary"
-                component="span"
-                startIcon={<CloudUploadIcon style={{color: 'grey', fontSize: '6em'}}/>}
-                style={{background: 'white', color: 'black', borderRadius: '25px'}}
+                type="button"
+                variant="default"
+                className="rounded-full bg-white text-black hover:bg-white/90"
+                asChild
             >
-                Upload file
+                <span className="inline-flex items-center gap-2">
+                    <CloudUpload className="size-16 text-neutral-500" aria-hidden />
+                    Upload file
+                </span>
             </Button>
         </div>
     );

@@ -4,7 +4,6 @@ import {FightMetaData} from '../../models/Fight';
 import {EncounterMetaData} from '../../models/LogLine';
 import {isFightGroupMetadata} from '../../models/FightGroup';
 import {isLeaderboardFightGroup, inferLeaderboardFightGroupName} from '../../utils/leaderboardContent';
-import {Typography, Box} from '@mui/material';
 import {colors} from '../../theme';
 import {formatHHmmss, ticksToTime} from '../../utils/utils';
 import {
@@ -192,9 +191,9 @@ export const EncounterTitleBar: React.FC<EncounterTitleBarProps> = ({
         <>
             <span className="encounter-title-bar-name">{name}</span>
             {officialDurationTicks != null && (
-                <Typography component="span" variant="body2" sx={{color: durationColor}} display="block">
+                <span className="block text-sm" style={{color: durationColor}}>
                     Overall - ({ticksToTime(officialDurationTicks)})
-                </Typography>
+                </span>
             )}
         </>
     );

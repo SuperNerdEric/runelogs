@@ -1,13 +1,12 @@
 import {Fight} from "../../models/Fight";
 import React from "react";
-import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, useMediaQuery,} from "@mui/material";
 import TableColumnHeaderTooltip from "../TableColumnHeaderTooltip";
 import {COLUMN_TOOLTIPS} from "../../utils/columnTooltips";
 import {FightPerformance, getFightPerformanceByPlayer, getPercentColor} from "../../utils/TickActivity";
 import {calculateWeightedAveragesByPlayer} from "./Boosts";
 import {Levels} from "../../models/Levels";
 import {statImages} from "../EventsTable";
-import theme from "../../theme";
+import {useIsMobile} from "../../hooks/useMediaQuery";
 
 interface ActivityTableProps {
     fight: Fight;
@@ -16,7 +15,7 @@ interface ActivityTableProps {
 const ActivityTable: React.FC<ActivityTableProps> = ({fight}) => {
     const performanceByPlayer = getFightPerformanceByPlayer(fight);
     const averageLevelsByPlayer = calculateWeightedAveragesByPlayer(fight);
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMobile = useIsMobile();
 
     const fightLengthMs = (fight.metaData.fightDurationTicks ?? 0) * 600;
 
@@ -33,34 +32,24 @@ const ActivityTable: React.FC<ActivityTableProps> = ({fight}) => {
         (p.boostedHits / p.actualWeaponHits) * 100;
 
     return (
-        <TableContainer
-            sx={{
-                '& .MuiTableCell-root': {
-                    fontSize: '13px',
-                    '@media (max-width: 768px)': {
-                        fontSize: '12px',
-                        padding: '2px 3px',
-                    },
-                },
-            }}
-        >
-            <Table style={{tableLayout: 'auto', width: '100%'}}>
-                <TableHead>
-                    <TableRow>
-                        <TableCell style={{width: '100px', textAlign: 'center'}}>Name</TableCell>
-                        <TableCell style={{width: '100px', textAlign: 'center'}}>
+        <div className="app-table-container">
+            <table className="app-table" style={{tableLayout: 'auto', width: '100%'}}>
+                <thead>
+                    <tr>
+                        <th style={{width: '100px', textAlign: 'center'}}>Name</th>
+                        <th style={{width: '100px', textAlign: 'center'}}>
                             <TableColumnHeaderTooltip
                                 label="Activity"
                                 tooltip={COLUMN_TOOLTIPS.activity}
                             />
-                        </TableCell>
-                        <TableCell style={{width: '100px', textAlign: 'center'}}>Boosted Hits</TableCell>
-                        <TableCell colSpan={Object.keys(statImages).length} style={{textAlign: 'center'}}>
+                        </th>
+                        <th style={{width: '100px', textAlign: 'center'}}>Boosted Hits</th>
+                        <th colSpan={Object.keys(statImages).length} style={{textAlign: 'center'}}>
                             Averages
-                        </TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
                     {[...performanceByPlayer.entries()]
                         .sort(([, a], [, b]) => getActivityPercent(b) - getActivityPercent(a))
                         .map(([player, perf], index) => {
@@ -69,32 +58,32 @@ const ActivityTable: React.FC<ActivityTableProps> = ({fight}) => {
                             const avgLevels = averageLevelsByPlayer.get(player);
 
                             return (
-                                <TableRow
+                                <tr
                                     key={player}
                                     className={index % 2 === 0 ? 'even-row' : 'odd-row'}
                                     style={{cursor: 'default'}}
                                     onMouseEnter={(e) => e.currentTarget.classList.add('highlighted-row')}
                                     onMouseLeave={(e) => e.currentTarget.classList.remove('highlighted-row')}
                                 >
-                                    <TableCell style={{textAlign: 'center'}}>{player}</TableCell>
-                                    <TableCell style={{
+                                    <td style={{textAlign: 'center'}}>{player}</td>
+                                    <td style={{
                                         textAlign: 'center',
-                                        color: getPercentColor(activity)
-                                    }}>{formatPercent(activity)}</TableCell>
-                                    <TableCell style={{
+                                        color: getPercentColor(activity),
+                                    }}>{formatPercent(activity)}</td>
+                                    <td style={{
                                         textAlign: 'center',
-                                        color: !perf.hasBoostedLevels ? undefined : getPercentColor(boosted)
+                                        color: !perf.hasBoostedLevels ? undefined : getPercentColor(boosted),
                                     }}>
                                         {!perf.hasBoostedLevels ? "-" : formatPercent(boosted)}
-                                    </TableCell>
-                                    {Object.keys(statImages).map((stat, index, array) => {
+                                    </td>
+                                    {Object.keys(statImages).map((stat, statIndex, array) => {
                                         const value = avgLevels?.[stat as keyof Levels];
-                                        const isLast = index === array.length - 1;
+                                        const isLast = statIndex === array.length - 1;
 
                                         return (
-                                            <TableCell
+                                            <td
                                                 key={stat}
-                                                sx={{
+                                                style={{
                                                     textAlign: 'left',
                                                     whiteSpace: 'nowrap',
                                                     padding: '2px 8px',
@@ -129,16 +118,15 @@ const ActivityTable: React.FC<ActivityTableProps> = ({fight}) => {
                                                 ) : (
                                                     '-'
                                                 )}
-                                            </TableCell>
+                                            </td>
                                         );
                                     })}
-
-                                </TableRow>
+                                </tr>
                             );
                         })}
-                </TableBody>
-            </Table>
-        </TableContainer>
+                </tbody>
+            </table>
+        </div>
     );
 };
 

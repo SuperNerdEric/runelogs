@@ -2,108 +2,23 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useAuth0} from '@auth0/auth0-react';
 import {
-    Alert,
-    Box,
-    CircularProgress,
-    IconButton,
-    InputAdornment,
-    Link,
-    TextField,
-    Typography,
-} from '@mui/material';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import SensorsIcon from '@mui/icons-material/Sensors';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+    Copy,
+    Eye,
+    EyeOff,
+    Info,
+    Radio,
+    RefreshCw,
+} from 'lucide-react';
 import SectionBox from './SectionBox';
 import PanelIcon from '../assets/help/panel_icon.png';
-import {colors, contentColumnSx, fonts, fontSizes, media, typography} from '../theme';
-
-const STEP_LINE_HEIGHT = 1.4;
-
-const stepRowSx = {
-    display: 'grid',
-    gridTemplateColumns: 'auto 1fr',
-    columnGap: 1.5,
-    alignItems: 'center',
-    fontSize: typography.h5,
-    fontWeight: 600,
-    lineHeight: STEP_LINE_HEIGHT,
-};
-
-const stepBadgeSx = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: `${STEP_LINE_HEIGHT}em`,
-    height: `${STEP_LINE_HEIGHT}em`,
-    borderRadius: '50%',
-    bgcolor: colors.background.surfaceAlt,
-    border: `1px solid ${colors.border.default}`,
-    color: colors.upload.dragActive,
-    fontWeight: 600,
-    fontSize: '0.7em',
-    lineHeight: 1,
-};
-
-const stepTextSx = {
-    m: 0,
-    p: 0,
-    fontSize: 'inherit',
-    fontWeight: 'inherit',
-    lineHeight: 'inherit',
-};
-
-const panelIconInlineSx = {
-    height: '1em',
-    width: 'auto',
-    display: 'inline-block',
-    verticalAlign: '-0.125em',
-    mx: 0.25,
-};
+import {colors, contentColumnClass} from '../theme';
+import {Alert, AlertDescription} from '@/components/ui/alert';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Spinner} from '@/components/ui/spinner';
+import {cn} from '@/lib/utils';
 
 const NO_ACCESS_KEY_MESSAGE = 'You do not have a live log access key yet.';
-
-const textFieldSx = {
-    '& .MuiInputBase-root': {
-        bgcolor: colors.background.surfaceAlt,
-        color: colors.text.primary,
-    },
-    '& .MuiOutlinedInput-notchedOutline': {
-        borderColor: colors.border.default,
-    },
-};
-
-const primaryButtonSx = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 1,
-    cursor: 'pointer',
-    minWidth: 140,
-    px: 3,
-    py: 1.25,
-    borderRadius: '5px',
-    border: `3px solid ${colors.border.default}`,
-    bgcolor: 'white',
-    color: colors.background.page,
-    fontFamily: fonts.body,
-    fontSize: fontSizes.base,
-    fontWeight: 600,
-    transition: 'background-color 0.2s ease, border-color 0.2s ease',
-    '&:hover:not(:disabled)': {
-        bgcolor: colors.upload.buttonHover,
-        borderColor: colors.text.rune,
-    },
-    '&:disabled': {
-        bgcolor: colors.background.progress,
-        color: 'rgba(255, 255, 255, 0.5)',
-        borderColor: colors.border.default,
-        cursor: 'not-allowed',
-    },
-};
 
 interface AccessKeyResponse {
     hasKey: boolean;
@@ -216,172 +131,145 @@ const LiveLog: React.FC = () => {
 
     if (isLoading || !isAuthenticated || loading) {
         return (
-            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-                <CircularProgress/>
-            </Box>
+            <div className="loading-indicator-container">
+                <Spinner className="size-8 text-white"/>
+            </div>
         );
     }
 
     return (
-        <Box sx={{...contentColumnSx, mt: 2, px: 2, pb: 4, [media.mobileDown]: {px: 1}}}>
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1.5,
-                    mb: 3,
-                    pt: 1,
-                }}
-            >
-                <Box
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 56,
-                        height: 56,
-                        borderRadius: 2,
-                        bgcolor: colors.background.surfaceAlt,
-                        border: `1px solid ${colors.border.default}`,
-                    }}
-                >
-                    <SensorsIcon sx={{fontSize: 32, color: colors.upload.dragActive}}/>
-                </Box>
-                <Typography variant="h4" sx={{m: 0, fontWeight: 600, color: colors.text.primary}}>
-                    Live Log
-                </Typography>
-            </Box>
+        <div className={cn(contentColumnClass, 'mt-2 px-2 pb-4 max-[1279px]:px-1')}>
+            <div className="upload-page-hero">
+                <div className="upload-page-hero__icon">
+                    <Radio className="size-8" style={{color: colors.upload.dragActive}} aria-hidden/>
+                </div>
+                <h1 className="upload-page-hero__title">Live Log</h1>
+            </div>
 
-            <SectionBox sx={{p: {xs: 2.5, md: 4}}}>
-                <Box sx={{display: 'flex', flexDirection: 'column', gap: 1.5, mb: 4}}>
-                    <Box sx={stepRowSx}>
-                        <Box component="span" sx={stepBadgeSx}>1</Box>
-                        <Box sx={stepTextSx}>
+            <SectionBox className="p-6 max-[1279px]:p-5 md:p-8 text-left">
+                <div className="mb-8 flex flex-col gap-3">
+                    <div className="upload-step-row">
+                        <span className="upload-step-badge">1</span>
+                        <p className="upload-step-text">
                             Install the{' '}
-                            <Link
+                            <a
                                 href="https://runelite.net/plugin-hub/show/combat-logger"
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                className="link"
                             >
                                 Combat Logger
-                            </Link>{' '}
+                            </a>{' '}
                             plugin from the RuneLite plugin hub.
-                        </Box>
-                    </Box>
+                        </p>
+                    </div>
 
-                    <Box sx={stepRowSx}>
-                        <Box component="span" sx={stepBadgeSx}>2</Box>
-                        <Box sx={stepTextSx}>
+                    <div className="upload-step-row">
+                        <span className="upload-step-badge">2</span>
+                        <p className="upload-step-text">
                             Generate your Runelogs access key below and copy it.
-                        </Box>
-                    </Box>
+                        </p>
+                    </div>
 
-                    <Box sx={stepRowSx}>
-                        <Box component="span" sx={stepBadgeSx}>3</Box>
-                        <Box sx={stepTextSx}>
+                    <div className="upload-step-row">
+                        <span className="upload-step-badge">3</span>
+                        <p className="upload-step-text">
                             In RuneLite, open Combat Logger settings and paste the key into{' '}
-                            <Box component="span" sx={{color: 'yellow', fontFamily: 'monospace'}}>
-                                Runelogs Access Key
-                            </Box>
-                            .
-                        </Box>
-                    </Box>
+                            <span className="mono-yellow">Runelogs Access Key</span>.
+                        </p>
+                    </div>
 
-                    <Box sx={stepRowSx}>
-                        <Box component="span" sx={stepBadgeSx}>4</Box>
-                        <Box sx={stepTextSx}>
+                    <div className="upload-step-row">
+                        <span className="upload-step-badge">4</span>
+                        <p className="upload-step-text">
                             Click the Combat Logger{' '}
-                            <Box component="img" src={PanelIcon} alt="Panel Icon" sx={panelIconInlineSx} />
-                            {' '}panel icon in the RuneLite sidebar and enable live logging.
-                        </Box>
-                    </Box>
-                </Box>
+                            <img src={PanelIcon} alt="Panel Icon" className="help-icon-inline"/> panel icon in the
+                            RuneLite sidebar and enable live logging.
+                        </p>
+                    </div>
+                </div>
 
-                <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
-                    <Box>
-                        <Typography sx={{mb: 0.75, color: colors.text.primary, fontWeight: 500}}>
+                <div className="flex flex-col gap-4">
+                    <div>
+                        <label className="live-log-field-label">
                             Runelogs Access Key
-                        </Typography>
-                        <TextField
-                            fullWidth
-                            value={
-                                accessKey
-                                    ? revealed
-                                        ? accessKey
-                                        : '•'.repeat(Math.min(accessKey.length, 48))
-                                    : NO_ACCESS_KEY_MESSAGE
-                            }
-                            InputProps={{
-                                readOnly: true,
-                                endAdornment: accessKey ? (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            aria-label={revealed ? 'Hide access key' : 'Reveal access key'}
-                                            onClick={() => setRevealed((prev) => !prev)}
-                                            edge="end"
-                                        >
-                                            {revealed ? <VisibilityOffIcon/> : <VisibilityIcon/>}
-                                        </IconButton>
-                                        <IconButton aria-label="Copy access key" onClick={handleCopy} edge="end">
-                                            <ContentCopyIcon/>
-                                        </IconButton>
-                                    </InputAdornment>
-                                ) : undefined,
-                            }}
-                            sx={textFieldSx}
-                        />
+                        </label>
+                        <div className="relative">
+                            <Input
+                                readOnly
+                                value={
+                                    accessKey
+                                        ? revealed
+                                            ? accessKey
+                                            : '•'.repeat(Math.min(accessKey.length, 48))
+                                        : NO_ACCESS_KEY_MESSAGE
+                                }
+                                className="live-log-access-input bg-[var(--color-bg-surface-alt)] pr-20 text-[var(--color-text-primary)]"
+                            />
+                            {accessKey && (
+                                <div className="absolute inset-y-0 right-1 flex items-center gap-0.5">
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon"
+                                        aria-label={revealed ? 'Hide access key' : 'Reveal access key'}
+                                        onClick={() => setRevealed((prev) => !prev)}
+                                    >
+                                        {revealed ? <EyeOff className="size-4"/> : <Eye className="size-4"/>}
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon"
+                                        aria-label="Copy access key"
+                                        onClick={handleCopy}
+                                    >
+                                        <Copy className="size-4"/>
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
                         {copied && accessKey && (
-                            <Typography variant="body2" sx={{mt: 1, color: colors.text.heal}}>
+                            <p className="mt-2 text-sm" style={{color: colors.text.heal}}>
                                 Copied to clipboard
-                            </Typography>
+                            </p>
                         )}
-                    </Box>
+                    </div>
 
-                    {error && <Alert severity="error">{error}</Alert>}
+                    {error && (
+                        <Alert variant="destructive">
+                            <AlertDescription>{error}</AlertDescription>
+                        </Alert>
+                    )}
 
-                    <Box display="flex" justifyContent="flex-end" sx={{[media.mobileDown]: {justifyContent: 'center'}}}>
-                        <Box
-                            component="button"
+                    <div className="flex justify-end max-[1279px]:justify-center">
+                        <button
                             type="button"
                             onClick={handleRegenerate}
                             disabled={regenerating}
-                            sx={primaryButtonSx}
+                            className="upload-primary-btn"
                         >
                             {regenerating ? (
-                                <CircularProgress size={24} sx={{color: 'inherit'}}/>
+                                <Spinner className="size-6 text-inherit"/>
                             ) : (
                                 <>
-                                    {accessKey ? <RefreshIcon sx={{fontSize: 20}}/> : <SensorsIcon sx={{fontSize: 20}}/>}
+                                    {accessKey ? <RefreshCw className="size-5"/> : <Radio className="size-5"/>}
                                     {accessKey ? 'Regenerate Key' : 'Generate Key'}
                                 </>
                             )}
-                        </Box>
-                    </Box>
+                        </button>
+                    </div>
 
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'flex-start',
-                            gap: 1.5,
-                            mt: 1,
-                            p: 2,
-                            borderRadius: 1.5,
-                            bgcolor: colors.background.page,
-                            border: `1px solid ${colors.border.default}`,
-                        }}
-                    >
-                        <InfoOutlinedIcon sx={{color: colors.text.rune, mt: 0.25, flexShrink: 0}}/>
-                        <Typography variant="body1" sx={{color: colors.text.primary, m: 0}}>
+                    <div className="upload-info-box">
+                        <Info className="mt-0.5 size-5 shrink-0" style={{color: colors.text.rune}} aria-hidden/>
+                        <p>
                             You can enable or disable live logging with the{' '}
-                            <Box component="span" sx={{color: 'yellow', fontFamily: fonts.mono}}>
-                                ::livelog
-                            </Box>{' '}
-                            command in-game.
-                        </Typography>
-                    </Box>
-                </Box>
+                            <span className="mono-yellow">::livelog</span> command in-game.
+                        </p>
+                    </div>
+                </div>
             </SectionBox>
-        </Box>
+        </div>
     );
 };
 

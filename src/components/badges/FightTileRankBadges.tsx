@@ -1,5 +1,4 @@
 import React from 'react';
-import {Box} from '@mui/material';
 import PercentileRankBadge from './PercentileRankBadge';
 import {displayUsername} from '../../utils/utils';
 
@@ -19,7 +18,7 @@ const FightTileRankBadges: React.FC<FightTileRankBadgesProps> = ({badges}) => {
     }
 
     return (
-        <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 0.5, justifyContent: 'center'}}>
+        <div className="fight-tile-rank-badges">
             {badges.map((badge) => (
                 <PercentileRankBadge
                     key={badge.playerId}
@@ -30,7 +29,7 @@ const FightTileRankBadges: React.FC<FightTileRankBadgesProps> = ({badges}) => {
                     compact
                 />
             ))}
-        </Box>
+        </div>
     );
 };
 

@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {Box, Chip, CircularProgress, Menu, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
+import {AlertCircle, ChevronDown, X} from 'lucide-react';
 import AppTooltip from './AppTooltip';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import {Fight} from "../models/Fight";
 import {LogLine, LogTypes} from "../models/LogLine";
 import {Levels} from "../models/Levels";
@@ -23,7 +22,14 @@ import {itemIdMap} from "../lib/itemIdMap";
 import {prayerIdMap} from "../lib/prayerIdMap";
 import {prayerImages} from "../lib/prayerImages";
 import FilterSearchBar from "./FilterSearchBar";
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import {Spinner} from '@/components/ui/spinner';
+import {cn} from '@/lib/utils';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface EventsTableProps {
     fight: Fight;
@@ -82,6 +88,40 @@ const getSourceTextClass = (source: string, loggedInPlayer: string): string => {
     return 'other-text';
 };
 
+const filterChipStyle = (textColor: string): React.CSSProperties => ({
+    display: 'inline-flex',
+    alignItems: 'center',
+    backgroundColor: colors.background.surface,
+    color: textColor,
+    border: '1px solid grey',
+    borderRadius: '5px',
+    fontSize: '0.9rem',
+    overflow: 'hidden',
+});
+
+const filterChipButtonStyle: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '4px',
+    background: 'none',
+    border: 'none',
+    color: 'inherit',
+    cursor: 'pointer',
+    padding: '4px 10px',
+    font: 'inherit',
+};
+
+const filterChipDeleteStyle: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'none',
+    border: 'none',
+    color: 'inherit',
+    cursor: 'pointer',
+    padding: '4px 8px 4px 4px',
+};
+
 export const renderStatImages = (levels: Levels) => {
     return (
         <div style={{display: 'flex', alignItems: 'center'}}>
@@ -125,8 +165,6 @@ const EventsTable: React.FC<EventsTableProps> = ({
     onClearEventTypeFilter,
 }) => {
     const loggedInPlayer = fight.loggedInPlayer;
-    const [sourceMenuAnchor, setSourceMenuAnchor] = useState<null | HTMLElement>(null);
-    const [targetMenuAnchor, setTargetMenuAnchor] = useState<null | HTMLElement>(null);
     const [logs, setLogs] = useState<LogLine[] | null>(null);
     const [sourceSpecificIds, setSourceSpecificIds] = useState<number[]>([]);
     const [targetSpecificIds, setTargetSpecificIds] = useState<number[]>([]);
@@ -236,311 +274,196 @@ const EventsTable: React.FC<EventsTableProps> = ({
                 />
             )}
             {(sourceFilter || targetFilter || equipmentFilter || prayerFilter || eventTypeFilter) && (
-                <Box sx={{width: '100%', maxWidth: `${layout.contentMaxWidth}px`, mb: 1, display: 'flex', gap: 1, flexWrap: 'wrap'}}>
+                <div
+                    className="flex flex-wrap gap-2 mb-2 w-full"
+                    style={{maxWidth: `${layout.contentMaxWidth}px`}}
+                >
                     {sourceFilter && (
-                        <>
-                            <Chip
-                                label={`Source: ${sourceFilter.name}${sourceFilter.index !== undefined ? ` - ${sourceFilter.index}` : ''}`}
-                                onDelete={onClearSourceFilter}
-                                onClick={(e) => setSourceMenuAnchor(e.currentTarget)}
-                                icon={<ArrowDropDownIcon sx={{color: getFilterTextColor(sourceFilter, loggedInPlayer)}}/>}
-                                size="small"
-                                sx={{
-                                    bgcolor: colors.background.surface,
-                                    color: getFilterTextColor(sourceFilter, loggedInPlayer),
-                                    border: '1px solid grey',
-                                    borderRadius: '5px',
-                                    '& .MuiChip-label': {
-                                        fontSize: '0.9rem',
-                                        paddingLeft: '10px',
-                                        paddingRight: '10px',
-                                    },
-                                    '& .MuiChip-deleteIcon': {
-                                        color: getFilterTextColor(sourceFilter, loggedInPlayer),
-                                        fontSize: '1.05rem',
-                                        marginRight: '6px',
-                                    },
-                                    '& .MuiChip-deleteIcon:hover': {
-                                        color: getFilterTextColor(sourceFilter, loggedInPlayer),
-                                    },
-                                }}
-                            />
-                            <Menu
-                                anchorEl={sourceMenuAnchor}
-                                open={Boolean(sourceMenuAnchor)}
-                                onClose={() => setSourceMenuAnchor(null)}
-                                PaperProps={{
-                                    sx: {
-                                        maxHeight: '200px',
-                                        minWidth: '100px',
-                                        '& .MuiMenu-list': {
-                                            paddingRight: '12px',
-                                        },
-                                    },
-                                }}
-                            >
-                                <MenuItem
+                        <DropdownMenu>
+                            <span style={filterChipStyle(getFilterTextColor(sourceFilter, loggedInPlayer))}>
+                                <DropdownMenuTrigger asChild>
+                                    <button type="button" style={filterChipButtonStyle}>
+                                        <ChevronDown size={16}/>
+                                        {`Source: ${sourceFilter.name}${sourceFilter.index !== undefined ? ` - ${sourceFilter.index}` : ''}`}
+                                    </button>
+                                </DropdownMenuTrigger>
+                                <button
+                                    type="button"
+                                    aria-label="Clear source filter"
+                                    style={filterChipDeleteStyle}
+                                    onClick={onClearSourceFilter}
+                                >
+                                    <X size={16}/>
+                                </button>
+                            </span>
+                            <DropdownMenuContent className="max-h-[200px] min-w-[100px]">
+                                <DropdownMenuItem
                                     onClick={() => {
                                         if (onSelectSourceFilter) {
                                             onSelectSourceFilter({name: sourceFilter.name});
                                         }
-                                        setSourceMenuAnchor(null);
                                     }}
                                 >
                                     All IDs
-                                </MenuItem>
+                                </DropdownMenuItem>
                                 {sourceSpecificIds.map((specificId) => (
-                                    <MenuItem
+                                    <DropdownMenuItem
                                         key={`source-id-${specificId}`}
                                         onClick={() => {
                                             if (onSelectSourceFilter) {
                                                 onSelectSourceFilter({name: sourceFilter.name, index: specificId});
                                             }
-                                            setSourceMenuAnchor(null);
                                         }}
                                     >
                                         {specificId}
-                                    </MenuItem>
+                                    </DropdownMenuItem>
                                 ))}
-                            </Menu>
-                        </>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     )}
                     {targetFilter && (
-                        <>
-                            <Chip
-                                label={`Target: ${targetFilter.name}${targetFilter.index !== undefined ? ` - ${targetFilter.index}` : ''}`}
-                                onDelete={onClearTargetFilter}
-                                onClick={(e) => setTargetMenuAnchor(e.currentTarget)}
-                                icon={<ArrowDropDownIcon sx={{color: getFilterTextColor(targetFilter, loggedInPlayer)}}/>}
-                                size="small"
-                                sx={{
-                                    bgcolor: colors.background.surface,
-                                    color: getFilterTextColor(targetFilter, loggedInPlayer),
-                                    border: '1px solid grey',
-                                    borderRadius: '5px',
-                                    '& .MuiChip-label': {
-                                        fontSize: '0.9rem',
-                                        paddingLeft: '10px',
-                                        paddingRight: '10px',
-                                    },
-                                    '& .MuiChip-deleteIcon': {
-                                        color: getFilterTextColor(targetFilter, loggedInPlayer),
-                                        fontSize: '1.05rem',
-                                        marginRight: '6px',
-                                    },
-                                    '& .MuiChip-deleteIcon:hover': {
-                                        color: getFilterTextColor(targetFilter, loggedInPlayer),
-                                    },
-                                }}
-                            />
-                            <Menu
-                                anchorEl={targetMenuAnchor}
-                                open={Boolean(targetMenuAnchor)}
-                                onClose={() => setTargetMenuAnchor(null)}
-                                PaperProps={{
-                                    sx: {
-                                        maxHeight: '200px',
-                                        width: '100px',
-                                        '& .MuiMenu-list': {
-                                            paddingRight: '12px',
-                                        },
-                                    },
-                                }}
-                            >
-                                <MenuItem
+                        <DropdownMenu>
+                            <span style={filterChipStyle(getFilterTextColor(targetFilter, loggedInPlayer))}>
+                                <DropdownMenuTrigger asChild>
+                                    <button type="button" style={filterChipButtonStyle}>
+                                        <ChevronDown size={16}/>
+                                        {`Target: ${targetFilter.name}${targetFilter.index !== undefined ? ` - ${targetFilter.index}` : ''}`}
+                                    </button>
+                                </DropdownMenuTrigger>
+                                <button
+                                    type="button"
+                                    aria-label="Clear target filter"
+                                    style={filterChipDeleteStyle}
+                                    onClick={onClearTargetFilter}
+                                >
+                                    <X size={16}/>
+                                </button>
+                            </span>
+                            <DropdownMenuContent className="max-h-[200px] min-w-[100px]">
+                                <DropdownMenuItem
                                     onClick={() => {
                                         if (onSelectTargetFilter) {
                                             onSelectTargetFilter({name: targetFilter.name});
                                         }
-                                        setTargetMenuAnchor(null);
                                     }}
                                 >
                                     All IDs
-                                </MenuItem>
+                                </DropdownMenuItem>
                                 {targetSpecificIds.map((specificId) => (
-                                    <MenuItem
+                                    <DropdownMenuItem
                                         key={`target-id-${specificId}`}
                                         onClick={() => {
                                             if (onSelectTargetFilter) {
                                                 onSelectTargetFilter({name: targetFilter.name, index: specificId});
                                             }
-                                            setTargetMenuAnchor(null);
                                         }}
                                     >
                                         {specificId}
-                                    </MenuItem>
+                                    </DropdownMenuItem>
                                 ))}
-                            </Menu>
-                        </>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     )}
                     {equipmentFilter && (
-                        <Chip
-                            label={`Equipment: ${equipmentFilter.name || itemIdMap[equipmentFilter.id] || equipmentFilter.id}`}
-                            onDelete={onClearEquipmentFilter}
-                            icon={
-                                <AppTooltip
-                                    title="Equipment filter is based on when an event was recorded. However, some actions, such as projectile damage, may have been initiated while different equipment was equipped."
-                                    arrow
-                                >
-                                    <ErrorOutlineIcon
-                                        sx={{
-                                            color: '#f44336 !important',
-                                            fontSize: '1.05rem',
-                                        }}
-                                    />
-                                </AppTooltip>
-                            }
-                            size="small"
-                            sx={{
-                                bgcolor: colors.background.surface,
-                                color: 'white',
-                                border: '1px solid grey',
-                                borderRadius: '5px',
-                                '& .MuiChip-label': {
-                                    fontSize: '0.9rem',
-                                    paddingLeft: '10px',
-                                    paddingRight: '10px',
-                                },
-                                '& .MuiChip-icon': {
-                                    marginLeft: '8px',
-                                },
-                                '& .MuiChip-deleteIcon': {
-                                    color: 'white',
-                                    fontSize: '1.05rem',
-                                    marginRight: '6px',
-                                },
-                                '& .MuiChip-deleteIcon:hover': {
-                                    color: 'white',
-                                },
-                            }}
-                        />
+                        <span style={filterChipStyle('white')}>
+                            <AppTooltip
+                                title="Equipment filter is based on when an event was recorded. However, some actions, such as projectile damage, may have been initiated while different equipment was equipped."
+                            >
+                                <span style={{display: 'inline-flex', marginLeft: '8px', marginRight: '4px'}}>
+                                    <AlertCircle size={16} style={{color: '#f44336'}}/>
+                                </span>
+                            </AppTooltip>
+                            <span style={{padding: '4px 0'}}>
+                                {`Equipment: ${equipmentFilter.name || itemIdMap[equipmentFilter.id] || equipmentFilter.id}`}
+                            </span>
+                            <button
+                                type="button"
+                                aria-label="Clear equipment filter"
+                                style={filterChipDeleteStyle}
+                                onClick={onClearEquipmentFilter}
+                            >
+                                <X size={16}/>
+                            </button>
+                        </span>
                     )}
                     {prayerFilter && (
-                        <Chip
-                            label={`Prayer: ${prayerFilter.name || prayerIdMap[prayerFilter.id] || prayerFilter.id}`}
-                            onDelete={onClearPrayerFilter}
-                            icon={
-                                <AppTooltip
-                                    title="Prayer filter is based on when an event was recorded. Active prayers and overhead prayers are tracked separately in the log."
-                                    arrow
-                                >
-                                    <ErrorOutlineIcon
-                                        sx={{
-                                            color: '#f44336 !important',
-                                            fontSize: '1.05rem',
-                                        }}
-                                    />
-                                </AppTooltip>
-                            }
-                            size="small"
-                            sx={{
-                                bgcolor: colors.background.surface,
-                                color: 'white',
-                                border: '1px solid grey',
-                                borderRadius: '5px',
-                                '& .MuiChip-label': {
-                                    fontSize: '0.9rem',
-                                    paddingLeft: '10px',
-                                    paddingRight: '10px',
-                                },
-                                '& .MuiChip-icon': {
-                                    marginLeft: '8px',
-                                },
-                                '& .MuiChip-deleteIcon': {
-                                    color: 'white',
-                                    fontSize: '1.05rem',
-                                    marginRight: '6px',
-                                },
-                                '& .MuiChip-deleteIcon:hover': {
-                                    color: 'white',
-                                },
-                            }}
-                        />
+                        <span style={filterChipStyle('white')}>
+                            <AppTooltip
+                                title="Prayer filter is based on when an event was recorded. Active prayers and overhead prayers are tracked separately in the log."
+                            >
+                                <span style={{display: 'inline-flex', marginLeft: '8px', marginRight: '4px'}}>
+                                    <AlertCircle size={16} style={{color: '#f44336'}}/>
+                                </span>
+                            </AppTooltip>
+                            <span style={{padding: '4px 0'}}>
+                                {`Prayer: ${prayerFilter.name || prayerIdMap[prayerFilter.id] || prayerFilter.id}`}
+                            </span>
+                            <button
+                                type="button"
+                                aria-label="Clear prayer filter"
+                                style={filterChipDeleteStyle}
+                                onClick={onClearPrayerFilter}
+                            >
+                                <X size={16}/>
+                            </button>
+                        </span>
                     )}
                     {eventTypeFilter && (
-                        <Chip
-                            label={`Type: ${eventTypeFilter}`}
-                            onDelete={onClearEventTypeFilter}
-                            size="small"
-                            sx={{
-                                bgcolor: colors.background.surface,
-                                color: 'white',
-                                border: '1px solid grey',
-                                borderRadius: '5px',
-                                '& .MuiChip-label': {
-                                    fontSize: '0.9rem',
-                                    paddingLeft: '10px',
-                                    paddingRight: '10px',
-                                },
-                                '& .MuiChip-deleteIcon': {
-                                    color: 'white',
-                                    fontSize: '1.05rem',
-                                    marginRight: '6px',
-                                },
-                                '& .MuiChip-deleteIcon:hover': {
-                                    color: 'white',
-                                },
-                            }}
-                        />
+                        <span style={filterChipStyle('white')}>
+                            <span style={{padding: '4px 10px'}}>{`Type: ${eventTypeFilter}`}</span>
+                            <button
+                                type="button"
+                                aria-label="Clear event type filter"
+                                style={filterChipDeleteStyle}
+                                onClick={onClearEventTypeFilter}
+                            >
+                                <X size={16}/>
+                            </button>
+                        </span>
                     )}
-                </Box>
+                </div>
             )}
-            <Box
-                sx={{
-                    width: '100%',
+            <div
+                className="events-table-container w-full overflow-y-auto max-h-[70vh] md:max-h-[var(--events-table-max-height)]"
+                style={{
                     maxWidth: `${layout.contentMaxWidth}px`,
-                    maxHeight: {
-                        xs: '70vh',
-                        sm: '70vh',
-                        md: maxHeight,
-                    },
-                    overflowY: 'auto',
-                }}
+                    '--events-table-max-height': maxHeight,
+                } as React.CSSProperties}
             >
-                <TableContainer
-                    sx={{
-                        '& .MuiTableCell-root': {
-                            fontSize: '13px',
-                            '@media (max-width: 768px)': {
-                                fontSize: '12px',
-                                padding: '2px 3px',
-                            },
-                        },
-                    }}
-                >
-                <Table style={{tableLayout: 'auto'}}>
-                        <TableHead style={{backgroundColor: '#494949'}}>
-                            <TableRow>
-                                <TableCell style={{width: '50px', textAlign: 'center'}}>Time</TableCell>
-                                <TableCell
-                                    style={{width: '120px', textAlign: 'right', paddingBottom: '2px'}}>Type</TableCell>
-                                <TableCell style={{textAlign: 'center'}}>Event</TableCell>
-                                <TableCell style={{width: '100px', textAlign: 'center'}}>Source</TableCell>
-                                <TableCell style={{width: '100px', textAlign: 'center'}}>Target</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
+                <div className="app-table-container" style={{marginBottom: 0}}>
+                    <table className="app-table events-table" style={{tableLayout: 'auto'}}>
+                        <thead style={{backgroundColor: '#494949'}}>
+                            <tr>
+                                <th className="events-table-col-time">Time</th>
+                                <th className="events-table-col-type events-table-col-type-header">Type</th>
+                                <th className="events-table-col-event">Event</th>
+                                <th className="events-table-col-source">Source</th>
+                                <th className="events-table-col-target">Target</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                             {isLoading ? (
-                                <TableRow>
-                                    <TableCell
-                                        colSpan={5}
-                                        align="center"
-                                        sx={{py: 8, borderBottom: 'none'}}
-                                    >
-                                        <CircularProgress color="inherit"/>
-                                    </TableCell>
-                                </TableRow>
+                                <tr>
+                                    <td colSpan={5} className="text-center py-8" style={{borderBottom: 'none'}}>
+                                        <div className="flex justify-center">
+                                            <Spinner size="lg"/>
+                                        </div>
+                                    </td>
+                                </tr>
                             ) : (
                             logs.map((log, index) => {
                                 const source = getActorName(log, 'source');
                                 const target = getActorName(log, 'target');
                                 return (
-                                    <TableRow key={index} className={index % 2 === 0 ? 'even-row' : 'odd-row'}
-                                              style={{cursor: 'default'}}
-                                              onMouseEnter={(e) => e.currentTarget.classList.add('highlighted-row')}
-                                              onMouseLeave={(e) => e.currentTarget.classList.remove('highlighted-row')}>
-                                        <TableCell>{formatHHmmss(log.fightTimeMs!, true)}</TableCell>
-                                        <TableCell style={{width: '120px', textAlign: 'right'}}>
+                                    <tr
+                                        key={index}
+                                        className={index % 2 === 0 ? 'even-row' : 'odd-row'}
+                                        style={{cursor: 'default'}}
+                                        onMouseEnter={(e) => e.currentTarget.classList.add('highlighted-row')}
+                                        onMouseLeave={(e) => e.currentTarget.classList.remove('highlighted-row')}
+                                    >
+                                        <td className="events-table-col-time">{formatHHmmss(log.fightTimeMs!, true)}</td>
+                                        <td className="events-table-col-type">
                                             {onSelectEventTypeFilter ? (
                                                 <span className="link" onClick={() => onSelectEventTypeFilter(log.type)}>
                                                     {log.type}
@@ -548,8 +471,8 @@ const EventsTable: React.FC<EventsTableProps> = ({
                                             ) : (
                                                 log.type
                                             )}
-                                        </TableCell>
-                                        <TableCell>
+                                        </td>
+                                        <td className="events-table-col-event">
                                         {log.type === LogTypes.LOG_VERSION ? `Log version ${log.logVersion}` : ""}
                                         {log.type === LogTypes.LOGGED_IN_PLAYER ? `Logged in player ${log.loggedInPlayer}` : ""}
                                         {log.type === LogTypes.PLAYER_REGION ? `${log.playerRegion}` : ""}
@@ -622,13 +545,13 @@ const EventsTable: React.FC<EventsTableProps> = ({
                                         {log.type === LogTypes.PATH_START ? `${log.pathName}` : ""}
                                         {log.type === LogTypes.PATH_COMPLETE ? `${log.pathName}` : ""}
                                         {log.type === LogTypes.DURATION ? `${log.duration}` : ""}
-                                        </TableCell>
-                                        <TableCell className={getSourceTextClass(source, loggedInPlayer)}>
+                                        </td>
+                                        <td className={cn('events-table-col-source', getSourceTextClass(source, loggedInPlayer))}>
                                             {(() => {
                                                 const sourceActor = getActorFromLog(log, 'source');
                                                 return sourceActor && onSelectSourceFilter ? (
                                                     <span
-                                                        className="link"
+                                                        className="link link-inherit"
                                                         onClick={() => onSelectSourceFilter({
                                                             name: sourceActor.name,
                                                         })}
@@ -637,14 +560,17 @@ const EventsTable: React.FC<EventsTableProps> = ({
                                                     </span>
                                                 ) : source;
                                             })()}
-                                        </TableCell>
-                                        <TableCell
-                                            className={target === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>
+                                        </td>
+                                        <td
+                                            className={cn(
+                                                'events-table-col-target',
+                                                target === loggedInPlayer ? 'logged-in-player-text' : 'other-text',
+                                            )}>
                                             {(() => {
                                                 const targetActor = getActorFromLog(log, 'target');
                                                 return targetActor && onSelectTargetFilter ? (
                                                     <span
-                                                        className="link"
+                                                        className="link link-inherit"
                                                         onClick={() => onSelectTargetFilter({
                                                             name: targetActor.name,
                                                         })}
@@ -653,16 +579,15 @@ const EventsTable: React.FC<EventsTableProps> = ({
                                                     </span>
                                                 ) : target;
                                             })()}
-                                        </TableCell>
-                                    </TableRow>
+                                        </td>
+                                    </tr>
                                 );
                             })
                             )}
-                        </TableBody>
-
-                    </Table>
-                </TableContainer>
-            </Box>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </>
     );
 };

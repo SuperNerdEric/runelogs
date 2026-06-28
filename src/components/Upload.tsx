@@ -1,20 +1,24 @@
 import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
 import {Link as RouterLink, useNavigate} from 'react-router-dom';
 import {useAuth0} from '@auth0/auth0-react';
-import {Alert, Box, CircularProgress, Link, TextField, Typography} from '@mui/material';
 import AppTooltip from './AppTooltip';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
-import CheckIcon from '@mui/icons-material/Check';
-import {flushSync} from 'react-dom';
-import SectionBox from "./SectionBox";
-import {useStableDropzone} from "../hooks/useStableDropzone";
-import {colors, contentColumnSx, fonts, fontSizes, media, typography} from "../theme";
 import {
-    combineOverallUploadProgress,
-} from '../utils/uploadProgress';
+    Check,
+    CloudUpload,
+    FileText,
+    HelpCircle,
+    Info,
+} from 'lucide-react';
+import {flushSync} from 'react-dom';
+import SectionBox from './SectionBox';
+import {useStableDropzone} from '../hooks/useStableDropzone';
+import {colors, contentColumnClass, fonts} from '../theme';
+import {combineOverallUploadProgress} from '../utils/uploadProgress';
+import {Alert, AlertDescription} from '@/components/ui/alert';
+import {Input} from '@/components/ui/input';
+import {Progress} from '@/components/ui/progress';
+import {Spinner} from '@/components/ui/spinner';
+import {cn} from '@/lib/utils';
 
 type UploadProgressPayload = {
     progress?: number;
@@ -89,41 +93,6 @@ function extractCompleteLogId(responseText: string): string | null {
     return null;
 }
 
-const STEP_LINE_HEIGHT = 1.4;
-
-const stepRowSx = {
-    display: 'grid',
-    gridTemplateColumns: 'auto 1fr',
-    columnGap: 1.5,
-    alignItems: 'center',
-    fontSize: typography.h5,
-    fontWeight: 600,
-    lineHeight: STEP_LINE_HEIGHT,
-};
-
-const stepBadgeSx = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: `${STEP_LINE_HEIGHT}em`,
-    height: `${STEP_LINE_HEIGHT}em`,
-    borderRadius: '50%',
-    bgcolor: colors.background.surfaceAlt,
-    border: `1px solid ${colors.border.default}`,
-    color: colors.upload.dragActive,
-    fontWeight: 600,
-    fontSize: '0.7em',
-    lineHeight: 1,
-};
-
-const stepTextSx = {
-    m: 0,
-    p: 0,
-    fontSize: 'inherit',
-    fontWeight: 'inherit',
-    lineHeight: 'inherit',
-};
-
 function UploadProgressIndicator({
     uploadPercent,
     parsePercent,
@@ -141,118 +110,53 @@ function UploadProgressIndicator({
     const parseWaiting = uploadComplete && !parseStarted;
 
     return (
-        <Box
-            sx={{
-                my: 1,
-                p: 2,
-                borderRadius: 1.5,
-                bgcolor: colors.background.surfaceAlt,
-                border: `1px solid ${colors.border.default}`,
-            }}
-        >
-            <Typography
-                component="h3"
-                sx={{
-                    m: 0,
-                    mb: 1.25,
-                    fontSize: typography.h6,
-                    fontWeight: 700,
-                    letterSpacing: '-0.01em',
-                    color: colors.text.primary,
-                }}
-            >
+        <div className="upload-progress-panel">
+            <h3 className="m-0 mb-3 text-lg font-bold tracking-tight text-[var(--color-text-primary)]">
                 Step {isParsing ? 2 : 1} of 2
-            </Typography>
+            </h3>
 
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
-                    gap: 0.75,
-                    mb: 1.5,
-                    fontSize: fontSizes.base,
-                }}
-            >
-                <Box
-                    sx={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 0.5,
-                        color: colors.text.primary,
-                        fontWeight: uploadComplete ? 400 : 600,
-                    }}
+            <div className="mb-4 flex flex-col items-start gap-1.5 text-base">
+                <div
+                    className="inline-flex items-center gap-1 text-[var(--color-text-primary)]"
+                    style={{fontWeight: uploadComplete ? 400 : 600}}
                 >
                     {uploadComplete && (
-                        <CheckIcon sx={{fontSize: 18, color: colors.upload.dragActive}}/>
+                        <Check className="size-[18px]" style={{color: colors.upload.dragActive}} aria-hidden/>
                     )}
                     Upload
-                    <Box component="span" sx={{fontWeight: 500}}>
-                        · {Math.round(uploadPercent)}%
-                    </Box>
-                </Box>
-                <Box
-                    sx={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 0.5,
-                        color: colors.text.primary,
-                        fontWeight: isParsing && !parseWaiting ? 600 : 400,
-                    }}
+                    <span className="font-medium">· {Math.round(uploadPercent)}%</span>
+                </div>
+                <div
+                    className="inline-flex items-center gap-1 text-[var(--color-text-primary)]"
+                    style={{fontWeight: isParsing && !parseWaiting ? 600 : 400}}
                 >
                     Parse
-                    <Box component="span" sx={{fontWeight: 500}}>
+                    <span className="font-medium">
                         · {parseWaiting ? 'Waiting' : isParsing ? `${Math.round(parsePercent)}%` : 'Waiting'}
-                    </Box>
-                </Box>
-            </Box>
+                    </span>
+                </div>
+            </div>
 
-            <Box sx={{display: 'flex', alignItems: 'center', gap: 1.5}}>
-                <LinearProgress
-                    variant={recovering ? 'indeterminate' : 'determinate'}
+            <div className="flex items-center gap-3">
+                <Progress
+                    className="upload-progress-bar h-3 flex-1 bg-[var(--color-bg-progress)] [&>div]:bg-[var(--color-upload-drag-active)]"
                     value={recovering ? undefined : Math.min(Math.max(overallProgress, 0), 100)}
-                    sx={{
-                        flex: 1,
-                        height: 12,
-                        borderRadius: 6,
-                        backgroundColor: colors.background.progress,
-                        '& .MuiLinearProgress-bar': {
-                            backgroundColor: colors.upload.dragActive,
-                            borderRadius: 6,
-                        },
-                    }}
                 />
                 {!recovering && (
-                    <Typography
-                        sx={{
-                            minWidth: 40,
-                            fontSize: fontSizes.sm,
-                            fontWeight: 600,
-                            color: colors.text.primary,
-                            fontVariantNumeric: 'tabular-nums',
-                            textAlign: 'right',
-                        }}
-                    >
+                    <span className="min-w-10 text-right text-sm font-semibold tabular-nums text-[var(--color-text-primary)]">
                         {Math.round(overallProgress)}%
-                    </Typography>
+                    </span>
                 )}
-            </Box>
+            </div>
 
             {isParsing && (
-                <Typography
-                    sx={{
-                        m: 0,
-                        mt: 1.25,
-                        fontSize: fontSizes.sm,
-                        color: colors.text.muted,
-                    }}
-                >
+                <p className="m-0 mt-3 text-sm text-muted">
                     {recovering
                         ? 'Connection lost — still parsing in the background. You can leave this page and check your logs list.'
                         : 'You can leave this page while parsing finishes. Check your logs list for progress.'}
-                </Typography>
+                </p>
             )}
-        </Box>
+        </div>
     );
 }
 
@@ -291,7 +195,7 @@ const Upload: React.FC = () => {
     const {
         getRootProps,
         getInputProps,
-        isDragActive
+        isDragActive,
     } = useStableDropzone({
         onDrop,
         multiple: true,
@@ -335,9 +239,9 @@ const Upload: React.FC = () => {
             xhr.open('POST', `${import.meta.env.VITE_API_URL}/log`, true);
             xhr.setRequestHeader('Authorization', `Bearer ${token}`);
 
-            xhr.upload.onprogress = (e) => {
-                if (e.lengthComputable) {
-                    const percent = (e.loaded / e.total) * 100;
+            xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable) {
+                    const percent = (event.loaded / event.total) * 100;
                     flushSync(() => setUploadPercent(percent));
                 }
             };
@@ -472,191 +376,115 @@ const Upload: React.FC = () => {
         }
     };
 
-
     if (isLoading || !isAuthenticated) {
         return (
-            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-                <CircularProgress/>
-            </Box>
+            <div className="loading-indicator-container">
+                <Spinner className="size-8 text-white"/>
+            </div>
         );
     }
 
     return (
-        <Box sx={{...contentColumnSx, mt: 2, px: 2, pb: 4, [media.mobileDown]: {px: 1}}}>
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1.5,
-                    mb: 3,
-                    pt: 1,
-                }}
-            >
-                <Box
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 56,
-                        height: 56,
-                        borderRadius: 2,
-                        bgcolor: colors.background.surfaceAlt,
-                        border: `1px solid ${colors.border.default}`,
-                    }}
-                >
-                    <CloudUploadIcon sx={{fontSize: 32, color: colors.upload.dragActive}}/>
-                </Box>
-                <Typography variant="h4" sx={{m: 0, fontWeight: 600, color: colors.text.primary}}>
-                    Upload a Combat Log
-                </Typography>
-            </Box>
+        <div className={cn(contentColumnClass, 'mt-2 px-2 pb-4 max-[1279px]:px-1')}>
+            <div className="upload-page-hero">
+                <div className="upload-page-hero__icon">
+                    <CloudUpload className="size-8" style={{color: colors.upload.dragActive}} aria-hidden/>
+                </div>
+                <h1 className="upload-page-hero__title">Upload a Combat Log</h1>
+            </div>
 
             <SectionBox
                 {...getRootProps()}
-                sx={{
-                    p: {xs: 2.5, md: 4},
-                    borderColor: isDragActive ? colors.upload.dragActive : colors.border.default,
-                    borderStyle: isDragActive ? 'dashed' : 'solid',
-                    transition: 'border-color 0.2s ease, background-color 0.2s ease',
-                    bgcolor: isDragActive ? colors.background.surfaceAlt : colors.background.surface,
-                }}
+                className={cn(
+                    'upload-section-box--drag p-6 max-[1279px]:p-5 md:p-8',
+                    isDragActive && 'upload-section-box--drag-active',
+                )}
             >
                 <input {...getInputProps({
                     onDragEnter: (e) => e.stopPropagation(),
                     onDragOver: (e) => e.stopPropagation(),
-                    onDragLeave: (e) => e.stopPropagation()
+                    onDragLeave: (e) => e.stopPropagation(),
                 })}/>
 
-                <Box sx={{display: 'flex', flexDirection: 'column', gap: 1.5, mb: 4}}>
-                    <Box sx={stepRowSx}>
-                        <Box component="span" sx={stepBadgeSx}>1</Box>
-                        <Box sx={stepTextSx}>
+                <div className="mb-8 flex flex-col gap-3">
+                    <div className="upload-step-row">
+                        <span className="upload-step-badge">1</span>
+                        <p className="upload-step-text">
                             Install the{' '}
-                            <Link
+                            <a
                                 href="https://runelite.net/plugin-hub/show/combat-logger"
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                className="link"
                             >
                                 Combat Logger
-                            </Link>{' '}
+                            </a>{' '}
                             plugin from the RuneLite plugin hub.
-                        </Box>
-                    </Box>
+                        </p>
+                    </div>
 
-                    <Box sx={stepRowSx}>
-                        <Box component="span" sx={stepBadgeSx}>2</Box>
-                        <Box sx={stepTextSx}>
+                    <div className="upload-step-row">
+                        <span className="upload-step-badge">2</span>
+                        <p className="upload-step-text">
                             Locate your combat logs stored in{' '}
-                            <Box component="span" sx={{color: 'yellow', fontFamily: 'monospace'}}>
-                                .runelite/combat_log
-                            </Box>
-                            .
-                            <AppTooltip title="Help" placement="top" disableTouch>
-                                <Link
-                                    component={RouterLink}
+                            <span className="mono-yellow">.runelite/combat_log</span>.
+                            <AppTooltip title="Help" side="top" disableTouch>
+                                <RouterLink
                                     to="/help#find-combat-log"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    sx={{display: 'inline-flex', alignItems: 'center', gap: 0.25, ml: 0.5, verticalAlign: 'middle'}}
+                                    className="link ml-1 inline-flex items-center align-middle"
                                 >
-                                    <HelpOutlineIcon fontSize="inherit"/>
-                                </Link>
+                                    <HelpCircle className="size-[1em]" aria-hidden/>
+                                </RouterLink>
                             </AppTooltip>
-                        </Box>
-                    </Box>
+                        </p>
+                    </div>
 
-                    <Box sx={stepRowSx}>
-                        <Box component="span" sx={stepBadgeSx}>3</Box>
-                        <Box sx={stepTextSx}>
-                            Upload and analyze!
-                        </Box>
-                    </Box>
-                </Box>
+                    <div className="upload-step-row">
+                        <span className="upload-step-badge">3</span>
+                        <p className="upload-step-text">Upload and analyze!</p>
+                    </div>
+                </div>
 
-                <Box
-                    component="form"
-                    onSubmit={handleSubmit}
-                    sx={{display: 'flex', flexDirection: 'column', gap: 2}}
-                >
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: 1.5,
-                            py: 3,
-                            px: 2,
-                            borderRadius: 1.5,
-                            border: `2px dashed ${isDragActive ? colors.upload.dragActive : colors.border.default}`,
-                            bgcolor: colors.background.surfaceAlt,
-                            transition: 'border-color 0.2s ease, background-color 0.2s ease',
-                        }}
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                    <div
+                        className={cn(
+                            'upload-drop-zone',
+                            isDragActive && 'upload-drop-zone--active',
+                        )}
                     >
-                        <DescriptionOutlinedIcon
-                            sx={{
-                                fontSize: 40,
-                                color: colors.text.rune,
-                            }}
-                        />
-                        <Box
-                            component="label"
-                            sx={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                                opacity: isSubmitting ? 0.5 : 1,
-                                pointerEvents: isSubmitting ? 'none' : 'auto',
-                                px: 3,
-                                py: 1.25,
-                                borderRadius: '5px',
-                                border: `3px solid ${colors.border.default}`,
-                                bgcolor: colors.background.page,
-                                color: selectedFile ? colors.text.gold : colors.text.primary,
-                                fontFamily: fonts.body,
-                                fontSize: fontSizes.base,
-                                fontWeight: 500,
-                                maxWidth: '100%',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                                transition: 'border-color 0.2s ease, color 0.2s ease',
-                                '&:hover': {
-                                    borderColor: colors.text.rune,
-                                },
-                            }}
+                        <FileText className="size-10" style={{color: colors.text.rune}} aria-hidden/>
+                        <label
+                            className={cn(
+                                'upload-file-label',
+                                selectedFile && 'upload-file-label--selected',
+                                isSubmitting && 'upload-file-label--disabled',
+                            )}
                         >
                             {selectedFile ? selectedFile.name : 'Choose Log File...'}
                             <input type="file" accept=".txt" hidden onChange={handleFileChange}/>
-                        </Box>
-                    </Box>
+                        </label>
+                    </div>
 
-                    <Box>
-                        <Typography sx={{ mb: 0.75, color: colors.text.primary, fontWeight: 500 }}>
-                            Name{' '}
-                            <Box component="span" sx={{ color: 'rgba(255, 255, 255, 0.5)', fontWeight: 400 }}>
-                                (Optional)
-                            </Box>
-                        </Typography>
-                        <TextField
+                    <div>
+                        <label className="mb-1.5 block font-medium text-[var(--color-text-primary)]">
+                            Name <span className="font-normal text-white/50">(Optional)</span>
+                        </label>
+                        <Input
                             value={logName}
                             onChange={(e) => setLogName(e.target.value)}
                             disabled={isSubmitting}
-                            fullWidth
-                            inputProps={{ maxLength: 100 }}
-                            sx={{
-                                '& .MuiInputBase-root': {
-                                    bgcolor: colors.background.surfaceAlt,
-                                    color: colors.text.primary,
-                                },
-                                '& .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: colors.border.default,
-                                },
-                            }}
+                            maxLength={100}
+                            className="bg-[var(--color-bg-surface-alt)] text-[var(--color-text-primary)]"
                         />
-                    </Box>
+                    </div>
 
-                    {errorText && <Alert severity="error">{errorText}</Alert>}
+                    {errorText && (
+                        <Alert variant="destructive">
+                            <AlertDescription>{errorText}</AlertDescription>
+                        </Alert>
+                    )}
 
                     {uploadPercent !== null && (
                         <UploadProgressIndicator
@@ -667,69 +495,29 @@ const Upload: React.FC = () => {
                         />
                     )}
 
-                    <Box display="flex" justifyContent="flex-end" sx={{[media.mobileDown]: {justifyContent: 'center'}}}>
-                        <Box
-                            component="button"
-                            type="submit"
-                            disabled={isSubmitting}
-                            sx={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: 1,
-                                cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                                minWidth: 140,
-                                px: 3,
-                                py: 1.25,
-                                borderRadius: '5px',
-                                border: `3px solid ${colors.border.default}`,
-                                bgcolor: 'white',
-                                color: colors.background.page,
-                                fontFamily: fonts.body,
-                                fontSize: fontSizes.base,
-                                fontWeight: 600,
-                                transition: 'background-color 0.2s ease, border-color 0.2s ease',
-                                '&:hover:not(:disabled)': {
-                                    bgcolor: colors.upload.buttonHover,
-                                    borderColor: colors.text.rune,
-                                },
-                                '&:disabled': {
-                                    bgcolor: colors.background.progress,
-                                    color: 'rgba(255, 255, 255, 0.5)',
-                                    borderColor: colors.border.default,
-                                },
-                            }}
-                        >
-                            {isSubmitting
-                                ? <CircularProgress size={24} sx={{color: 'inherit'}}/>
-                                : <><CloudUploadIcon sx={{fontSize: 20}}/>Upload</>}
-                        </Box>
-                    </Box>
+                    <div className="flex justify-end max-[1279px]:justify-center">
+                        <button type="submit" disabled={isSubmitting} className="upload-primary-btn">
+                            {isSubmitting ? (
+                                <Spinner className="size-6 text-inherit"/>
+                            ) : (
+                                <>
+                                    <CloudUpload className="size-5"/>
+                                    Upload
+                                </>
+                            )}
+                        </button>
+                    </div>
 
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'flex-start',
-                            gap: 1.5,
-                            mt: 1,
-                            p: 2,
-                            borderRadius: 1.5,
-                            bgcolor: colors.background.page,
-                            border: `1px solid ${colors.border.default}`,
-                        }}
-                    >
-                        <InfoOutlinedIcon sx={{color: colors.text.rune, mt: 0.25, flexShrink: 0}}/>
-                        <Typography variant="body1" sx={{color: colors.text.primary, m: 0}}>
+                    <div className="upload-info-box">
+                        <Info className="mt-0.5 size-5 shrink-0" style={{color: colors.text.rune}} aria-hidden/>
+                        <p>
                             You can start a new combat log with the{' '}
-                            <Box component="span" sx={{color: 'yellow', fontFamily: fonts.mono}}>
-                                ::newlog
-                            </Box>{' '}
-                            command in-game.
-                        </Typography>
-                    </Box>
-                </Box>
+                            <span style={{color: 'yellow', fontFamily: fonts.mono}}>::newlog</span> command in-game.
+                        </p>
+                    </div>
+                </form>
             </SectionBox>
-        </Box>
+        </div>
     );
 };
 

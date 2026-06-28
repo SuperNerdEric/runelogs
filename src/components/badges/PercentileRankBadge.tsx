@@ -1,12 +1,12 @@
 import React from 'react';
 import {Link as RouterLink} from 'react-router-dom';
-import {Box, Typography} from '@mui/material';
 import AppTooltip from '../AppTooltip';
 import {colors} from '../../theme';
 import {getPercentileAccentColor} from '../../utils/percentile';
 import {CrownIcon} from '../CrownIcon';
 import MedalIcon from '../MedalIcon';
 import RankBadgeCategoryIcon, {RankBadgeCategory} from './RankBadgeCategoryIcon';
+import {cn} from '@/lib/utils';
 
 export interface PercentileRankBadgeProps {
     rank: number;
@@ -17,20 +17,6 @@ export interface PercentileRankBadgeProps {
     href?: string;
     tooltipFightName?: string;
 }
-
-const nonSelectableSx = {
-    userSelect: 'none',
-    WebkitUserSelect: 'none',
-} as const;
-
-const linkableSx = {
-    cursor: 'pointer',
-    textDecoration: 'none',
-    color: 'inherit',
-    '&:hover': {
-        filter: 'brightness(1.1)',
-    },
-} as const;
 
 function buildBadgeTooltip(
     category: RankBadgeCategory,
@@ -83,78 +69,95 @@ const PercentileRankBadge: React.FC<PercentileRankBadgeProps> = ({
     const inner = compact ? (
         <>
             <RankBadgeCategoryIcon category={category} size={categoryIconSize} />
-            <Typography
-                component="span"
-                sx={{color: accentColor, fontWeight: 700, fontSize: '0.7rem', lineHeight: 1.2}}
+            <span
+                className="font-bold leading-tight text-[0.7rem]"
+                style={{color: accentColor}}
             >
                 #{rank}
-            </Typography>
+            </span>
             {label && (
-                <Typography component="span" sx={{color: colors.text.primary, fontSize: '0.65rem', lineHeight: 1.2}}>
+                <span className="text-[0.65rem] leading-tight" style={{color: colors.text.primary}}>
                     {label}
-                </Typography>
+                </span>
             )}
         </>
     ) : (
         <>
             <RankBadgeCategoryIcon category={category} size={categoryIconSize} />
-            <Typography
-                component="span"
-                sx={{color: accentColor, fontWeight: 700, fontSize: {xs: '1rem', sm: '1.15rem'}}}
+            <span
+                className="font-bold text-base sm:text-[1.15rem]"
+                style={{color: accentColor}}
             >
                 #{rank}
-            </Typography>
+            </span>
             {rank === 1 && <CrownIcon />}
             {rank === 2 && <MedalIcon color={colors.medal.silver} />}
             {rank === 3 && <MedalIcon color={colors.medal.bronze} />}
             {label && (
-                <Typography component="span" sx={{color: colors.text.primary, fontSize: {xs: '0.8rem', sm: '0.9rem'}}}>
+                <span className="text-[0.8rem] sm:text-[0.9rem]" style={{color: colors.text.primary}}>
                     {label}
-                </Typography>
+                </span>
             )}
         </>
     );
 
-    const sx = compact
+    const badgeStyle: React.CSSProperties = compact
         ? {
-            ...nonSelectableSx,
-            ...(href ? linkableSx : {}),
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 0.35,
-            px: 0.6,
-            py: 0.2,
-            borderRadius: 0.5,
+            gap: 2.8,
+            padding: '1.6px 4.8px',
             border: `1px solid ${accentColor}`,
             background: `linear-gradient(135deg, rgba(22, 27, 34, 0.95) 0%, ${accentColor}22 100%)`,
             verticalAlign: 'middle',
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
+            ...(href ? {
+                cursor: 'pointer',
+                textDecoration: 'none',
+                color: 'inherit',
+            } : {}),
         }
         : {
-            ...nonSelectableSx,
-            ...(href ? linkableSx : {}),
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 0.75,
-            px: 1.5,
-            py: 0.75,
-            borderRadius: 1,
+            gap: 6,
+            padding: '6px 12px',
             border: `2px solid ${accentColor}`,
             background: `linear-gradient(135deg, rgba(22, 27, 34, 0.95) 0%, ${accentColor}22 100%)`,
             boxShadow: showGlow ? `0 0 12px ${accentColor}55` : undefined,
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
+            ...(href ? {
+                cursor: 'pointer',
+                textDecoration: 'none',
+                color: 'inherit',
+            } : {}),
         };
 
     const ariaLabel = label
         ? `${categoryLabel} rank #${rank} — ${label}`
         : `${categoryLabel} rank #${rank}`;
 
+    const badgeClassName = cn(
+        'fight-group-rank-badge',
+        compact && 'fight-group-rank-badge--compact',
+        href && 'hover:brightness-110',
+    );
+
     const badge = !href ? (
-        <Box component="span" className="fight-group-rank-badge" aria-label={ariaLabel} sx={sx}>
+        <span className={badgeClassName} aria-label={ariaLabel} style={badgeStyle}>
             {inner}
-        </Box>
+        </span>
     ) : (
-        <Box component={RouterLink} to={href} className="fight-group-rank-badge" aria-label={ariaLabel} sx={sx}>
+        <RouterLink
+            to={href}
+            className={badgeClassName}
+            aria-label={ariaLabel}
+            style={badgeStyle}
+        >
             {inner}
-        </Box>
+        </RouterLink>
     );
 
     if (compact) {
@@ -162,10 +165,12 @@ const PercentileRankBadge: React.FC<PercentileRankBadgeProps> = ({
     }
 
     return (
-        <AppTooltip title={buildBadgeTooltip(category, rank, label, tooltipFightName)} arrow placement="top" disableTouch>
-            <Box component="span" sx={{display: 'inline-flex'}}>
-                {badge}
-            </Box>
+        <AppTooltip
+            title={buildBadgeTooltip(category, rank, label, tooltipFightName)}
+            side="top"
+            disableTouch
+        >
+            <span className="inline-flex">{badge}</span>
         </AppTooltip>
     );
 };

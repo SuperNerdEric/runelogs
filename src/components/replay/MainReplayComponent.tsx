@@ -9,8 +9,7 @@ import * as semver from "semver";
 import Prayers from './Prayers';
 import CombatLevels from './CombatLevels';
 import TickChart from './TickChart';
-import {useMediaQuery} from "@mui/material";
-import theme from "../../theme";
+import {useIsMobile} from "../../hooks/useMediaQuery";
 import {colors} from "../../theme";
 import {CLIENT_CYCLE_DURATION_SECONDS, computeFightEpochCycle, TICK_DURATION_SECONDS} from '../../lib/replayTiming';
 import EquipmentIcon from "../../assets/replay-icons/equipment.png";
@@ -30,7 +29,7 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
     const [currentGameState, setCurrentGameState] = useState<GameState | undefined>(undefined);
     const [isPlaying, setIsPlaying] = useState(false);
     const [selectedPlayerName, setSelectedPlayerName] = useState<string | undefined>(undefined);
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMobile = useIsMobile();
     const [activeTab, setActiveTab] = useState<'levels' | 'equipment' | 'prayers'>('levels');
 
     // Calculate max time based on fight length

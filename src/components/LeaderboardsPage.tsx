@@ -1,42 +1,27 @@
 import React from 'react';
-import {Box, Typography} from '@mui/material';
 import Leaderboard from './Leaderboard';
 import TrophyIcon from './TrophyIcon';
-import {colors, contentColumnSx, media} from '../theme';
+import {
+    pageHeaderClass,
+    pageHeaderIconClass,
+    pageHeaderTitleClass,
+} from './pageHeaderStyles';
+import {contentColumnClass} from '../theme';
+import {cn} from '@/lib/utils';
 
 const LeaderboardsPage: React.FC = () => {
     return (
-        <Box sx={{...contentColumnSx, mt: 2, px: 2, pb: 4, [media.mobileDown]: {px: 1}}}>
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1.5,
-                    mb: 3,
-                    pt: 1,
-                }}
-            >
-                <Box
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 56,
-                        height: 56,
-                        borderRadius: 2,
-                        bgcolor: colors.background.surfaceAlt,
-                        border: `1px solid ${colors.border.default}`,
-                    }}
-                >
+        <div className={cn(contentColumnClass, 'mt-2 px-2 pb-4 max-[1279px]:px-1')}>
+            <div className={pageHeaderClass}>
+                <div className={pageHeaderIconClass}>
                     <TrophyIcon size={32}/>
-                </Box>
-                <Typography variant="h4" sx={{m: 0, fontWeight: 600, color: colors.text.primary}}>
-                    Leaderboards
-                </Typography>
-            </Box>
+                </div>
+                <h1 className={pageHeaderTitleClass}>Leaderboards</h1>
+            </div>
 
             <Leaderboard entriesPerPage={50}/>
-        </Box>
+        </div>
     );
 };
+
 export default LeaderboardsPage;

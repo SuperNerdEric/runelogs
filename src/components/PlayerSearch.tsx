@@ -1,19 +1,19 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Box, List, ListItem, Paper, Popper, TextField} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
-import {colors} from '../theme';
+import {Popover, PopoverAnchor, PopoverContent} from '@/components/ui/popover';
+import {cn} from '@/lib/utils';
 
 interface PlayerSearchProps {
     onSelect?: () => void;
     fullWidth?: boolean;
 }
 
-const PlayerSearch: React.FC<PlayerSearchProps> = ({ onSelect, fullWidth = false }) => {
+const PlayerSearch: React.FC<PlayerSearchProps> = ({onSelect, fullWidth = false}) => {
     const [input, setInput] = useState('');
     const [results, setResults] = useState<string[]>([]);
     const [open, setOpen] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState(0);
-    const anchorRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
     const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
@@ -29,7 +29,7 @@ const PlayerSearch: React.FC<PlayerSearchProps> = ({ onSelect, fullWidth = false
             fetch(`${import.meta.env.VITE_API_URL}/player-search/${encodeURIComponent(input)}`)
                 .then(res => res.json())
                 .then(data => {
-                    setResults(data.matches.slice(0, 6) || []); // Limit to 6 results
+                    setResults(data.matches.slice(0, 6) || []);
                     setOpen(true);
                     setHighlightedIndex(0);
                 });
@@ -66,60 +66,55 @@ const PlayerSearch: React.FC<PlayerSearchProps> = ({ onSelect, fullWidth = false
         clearSearch();
     };
 
+    const showResults = open && results.length > 0;
+
     return (
-        <Box
-            position="relative"
-            sx={{
-                height: '40px',
-                width: fullWidth ? '100%' : undefined,
-                maxWidth: fullWidth ? '100%' : undefined,
-                boxSizing: 'border-box',
-            }}
-        >
-            <TextField
-                inputRef={anchorRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Search for a player"
-                size="small"
-                fullWidth={fullWidth}
-                sx={{
-                    input: {color: 'white', textAlign: 'left'},
-                    backgroundColor: colors.background.surface,
-                    width: fullWidth ? '100%' : 200,
-                    maxWidth: '100%',
-                    boxSizing: 'border-box',
-                    ...(fullWidth ? {m: 0} : {}),
-                }}
-            />
-            <Popper
-                open={open && results.length > 0}
-                anchorEl={anchorRef.current}
-                placement="bottom-start"
-                sx={{width: fullWidth ? '100%' : undefined, maxWidth: fullWidth ? '100%' : undefined, zIndex: 1300, boxSizing: 'border-box'}}
+        <Popover open={showResults} onOpenChange={setOpen}>
+            <div
+                className={cn(
+                    'player-search',
+                    fullWidth && 'player-search--full',
+                )}
             >
-                <Paper sx={{backgroundColor: colors.background.surfaceDropdown, width: fullWidth ? '100%' : 250, maxWidth: '100%', boxSizing: 'border-box'}}>
-                    <List>
+                <PopoverAnchor asChild>
+                    <input
+                        ref={inputRef}
+                        type="search"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        placeholder="Search for a player"
+                        className="player-search__input"
+                        autoComplete="off"
+                        spellCheck={false}
+                    />
+                </PopoverAnchor>
+                <PopoverContent
+                    align="start"
+                    sideOffset={0}
+                    variant="playerSearch"
+                    onOpenAutoFocus={(e) => e.preventDefault()}
+                >
+                    <ul className="player-search__list" role="listbox">
                         {results.map((name, idx) => (
-                            <ListItem
+                            <li
                                 key={name}
-                                button
-                                selected={idx === highlightedIndex}
+                                role="option"
+                                aria-selected={idx === highlightedIndex}
+                                className={cn(
+                                    'player-search__option',
+                                    idx === highlightedIndex && 'player-search__option--highlighted',
+                                )}
+                                onMouseEnter={() => setHighlightedIndex(idx)}
                                 onClick={() => handleClick(name)}
-                                sx={{
-                                    '&.Mui-selected': {backgroundColor: colors.background.surfaceSelected},
-                                    '&:hover': {backgroundColor: colors.background.hover},
-                                    color: 'white'
-                                }}
                             >
                                 {name}
-                            </ListItem>
+                            </li>
                         ))}
-                    </List>
-                </Paper>
-            </Popper>
-        </Box>
+                    </ul>
+                </PopoverContent>
+            </div>
+        </Popover>
     );
 };
 

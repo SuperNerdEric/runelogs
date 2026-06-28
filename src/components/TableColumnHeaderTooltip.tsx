@@ -7,8 +7,11 @@ interface TableColumnHeaderTooltipProps {
 }
 
 const TableColumnHeaderTooltip: React.FC<TableColumnHeaderTooltipProps> = ({label, tooltip}) => (
-    <AppTooltip title={tooltip} arrow placement="top">
-        <span style={{cursor: 'help', borderBottom: '1px dotted currentColor'}}>
+    <AppTooltip title={tooltip} side="top">
+        <span
+            className="inline-block align-middle leading-none"
+            style={{cursor: 'help', borderBottom: '1px dotted currentColor'}}
+        >
             {label}
         </span>
     </AppTooltip>

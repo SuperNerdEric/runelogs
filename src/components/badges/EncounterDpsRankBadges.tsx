@@ -46,7 +46,7 @@ const EncounterDpsRankBadges: React.FC<EncounterDpsRankBadgesProps> = ({
     }
 
     return (
-        <RankBadgeCallout sx={{mb: 1, alignSelf: 'center'}}>
+        <RankBadgeCallout className="mb-2 self-center">
             {badges.map((badge) => (
                 <PercentileRankBadge
                     key={badge.playerId}

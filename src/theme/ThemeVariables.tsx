@@ -1,6 +1,9 @@
-import { GlobalStyles } from '@mui/material';
-import { cssVariables } from './cssVariables';
+import {cssVariables} from './cssVariables';
 
 export default function ThemeVariables() {
-    return <GlobalStyles styles={{ ':root': cssVariables }} />;
+    const cssText = `:root { ${Object.entries(cssVariables)
+        .map(([key, value]) => `${key}: ${value};`)
+        .join(' ')} }`;
+
+    return <style>{cssText}</style>;
 }

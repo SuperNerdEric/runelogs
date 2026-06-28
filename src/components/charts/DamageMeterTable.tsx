@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 import TableColumnHeaderTooltip from '../TableColumnHeaderTooltip';
 import {COLUMN_TOOLTIPS} from '../../utils/columnTooltips';
 import {colors} from '../../theme';
@@ -50,31 +49,21 @@ const DamageMeterTable: React.FC<DamageMeterTableProps> = ({rows}) => {
     const sortedRows = [...rows].sort((a, b) => b.damageDealt - a.damageDealt);
 
     return (
-        <TableContainer
-            sx={{
-                '& .MuiTableCell-root': {
-                    fontSize: '13px',
-                    '@media (max-width: 768px)': {
-                        fontSize: '12px',
-                        padding: '2px 3px',
-                    },
-                },
-            }}
-        >
-            <Table style={{tableLayout: 'auto', width: '100%'}}>
-                <TableHead>
-                    <TableRow>
-                        <TableCell style={{width: '100px', textAlign: 'center'}}>Name</TableCell>
-                        <TableCell style={{textAlign: 'center', paddingBottom: '2px'}}>Amount</TableCell>
-                        <TableCell style={{width: '70px', textAlign: 'center'}}>
+        <div className="app-table-container">
+            <table className="app-table" style={{tableLayout: 'auto', width: '100%'}}>
+                <thead>
+                    <tr>
+                        <th style={{width: '100px', textAlign: 'center'}}>Name</th>
+                        <th style={{textAlign: 'center', paddingBottom: '2px'}}>Amount</th>
+                        <th style={{width: '70px', textAlign: 'center'}}>
                             <TableColumnHeaderTooltip
                                 label="DPS"
                                 tooltip={COLUMN_TOOLTIPS.dps}
                             />
-                        </TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
                     {sortedRows.map((row, index) => {
                         const damagePercentage = totalDamage > 0
                             ? Number(((row.damageDealt / totalDamage) * 100).toFixed(2))
@@ -82,20 +71,20 @@ const DamageMeterTable: React.FC<DamageMeterTableProps> = ({rows}) => {
                         const unknown = isUnknownPlayer(row.key);
 
                         return (
-                            <TableRow
+                            <tr
                                 key={row.key}
                                 className={index % 2 === 0 ? 'even-row' : 'odd-row'}
                                 style={{cursor: 'default'}}
                                 onMouseEnter={(e) => e.currentTarget.classList.add('highlighted-row')}
                                 onMouseLeave={(e) => e.currentTarget.classList.remove('highlighted-row')}
                             >
-                                <TableCell
+                                <td
                                     style={{width: '100px', textAlign: 'left'}}
                                     className={unknown ? 'unknown-text' : (row.nameClassName ?? 'other-text')}
                                 >
                                     {row.name}
-                                </TableCell>
-                                <TableCell style={{textAlign: 'center'}}>
+                                </td>
+                                <td style={{textAlign: 'center'}}>
                                     <div style={{display: 'flex', alignItems: 'center'}}>
                                         <span
                                             style={{
@@ -120,8 +109,8 @@ const DamageMeterTable: React.FC<DamageMeterTableProps> = ({rows}) => {
                                         />
                                         {row.damageDealt}
                                     </div>
-                                </TableCell>
-                                <TableCell
+                                </td>
+                                <td
                                     style={{
                                         width: '70px',
                                         textAlign: 'right',
@@ -130,13 +119,13 @@ const DamageMeterTable: React.FC<DamageMeterTableProps> = ({rows}) => {
                                     className={!unknown && row.useDpsTextClass ? 'dps-text' : undefined}
                                 >
                                     {row.dps.toFixed(3)}
-                                </TableCell>
-                            </TableRow>
+                                </td>
+                            </tr>
                         );
                     })}
-                </TableBody>
-            </Table>
-        </TableContainer>
+                </tbody>
+            </table>
+        </div>
     );
 };
 

@@ -1,26 +1,20 @@
 import React, {useState} from 'react';
 import {
-    Box,
-    Collapse,
-    Drawer,
-    IconButton,
-    List,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
-    Typography,
-} from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import CloseIcon from '@mui/icons-material/Close';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
-import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import HistoryIcon from '@mui/icons-material/History';
+    ChevronDown,
+    ChevronUp,
+    ExternalLink,
+    HelpCircle,
+    History,
+    Menu,
+    Users,
+    X,
+} from 'lucide-react';
 import {Icon} from '@iconify/react';
 import {Link as RouterLink} from 'react-router-dom';
 import logoImage from '../assets/Logo.png';
+import {Button} from '@/components/ui/button';
+import {Sheet, SheetContent} from '@/components/ui/sheet';
+import {cn} from '@/lib/utils';
 import TrophyIcon from './TrophyIcon';
 import {
     buildLeaderboardHref,
@@ -28,68 +22,9 @@ import {
     LEADERBOARD_CONTENT_OPTIONS,
     RECENT_ENCOUNTERS_CONTENT_OPTIONS,
 } from '../utils/leaderboardContent';
-import {colors, fontSizes, layout} from '../theme';
-
-const menuItemIconSx = {
-    minWidth: 36,
-    color: colors.upload.dragActive,
-};
-
-const navItemSx = {
-    color: colors.text.primary,
-    '&:hover': {backgroundColor: colors.background.hover},
-};
-
-const submenuItemTextSx = {
-    '& .MuiListItemText-primary': {
-        fontSize: '0.875rem',
-        color: colors.text.primary,
-    },
-};
-
-const SUBMENU_INDENT_PX = 52;
-const SUBMENU_LINE_LEFT_PX = 24;
-
-const submenuItemSx = {
-    ...navItemSx,
-    pl: `${SUBMENU_INDENT_PX}px`,
-    ...submenuItemTextSx,
-};
-
-const NAV_SECTION_LINE_COLORS = {
-    leaderboards: colors.medal.gold,
-    recentEncounters: colors.text.rune,
-    community: colors.upload.dragActive,
-} as const;
-
-const createSubmenuListSx = (lineColor: string) => ({
-    position: 'relative',
-    py: 0.5,
-    '&::before': {
-        content: '""',
-        position: 'absolute',
-        left: `${SUBMENU_LINE_LEFT_PX}px`,
-        top: 8,
-        bottom: 8,
-        width: '2px',
-        borderRadius: '999px',
-        backgroundColor: lineColor,
-        opacity: 0.35,
-        zIndex: 1,
-        pointerEvents: 'none',
-    },
-});
-
-const drawerPaperSx = {
-    backgroundColor: colors.background.black,
-    backgroundImage: 'none',
-    boxShadow: 'none',
-    color: colors.text.primary,
-    borderRight: `1px solid ${colors.border.default}`,
-};
 
 type TopBarNavMenuProps = {
-    iconButtonSx?: object;
+    iconButtonClass?: string;
     onOpenChange?: (open: boolean) => void;
 };
 
@@ -98,7 +33,7 @@ const COMMUNITY_LINKS = [
     {label: 'GitHub', href: 'https://github.com/SuperNerdEric/runelogs', icon: 'bi:github'},
 ] as const;
 
-const TopBarNavMenu: React.FC<TopBarNavMenuProps> = ({iconButtonSx, onOpenChange}) => {
+const TopBarNavMenu: React.FC<TopBarNavMenuProps> = ({iconButtonClass, onOpenChange}) => {
     const [open, setOpen] = useState(false);
     const [leaderboardsExpanded, setLeaderboardsExpanded] = useState(false);
     const [recentEncountersExpanded, setRecentEncountersExpanded] = useState(false);
@@ -133,202 +68,177 @@ const TopBarNavMenu: React.FC<TopBarNavMenuProps> = ({iconButtonSx, onOpenChange
 
     return (
         <>
-            <IconButton
-                color="inherit"
+            <Button
+                type="button"
+                variant="ghost"
+                size="icon"
                 aria-label="Open navigation menu"
                 onClick={openMenu}
-                sx={iconButtonSx}
+                className={cn('top-bar__nav-trigger [&_svg]:!size-7', iconButtonClass)}
             >
-                <MenuIcon sx={{fontSize: fontSizes.topBarIcon}}/>
-            </IconButton>
+                <Menu aria-hidden />
+            </Button>
 
-            <Drawer
-                anchor="left"
-                open={open}
-                onClose={closeMenu}
-                elevation={0}
-                PaperProps={{sx: drawerPaperSx}}
-            >
-                <Box sx={{width: 280, display: 'flex', flexDirection: 'column', height: '100%', bgcolor: colors.background.black}}>
-                    <Box
-                        sx={{
-                            display: 'grid',
-                            gridTemplateColumns: '1fr auto',
-                            alignItems: 'center',
-                            height: layout.topBarHeight,
-                            minHeight: layout.topBarHeight,
-                            flexShrink: 0,
-                            borderBottom: `1px solid ${colors.border.default}`,
-                        }}
-                    >
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                minWidth: 0,
-                            }}
-                        >
-                            <Box
-                                component={RouterLink}
-                                to="/"
+            <Sheet open={open} onOpenChange={(isOpen) => { if (!isOpen) closeMenu(); }}>
+                <SheetContent
+                    side="left"
+                    className="nav-drawer-content p-0 [&>button]:hidden"
+                >
+                    <div className="nav-drawer-inner">
+                        <div className="nav-drawer-header">
+                            <div className="nav-drawer-header__logo-wrap">
+                                <RouterLink
+                                    to="/"
+                                    onClick={closeMenu}
+                                    className="top-bar__logo-link"
+                                >
+                                    <img
+                                        src={logoImage}
+                                        alt="Runelogs.com"
+                                        style={{
+                                            marginRight: '5px',
+                                            height: '25px',
+                                            verticalAlign: 'middle',
+                                        }}
+                                    />
+                                    <h6 className="top-bar__logo-text">
+                                        <span className="text-account">Rune</span>
+                                        <span className="logs-text">logs</span>
+                                    </h6>
+                                </RouterLink>
+                            </div>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                aria-label="Close navigation menu"
                                 onClick={closeMenu}
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    textDecoration: 'none',
-                                    color: 'inherit',
-                                }}
+                                className="mr-1 shrink-0"
                             >
-                            <img
-                                src={logoImage}
-                                alt="Runelogs.com"
-                                style={{
-                                    marginRight: '5px',
-                                    height: '25px',
-                                    verticalAlign: 'middle',
-                                }}
-                            />
-                            <Typography
-                                variant="h6"
-                                sx={{m: 0, color: colors.text.primary, fontSize: fontSizes.topBarLogo}}
+                                <X aria-hidden />
+                            </Button>
+                        </div>
+
+                        <nav className="nav-drawer-nav">
+                            <button
+                                type="button"
+                                className="nav-drawer-item-btn nav-drawer-item"
+                                onClick={() => setLeaderboardsExpanded((prev) => !prev)}
                             >
-                                <Box component="span" sx={{color: colors.text.rune}}>Rune</Box>
-                                <Box component="span" sx={{color: colors.text.logs}}>logs</Box>
-                            </Typography>
-                            </Box>
-                        </Box>
-                        <IconButton
-                            color="inherit"
-                            aria-label="Close navigation menu"
-                            onClick={closeMenu}
-                            size="small"
-                            sx={{mr: 0.5, flexShrink: 0}}
-                        >
-                            <CloseIcon/>
-                        </IconButton>
-                    </Box>
-
-                    <List sx={{py: 0.5, flex: 1}}>
-                        <ListItemButton
-                            onClick={() => setLeaderboardsExpanded((prev) => !prev)}
-                            sx={navItemSx}
-                        >
-                            <ListItemIcon sx={menuItemIconSx}>
-                                <TrophyIcon size={20}/>
-                            </ListItemIcon>
-                            <ListItemText primary="Leaderboards"/>
-                            {leaderboardsExpanded ? (
-                                <ExpandLess sx={{color: colors.text.primary}}/>
-                            ) : (
-                                <ExpandMore sx={{color: colors.text.primary}}/>
+                                <span className="top-bar__menu-item-icon flex items-center">
+                                    <TrophyIcon size={20} />
+                                </span>
+                                <span className="nav-drawer-item-btn__label">Leaderboards</span>
+                                {leaderboardsExpanded ? (
+                                    <ChevronUp className="nav-drawer-item-btn__chevron size-5" aria-hidden />
+                                ) : (
+                                    <ChevronDown className="nav-drawer-item-btn__chevron size-5" aria-hidden />
+                                )}
+                            </button>
+                            {leaderboardsExpanded && (
+                                <div className="nav-drawer-submenu nav-drawer-submenu--leaderboards">
+                                    {leaderboardLinks.map((item) => (
+                                        <RouterLink
+                                            key={item.to}
+                                            to={item.to}
+                                            onClick={closeMenu}
+                                            className="nav-drawer-item-btn nav-drawer-item nav-drawer-submenu-item"
+                                        >
+                                            {item.label}
+                                        </RouterLink>
+                                    ))}
+                                </div>
                             )}
-                        </ListItemButton>
-                        <Collapse in={leaderboardsExpanded} timeout="auto" unmountOnExit>
-                            <List disablePadding sx={createSubmenuListSx(NAV_SECTION_LINE_COLORS.leaderboards)}>
-                                {leaderboardLinks.map((item) => (
-                                    <ListItemButton
-                                        key={item.to}
-                                        component={RouterLink}
-                                        to={item.to}
-                                        onClick={closeMenu}
-                                        sx={submenuItemSx}
-                                    >
-                                        <ListItemText primary={item.label}/>
-                                    </ListItemButton>
-                                ))}
-                            </List>
-                        </Collapse>
 
-                        <ListItemButton
-                            onClick={() => setRecentEncountersExpanded((prev) => !prev)}
-                            sx={navItemSx}
-                        >
-                            <ListItemIcon sx={menuItemIconSx}>
-                                <HistoryIcon fontSize="small" sx={{color: colors.text.rune}}/>
-                            </ListItemIcon>
-                            <ListItemText primary="Recent Encounters"/>
-                            {recentEncountersExpanded ? (
-                                <ExpandLess sx={{color: colors.text.primary}}/>
-                            ) : (
-                                <ExpandMore sx={{color: colors.text.primary}}/>
+                            <button
+                                type="button"
+                                className="nav-drawer-item-btn nav-drawer-item"
+                                onClick={() => setRecentEncountersExpanded((prev) => !prev)}
+                            >
+                                <span className="top-bar__menu-item-icon flex items-center text-account">
+                                    <History className="size-4" aria-hidden />
+                                </span>
+                                <span className="nav-drawer-item-btn__label">Recent Encounters</span>
+                                {recentEncountersExpanded ? (
+                                    <ChevronUp className="nav-drawer-item-btn__chevron size-5" aria-hidden />
+                                ) : (
+                                    <ChevronDown className="nav-drawer-item-btn__chevron size-5" aria-hidden />
+                                )}
+                            </button>
+                            {recentEncountersExpanded && (
+                                <div className="nav-drawer-submenu nav-drawer-submenu--recent">
+                                    {recentEncountersLinks.map((item) => (
+                                        <RouterLink
+                                            key={item.to}
+                                            to={item.to}
+                                            onClick={closeMenu}
+                                            className="nav-drawer-item-btn nav-drawer-item nav-drawer-submenu-item"
+                                        >
+                                            {item.label}
+                                        </RouterLink>
+                                    ))}
+                                </div>
                             )}
-                        </ListItemButton>
-                        <Collapse in={recentEncountersExpanded} timeout="auto" unmountOnExit>
-                            <List disablePadding sx={createSubmenuListSx(NAV_SECTION_LINE_COLORS.recentEncounters)}>
-                                {recentEncountersLinks.map((item) => (
-                                    <ListItemButton
-                                        key={item.to}
-                                        component={RouterLink}
-                                        to={item.to}
-                                        onClick={closeMenu}
-                                        sx={submenuItemSx}
-                                    >
-                                        <ListItemText primary={item.label}/>
-                                    </ListItemButton>
-                                ))}
-                            </List>
-                        </Collapse>
 
-                        <ListItemButton
-                            onClick={() => setCommunityExpanded((prev) => !prev)}
-                            sx={navItemSx}
-                        >
-                            <ListItemIcon sx={menuItemIconSx}>
-                                <GroupsOutlinedIcon fontSize="small"/>
-                            </ListItemIcon>
-                            <ListItemText primary="Community"/>
-                            {communityExpanded ? (
-                                <ExpandLess sx={{color: colors.text.primary}}/>
-                            ) : (
-                                <ExpandMore sx={{color: colors.text.primary}}/>
+                            <button
+                                type="button"
+                                className="nav-drawer-item-btn nav-drawer-item"
+                                onClick={() => setCommunityExpanded((prev) => !prev)}
+                            >
+                                <span className="top-bar__menu-item-icon flex items-center">
+                                    <Users className="size-4" aria-hidden />
+                                </span>
+                                <span className="nav-drawer-item-btn__label">Community</span>
+                                {communityExpanded ? (
+                                    <ChevronUp className="nav-drawer-item-btn__chevron size-5" aria-hidden />
+                                ) : (
+                                    <ChevronDown className="nav-drawer-item-btn__chevron size-5" aria-hidden />
+                                )}
+                            </button>
+                            {communityExpanded && (
+                                <div className="nav-drawer-submenu nav-drawer-submenu--community">
+                                    {COMMUNITY_LINKS.map((item) => (
+                                        <a
+                                            key={item.href}
+                                            href={item.href}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            onClick={closeMenu}
+                                            className="nav-drawer-item-btn nav-drawer-item nav-drawer-submenu-item nav-drawer-community-link"
+                                        >
+                                            <Icon
+                                                icon={item.icon}
+                                                className="nav-drawer-community-link__icon"
+                                                style={{
+                                                    color: item.icon === 'bi:github'
+                                                        ? 'var(--color-text-primary)'
+                                                        : undefined,
+                                                }}
+                                            />
+                                            <span>{item.label}</span>
+                                            <ExternalLink
+                                                className="nav-drawer-community-link__external"
+                                                aria-hidden
+                                            />
+                                        </a>
+                                    ))}
+                                </div>
                             )}
-                        </ListItemButton>
-                        <Collapse in={communityExpanded} timeout="auto" unmountOnExit>
-                            <List disablePadding sx={createSubmenuListSx(NAV_SECTION_LINE_COLORS.community)}>
-                                {COMMUNITY_LINKS.map((item) => (
-                                    <ListItemButton
-                                        key={item.href}
-                                        component="a"
-                                        href={item.href}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        onClick={closeMenu}
-                                        sx={submenuItemSx}
-                                    >
-                                        <Icon
-                                            icon={item.icon}
-                                            style={{
-                                                width: 20,
-                                                height: 20,
-                                                flexShrink: 0,
-                                                marginRight: 8,
-                                                color: item.icon === 'bi:github' ? colors.text.primary : undefined,
-                                            }}
-                                        />
-                                        <ListItemText
-                                            primary={item.label}
-                                            sx={{flex: '0 0 auto', m: 0}}
-                                        />
-                                        <OpenInNewIcon sx={{fontSize: 14, color: colors.text.iconHover, flexShrink: 0, ml: 1}}/>
-                                    </ListItemButton>
-                                ))}
-                            </List>
-                        </Collapse>
 
-                        <ListItemButton
-                            component={RouterLink}
-                            to="/help"
-                            onClick={closeMenu}
-                            sx={navItemSx}
-                        >
-                            <ListItemIcon sx={menuItemIconSx}>
-                                <HelpOutlineIcon fontSize="small"/>
-                            </ListItemIcon>
-                            <ListItemText primary="Help"/>
-                        </ListItemButton>
-                    </List>
-                </Box>
-            </Drawer>
+                            <RouterLink
+                                to="/help"
+                                onClick={closeMenu}
+                                className="nav-drawer-item-btn nav-drawer-item"
+                            >
+                                <span className="top-bar__menu-item-icon flex items-center">
+                                    <HelpCircle className="size-4" aria-hidden />
+                                </span>
+                                <span className="nav-drawer-item-btn__label">Help</span>
+                            </RouterLink>
+                        </nav>
+                    </div>
+                </SheetContent>
+            </Sheet>
         </>
     );
 };

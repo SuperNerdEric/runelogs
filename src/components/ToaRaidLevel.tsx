@@ -1,5 +1,4 @@
 import React from 'react';
-import {Box, Typography} from '@mui/material';
 import {ToaExtraInfo} from '../utils/fightGroupExtraInfo';
 import {
     formatToaRaidLevel,
@@ -21,11 +20,11 @@ const ToaRaidLevel: React.FC<ToaRaidLevelProps> = ({toa}) => {
     const mode = getToaRaidMode(toa.raidLevel);
 
     return (
-        <Box className={`toa-raid-level toa-raid-level--${mode}`}>
-            <Box className="toa-raid-level__inner">
-                <Typography component="p" className="toa-raid-level__mode">
+        <div className={`toa-raid-level toa-raid-level--${mode}`}>
+            <div className="toa-raid-level__inner">
+                <p className="toa-raid-level__mode">
                     {getToaRaidModeLabel(mode)}
-                </Typography>
+                </p>
                 <img
                     className="toa-raid-level__icon"
                     src={getToaRaidModeIconUrl(mode)}
@@ -34,11 +33,11 @@ const ToaRaidLevel: React.FC<ToaRaidLevelProps> = ({toa}) => {
                     height={56}
                     loading="lazy"
                 />
-                <Typography component="p" className="toa-raid-level__level">
+                <p className="toa-raid-level__level">
                     Raid Level {formatToaRaidLevel(toa.raidLevel)}
-                </Typography>
-            </Box>
-        </Box>
+                </p>
+            </div>
+        </div>
     );
 };
 

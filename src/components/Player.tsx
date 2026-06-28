@@ -1,37 +1,30 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
-import { Box, Typography } from '@mui/material';
+import {useParams} from 'react-router-dom';
 import PersonalBests from './PersonalBests';
-import RecentEncounters from "./RecentEncounters";
-import { contentColumnSx, colors } from '../theme';
-import { displayUsername } from '../utils/utils';
+import RecentEncounters from './RecentEncounters';
+import {contentColumnClass} from '../theme';
+import {displayUsername} from '../utils/utils';
 import playerAvatar from '../assets/player-avatar.png';
+import {cn} from '@/lib/utils';
 
 const Player: React.FC = () => {
-    const { playerName } = useParams<{ playerName: string }>();
+    const {playerName} = useParams<{playerName: string}>();
 
     return (
-        <Box sx={{...contentColumnSx, mt: 1, px: 2, pb: 0, textAlign: 'left'}}>
-            <Box pb={0} pt={0} display="flex" alignItems="center" gap={1.5}>
-                <Box
-                    component="img"
+        <div className={cn(contentColumnClass, 'mt-1 px-2 pb-0 text-left')}>
+            <div className="flex items-center gap-3 pb-0 pt-0">
+                <img
                     src={playerAvatar}
                     alt={playerName ? `${displayUsername(playerName)} avatar` : 'Player avatar'}
-                    sx={{
-                        width: 40,
-                        height: 40,
-                        flexShrink: 0,
-                        objectFit: 'cover',
-                        borderRadius: '4px',
-                    }}
+                    className="size-10 shrink-0 rounded object-cover"
                 />
-                <Typography variant="h4" gutterBottom sx={{textTransform: 'capitalize', color: colors.text.player, m: 0}}>
+                <h1 className="text-h4 m-0 capitalize text-[var(--color-text-player,#abd473)]">
                     {displayUsername(playerName)}
-                </Typography>
-            </Box>
+                </h1>
+            </div>
             {playerName && <RecentEncounters />}
             {playerName && <PersonalBests />}
-        </Box>
+        </div>
     );
 };
 

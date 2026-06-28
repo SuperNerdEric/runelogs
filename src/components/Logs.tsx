@@ -1,44 +1,31 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link as RouterLink, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {Link as RouterLink, useNavigate, useParams, useSearchParams} from 'react-router-dom';
+import {format} from 'date-fns';
+import {useAuth0} from '@auth0/auth0-react';
+import {closeSnackbar, SnackbarKey, useSnackbar} from 'notistack';
 import {
-    Alert,
-    Box,
-    CircularProgress,
-    IconButton,
-    Link,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    TableSortLabel,
-    TextField,
-    Typography,
-} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
-import { format } from 'date-fns';
-import { useAuth0 } from '@auth0/auth0-react';
-import {closeSnackbar, SnackbarKey, useSnackbar} from "notistack";
-import {colors, contentColumnSx, logNameTextSx, media} from "../theme";
-import {displayUsername} from "../utils/utils";
+    ArrowDown,
+    ArrowUp,
+    ArrowUpDown,
+    Check,
+    FolderOpen,
+    Pencil,
+    Trash2,
+    X,
+} from 'lucide-react';
+import {colors, contentColumnClass, logNameTextClass} from '../theme';
+import {displayUsername} from '../utils/utils';
 import {buildProfileHref} from '../utils/profile';
-import {logTableRowProps, stopRowClick} from "../utils/encounterTableRow";
+import {logTableRowProps, stopRowClick} from '../utils/encounterTableRow';
 import {
-    pageHeaderContainerSx,
-    pageHeaderIconBoxSx,
-    pageHeaderSubtitleSx,
-    pageHeaderTitleTypographySx,
-    pageHeaderTitleWrapperSx,
+    pageHeaderClass,
+    pageHeaderIconClass,
+    pageHeaderSubtitleClass,
+    pageHeaderTitleAccountClass,
 } from './pageHeaderStyles';
 import FilterSelect from './filters/FilterSelect';
 import FilterToolbar from './filters/FilterToolbar';
-import {filterFieldCompactSx} from './filters/filterStyles';
+import {filterFieldCompactClass} from './filters/filterStyles';
 import {
     BROWSE_ANY_PLAYER_COUNT,
     BrowsePlayerCount,
@@ -51,6 +38,11 @@ import {
     resolveBrowsePlayerCount,
     resolveRecentEncountersContent,
 } from '../utils/leaderboardContent';
+import {Alert, AlertDescription} from '@/components/ui/alert';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Spinner} from '@/components/ui/spinner';
+import {cn} from '@/lib/utils';
 
 interface LogItem {
     id: string;
@@ -96,36 +88,8 @@ async function fetchLogStatus(logId: string): Promise<LogStatusResponse | null> 
     return resp.json() as Promise<LogStatusResponse>;
 }
 
-// Define the possible columns to sort by
 type SortKey = 'name' | 'uploadedAt' | 'fights' | 'fightGroups';
-
-// Direction type
 type Order = 'asc' | 'desc';
-
-const nameColumnSx = {
-    color: 'white',
-    width: '100%',
-    maxWidth: 0,
-    overflow: 'hidden',
-} as const;
-
-const shrinkColumnSx = {
-    color: 'white',
-    whiteSpace: 'nowrap',
-} as const;
-
-const tableCellPaddingSx = {
-    paddingY: 1,
-    [media.mobileDown]: { px: 1 },
-} as const;
-
-const pageContainerSx = {
-    ...contentColumnSx,
-    mt: 2,
-    px: 2,
-    pb: 4,
-    [media.mobileDown]: { px: 1 },
-} as const;
 
 function toSearchParams(
     uploaderId: string,
@@ -178,13 +142,39 @@ const getComparator = (order: Order, orderBy: SortKey) => {
     };
 };
 
+interface SortHeaderProps {
+    label: string;
+    sortKey: SortKey;
+    orderBy: SortKey;
+    order: Order;
+    onSort: (key: SortKey) => void;
+}
+
+const SortHeader: React.FC<SortHeaderProps> = ({label, sortKey, orderBy, order, onSort}) => {
+    const active = orderBy === sortKey;
+    return (
+        <button type="button" className="app-table-sort" onClick={() => onSort(sortKey)}>
+            <strong>{label}</strong>
+            {active ? (
+                order === 'asc' ? (
+                    <ArrowUp className="app-table-sort__icon" aria-hidden/>
+                ) : (
+                    <ArrowDown className="app-table-sort__icon" aria-hidden/>
+                )
+            ) : (
+                <ArrowUpDown className="app-table-sort__icon app-table-sort__icon--inactive" aria-hidden/>
+            )}
+        </button>
+    );
+};
+
 interface LogNameCellProps {
     log: LogItem;
     canEdit: boolean;
     onRename: (logId: string, name: string) => Promise<void>;
 }
 
-const LogNameCell: React.FC<LogNameCellProps> = ({ log, canEdit, onRename }) => {
+const LogNameCell: React.FC<LogNameCellProps> = ({log, canEdit, onRename}) => {
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState(log.name ?? '');
     const [saving, setSaving] = useState(false);
@@ -212,8 +202,8 @@ const LogNameCell: React.FC<LogNameCellProps> = ({ log, canEdit, onRename }) => 
 
     if (editing) {
         return (
-            <Box display="flex" alignItems="center" gap={0.5} width="100%" onClick={stopRowClick}>
-                <TextField
+            <div className="log-name-edit-row" onClick={stopRowClick}>
+                <Input
                     value={draft}
                     onChange={(e) => setDraft(e.target.value)}
                     onKeyDown={(e) => {
@@ -224,60 +214,62 @@ const LogNameCell: React.FC<LogNameCellProps> = ({ log, canEdit, onRename }) => 
                             cancelEditing();
                         }
                     }}
-                    size="small"
                     autoFocus
                     disabled={saving}
-                    fullWidth
-                    inputProps={{ maxLength: 100 }}
-                    sx={{
-                        flex: 1,
-                        minWidth: 0,
-                        '& .MuiInputBase-input': { color: 'white', py: 0.5 },
-                        '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.3)' },
-                    }}
+                    maxLength={100}
+                    className="log-name-edit-input"
                 />
-                <IconButton aria-label="save log name" size="small" onClick={() => void saveEditing()} disabled={saving} sx={{ flexShrink: 0 }}>
-                    <CheckIcon fontSize="small" sx={{ color: 'white' }} />
-                </IconButton>
-                <IconButton aria-label="cancel edit" size="small" onClick={cancelEditing} disabled={saving} sx={{ flexShrink: 0 }}>
-                    <CloseIcon fontSize="small" sx={{ color: 'white' }} />
-                </IconButton>
-            </Box>
+                <Button
+                    aria-label="save log name"
+                    variant="ghost"
+                    size="icon"
+                    className="size-8 shrink-0 text-white"
+                    onClick={() => void saveEditing()}
+                    disabled={saving}
+                >
+                    <Check className="size-4"/>
+                </Button>
+                <Button
+                    aria-label="cancel edit"
+                    variant="ghost"
+                    size="icon"
+                    className="size-8 shrink-0 text-white"
+                    onClick={cancelEditing}
+                    disabled={saving}
+                >
+                    <X className="size-4"/>
+                </Button>
+            </div>
         );
     }
 
     return (
-        <Box display="flex" alignItems="center" width="100%" gap={1}>
-            <Link
-                component={RouterLink}
+        <div className="log-name-display-row">
+            <RouterLink
                 to={`/log/${log.id}`}
                 onClick={stopRowClick}
-                underline="hover"
-                sx={{
-                    ...logNameTextSx(!!log.name),
-                    flex: 1,
-                    minWidth: 0,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                }}
+                className={cn(
+                    'link min-w-0 flex-1 truncate',
+                    logNameTextClass(!!log.name),
+                )}
             >
                 {log.name ?? 'Unnamed'}
-            </Link>
+            </RouterLink>
             {canEdit && (
-                <IconButton
+                <Button
                     aria-label="edit log name"
-                    size="small"
+                    variant="ghost"
+                    size="icon"
+                    className="ml-auto size-8 shrink-0"
                     onClick={(e) => {
                         stopRowClick(e);
                         startEditing();
                     }}
-                    sx={{ flexShrink: 0, ml: 'auto' }}
                 >
-                    <EditIcon fontSize="small" sx={{ color: 'rgba(255,255,255,0.7)' }} />
-                </IconButton>
+                    <Pencil className="size-4 text-white/70"/>
+                </Button>
             )}
-        </Box>
+        </div>
     );
 };
 
@@ -285,38 +277,28 @@ interface LogsPageHeaderProps {
     uploaderId?: string;
 }
 
-const LogsPageHeader: React.FC<LogsPageHeaderProps> = ({ uploaderId }) => (
-    <Box sx={pageHeaderContainerSx}>
-        <Box sx={pageHeaderIconBoxSx}>
-            <FolderOpenOutlinedIcon sx={{ fontSize: 32, color: colors.upload.dragActive }} />
-        </Box>
-        <Box>
-            <Link
-                component={RouterLink}
+const LogsPageHeader: React.FC<LogsPageHeaderProps> = ({uploaderId}) => (
+    <div className={pageHeaderClass}>
+        <div className={pageHeaderIconClass}>
+            <FolderOpen className="size-8" style={{color: colors.upload.dragActive}} aria-hidden/>
+        </div>
+        <div>
+            <RouterLink
                 to={buildProfileHref(uploaderId || '')}
-                underline="hover"
-                sx={pageHeaderTitleWrapperSx}
+                className={cn(pageHeaderTitleAccountClass, 'link')}
             >
-                <Typography
-                    component="span"
-                    variant="h4"
-                    sx={pageHeaderTitleTypographySx}
-                >
-                    {displayUsername(uploaderId || 'Unknown User')}
-                </Typography>
-            </Link>
-            <Typography sx={pageHeaderSubtitleSx}>
-                Uploaded logs
-            </Typography>
-        </Box>
-    </Box>
+                {displayUsername(uploaderId || 'Unknown User')}
+            </RouterLink>
+            <p className={pageHeaderSubtitleClass}>Uploaded logs</p>
+        </div>
+    </div>
 );
 
 const Logs: React.FC = () => {
-    const { uploaderId } = useParams<{ uploaderId: string }>();
+    const {uploaderId} = useParams<{ uploaderId: string }>();
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
-    const { user, getAccessTokenSilently } = useAuth0();
+    const {user, getAccessTokenSilently} = useAuth0();
     const {enqueueSnackbar} = useSnackbar();
 
     const contentParam = searchParams.get('content');
@@ -329,8 +311,6 @@ const Logs: React.FC = () => {
     const [logs, setLogs] = useState<LogItem[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-
-    // Sorting state
     const [orderBy, setOrderBy] = useState<SortKey>('uploadedAt');
     const [order, setOrder] = useState<Order>('desc');
     const canEditLogs = user?.username === uploaderId;
@@ -361,14 +341,15 @@ const Logs: React.FC = () => {
     };
 
     const action = (snackbarId: SnackbarKey) => (
-        <IconButton
+        <Button
             aria-label="close"
-            size="small"
+            variant="ghost"
+            size="icon"
+            className="size-8 text-inherit"
             onClick={() => closeSnackbar(snackbarId)}
-            sx={{ color: 'inherit' }}
         >
-            <CloseIcon fontSize="small" />
-        </IconButton>
+            <X className="size-4"/>
+        </Button>
     );
 
     const fetchLogs = useCallback(async () => {
@@ -483,7 +464,7 @@ const Logs: React.FC = () => {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name: name.trim() || null }),
+                body: JSON.stringify({name: name.trim() || null}),
             });
 
             if (!resp.ok) {
@@ -491,14 +472,14 @@ const Logs: React.FC = () => {
                 throw new Error(body.error || `Rename failed with status ${resp.status}`);
             }
 
-            const data: { name: string | null } = await resp.json();
+            const data: {name: string | null} = await resp.json();
             setLogs((prev) =>
-                prev?.map((log) => (log.id === logId ? { ...log, name: data.name } : log)) ?? null
+                prev?.map((log) => (log.id === logId ? {...log, name: data.name} : log)) ?? null,
             );
-            enqueueSnackbar('Log renamed', { variant: 'success', autoHideDuration: 1000, action });
+            enqueueSnackbar('Log renamed', {variant: 'success', autoHideDuration: 1000, action});
         } catch (err: any) {
             console.error('Failed to rename log:', err);
-            enqueueSnackbar(err.message || 'Failed to rename log', { variant: 'error', action });
+            enqueueSnackbar(err.message || 'Failed to rename log', {variant: 'error', action});
             throw err;
         }
     };
@@ -518,7 +499,6 @@ const Logs: React.FC = () => {
             if (!resp.ok) {
                 throw new Error(`Delete failed with status ${resp.status}`);
             }
-            // Remove deleted log from state
             enqueueSnackbar('Log Deleted', {variant: 'success', autoHideDuration: 1000, action});
             setLogs((prev) => prev?.filter((log) => log.id !== logId) ?? null);
         } catch (err: any) {
@@ -534,7 +514,7 @@ const Logs: React.FC = () => {
     };
 
     const renderFilters = () => (
-        <FilterToolbar sx={{ mb: 2 }}>
+        <FilterToolbar className="mb-4">
             <FilterSelect
                 field="content"
                 value={content.value}
@@ -542,7 +522,7 @@ const Logs: React.FC = () => {
                     value: option.value,
                     label: option.label,
                 }))}
-                sx={{minWidth: {xs: 100, sm: 140}}}
+                className="min-w-[100px] sm:min-w-[140px]"
                 onChange={(nextContentValue) => {
                     const selectedContent = RECENT_ENCOUNTERS_CONTENT_OPTIONS.find(
                         (option) => option.value === nextContentValue,
@@ -562,7 +542,7 @@ const Logs: React.FC = () => {
                     field="team"
                     value={playerCount}
                     compact
-                    sx={filterFieldCompactSx}
+                    className={filterFieldCompactClass}
                     options={buildBrowsePlayerCountOptions(content.playerCounts)}
                     onChange={(count) => {
                         setPlayerCount(count);
@@ -575,21 +555,23 @@ const Logs: React.FC = () => {
 
     if (loading) {
         return (
-            <Box sx={pageContainerSx}>
-                <LogsPageHeader uploaderId={uploaderId} />
-                <Box display="flex" justifyContent="center" alignItems="center" py={6}>
-                    <CircularProgress color="inherit" />
-                </Box>
-            </Box>
+            <div className={cn(contentColumnClass, 'mt-2 px-2 pb-4 max-[1279px]:px-1')}>
+                <LogsPageHeader uploaderId={uploaderId}/>
+                <div className="flex items-center justify-center py-12">
+                    <Spinner className="text-white"/>
+                </div>
+            </div>
         );
     }
 
     if (error) {
         return (
-            <Box sx={pageContainerSx}>
-                <LogsPageHeader uploaderId={uploaderId} />
-                <Alert severity="error">{error}</Alert>
-            </Box>
+            <div className={cn(contentColumnClass, 'mt-2 px-2 pb-4 max-[1279px]:px-1')}>
+                <LogsPageHeader uploaderId={uploaderId}/>
+                <Alert variant="destructive">
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
+            </div>
         );
     }
 
@@ -600,149 +582,124 @@ const Logs: React.FC = () => {
 
     if (!logs || logs.length === 0) {
         return (
-            <Box sx={pageContainerSx}>
-                <LogsPageHeader uploaderId={uploaderId} />
+            <div className={cn(contentColumnClass, 'mt-2 px-2 pb-4 max-[1279px]:px-1')}>
+                <LogsPageHeader uploaderId={uploaderId}/>
                 {renderFilters()}
-                <Typography variant="h6" sx={{ color: colors.text.primary }}>
-                    {emptyMessage}
-                </Typography>
-            </Box>
+                <h2 className="text-h6 text-[var(--color-text-primary)]">{emptyMessage}</h2>
+            </div>
         );
     }
 
     const sortedLogs = logs.slice().sort(getComparator(order, orderBy));
 
     return (
-        <Box sx={pageContainerSx}>
-            <LogsPageHeader uploaderId={uploaderId} />
+        <div className={cn(contentColumnClass, 'mt-2 px-2 pb-4 max-[1279px]:px-1')}>
+            <LogsPageHeader uploaderId={uploaderId}/>
             {renderFilters()}
 
-            <TableContainer component={Paper} sx={{ backgroundColor: 'transparent', boxShadow: 'none', width: '100%' }}>
-                <Table sx={{ tableLayout: 'auto', width: '100%' }}>
-                    <TableHead>
-                        <TableRow>
-                            {/* Log Name Column */}
-                            <TableCell sx={nameColumnSx}>
-                                <TableSortLabel
-                                    active={orderBy === 'name'}
-                                    direction={orderBy === 'name' ? order : 'asc'}
-                                    onClick={() => handleRequestSort('name')}
-                                    sx={{ color: 'white', '& .MuiTableSortLabel-icon': { color: 'white !important' } }}
-                                >
-                                    <strong>Name</strong>
-                                </TableSortLabel>
-                            </TableCell>
-
-                            {/* Uploaded Column */}
-                            <TableCell sx={shrinkColumnSx}>
-                                <TableSortLabel
-                                    active={orderBy === 'uploadedAt'}
-                                    direction={orderBy === 'uploadedAt' ? order : 'asc'}
-                                    onClick={() => handleRequestSort('uploadedAt')}
-                                    sx={{ color: 'white', '& .MuiTableSortLabel-icon': { color: 'white !important' } }}
-                                >
-                                    <strong>Uploaded</strong>
-                                </TableSortLabel>
-                            </TableCell>
-
-                            {/* # Fights Column */}
-                            <TableCell align="right" sx={{ ...shrinkColumnSx, [media.mobileDown]: { display: 'none' } }}>
-                                <TableSortLabel
-                                    active={orderBy === 'fights'}
-                                    direction={orderBy === 'fights' ? order : 'asc'}
-                                    onClick={() => handleRequestSort('fights')}
-                                    sx={{ color: 'white', '& .MuiTableSortLabel-icon': { color: 'white !important' } }}
-                                >
-                                    <strong># Fights</strong>
-                                </TableSortLabel>
-                            </TableCell>
-
-                            {/* # Fight Groups Column */}
-                            <TableCell align="right" sx={{ ...shrinkColumnSx, [media.mobileDown]: { display: 'none' } }}>
-                                <TableSortLabel
-                                    active={orderBy === 'fightGroups'}
-                                    direction={orderBy === 'fightGroups' ? order : 'asc'}
-                                    onClick={() => handleRequestSort('fightGroups')}
-                                    sx={{ color: 'white', '& .MuiTableSortLabel-icon': { color: 'white !important' } }}
-                                >
-                                    <strong># Fight Groups</strong>
-                                </TableSortLabel>
-                            </TableCell>
-
-                            {/* Delete Column */}
-                            {canEditLogs && (
-                                <TableCell align="center" sx={shrinkColumnSx}>
-                                </TableCell>
-                            )}
-                        </TableRow>
-                    </TableHead>
-
-                    <TableBody>
+            <div className="app-table-container bg-transparent shadow-none">
+                <table className="app-table w-full table-auto">
+                    <thead>
+                        <tr>
+                            <th className="app-table-cell--name">
+                                <SortHeader
+                                    label="Name"
+                                    sortKey="name"
+                                    orderBy={orderBy}
+                                    order={order}
+                                    onSort={handleRequestSort}
+                                />
+                            </th>
+                            <th className="app-table-cell--nowrap">
+                                <SortHeader
+                                    label="Uploaded"
+                                    sortKey="uploadedAt"
+                                    orderBy={orderBy}
+                                    order={order}
+                                    onSort={handleRequestSort}
+                                />
+                            </th>
+                            <th className="app-table-cell--nowrap app-table-cell--hide-mobile text-right">
+                                <SortHeader
+                                    label="# Fights"
+                                    sortKey="fights"
+                                    orderBy={orderBy}
+                                    order={order}
+                                    onSort={handleRequestSort}
+                                />
+                            </th>
+                            <th className="app-table-cell--nowrap app-table-cell--hide-mobile text-right">
+                                <SortHeader
+                                    label="# Fight Groups"
+                                    sortKey="fightGroups"
+                                    orderBy={orderBy}
+                                    order={order}
+                                    onSort={handleRequestSort}
+                                />
+                            </th>
+                            {canEditLogs && <th className="app-table-cell--nowrap text-center"/>}
+                        </tr>
+                    </thead>
+                    <tbody>
                         {sortedLogs.map((log) => {
                             const parsing = isParsingLog(log);
 
                             return (
-                            <TableRow
-                                key={log.id}
-                                {...(parsing ? {} : logTableRowProps(navigate, log.id))}
-                                sx={parsing ? {
-                                    cursor: 'default',
-                                    '&:hover': {backgroundColor: 'transparent'},
-                                } : undefined}
-                            >
-                                <TableCell sx={{ ...nameColumnSx, ...tableCellPaddingSx }}>
-                                    {parsing ? (
-                                        <Box sx={{display: 'flex', alignItems: 'center', gap: 1, color: colors.text.muted}}>
-                                            <CircularProgress size={14} sx={{color: colors.upload.dragActive}}/>
-                                            <Typography sx={{...logNameTextSx, color: colors.text.muted}}>
-                                                Parsing {log.processingProgress ?? 0}%
-                                            </Typography>
-                                        </Box>
-                                    ) : (
-                                        <LogNameCell log={log} canEdit={canEditLogs} onRename={handleRename} />
-                                    )}
-                                </TableCell>
-
-                                <TableCell sx={{ ...shrinkColumnSx, ...tableCellPaddingSx }}>
-                                    <Box component="span" sx={{ [media.desktopUp]: { display: 'none' } }}>
-                                        {format(new Date(log.uploadedAt), 'MMM d, yyyy')}
-                                    </Box>
-                                    <Box component="span" sx={{ display: 'none', [media.desktopUp]: { display: 'inline' } }}>
-                                        {format(new Date(log.uploadedAt), 'PPp')}
-                                    </Box>
-                                </TableCell>
-
-                                <TableCell align="right" sx={{ ...shrinkColumnSx, ...tableCellPaddingSx, [media.mobileDown]: { display: 'none' } }}>
-                                    {parsing ? '—' : log._count.fights}
-                                </TableCell>
-
-                                <TableCell align="right" sx={{ ...shrinkColumnSx, ...tableCellPaddingSx, [media.mobileDown]: { display: 'none' } }}>
-                                    {parsing ? '—' : log._count.fightGroups}
-                                </TableCell>
-
-                                {canEditLogs && (
-                                    <TableCell align="center" sx={{ ...shrinkColumnSx, ...tableCellPaddingSx }}>
-                                        {!parsing && (
-                                        <IconButton
-                                            aria-label="delete"
-                                            onClick={(e) => {
-                                                stopRowClick(e);
-                                                void handleDelete(log.id);
-                                            }}
-                                            size="small"
-                                        >
-                                            <DeleteIcon fontSize="small" sx={{ color: 'white' }} />
-                                        </IconButton>
+                                <tr
+                                    key={log.id}
+                                    {...(parsing ? {className: 'app-table-row--static'} : logTableRowProps(navigate, log.id))}
+                                >
+                                    <td className="app-table-cell--name app-table-cell--py">
+                                        {parsing ? (
+                                            <div className="parsing-log-row">
+                                                <Spinner size="sm" className="text-[var(--color-upload-drag-active)]"/>
+                                                <span className={logNameTextClass(true)}>
+                                                    Parsing {log.processingProgress ?? 0}%
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <LogNameCell log={log} canEdit={canEditLogs} onRename={handleRename}/>
                                         )}
-                                    </TableCell>
-                                )}
-                            </TableRow>
+                                    </td>
+                                    <td className="app-table-cell--nowrap app-table-cell--py">
+                                        <span className="date-responsive-short">
+                                            {format(new Date(log.uploadedAt), 'MMM d, yyyy')}
+                                        </span>
+                                        <span className="date-responsive-full">
+                                            {format(new Date(log.uploadedAt), 'PPp')}
+                                        </span>
+                                    </td>
+                                    <td className="app-table-cell--nowrap app-table-cell--hide-mobile app-table-cell--py text-right">
+                                        {parsing ? '—' : log._count.fights}
+                                    </td>
+                                    <td className="app-table-cell--nowrap app-table-cell--hide-mobile app-table-cell--py text-right">
+                                        {parsing ? '—' : log._count.fightGroups}
+                                    </td>
+                                    {canEditLogs && (
+                                        <td className="app-table-cell--nowrap app-table-cell--py text-center">
+                                            {!parsing && (
+                                                <Button
+                                                    aria-label="delete"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="size-8 text-white"
+                                                    onClick={(e) => {
+                                                        stopRowClick(e);
+                                                        void handleDelete(log.id);
+                                                    }}
+                                                >
+                                                    <Trash2 className="size-4"/>
+                                                </Button>
+                                            )}
+                                        </td>
+                                    )}
+                                </tr>
                             );
                         })}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Box>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     );
 };
 

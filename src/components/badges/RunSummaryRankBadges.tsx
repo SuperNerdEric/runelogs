@@ -39,7 +39,7 @@ const RunSummaryRankBadges: React.FC<RunSummaryRankBadgesProps> = ({
     }
 
     return (
-        <RankBadgeCallout sx={{mb: 2}}>
+        <RankBadgeCallout className="mb-4">
             {entries.map((entry, index) => (
                 <PercentileRankBadge
                     key={`${entry.category}-${entry.playerId}-${index}`}

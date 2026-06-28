@@ -14,6 +14,8 @@ export const cssVariables: Record<string, string> = {
     '--color-bg-top-bar': colors.background.topBar,
     '--color-bg-surface': colors.background.surface,
     '--color-bg-surface-alt': colors.background.surfaceAlt,
+    '--color-bg-surface-dropdown': colors.background.surfaceDropdown,
+    '--color-bg-surface-selected': colors.background.surfaceSelected,
     '--color-bg-row-even': colors.background.rowEven,
     '--color-bg-row-odd': colors.background.rowOdd,
     '--color-bg-row-hover': colors.background.rowHover,
@@ -28,6 +30,7 @@ export const cssVariables: Record<string, string> = {
 
     '--color-text-primary': colors.text.primary,
     '--color-text-gold': colors.text.gold,
+    '--color-text-logs': colors.text.logs,
     '--color-text-muted': colors.text.muted,
     '--color-text-account': colors.text.rune,
     '--color-text-player': colors.text.player,
@@ -49,6 +52,12 @@ export const cssVariables: Record<string, string> = {
     '--color-border-black': colors.border.black,
     '--color-border-white': colors.border.white,
 
+    '--color-upload-drag-active': colors.upload.dragActive,
+    '--color-fight-failure': colors.fight.failure,
+    '--color-fight-success': colors.fight.success,
+    '--color-bg-hover': colors.background.hover,
+    '--color-bg-black': colors.background.black,
+
     '--color-switch-tan': colors.switch.tan,
 
     '--font-body': fonts.body,
@@ -69,6 +78,8 @@ export const cssVariables: Record<string, string> = {
     '--font-size-dropdown-fight': fontSizes.dropdownFight,
 
     '--layout-content-max-width': `${layout.contentMaxWidth}px`,
+    '--layout-top-bar-height': `${layout.topBarHeight}px`,
+    '--font-size-top-bar-logo': fontSizes.topBarLogo,
 
     '--fight-tile-min-base': fightTileCssValues.minBase,
     '--fight-tile-max': fightTileCssValues.max,

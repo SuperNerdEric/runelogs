@@ -1,28 +1,19 @@
 import React, {useMemo, useRef, useState} from 'react';
-import {
-    Autocomplete,
-    Box,
-    InputAdornment,
-    ListItemIcon,
-    ListItemText,
-    TextField,
-    useMediaQuery,
-    useTheme,
-} from '@mui/material';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import {Fight} from "../models/Fight";
-import {LogTypes} from "../models/LogLine";
-import {ActorFilter} from "../utils/actorFilter";
-import {EquipmentFilter} from "../utils/equipmentFilter";
-import {PrayerFilter} from "../utils/prayerFilter";
-import {colors, layout} from "../theme";
-import {getActorFromLog} from "../utils/actorUtils";
-import {itemIdMap} from "../lib/itemIdMap";
-import {prayerIdMap} from "../lib/prayerIdMap";
-import {getPrayerImageUrl} from "../lib/prayerImages";
-import {getItemImageUrl} from "./replay/PlayerEquipment";
+import {ArrowLeft, ChevronRight, ListFilter} from 'lucide-react';
+import {Popover, PopoverAnchor, PopoverContent} from '@/components/ui/popover';
+import {useIsMobile} from '@/hooks/useMediaQuery';
+import {cn} from '@/lib/utils';
+import {Fight} from '../models/Fight';
+import {LogTypes} from '../models/LogLine';
+import {ActorFilter} from '../utils/actorFilter';
+import {EquipmentFilter} from '../utils/equipmentFilter';
+import {PrayerFilter} from '../utils/prayerFilter';
+import {colors, layout} from '../theme';
+import {getActorFromLog} from '../utils/actorUtils';
+import {itemIdMap} from '../lib/itemIdMap';
+import {prayerIdMap} from '../lib/prayerIdMap';
+import {getPrayerImageUrl} from '../lib/prayerImages';
+import {getItemImageUrl} from './replay/PlayerEquipment';
 
 export type FilterOption =
     | { kind: 'source'; label: string; filter: ActorFilter }
@@ -57,6 +48,16 @@ const FILTER_ICON_MAX_SIZE = 22;
 
 const getCategoryLabel = (option: FilterOption): string => CATEGORY_LABELS[option.kind];
 
+const getDisplayOptionKey = (option: DisplayOption): string => {
+    if (option.type === 'item') {
+        return `${option.option.kind}-${option.label}`;
+    }
+    if (option.type === 'category') {
+        return `category-${option.category}`;
+    }
+    return 'back';
+};
+
 const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
     fight,
     onSelectSourceFilter,
@@ -68,8 +69,7 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
     const [open, setOpen] = useState(false);
     const [activeCategory, setActiveCategory] = useState<FilterCategory | null>(null);
     const keepOpenRef = useRef(false);
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMobile = useIsMobile();
 
     const itemOptions = useMemo(() => {
         const sourceNames = new Set<string>();
@@ -214,269 +214,202 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
         setInputValue('');
     };
 
+    const handleOpenChange = (nextOpen: boolean) => {
+        if (!nextOpen && keepOpenRef.current) {
+            keepOpenRef.current = false;
+            setOpen(true);
+            return;
+        }
+
+        setOpen(nextOpen);
+        if (!nextOpen) {
+            setActiveCategory(null);
+        }
+    };
+
+    const handleSelectCategory = (category: FilterCategory) => {
+        keepOpenRef.current = true;
+        setActiveCategory(category);
+        setInputValue('');
+        setOpen(true);
+    };
+
+    const handleSelectItem = (option: FilterOption) => {
+        applyFilter(option);
+        resetNavigation();
+        setOpen(false);
+    };
+
     if (!onSelectSourceFilter && !onSelectTargetFilter && !onSelectEquipmentFilter && !onSelectPrayerFilter) {
         return null;
     }
 
+    const placeholder = activeCategory
+        ? `Search ${CATEGORY_LABELS[activeCategory].toLowerCase()}...`
+        : isMobile
+            ? 'Filter'
+            : 'Filter by source, targets, equipment, and more...';
+
+    const noOptionsText = activeCategory ? 'No options' : 'No filter categories';
+
     return (
-        <Box sx={{width: '100%', maxWidth: layout.contentMaxWidth, mb: 1}}>
-            <Autocomplete
-                open={open}
-                onOpen={() => setOpen(true)}
-                onClose={(_, reason) => {
-                    if (keepOpenRef.current) {
-                        keepOpenRef.current = false;
-                        return;
-                    }
-                    if (reason === 'selectOption') {
-                        return;
-                    }
-                    setOpen(false);
-                    setActiveCategory(null);
-                }}
-                options={displayedOptions}
-                inputValue={inputValue}
-                onInputChange={(_, newValue, reason) => {
-                    if (reason === 'reset') {
-                        setInputValue('');
-                        return;
-                    }
-                    setInputValue(newValue);
-                }}
-                getOptionLabel={(option) => option.label}
-                isOptionEqualToValue={(option, value) =>
-                    option.type === value.type && option.label === value.label
-                }
-                filterOptions={(options) => options}
-                noOptionsText={activeCategory ? 'No options' : 'No filter categories'}
-                onChange={(_, option) => {
-                    if (!option) {
-                        return;
-                    }
-
-                    if (option.type === 'back') {
-                        goBackToCategories();
-                        return;
-                    }
-
-                    if (option.type === 'category') {
-                        keepOpenRef.current = true;
-                        setActiveCategory(option.category);
-                        setInputValue('');
-                        setOpen(true);
-                        return;
-                    }
-
-                    applyFilter(option.option);
-                    resetNavigation();
-                    setOpen(false);
-                }}
-                renderOption={(props, option) => {
-                    if (option.type === 'back') {
-                        const {key, onClick: _onClick, ...optionProps} = props;
-                        return (
-                            <Box
-                                component="li"
-                                key={key}
-                                {...optionProps}
-                                onClick={(event) => {
+        <div
+            className="filter-search-bar"
+            style={{maxWidth: `${layout.contentMaxWidth}px`}}
+        >
+            <Popover open={open} onOpenChange={handleOpenChange}>
+                <PopoverAnchor asChild>
+                    <div className="filter-search-bar__anchor">
+                        <div className="filter-search-bar__input-row">
+                            <button
+                                type="button"
+                                className={cn(
+                                    'filter-search-bar__start-icon',
+                                    activeCategory && 'filter-search-bar__start-icon--back',
+                                )}
+                                aria-label={activeCategory ? 'Back to categories' : undefined}
+                                onMouseDown={(event) => {
+                                    if (!activeCategory) {
+                                        return;
+                                    }
                                     event.preventDefault();
-                                    event.stopPropagation();
                                     goBackToCategories();
                                 }}
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 1,
-                                    color: 'lightblue',
-                                    borderBottom: `1px solid ${colors.border.default}`,
-                                }}
                             >
-                                <ListItemIcon sx={{minWidth: 'auto', color: 'lightblue'}}>
-                                    <ArrowBackIcon fontSize="small"/>
-                                </ListItemIcon>
-                                <ListItemText primary={option.label}/>
-                            </Box>
-                        );
-                    }
-
-                    if (option.type === 'category') {
-                        const {key, onClick: _onClick, ...optionProps} = props;
-                        return (
-                            <Box
-                                component="li"
-                                key={key}
-                                {...optionProps}
-                                onClick={(event) => {
-                                    event.preventDefault();
-                                    event.stopPropagation();
-                                    keepOpenRef.current = true;
-                                    setActiveCategory(option.category);
-                                    setInputValue('');
+                                {activeCategory ? (
+                                    <ArrowLeft size={20}/>
+                                ) : (
+                                    <ListFilter size={20}/>
+                                )}
+                            </button>
+                            <input
+                                type="text"
+                                className="filter-search-bar__input"
+                                value={inputValue}
+                                placeholder={placeholder}
+                                onChange={(event) => {
+                                    setInputValue(event.target.value);
                                     setOpen(true);
                                 }}
-                                sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}
-                            >
-                                <ListItemText primary={option.label}/>
-                                <ListItemIcon sx={{minWidth: 'auto', color: 'grey'}}>
-                                    <ChevronRightIcon fontSize="small"/>
-                                </ListItemIcon>
-                            </Box>
-                        );
-                    }
+                                onFocus={() => setOpen(true)}
+                                onKeyDown={(event) => {
+                                    if (event.key === 'Backspace' && !inputValue && activeCategory) {
+                                        event.preventDefault();
+                                        goBackToCategories();
+                                    }
+                                }}
+                            />
+                        </div>
+                    </div>
+                </PopoverAnchor>
+                <PopoverContent
+                    align="start"
+                    sideOffset={4}
+                    className="filter-search-bar__dropdown"
+                    onOpenAutoFocus={(event) => event.preventDefault()}
+                >
+                    <ul className="filter-search-bar__list" role="listbox">
+                        {displayedOptions.length === 0 ? (
+                            <li className="filter-search-bar__empty">{noOptionsText}</li>
+                        ) : (
+                            displayedOptions.map((option) => {
+                                if (option.type === 'back') {
+                                    return (
+                                        <li key={getDisplayOptionKey(option)}>
+                                            <button
+                                                type="button"
+                                                className="filter-search-bar__option filter-search-bar__option--back"
+                                                onMouseDown={(event) => event.preventDefault()}
+                                                onClick={() => goBackToCategories()}
+                                            >
+                                                <ArrowLeft size={16}/>
+                                                <span>{option.label}</span>
+                                            </button>
+                                        </li>
+                                    );
+                                }
 
-                    const showCategory = Boolean(inputValue.trim());
-                    const isEquipment = option.option.kind === 'equipment';
-                    const isPrayer = option.option.kind === 'prayer';
-                    const imageUrl = isEquipment
-                        ? getItemImageUrl(option.option.filter.id)
-                        : isPrayer
-                            ? getPrayerImageUrl(option.option.filter.id)
-                            : undefined;
+                                if (option.type === 'category') {
+                                    return (
+                                        <li key={getDisplayOptionKey(option)}>
+                                            <button
+                                                type="button"
+                                                className="filter-search-bar__option filter-search-bar__option--category"
+                                                onMouseDown={(event) => event.preventDefault()}
+                                                onClick={() => handleSelectCategory(option.category)}
+                                            >
+                                                <span>{option.label}</span>
+                                                <ChevronRight size={16} className="filter-search-bar__chevron"/>
+                                            </button>
+                                        </li>
+                                    );
+                                }
 
-                    const showIconColumn = isEquipment || isPrayer;
+                                const showCategory = Boolean(inputValue.trim());
+                                const isEquipment = option.option.kind === 'equipment';
+                                const isPrayer = option.option.kind === 'prayer';
+                                let imageUrl: string | undefined;
+                                if (option.option.kind === 'equipment') {
+                                    imageUrl = getItemImageUrl(option.option.filter.id);
+                                } else if (option.option.kind === 'prayer') {
+                                    imageUrl = getPrayerImageUrl(option.option.filter.id);
+                                }
+                                const showIconColumn = isEquipment || isPrayer;
 
-                    return (
-                        <Box
-                            component="li"
-                            {...props}
-                            key={`${option.option.kind}-${option.label}`}
-                            sx={{display: 'flex', alignItems: 'center'}}
-                        >
-                            {showIconColumn && (
-                                <Box
-                                    sx={{
-                                        width: FILTER_ICON_COLUMN_WIDTH,
-                                        minWidth: FILTER_ICON_COLUMN_WIDTH,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        flexShrink: 0,
-                                        mr: 0.75,
-                                    }}
-                                >
-                                    {imageUrl && (
-                                        <Box
-                                            component="img"
-                                            src={imageUrl}
-                                            alt=""
-                                            sx={{
-                                                maxHeight: FILTER_ICON_MAX_SIZE,
-                                                maxWidth: FILTER_ICON_MAX_SIZE,
-                                                width: 'auto',
-                                                height: 'auto',
-                                                objectFit: 'contain',
-                                                backgroundColor: isEquipment ? colors.background.tableHeadAlt : 'transparent',
-                                            }}
-                                        />
-                                    )}
-                                </Box>
-                            )}
-                            <Box sx={{flex: 1, minWidth: 0}}>
-                                {showCategory ? (
-                                    <ListItemText
-                                        primary={option.label}
-                                        secondary={getCategoryLabel(option.option)}
-                                        secondaryTypographyProps={{sx: {color: 'lightblue', fontSize: '0.75rem'}}}
-                                        sx={{my: 0}}
-                                    />
-                                ) : (
-                                    <ListItemText primary={option.label} sx={{my: 0}}/>
-                                )}
-                            </Box>
-                        </Box>
-                    );
-                }}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        placeholder={
-                            activeCategory
-                                ? `Search ${CATEGORY_LABELS[activeCategory].toLowerCase()}...`
-                                : isMobile
-                                    ? 'Filter'
-                                    : 'Filter by source, targets, equipment, and more...'
-                        }
-                        size="small"
-                        onKeyDown={(event) => {
-                            if (event.key === 'Backspace' && !inputValue && activeCategory) {
-                                event.preventDefault();
-                                goBackToCategories();
-                            }
-                        }}
-                        InputProps={{
-                            ...params.InputProps,
-                            startAdornment: (
-                                <>
-                                    <InputAdornment position="start">
-                                        {activeCategory ? (
-                                            <ArrowBackIcon
-                                                sx={{color: 'lightblue', cursor: 'pointer', fontSize: 20}}
-                                                onMouseDown={(event) => {
-                                                    event.preventDefault();
-                                                    goBackToCategories();
-                                                }}
-                                            />
-                                        ) : (
-                                            <FilterListIcon sx={{color: 'grey'}}/>
-                                        )}
-                                    </InputAdornment>
-                                    {params.InputProps.startAdornment}
-                                </>
-                            ),
-                        }}
-                        sx={{
-                            '& .MuiInputBase-root': {
-                                bgcolor: colors.background.surface,
-                                color: 'white',
-                                borderRadius: '5px',
-                            },
-                            '& .MuiOutlinedInput-notchedOutline': {
-                                borderColor: colors.border.default,
-                                borderWidth: '3px',
-                            },
-                            '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-                                borderColor: colors.border.default,
-                            },
-                            '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                borderColor: colors.border.default,
-                                borderWidth: '3px',
-                            },
-                            '& .MuiSvgIcon-root': {
-                                color: 'grey',
-                            },
-                        }}
-                    />
-                )}
-                componentsProps={{
-                    popper: {
-                        placement: 'bottom-start',
-                        modifiers: [
-                            {
-                                name: 'flip',
-                                enabled: true,
-                                options: {
-                                    fallbackPlacements: ['bottom-start', 'bottom', 'top-start', 'top'],
-                                },
-                            },
-                        ],
-                    },
-                    paper: {
-                        sx: {
-                            bgcolor: colors.background.surface,
-                            color: 'white',
-                            border: `3px solid ${colors.border.default}`,
-                            borderRadius: '5px',
-                            boxShadow: 'none',
-                        },
-                    },
-                }}
-                blurOnSelect={false}
-                clearOnBlur={false}
-                handleHomeEndKeys
-                value={null}
-            />
-        </Box>
+                                return (
+                                    <li key={getDisplayOptionKey(option)}>
+                                        <button
+                                            type="button"
+                                            className="filter-search-bar__option filter-search-bar__option--item"
+                                            onMouseDown={(event) => event.preventDefault()}
+                                            onClick={() => handleSelectItem(option.option)}
+                                        >
+                                            {showIconColumn && (
+                                                <span
+                                                    className="filter-search-bar__icon-column"
+                                                    style={{width: FILTER_ICON_COLUMN_WIDTH, minWidth: FILTER_ICON_COLUMN_WIDTH}}
+                                                >
+                                                    {imageUrl && (
+                                                        <img
+                                                            src={imageUrl}
+                                                            alt=""
+                                                            className="filter-search-bar__icon-image"
+                                                            style={{
+                                                                maxHeight: FILTER_ICON_MAX_SIZE,
+                                                                maxWidth: FILTER_ICON_MAX_SIZE,
+                                                                backgroundColor: isEquipment
+                                                                    ? colors.background.tableHeadAlt
+                                                                    : 'transparent',
+                                                            }}
+                                                        />
+                                                    )}
+                                                </span>
+                                            )}
+                                            <span className="filter-search-bar__option-text">
+                                                {showCategory ? (
+                                                    <>
+                                                        <span className="filter-search-bar__option-primary">
+                                                            {option.label}
+                                                        </span>
+                                                        <span className="filter-search-bar__option-secondary">
+                                                            {getCategoryLabel(option.option)}
+                                                        </span>
+                                                    </>
+                                                ) : (
+                                                    <span className="filter-search-bar__option-primary">
+                                                        {option.label}
+                                                    </span>
+                                                )}
+                                            </span>
+                                        </button>
+                                    </li>
+                                );
+                            })
+                        )}
+                    </ul>
+                </PopoverContent>
+            </Popover>
+        </div>
     );
 };
 

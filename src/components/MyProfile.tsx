@@ -1,30 +1,16 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Link as RouterLink, useNavigate, useParams} from 'react-router-dom';
 import {useAuth0} from '@auth0/auth0-react';
-import {
-    Alert,
-    Box,
-    CircularProgress,
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    Divider,
-    Grid,
-    IconButton,
-    Typography,
-} from '@mui/material';
+import {Pencil} from 'lucide-react';
 import AppTooltip from './AppTooltip';
-import CloseIcon from '@mui/icons-material/Close';
-import EditIcon from '@mui/icons-material/Edit';
 import AvatarIcon from './AvatarIcon';
 import ProfileDetailsForm from './ProfileDetailsForm';
 import ProfileDetailsView from './ProfileDetailsView';
 import {
     PAGE_HEADER_ICON_SIZE,
-    pageHeaderContainerSx,
-    pageHeaderSubtitleLinkSx,
-    pageHeaderTitleTypographySx,
-    pageHeaderTitleWrapperSx,
+    pageHeaderClass,
+    pageHeaderSubtitleLinkClass,
+    pageHeaderTitleAccountClass,
 } from './pageHeaderStyles';
 import {useUserProfile} from '../hooks/useUserProfile';
 import {
@@ -35,13 +21,21 @@ import {
     isAvatarId,
     PublicUserProfile,
 } from '../utils/avatars';
-import {colors, contentColumnSx, fontSizes} from '../theme';
+import {contentColumnClass} from '../theme';
 import {buildUploaderLogsHref} from '../utils/leaderboardContent';
 import {displayUsername} from '../utils/utils';
+import {Alert, AlertDescription} from '@/components/ui/alert';
+import {Spinner} from '@/components/ui/spinner';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import {cn} from '@/lib/utils';
+import {colors} from '../theme';
 
-const PROFILE_AVATAR_SIZE = 60;
 const AVATAR_PREVIEW_SIZE = 96;
-const AVATAR_TOOLTIP_WIDTH = 300;
 
 const MyProfile: React.FC = () => {
     const {profileId} = useParams<{profileId?: string}>();
@@ -157,319 +151,161 @@ const MyProfile: React.FC = () => {
 
     if (pageLoading) {
         return (
-            <Box sx={{display: 'flex', justifyContent: 'center', py: 6}}>
-                <CircularProgress />
-            </Box>
+            <div className="flex justify-center py-12">
+                <Spinner className="size-8 text-white"/>
+            </div>
         );
     }
 
     if (!activeProfile) {
         return (
-            <Box sx={{...contentColumnSx, py: 2, px: 2}}>
+            <div className={cn(contentColumnClass, 'px-2 py-2')}>
                 {pageError && (
-                    <Alert severity="error">{pageError}</Alert>
+                    <Alert variant="destructive">
+                        <AlertDescription>{pageError}</AlertDescription>
+                    </Alert>
                 )}
-            </Box>
+            </div>
         );
     }
 
     return (
-        <Box sx={{...contentColumnSx, py: 2, px: 2}}>
-            <Box sx={pageHeaderContainerSx}>
+        <div className={cn(contentColumnClass, 'px-2 py-2')}>
+            <div className={pageHeaderClass}>
                 {currentAvatarId && (
                     isOwnProfile && profile ? (
-                        <AppTooltip title="Change Avatar" arrow placement="bottom" disableTouch>
-                            <Box
-                                component="button"
+                        <AppTooltip title="Change Avatar" side="bottom" disableTouch>
+                            <button
                                 type="button"
                                 onClick={() => {
                                     setSaveError(null);
                                     setPickerOpen(true);
                                 }}
                                 aria-label="Change avatar"
-                                sx={{
-                                    position: 'relative',
-                                    p: 0,
-                                    border: 'none',
-                                    borderRadius: '50%',
-                                    bgcolor: 'transparent',
-                                    cursor: 'pointer',
-                                    flexShrink: 0,
-                                    width: PAGE_HEADER_ICON_SIZE,
-                                    height: PAGE_HEADER_ICON_SIZE,
-                                    '&:hover .avatar-edit-overlay': {
-                                        opacity: 1,
-                                    },
-                                    '&:focus-visible': {
-                                        outline: `2px solid ${colors.upload.dragActive}`,
-                                        outlineOffset: 4,
-                                    },
-                                }}
+                                className="avatar-change-btn"
+                                style={{width: PAGE_HEADER_ICON_SIZE, height: PAGE_HEADER_ICON_SIZE}}
                             >
-                                <AvatarIcon avatarId={currentAvatarId} size={PAGE_HEADER_ICON_SIZE} />
-                                <Box
-                                    className="avatar-edit-overlay"
-                                    sx={{
-                                        position: 'absolute',
-                                        inset: 0,
-                                        borderRadius: '50%',
-                                        bgcolor: 'rgba(0, 0, 0, 0.55)',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        opacity: 0,
-                                        transition: 'opacity 0.15s ease',
-                                        pointerEvents: 'none',
-                                    }}
-                                >
-                                    <EditIcon sx={{color: colors.text.primary, fontSize: 24}} />
-                                </Box>
-                            </Box>
+                                <AvatarIcon avatarId={currentAvatarId} size={PAGE_HEADER_ICON_SIZE}/>
+                                <span className="avatar-edit-overlay">
+                                    <Pencil className="size-6 text-white"/>
+                                </span>
+                            </button>
                         </AppTooltip>
                     ) : (
-                        <Box
-                            sx={{
-                                flexShrink: 0,
-                                width: PAGE_HEADER_ICON_SIZE,
-                                height: PAGE_HEADER_ICON_SIZE,
-                            }}
+                        <div
+                            className="shrink-0"
+                            style={{width: PAGE_HEADER_ICON_SIZE, height: PAGE_HEADER_ICON_SIZE}}
                         >
-                            <AvatarIcon avatarId={currentAvatarId} size={PAGE_HEADER_ICON_SIZE} />
-                        </Box>
+                            <AvatarIcon avatarId={currentAvatarId} size={PAGE_HEADER_ICON_SIZE}/>
+                        </div>
                     )
                 )}
-                <Box>
-                    <Box sx={pageHeaderTitleWrapperSx}>
-                        <Typography
-                            component="span"
-                            variant="h4"
-                            sx={pageHeaderTitleTypographySx}
-                        >
-                            {displayUsername(displayName)}
-                        </Typography>
-                    </Box>
+                <div>
+                    <h1 className={pageHeaderTitleAccountClass}>
+                        {displayUsername(displayName)}
+                    </h1>
                     {logsUsername && (
-                        <Typography
-                            component={RouterLink}
+                        <RouterLink
                             to={buildUploaderLogsHref(logsUsername)}
-                            sx={pageHeaderSubtitleLinkSx}
+                            className={pageHeaderSubtitleLinkClass}
                         >
                             View logs {'->'}
-                        </Typography>
+                        </RouterLink>
                     )}
-                </Box>
-            </Box>
+                </div>
+            </div>
 
             {pageError && (
-                <Alert severity="error" sx={{mb: 2}}>
-                    {pageError}
+                <Alert variant="destructive" className="mb-4">
+                    <AlertDescription>{pageError}</AlertDescription>
                 </Alert>
             )}
 
             {isOwnProfile && profile ? (
-                <ProfileDetailsForm profile={profile} onSave={updateProfileDetails} />
+                <ProfileDetailsForm profile={profile} onSave={updateProfileDetails}/>
             ) : (
-                <ProfileDetailsView profile={activeProfile} />
+                <ProfileDetailsView profile={activeProfile}/>
             )}
 
             {isOwnProfile && profile && (
-            <Dialog
-                open={pickerOpen}
-                onClose={() => setPickerOpen(false)}
-                maxWidth="md"
-                fullWidth
-                slotProps={{
-                    paper: {
-                        elevation: 8,
-                        sx: {
-                            '&&': {
-                                backgroundColor: colors.background.surface,
-                                backgroundImage: 'none',
-                            },
-                            border: `1px solid ${colors.border.default}`,
-                            borderRadius: 1,
-                        },
-                    },
-                }}
-            >
-                <DialogTitle
-                    sx={{
-                        position: 'relative',
-                        color: colors.text.primary,
-                        fontWeight: 600,
-                        fontSize: fontSizes.xl,
-                        pr: 6,
-                        pb: 2.5,
-                    }}
-                >
-                    Select an Avatar
-                    <IconButton
-                        onClick={() => setPickerOpen(false)}
-                        aria-label="Close avatar picker"
-                        sx={{
-                            position: 'absolute',
-                            right: 8,
-                            top: 8,
-                            color: colors.text.primary,
-                        }}
-                    >
-                        <CloseIcon />
-                    </IconButton>
-                </DialogTitle>
-                <Divider sx={{borderColor: colors.border.default}} />
-                <DialogContent sx={{pt: 3, pb: 3}}>
-                    {saveError && (
-                        <Alert severity="error" sx={{mb: 2}}>
-                            {saveError}
-                        </Alert>
-                    )}
-                    <Grid container spacing={2} justifyContent="center">
-                        {avatars.map((avatar) => {
-                            const isSelected = profile.avatarId === avatar.id;
-                            const isSaving = savingAvatarId === avatar.id;
+                <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
+                    <DialogContent className="max-w-3xl border-[var(--color-border-default)] bg-[var(--color-bg-surface)]">
+                        <DialogHeader>
+                            <DialogTitle className="pr-8 text-xl font-semibold text-[var(--color-text-primary)]">
+                                Select an Avatar
+                            </DialogTitle>
+                        </DialogHeader>
+                        <div className="border-t border-[var(--color-border-default)] pt-6">
+                            {saveError && (
+                                <Alert variant="destructive" className="mb-4">
+                                    <AlertDescription>{saveError}</AlertDescription>
+                                </Alert>
+                            )}
+                            <div className="avatar-picker-grid">
+                                {avatars.map((avatar) => {
+                                    const isSelected = profile.avatarId === avatar.id;
+                                    const isSaving = savingAvatarId === avatar.id;
 
-                            return (
-                                <Grid
-                                    item
-                                    xs={6}
-                                    sm={4}
-                                    md={3}
-                                    key={avatar.id}
-                                    sx={{display: 'flex', justifyContent: 'center'}}
-                                >
-                                    <AppTooltip
-                                        disableTouch
-                                        slotProps={{
-                                            tooltip: {
-                                                sx: {
-                                                    width: AVATAR_TOOLTIP_WIDTH,
-                                                    minWidth: AVATAR_TOOLTIP_WIDTH,
-                                                    maxWidth: AVATAR_TOOLTIP_WIDTH,
-                                                    px: 2,
-                                                    py: 1.75,
-                                                    boxSizing: 'border-box',
-                                                },
-                                            },
-                                        }}
-                                        title={
-                                            <Box
-                                                sx={{
-                                                    width: '100%',
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    alignItems: 'center',
-                                                    textAlign: 'center',
-                                                }}
-                                            >
-                                                <Typography
-                                                    component="span"
-                                                    sx={{
-                                                        display: 'block',
-                                                        width: '100%',
-                                                        fontSize: fontSizes.xl,
-                                                        fontWeight: 600,
-                                                        lineHeight: 1.25,
-                                                        color: colors.text.primary,
-                                                        textAlign: 'center',
-                                                    }}
-                                                >
-                                                    {AVATAR_LABELS[avatar.id]}
-                                                </Typography>
-                                                <Box
-                                                    sx={{
-                                                        width: '100%',
-                                                        mt: avatar.locked || unlockDates.get(avatar.id) ? 1 : 0,
-                                                        display: 'flex',
-                                                        alignItems: 'flex-start',
-                                                        justifyContent: 'center',
-                                                    }}
-                                                >
-                                                    {avatar.locked ? (
-                                                        <Typography
-                                                            component="span"
-                                                            sx={{
-                                                                fontSize: fontSizes.xs,
-                                                                lineHeight: 1.4,
-                                                                color: colors.fight.failure,
-                                                                textAlign: 'center',
-                                                            }}
-                                                        >
-                                                            {avatar.unlockHint}
-                                                        </Typography>
-                                                    ) : unlockDates.get(avatar.id) ? (
-                                                        <Typography
-                                                            component="span"
-                                                            sx={{
-                                                                fontSize: fontSizes.xs,
-                                                                lineHeight: 1.4,
-                                                                color: colors.fight.success,
-                                                                textAlign: 'center',
-                                                            }}
-                                                        >
-                                                            Unlocked {formatUnlockDate(unlockDates.get(avatar.id)!)}
-                                                        </Typography>
-                                                    ) : null}
-                                                </Box>
-                                            </Box>
-                                        }
-                                        arrow
-                                        placement="top"
-                                    >
-                                        <Box
-                                            component="button"
-                                            type="button"
-                                            onClick={() => void handleSelectAvatar(avatar.id, avatar.locked)}
-                                            disabled={avatar.locked || isSaving}
-                                            aria-label={AVATAR_LABELS[avatar.id]}
-                                            aria-pressed={isSelected}
-                                            sx={{
-                                                position: 'relative',
-                                                p: 0.5,
-                                                border: 'none',
-                                                borderRadius: '50%',
-                                                bgcolor: 'transparent',
-                                                cursor: avatar.locked ? 'not-allowed' : 'pointer',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                transition: 'transform 0.15s ease',
-                                                '&:hover:not(:disabled)': {
-                                                    transform: 'scale(1.04)',
-                                                },
-                                                '&:focus-visible': {
-                                                    outline: `2px solid ${colors.upload.dragActive}`,
-                                                    outlineOffset: 4,
-                                                },
-                                            }}
+                                    return (
+                                        <AppTooltip
+                                            key={avatar.id}
+                                            disableTouch
+                                            side="top"
+                                            className="avatar-tooltip-content"
+                                            title={
+                                                <div className="flex w-full flex-col items-center text-center">
+                                                    <span className="block w-full text-xl font-semibold leading-tight text-[var(--color-text-primary)]">
+                                                        {AVATAR_LABELS[avatar.id]}
+                                                    </span>
+                                                    {(avatar.locked || unlockDates.get(avatar.id)) && (
+                                                        <div className="mt-2 flex w-full items-start justify-center">
+                                                            {avatar.locked ? (
+                                                                <span
+                                                                    className="text-xs leading-snug text-center"
+                                                                    style={{color: colors.fight.failure}}
+                                                                >
+                                                                    {avatar.unlockHint}
+                                                                </span>
+                                                            ) : unlockDates.get(avatar.id) ? (
+                                                                <span
+                                                                    className="text-xs leading-snug text-center"
+                                                                    style={{color: colors.fight.success}}
+                                                                >
+                                                                    Unlocked {formatUnlockDate(unlockDates.get(avatar.id)!)}
+                                                                </span>
+                                                            ) : null}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            }
                                         >
-                                            <AvatarIcon
-                                                avatarId={avatar.id}
-                                                size={AVATAR_PREVIEW_SIZE}
-                                                locked={avatar.locked}
-                                                selected={isSelected}
-                                            />
-                                            {isSaving && (
-                                                <CircularProgress
-                                                    size={28}
-                                                    sx={{
-                                                        position: 'absolute',
-                                                        top: '50%',
-                                                        left: '50%',
-                                                        mt: '-14px',
-                                                        ml: '-14px',
-                                                    }}
+                                            <button
+                                                type="button"
+                                                onClick={() => void handleSelectAvatar(avatar.id, avatar.locked)}
+                                                disabled={avatar.locked || isSaving}
+                                                aria-label={AVATAR_LABELS[avatar.id]}
+                                                aria-pressed={isSelected}
+                                                className="avatar-picker-btn"
+                                            >
+                                                <AvatarIcon
+                                                    avatarId={avatar.id}
+                                                    size={AVATAR_PREVIEW_SIZE}
+                                                    locked={avatar.locked}
+                                                    selected={isSelected}
                                                 />
-                                            )}
-                                        </Box>
-                                    </AppTooltip>
-                                </Grid>
-                            );
-                        })}
-                    </Grid>
-                </DialogContent>
-            </Dialog>
+                                                {isSaving && (
+                                                    <Spinner className="absolute left-1/2 top-1/2 size-7 -translate-x-1/2 -translate-y-1/2"/>
+                                                )}
+                                            </button>
+                                        </AppTooltip>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </DialogContent>
+                </Dialog>
             )}
-        </Box>
+        </div>
     );
 };
 

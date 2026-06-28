@@ -1,14 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import {
-    Box,
-    Button,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow
-} from '@mui/material';
+import { Button } from '@/components/ui/button';
 import { Fight } from "../models/Fight";
 import { LogLine, LogTypes } from "../models/LogLine";
 import { Levels } from "../models/Levels";
@@ -143,27 +134,30 @@ const EventsTable: React.FC<EventsTableProps> = ({ fight, maxHeight, showSource 
     };
 
     return (
-        <Box sx={{ width: '100%', maxWidth: 1440, maxHeight: { xs: '70vh', sm: '70vh', md: maxHeight }}}>
-            <TableContainer sx={{ '& .MuiTableCell-root': { fontSize: '13px', '@media (max-width: 768px)': { fontSize: '12px', padding: '2px 3px' } } }}>
-                <Table style={{ tableLayout: 'auto' }}>
-                    <TableHead style={{ backgroundColor: '#494949' }}>
-                        <TableRow>
-                            <TableCell style={{ width: '50px', textAlign: 'center' }}>Time</TableCell>
-                            <TableCell style={{ width: '120px', textAlign: 'right', paddingBottom: '2px' }}>Type</TableCell>
-                            <TableCell style={{ textAlign: 'center' }}>Event</TableCell>
-                            <TableCell style={{ width: '100px', textAlign: 'center' }}>Source</TableCell>
-                            <TableCell style={{ width: '100px', textAlign: 'center' }}>Target</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
+        <div
+            className="w-full max-w-[1440px] overflow-y-auto max-h-[70vh] md:max-h-[var(--events-table-max-height)]"
+            style={{'--events-table-max-height': maxHeight} as React.CSSProperties}
+        >
+            <div className="app-table-container">
+                <table className="app-table" style={{ tableLayout: 'auto' }}>
+                    <thead style={{ backgroundColor: '#494949' }}>
+                        <tr>
+                            <th style={{ width: '50px', textAlign: 'center' }}>Time</th>
+                            <th style={{ width: '120px', textAlign: 'right', paddingBottom: '2px' }}>Type</th>
+                            <th style={{ textAlign: 'center' }}>Event</th>
+                            <th style={{ width: '100px', textAlign: 'center' }}>Source</th>
+                            <th style={{ width: '100px', textAlign: 'center' }}>Target</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         {visibleLogs.map((log, index) => {
                             const source = getActorName(log, 'source');
                             const target = getActorName(log, 'target');
                             return (
-                                <TableRow key={index} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
-                                    <TableCell>{formatHHmmss(log.fightTimeMs!, true)}</TableCell>
-                                    <TableCell style={{ textAlign: 'right' }}>{log.type}</TableCell>
-                                    <TableCell>
+                                <tr key={index} className={index % 2 === 0 ? 'even-row' : 'odd-row'}>
+                                    <td>{formatHHmmss(log.fightTimeMs!, true)}</td>
+                                    <td style={{ textAlign: 'right' }}>{log.type}</td>
+                                    <td>
                                         {log.type === LogTypes.LOG_VERSION ? `Log version ${log.logVersion}` : ""}
                                         {log.type === LogTypes.LOGGED_IN_PLAYER ? `Logged in player ${log.loggedInPlayer}` : ""}
                                         {log.type === LogTypes.PLAYER_REGION ? `${log.playerRegion}` : ""}
@@ -222,21 +216,21 @@ const EventsTable: React.FC<EventsTableProps> = ({ fight, maxHeight, showSource 
                                         {log.type === LogTypes.WAVE_END}
                                         {log.type === LogTypes.PATH_START ? `${log.pathName}` : ""}
                                         {log.type === LogTypes.PATH_COMPLETE ? `${log.pathName}` : ""}
-                                    </TableCell>
-                                    <TableCell className={source === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>{source}</TableCell>
-                                    <TableCell className={target === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>{target}</TableCell>
-                                </TableRow>
+                                    </td>
+                                    <td className={source === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>{source}</td>
+                                    <td className={target === loggedInPlayer ? 'logged-in-player-text' : 'other-text'}>{target}</td>
+                                </tr>
                             );
                         })}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <Box display="flex" justifyContent="center" alignItems="center" mt={1} gap={2}>
-                <Button variant="outlined" size="small" disabled={page === 0} onClick={() => setPage(page - 1)}>Prev</Button>
+                    </tbody>
+                </table>
+            </div>
+            <div className="flex justify-center items-center mt-2 gap-4">
+                <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(page - 1)}>Prev</Button>
                 <span>Page {page + 1} / {pageCount}</span>
-                <Button variant="outlined" size="small" disabled={page + 1 >= pageCount} onClick={() => setPage(page + 1)}>Next</Button>
-            </Box>
-        </Box>
+                <Button variant="outline" size="sm" disabled={page + 1 >= pageCount} onClick={() => setPage(page + 1)}>Next</Button>
+            </div>
+        </div>
     );
 };
 

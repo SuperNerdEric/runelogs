@@ -1,7 +1,9 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {flushSync} from 'react-dom';
 import {useNavigate, useParams, useSearchParams} from 'react-router-dom';
-import {Box, CircularProgress, Tab, Tabs, Typography, Alert} from '@mui/material';
+import {Tabs, TabsList, TabsTrigger} from '@/components/ui/tabs';
+import {Alert, AlertDescription} from '@/components/ui/alert';
+import {Spinner} from '@/components/ui/spinner';
 import {TabsEnum} from './Tabs';
 import EncounterTabContent from './EncounterTabContent';
 import {Fight, FightMetaData, isFight} from '../models/Fight';
@@ -324,27 +326,26 @@ const Encounter: React.FC = () => {
 
     const runMeta = group ?? fightGroupMeta;
 
-    // Dynamically calculate font size based on the number of tabs
-    // So that for smaller screens all tabs together equal 95% of the width
+    // Responsive tab label sizing — MUI only shrank labels below 500px viewport width
     const TAB_COUNT = availableTabs.length;
     const widthPerTab = 95 / TAB_COUNT;
-    const fontSize = `${widthPerTab * 0.14}vw`;
+    const narrowTabFontSize = `${widthPerTab * 0.14}vw`;
 
     const showTabShell = displayTab === TabsEnum.EVENTS || (showTabContent && displayTab === renderedTab);
     const showParentSpinner = isTabLoading && displayTab !== TabsEnum.EVENTS;
 
     if (loading)
         return (
-            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-                <CircularProgress color="inherit"/>
-            </Box>
+            <div className="flex justify-center items-center h-screen">
+                <Spinner size="lg"/>
+            </div>
         );
 
     if (error || !fight)
         return (
-            <Box m={2}>
-                <Typography color="error">{error ?? 'Encounter not found'}</Typography>
-            </Box>
+            <div className="m-4">
+                <p className="text-destructive">{error ?? 'Encounter not found'}</p>
+            </div>
         );
 
     const selectedFightIndex = group
@@ -387,7 +388,7 @@ const Encounter: React.FC = () => {
         <div className="App">
             <div className="App-main">
                 {breadcrumbSegments.length > 0 && (
-                    <PageBreadcrumbs segments={breadcrumbSegments} sx={{alignSelf: 'flex-start'}}/>
+                    <PageBreadcrumbs segments={breadcrumbSegments} className="self-start"/>
                 )}
                 <EncounterFightTitle
                     fightName={fight.name}
@@ -407,8 +408,10 @@ const Encounter: React.FC = () => {
                     }
                 />
                 {receivingData && (
-                    <Alert severity="info" sx={{alignSelf: 'stretch', mb: 1}}>
-                        Log is receiving more data — this page will refresh while new data arrives.
+                    <Alert className="self-stretch mb-4 border-sky-500/40 bg-sky-500/10">
+                        <AlertDescription>
+                            Log is receiving more data — this page will refresh while new data arrives.
+                        </AlertDescription>
                     </Alert>
                 )}
                 <EncounterDpsRankBadges
@@ -422,49 +425,44 @@ const Encounter: React.FC = () => {
 
                 <Tabs
                     value={displayTab}
-                    onChange={(_, newTab: TabsEnum) => {
+                    onValueChange={(newTab) => {
+                        const tab = newTab as TabsEnum;
                         const newParams = new URLSearchParams(searchParams);
-                        newParams.set('tab', newTab);
+                        newParams.set('tab', tab);
                         flushSync(() => {
-                            setOptimisticTab(newTab);
+                            setOptimisticTab(tab);
                         });
                         navigate(`${window.location.pathname}?${newParams.toString()}`);
                     }}
-                    indicatorColor="primary"
-                    textColor="primary"
-                    variant="fullWidth"
-                    style={{marginBottom: '20px'}}
-                    TabIndicatorProps={{style: {transition: 'none'}}}
-                    sx={{contain: 'layout'}}
+                    className="encounter-tabs"
+                    style={{contain: 'layout'}}
                 >
-                    {availableTabs.map((tab) => (
-                        <Tab
-                            key={tab}
-                            label={tab}
-                            value={tab}
-                            sx={{
-                                color: displayTab === tab ? 'lightblue' : 'white',
-                                minWidth: 0, // prevent MUI from enforcing a default min width
-                                '@media (max-width:500px)': {
-                                    padding: '6px 6px',
-                                    fontSize: fontSize,
-                                },
-                            }}
-                        />
-                    ))}
+                    <TabsList
+                        className="encounter-tabs-list"
+                        style={{
+                            gridTemplateColumns: `repeat(${TAB_COUNT}, minmax(0, 1fr))`,
+                            ['--encounter-tab-font-size' as string]: narrowTabFontSize,
+                        }}
+                    >
+                        {availableTabs.map((tab) => (
+                            <TabsTrigger
+                                key={tab}
+                                value={tab}
+                                className="encounter-tab-trigger"
+                            >
+                                {tab}
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
                 </Tabs>
 
-                <Box sx={{minHeight: '40vh', position: 'relative'}}>
+                <div className="relative min-h-[40vh]">
                     {showParentSpinner && (
-                        <Box
-                            display="flex"
-                            justifyContent="center"
-                            alignItems="center"
-                            py={8}
-                            sx={showTabContent ? undefined : {position: 'absolute', inset: 0, zIndex: 1}}
+                        <div
+                            className={`flex justify-center items-center py-8${showTabContent ? '' : ' absolute inset-0 z-[1]'}`}
                         >
-                            <CircularProgress color="inherit"/>
-                        </Box>
+                            <Spinner size="lg"/>
+                        </div>
                     )}
                     {showTabShell && (
                         <EncounterTabContent
@@ -488,7 +486,7 @@ const Encounter: React.FC = () => {
                             onClearEventTypeFilter={onClearEventTypeFilter}
                         />
                     )}
-                </Box>
+                </div>
             </div>
         </div>
     );

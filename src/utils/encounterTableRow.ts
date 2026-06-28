@@ -1,6 +1,5 @@
 import type {MouseEvent} from 'react';
 import type {NavigateFunction} from 'react-router-dom';
-import type {TableRowProps} from '@mui/material';
 
 export type EncounterLinkOptions = {
     encounterType?: 'fight' | 'fightGroup';
@@ -31,30 +30,33 @@ export function getEncounterHref(
     return `/encounter/${encounterId}`;
 }
 
+export type ClickableTableRowProps = {
+    className?: string;
+    onClick?: () => void;
+};
+
 export function encounterTableRowProps(
     navigate: NavigateFunction,
     encounterId: string | undefined,
     options?: EncounterLinkOptions,
-): Partial<TableRowProps> {
+): ClickableTableRowProps {
     if (!encounterId) {
         return {};
     }
 
     return {
-        hover: true,
+        className: 'app-table-row--hover',
         onClick: () => navigate(getEncounterHref(encounterId, options)),
-        sx: {cursor: 'pointer'},
     };
 }
 
 export function logTableRowProps(
     navigate: NavigateFunction,
     logId: string,
-): Partial<TableRowProps> {
+): ClickableTableRowProps {
     return {
-        hover: true,
+        className: 'app-table-row--hover',
         onClick: () => navigate(`/log/${logId}`),
-        sx: {cursor: 'pointer'},
     };
 }
 

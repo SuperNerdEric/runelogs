@@ -1,0 +1,88 @@
+/**
+ * MUI typography parity layer.
+ * MUI Typography set explicit font sizes (rem/clamp) and did NOT inherit
+ * .app-layout's vmin-based font-size. Plain HTML must use these classes
+ * wherever MUI Typography variants were used before.
+ */
+
+.text-h1 {
+    font-size: clamp(3.6rem, 10vw, 6rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+.text-h2 {
+    font-size: clamp(2.25rem, 6.25vw, 3.75rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.text-h3 {
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+}
+
+.text-h4 {
+    font-size: clamp(1.275rem, 3.5vw, 2.125rem);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.text-h5 {
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    font-weight: 600;
+}
+
+.text-h6 {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    font-weight: 600;
+}
+
+.text-body1 {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.text-body2 {
+    font-size: 0.875rem;
+    line-height: 1.45;
+}
+
+.text-subtitle1 {
+    font-size: 1rem;
+    line-height: 1.75;
+}
+
+.text-subtitle2 {
+    font-size: 0.875rem;
+    line-height: 1.57;
+    font-weight: 500;
+}
+
+/* MUI Typography paragraph prop */
+.text-paragraph {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin: 0 0 1em;
+}
+
+/* MUI Link default styling (theme override: no underline until hover) */
+.text-link {
+    color: var(--color-text-link);
+    text-decoration: none;
+}
+
+.text-link:hover {
+    text-decoration: underline;
+}
+
+.text-yellow,
+.mono-yellow {
+    color: var(--color-text-yellow) !important;
+}
+
+.font-mono,
+.mono-yellow {
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+}

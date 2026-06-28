@@ -1,13 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
-import {Alert, Box, CircularProgress, Typography,} from '@mui/material';
+import {Alert, AlertDescription, AlertTitle} from '@/components/ui/alert';
+import {Spinner} from '@/components/ui/spinner';
 import FightSelector from '../sections/FightSelector';
 import {FightMetaData} from '../../models/Fight';
 import {EncounterMetaData} from '../../models/LogLine';
-import LogInfoBox from "./LogInfoBox";
-import {contentColumnSx} from '../../theme';
+import LogInfoBox from './LogInfoBox';
+import {contentColumnClass} from '../../theme';
 import {getEncounterHref, getRunSummaryHref} from '../../utils/encounterTableRow';
 import {inferLeaderboardFightGroupName} from '../../utils/leaderboardContent';
+import {cn} from '@/lib/utils';
 
 interface ApiFight {
     id: string;
@@ -100,8 +102,8 @@ const Log: React.FC = () => {
             const token = await (window as any).auth0?.getAccessTokenSilently?.();
             const res = await fetch(`${import.meta.env.VITE_API_URL}/log/${logId}`, {
                 headers: {
-                    Authorization: token ? `Bearer ${token}` : ''
-                }
+                    Authorization: token ? `Bearer ${token}` : '',
+                },
             });
 
             if (!res.ok) {
@@ -126,14 +128,12 @@ const Log: React.FC = () => {
                     const childFights: FightMetaData[] = enc.fights
                         .slice()
                         .sort((a, b) => a.order - b.order)
-                        .map((f) => {
-                            return {
-                                name: f.name,
-                                startTime: f.startTime,
-                                fightDurationTicks: f.fightDurationTicks,
-                                success: f.success
-                            };
-                        });
+                        .map((f) => ({
+                            name: f.name,
+                            startTime: f.startTime,
+                            fightDurationTicks: f.fightDurationTicks,
+                            success: f.success,
+                        }));
 
                     const fgMeta = {
                         name: enc.name,
@@ -150,7 +150,7 @@ const Log: React.FC = () => {
                         name: enc.mainEnemyName,
                         startTime: enc.startTime,
                         fightDurationTicks: enc.fightDurationTicks,
-                        success: enc.success
+                        success: enc.success,
                     };
 
                     out.push(fMeta);
@@ -186,38 +186,41 @@ const Log: React.FC = () => {
 
     if (loading) {
         return (
-            <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                height="100vh"
-            >
-                <CircularProgress/>
-            </Box>
+            <div className="loading-indicator-container">
+                <Spinner className="size-8 text-white"/>
+            </div>
         );
     }
 
     if (error) {
         return (
-            <Box p={4}>
-                <Alert severity="error">
-                    <Typography variant="h6">Error loading log:</Typography>
-                    <Typography>{error}</Typography>
+            <div className="p-4">
+                <Alert variant="destructive">
+                    <AlertTitle>Error loading log:</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
                 </Alert>
-            </Box>
+            </div>
         );
     }
 
     const hasEncounters = metadata !== null && metadata.length > 0;
 
     return (
-        <Box p={2} sx={contentColumnSx}>
+        <div className={cn(contentColumnClass, 'p-2')}>
             {receivingData && (
-                <Alert severity="info" sx={{mb: 2}}>
-                    Live log in progress — this page will refresh while new data is received.
+                <Alert className="mb-2 border-sky-500/40 bg-sky-500/10">
+                    <AlertDescription>
+                        Live log in progress — this page will refresh while new data is received.
+                    </AlertDescription>
                 </Alert>
             )}
-            <LogInfoBox uploaderId={uploaderId} logName={logName} logId={logId!} uploadedAt={uploadedAt} onLogNameChange={setLogName}/>
+            <LogInfoBox
+                uploaderId={uploaderId}
+                logName={logName}
+                logId={logId!}
+                uploadedAt={uploadedAt}
+                onLogNameChange={setLogName}
+            />
 
             {hasEncounters ? (
                 <FightSelector
@@ -256,9 +259,9 @@ const Log: React.FC = () => {
                             const res = await fetch(`${import.meta.env.VITE_API_URL}/fight/aggregate`, {
                                 method: 'POST',
                                 headers: {
-                                    'Content-Type': 'application/json'
+                                    'Content-Type': 'application/json',
                                 },
-                                body: JSON.stringify({ fightIds: selectedFights })
+                                body: JSON.stringify({fightIds: selectedFights}),
                             });
 
                             if (!res.ok) {
@@ -266,7 +269,7 @@ const Log: React.FC = () => {
                                 return;
                             }
 
-                            const { aggregateId } = await res.json();
+                            const {aggregateId} = await res.json();
                             navigate(`/encounter/aggregate/${aggregateId}`);
                         } catch (err) {
                             console.error('Error aggregating fights:', err);
@@ -274,11 +277,9 @@ const Log: React.FC = () => {
                     }}
                 />
             ) : (
-                <Typography sx={{mt: 2, color: 'white'}}>
-                    No encounters found in this log.
-                </Typography>
+                <p className="mt-2 text-white">No encounters found in this log.</p>
             )}
-        </Box>
+        </div>
     );
 };
 

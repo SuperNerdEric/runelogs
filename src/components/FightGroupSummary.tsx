@@ -1,17 +1,10 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Link as RouterLink, useParams} from 'react-router-dom';
-import {
-    Alert,
-    Box,
-    CircularProgress,
-    Link,
-    Typography,
-} from '@mui/material';
 import DamageMeterTable from './charts/DamageMeterTable';
 import {FightGroupFightRows} from './sections/LogFightList';
 import RunInfoBox from './RunInfoBox';
 import PageBreadcrumbs from './PageBreadcrumbs';
-import {contentColumnSx, pageHeroTitleSx} from '../theme';
+import {contentColumnClass, pageHeroTitleClass} from '../theme';
 import {colors} from '../theme';
 import {displayUsername, ticksToTime} from '../utils/utils';
 import {getEncounterHref} from '../utils/encounterTableRow';
@@ -24,6 +17,9 @@ import {hasColosseumModifierData} from '../utils/colosseumModifiers';
 import {MOKHAIOTL_HIGH_SCORE_MODE_LABEL} from '../utils/leaderboardContent';
 import {FightGroupExtraInfo} from '../utils/fightGroupExtraInfo';
 import {resolvePlayerRankPercentile} from './badges/playerRankPercentile';
+import {Alert, AlertDescription} from '@/components/ui/alert';
+import {Spinner} from '@/components/ui/spinner';
+import {cn} from '@/lib/utils';
 import '../App.css';
 
 interface PlayerDpsRow {
@@ -174,17 +170,19 @@ const FightGroupSummary: React.FC = () => {
 
     if (loading) {
         return (
-            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-                <CircularProgress/>
-            </Box>
+            <div className="loading-indicator-container">
+                <Spinner className="size-8 text-white"/>
+            </div>
         );
     }
 
     if (error || !data) {
         return (
-            <Box p={4}>
-                <Alert severity="error">{error ?? 'Run not found'}</Alert>
-            </Box>
+            <div className="p-4">
+                <Alert variant="destructive">
+                    <AlertDescription>{error ?? 'Run not found'}</AlertDescription>
+                </Alert>
+            </div>
         );
     }
 
@@ -199,10 +197,12 @@ const FightGroupSummary: React.FC = () => {
     };
 
     return (
-        <Box p={2} sx={contentColumnSx} className="fight-group-summary">
+        <div className={cn(contentColumnClass, 'fight-group-summary p-2')}>
             {data.receivingData && (
-                <Alert severity="info" sx={{mb: 2}}>
-                    Live log in progress — this page will refresh while new data is received.
+                <Alert className="fight-group-summary-alert border-sky-500/40 bg-sky-500/10">
+                    <AlertDescription>
+                        Live log in progress — this page will refresh while new data is received.
+                    </AlertDescription>
                 </Alert>
             )}
 
@@ -216,48 +216,29 @@ const FightGroupSummary: React.FC = () => {
                 ]}
             />
 
-            <Box className="run-summary-hero" sx={{textAlign: 'center', mb: 2}}>
-                <Typography
-                    component="h1"
-                    variant="h4"
-                    sx={{
-                        ...pageHeroTitleSx,
-                        mb: displayDurationTicks != null && displayDurationTicks > 0 ? 0.5 : 0,
-                    }}
+            <div className="run-summary-hero text-center">
+                <h1
+                    className={cn(
+                        pageHeroTitleClass,
+                        displayDurationTicks != null && displayDurationTicks > 0 ? 'mb-1' : 'mb-0',
+                    )}
                 >
                     {data.name}
-                </Typography>
+                </h1>
                 {displayDurationTicks != null && displayDurationTicks > 0 && (
-                    <Box sx={{m: 0}}>
-                        <Typography
-                            component="p"
-                            sx={{
-                                color: durationColor,
-                                fontWeight: 700,
-                                fontSize: {xs: '1.25rem', sm: '1.75rem'},
-                                m: 0,
-                            }}
-                        >
+                    <div className="m-0">
+                        <p className="run-summary-duration" style={{color: durationColor}}>
                             {ticksToTime(displayDurationTicks)}
-                        </Typography>
+                        </p>
                         {delve1to8DisplayDurationTicks != null && (
-                            <Typography
-                                component="p"
-                                variant="body2"
-                                sx={{
-                                    color: 'text.secondary',
-                                    fontWeight: 600,
-                                    mt: 0.5,
-                                    mb: 0,
-                                }}
-                            >
+                            <p className="run-summary-delve-caption">
                                 Delves 1–8: {ticksToTime(delve1to8DisplayDurationTicks)}
-                            </Typography>
+                            </p>
                         )}
-                    </Box>
+                    </div>
                 )}
-                <ToaRaidLevel toa={data.extraInfo?.toa} />
-            </Box>
+                <ToaRaidLevel toa={data.extraInfo?.toa}/>
+            </div>
 
             <RunSummaryRankBadges
                 entries={topRankBadges}
@@ -274,45 +255,43 @@ const FightGroupSummary: React.FC = () => {
             />
 
             {hasColosseumModifierData(data.extraInfo?.colosseum) && (
-                <ColosseumModifiers modifiers={data.extraInfo!.colosseum} />
+                <ColosseumModifiers modifiers={data.extraInfo!.colosseum}/>
             )}
 
             {data.overallDps.length > 0 && (
-                <Box className="damage-done-container fight-group-dps-table" sx={{mb: 2}}>
-                    <Box className="encounter-title-bar">
+                <div className="damage-done-container fight-group-dps-table">
+                    <div className="encounter-title-bar">
                         <span className="encounter-title-bar-name">Overall Damage</span>
-                    </Box>
+                    </div>
                     <DamageMeterTable
                         rows={data.overallDps.map((row) => {
                             const unknown = isUnknownPlayer(row.playerId);
                             const dpsDisplay = getPlayerDpsDisplayColor(row.playerId, row.percentile);
                             return {
-                            key: row.playerId,
-                            name: (
-                                <>
-                                    {unknown ? (
-                                        UNKNOWN_PLAYER_NAME
-                                    ) : (
-                                        <Link
-                                            component={RouterLink}
-                                            to={`/player/${row.playerId}`}
-                                            underline="hover"
-                                            color="inherit"
-                                        >
-                                            {displayUsername(row.playerId)}
-                                        </Link>
-                                    )}
-                                </>
-                            ),
-                            nameClassName: unknown ? 'unknown-text' : undefined,
-                            damageDealt: row.damageDealt,
-                            dps: row.dps,
-                            dpsColor: dpsDisplay.color,
-                            useDpsTextClass: dpsDisplay.useDpsTextClass,
-                        };
+                                key: row.playerId,
+                                name: (
+                                    <>
+                                        {unknown ? (
+                                            UNKNOWN_PLAYER_NAME
+                                        ) : (
+                                            <RouterLink
+                                                to={`/player/${row.playerId}`}
+                                                className="link"
+                                            >
+                                                {displayUsername(row.playerId)}
+                                            </RouterLink>
+                                        )}
+                                    </>
+                                ),
+                                nameClassName: unknown ? 'unknown-text' : undefined,
+                                damageDealt: row.damageDealt,
+                                dps: row.dps,
+                                dpsColor: dpsDisplay.color,
+                                useDpsTextClass: dpsDisplay.useDpsTextClass,
+                            };
                         })}
                     />
-                </Box>
+                </div>
             )}
 
             <div className="damage-done-container">
@@ -322,10 +301,10 @@ const FightGroupSummary: React.FC = () => {
                         const rankBadges = (fightRankBadgesByKey.get(fightKey) ?? [])
                             .filter((entry) => !isUnknownPlayer(entry.playerId))
                             .map((entry) => ({
-                            playerId: entry.playerId,
-                            rank: entry.rank,
-                            percentile: resolvePlayerRankPercentile(entry, percentileContext),
-                        }));
+                                playerId: entry.playerId,
+                                rank: entry.rank,
+                                percentile: resolvePlayerRankPercentile(entry, percentileContext),
+                            }));
                         return {
                             fight: {
                                 name: fight.name,
@@ -341,7 +320,7 @@ const FightGroupSummary: React.FC = () => {
                     })}
                 />
             </div>
-        </Box>
+        </div>
     );
 };
 

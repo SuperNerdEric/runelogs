@@ -1,17 +1,4 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {
-    Box,
-    CircularProgress,
-    Link,
-    Pagination,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Typography,
-} from '@mui/material';
 import AppTooltip from './AppTooltip';
 import {format} from 'date-fns';
 import {Link as RouterLink, useNavigate, useSearchParams} from 'react-router-dom';
@@ -32,7 +19,10 @@ import {colors} from '../theme';
 import {ticksToTime} from '../utils/utils';
 import FilterSelect from './filters/FilterSelect';
 import FilterToolbar from './filters/FilterToolbar';
-import {filterFieldCompactSx} from './filters/filterStyles';
+import {filterFieldCompactClass} from './filters/filterStyles';
+import {Spinner} from '@/components/ui/spinner';
+import {cn} from '@/lib/utils';
+import {ChevronLeft, ChevronRight} from 'lucide-react';
 
 type Encounter = {
     type: 'fight' | 'fightGroup';
@@ -50,7 +40,6 @@ type Encounter = {
 };
 
 interface OverallRecentEncountersProps {
-    /** Homepage embed: no filters, fetches the latest encounters across all content. */
     embedded?: boolean;
     entriesPerPage?: number;
 }
@@ -73,20 +62,55 @@ function toSearchParams(
     );
 }
 
-const paginationSx = {
-    '& .MuiPaginationItem-root': {color: 'white'},
-    '& .MuiPaginationItem-root.Mui-selected': {
-        backgroundColor: 'white',
-        color: 'black',
-        borderRadius: '4px',
-    },
-} as const;
+function TablePagination({
+    count,
+    page,
+    onPageChange,
+}: {
+    count: number;
+    page: number;
+    onPageChange: (page: number) => void;
+}) {
+    if (count <= 1) {
+        return null;
+    }
 
-const tableStatusCellSx = {
-    py: 4,
-    color: 'white',
-    borderBottom: 'none',
-} as const;
+    return (
+        <nav className="app-pagination" aria-label="Pagination">
+            <button
+                type="button"
+                className="app-pagination__btn"
+                disabled={page <= 1}
+                aria-label="Previous page"
+                onClick={() => onPageChange(page - 1)}
+            >
+                <ChevronLeft className="size-5" aria-hidden />
+            </button>
+            {Array.from({length: count}, (_, index) => index + 1).map((pageNumber) => (
+                <button
+                    key={pageNumber}
+                    type="button"
+                    className={cn(
+                        'app-pagination__btn',
+                        pageNumber === page && 'app-pagination__btn--selected',
+                    )}
+                    onClick={() => onPageChange(pageNumber)}
+                >
+                    {pageNumber}
+                </button>
+            ))}
+            <button
+                type="button"
+                className="app-pagination__btn"
+                disabled={page >= count}
+                aria-label="Next page"
+                onClick={() => onPageChange(page + 1)}
+            >
+                <ChevronRight className="size-5" aria-hidden />
+            </button>
+        </nav>
+    );
+}
 
 const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
     embedded = false,
@@ -181,16 +205,16 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
     const rows = encounters ?? [];
     const pageCount = Math.max(1, Math.ceil(total / entriesPerPage));
 
-    const renderTableStatusRow = (content: React.ReactNode) => (
-        <TableRow>
-            <TableCell colSpan={4} align="center" sx={tableStatusCellSx}>
-                {content}
-            </TableCell>
-        </TableRow>
+    const renderTableStatusRow = (contentNode: React.ReactNode) => (
+        <tr>
+            <td colSpan={4} className="app-table-status-cell">
+                {contentNode}
+            </td>
+        </tr>
     );
 
     return (
-        <Box m={0}>
+        <div className="m-0">
             {!embedded && (
                 <FilterToolbar>
                     <FilterSelect
@@ -200,7 +224,7 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
                             value: option.value,
                             label: option.label,
                         }))}
-                        sx={{minWidth: {xs: 100, sm: 140}}}
+                        className="min-w-[100px] sm:min-w-[140px]"
                         onChange={(nextContentValue) => {
                             const selectedContent = RECENT_ENCOUNTERS_CONTENT_OPTIONS.find(
                                 (option) => option.value === nextContentValue,
@@ -222,7 +246,7 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
                             field="team"
                             value={playerCount}
                             compact
-                            sx={filterFieldCompactSx}
+                            className={filterFieldCompactClass}
                             options={buildBrowsePlayerCountOptions(content.playerCounts)}
                             onChange={(count) => {
                                 setPlayerCount(count);
@@ -234,26 +258,26 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
                 </FilterToolbar>
             )}
 
-            <Box>
-                <TableContainer>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell sx={{color: 'white'}}>Name</TableCell>
-                                <TableCell sx={{color: 'white'}}>Duration</TableCell>
-                                <TableCell sx={{color: 'white'}}>Players</TableCell>
-                                <TableCell sx={{color: 'white'}}></TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
+            <div>
+                <div className="app-table-container">
+                    <table className="app-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Duration</th>
+                                <th>Players</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
                             {loading && renderTableStatusRow(
-                                <CircularProgress color="inherit" size={28}/>,
+                                <Spinner className="mx-auto text-white" size="sm"/>,
                             )}
                             {!loading && error && renderTableStatusRow(
-                                <Typography color="error">{error}</Typography>,
+                                <span className="text-[var(--color-fight-failure)]">{error}</span>,
                             )}
                             {!loading && !error && rows.length === 0 && renderTableStatusRow(
-                                <Typography color="white">No recent encounters found.</Typography>,
+                                <span className="text-white">No recent encounters found.</span>,
                             )}
                             {!loading && !error && rows.map((row) => {
                                 const encounterOptions = row.type === 'fightGroup'
@@ -261,80 +285,76 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
                                     : undefined;
 
                                 return (
-                                    <TableRow
+                                    <tr
                                         key={row.id}
                                         {...encounterTableRowProps(navigate, row.id, encounterOptions)}
                                     >
-                                        <TableCell sx={{color: 'white'}}>
-                                            <Link
-                                                component={RouterLink}
+                                        <td>
+                                            <RouterLink
                                                 to={getEncounterHref(row.id, encounterOptions)}
-                                                underline="hover"
+                                                className="link"
                                                 title={row.id}
                                                 onClick={stopRowClick}
                                             >
                                                 {row.type === 'fight' ? row.mainEnemyName : row.leaderboardName}
-                                            </Link>
-                                        </TableCell>
-                                        <TableCell sx={{
-                                            color: row.inProgress
-                                                ? 'white'
-                                                : row.success
-                                                    ? colors.fight.success
-                                                    : colors.fight.failure,
-                                        }}>
+                                            </RouterLink>
+                                        </td>
+                                        <td
+                                            style={{
+                                                color: row.inProgress
+                                                    ? undefined
+                                                    : row.success
+                                                        ? colors.fight.success
+                                                        : colors.fight.failure,
+                                            }}
+                                        >
                                             {row.inProgress
                                                 ? 'In Progress'
                                                 : row.officialDurationTicks != null
                                                     ? ticksToTime(row.officialDurationTicks)
                                                     : '-'}
-                                        </TableCell>
-                                        <TableCell sx={{color: 'white'}}>
+                                        </td>
+                                        <td>
                                             {row.players.map((p, i) => (
                                                 <React.Fragment key={p}>
-                                                    <Link
-                                                        component={RouterLink}
+                                                    <RouterLink
                                                         to={`/player/${p}`}
-                                                        underline="hover"
+                                                        className="link"
                                                         onClick={stopRowClick}
                                                     >
                                                         {p}
-                                                    </Link>
+                                                    </RouterLink>
                                                     {i < row.players.length - 1 ? ', ' : ''}
                                                 </React.Fragment>
                                             ))}
-                                        </TableCell>
-                                        <TableCell sx={{color: 'white'}}>
+                                        </td>
+                                        <td>
                                             <AppTooltip
                                                 title={format(new Date(row.startTime), 'MMM d, yyyy, h:mm a')}
-                                                arrow
-                                                placement="top"
+                                                side="top"
                                                 disableTouch
                                             >
                                                 <span>{getRelativeTime(new Date(row.startTime))}</span>
                                             </AppTooltip>
-                                        </TableCell>
-                                    </TableRow>
+                                        </td>
+                                    </tr>
                                 );
                             })}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                        </tbody>
+                    </table>
+                </div>
                 {!embedded && !loading && pageCount > 1 && (
-                    <Box display="flex" justifyContent="center" pt={0} pb={1}>
-                        <Pagination
-                            count={pageCount}
-                            page={page}
-                            onChange={(_, value) => {
-                                setPage(value);
-                                updateSearchParams({page: value});
-                            }}
-                            sx={paginationSx}
-                        />
-                    </Box>
+                    <TablePagination
+                        count={pageCount}
+                        page={page}
+                        onPageChange={(value) => {
+                            setPage(value);
+                            updateSearchParams({page: value});
+                        }}
+                    />
                 )}
-            </Box>
-        </Box>
+            </div>
+        </div>
     );
 };
 

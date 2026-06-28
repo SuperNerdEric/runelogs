@@ -1,20 +1,6 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-
 import {Link as RouterLink, useNavigate, useSearchParams} from 'react-router-dom';
-import {
-    Box,
-    CircularProgress,
-    Link,
-    Pagination,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Typography,
-} from '@mui/material';
-import {colors} from "../theme";
+import {colors} from '../theme';
 import {encounterTableRowProps, getEncounterHref, stopRowClick} from '../utils/encounterTableRow';
 import {
     buildLeaderboardHref,
@@ -29,17 +15,20 @@ import {
     MOKHAIOTL_DELVE_1_8_KEY,
     resolveLeaderboardStateFromSearchParams,
 } from '../utils/leaderboardContent';
-import {getDpsPercentileColor} from "../utils/TickActivity";
+import {getDpsPercentileColor} from '../utils/TickActivity';
 import {COLUMN_TOOLTIPS} from '../utils/columnTooltips';
 import TableColumnHeaderTooltip from './TableColumnHeaderTooltip';
-import {getPercentileAccentColor} from "../utils/percentile";
-import {ticksToTime} from "../utils/utils";
-import {CrownIcon} from "./CrownIcon";
+import {getPercentileAccentColor} from '../utils/percentile';
+import {ticksToTime} from '../utils/utils';
+import {CrownIcon} from './CrownIcon';
 import DurationDpsModeSelector from './DurationDpsModeSelector';
 import FilterSelect from './filters/FilterSelect';
 import FilterToolbar from './filters/FilterToolbar';
-import {filterFieldCompactSx} from './filters/filterStyles';
-import MedalIcon from "./MedalIcon";
+import {filterFieldCompactClass} from './filters/filterStyles';
+import MedalIcon from './MedalIcon';
+import {Spinner} from '@/components/ui/spinner';
+import {cn} from '@/lib/utils';
+import {ChevronLeft, ChevronRight} from 'lucide-react';
 
 type DurationEntry = {
     id: string;
@@ -61,39 +50,58 @@ type DpsConfigGroup = LeaderboardDpsConfigGroup & {
     hasOverall: boolean;
 };
 
-const highlightedRowSx = {
-    bgcolor: colors.background.surfaceAlt,
-    backgroundImage: `linear-gradient(90deg, rgba(56, 139, 253, 0.2) 0%, rgba(28, 33, 40, 0.95) 42%, ${colors.background.surfaceAlt} 100%)`,
-    boxShadow: `inset 4px 0 0 ${colors.upload.dragActive}, 0 0 20px rgba(56, 139, 253, 0.12)`,
-    transition: 'background-color 0.2s ease, box-shadow 0.2s ease',
-    '& td': {
-        bgcolor: 'transparent',
-        borderBottomColor: 'rgba(56, 139, 253, 0.22)',
-    },
-    '&:hover': {
-        bgcolor: colors.background.surfaceSelected,
-        backgroundImage: `linear-gradient(90deg, rgba(56, 139, 253, 0.28) 0%, rgba(48, 54, 61, 0.98) 42%, ${colors.background.surfaceSelected} 100%)`,
-        boxShadow: `inset 4px 0 0 ${colors.upload.dragActive}, 0 0 24px rgba(56, 139, 253, 0.18)`,
-    },
-} as const;
-
-const paginationSx = {
-    '& .MuiPaginationItem-root': {color: 'white'},
-    '& .MuiPaginationItem-root.Mui-selected': {
-        backgroundColor: 'white',
-        color: 'black',
-        borderRadius: '4px',
-    },
-} as const;
-
-const tableStatusCellSx = {
-    py: 4,
-    color: 'white',
-    borderBottom: 'none',
-} as const;
-
 interface LeaderboardProps {
     entriesPerPage?: number;
+}
+
+function TablePagination({
+    count,
+    page,
+    onPageChange,
+}: {
+    count: number;
+    page: number;
+    onPageChange: (page: number) => void;
+}) {
+    if (count <= 1) {
+        return null;
+    }
+
+    return (
+        <nav className="app-pagination" aria-label="Pagination">
+            <button
+                type="button"
+                className="app-pagination__btn"
+                disabled={page <= 1}
+                aria-label="Previous page"
+                onClick={() => onPageChange(page - 1)}
+            >
+                <ChevronLeft className="size-5" aria-hidden />
+            </button>
+            {Array.from({length: count}, (_, index) => index + 1).map((pageNumber) => (
+                <button
+                    key={pageNumber}
+                    type="button"
+                    className={cn(
+                        'app-pagination__btn',
+                        pageNumber === page && 'app-pagination__btn--selected',
+                    )}
+                    onClick={() => onPageChange(pageNumber)}
+                >
+                    {pageNumber}
+                </button>
+            ))}
+            <button
+                type="button"
+                className="app-pagination__btn"
+                disabled={page >= count}
+                aria-label="Next page"
+                onClick={() => onPageChange(page + 1)}
+            >
+                <ChevronRight className="size-5" aria-hidden />
+            </button>
+        </nav>
+    );
 }
 
 const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
@@ -236,40 +244,36 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
     const durationRows = durationEntries ?? [];
     const dpsRows = dpsEntries ?? [];
 
-    const renderTableStatusRow = (colSpan: number, content: React.ReactNode) => (
-        <TableRow>
-            <TableCell colSpan={colSpan} align="center" sx={tableStatusCellSx}>
-                {content}
-            </TableCell>
-        </TableRow>
+    const renderTableStatusRow = (colSpan: number, contentNode: React.ReactNode) => (
+        <tr>
+            <td colSpan={colSpan} className="app-table-status-cell">
+                {contentNode}
+            </td>
+        </tr>
     );
 
     const isHighScoreMode = mode === LEADERBOARD_MODE_HIGH_SCORE;
     const highScoreLevelColumn = getHighScoreLevelColumnLabel(content.value);
 
     const renderDurationTable = () => (
-        <Box>
-            <TableContainer>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell sx={{color: 'white'}}>Rank</TableCell>
-                            {isHighScoreMode && (
-                                <TableCell sx={{color: 'white'}}>{highScoreLevelColumn}</TableCell>
-                            )}
-                            <TableCell sx={{color: 'white'}}>
-                                {isHighScoreMode ? 'Time' : 'Duration'}
-                            </TableCell>
-                            <TableCell sx={{color: 'white'}}>Players</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {loading && renderTableStatusRow(isHighScoreMode ? 4 : 3, <CircularProgress color="inherit" size={28}/>)}
+        <div>
+            <div className="app-table-container">
+                <table className="app-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            {isHighScoreMode && <th>{highScoreLevelColumn}</th>}
+                            <th>{isHighScoreMode ? 'Time' : 'Duration'}</th>
+                            <th>Players</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loading && renderTableStatusRow(isHighScoreMode ? 4 : 3, <Spinner className="mx-auto text-white" size="sm"/>)}
                         {!loading && error && renderTableStatusRow(isHighScoreMode ? 4 : 3, (
-                            <Typography color="error">{error}</Typography>
+                            <span className="text-[var(--color-fight-failure)]">{error}</span>
                         ))}
                         {!loading && !error && durationRows.length === 0 && renderTableStatusRow(isHighScoreMode ? 4 : 3, (
-                            <Typography color="white">No records yet.</Typography>
+                            <span className="text-white">No records yet.</span>
                         ))}
                         {!loading && !error && durationRows
                             .slice((page - 1) * entriesPerPage, page * entriesPerPage)
@@ -277,90 +281,90 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
                                 const actualRank = (page - 1) * entriesPerPage + idx + 1;
                                 const isHighlighted = highlightRank === actualRank;
                                 const rankColor = getPercentileAccentColor(row.percentile);
+                                const rowProps = encounterTableRowProps(navigate, row.id, {
+                                    durationResultType,
+                                });
                                 return (
-                                    <TableRow
+                                    <tr
                                         key={row.id}
                                         ref={isHighlighted ? highlightedRowRef : undefined}
-                                        {...encounterTableRowProps(navigate, row.id, {
-                                            durationResultType,
-                                        })}
-                                        sx={{
-                                            cursor: 'pointer',
-                                            ...(isHighlighted ? highlightedRowSx : {}),
-                                        }}
+                                        className={cn(
+                                            rowProps.className,
+                                            isHighlighted && 'highlighted-leaderboard-row',
+                                        )}
+                                        onClick={rowProps.onClick}
                                     >
-                                        <TableCell sx={{color: rankColor, fontWeight: 'bold'}}>
-                                            <Link
-                                                component={RouterLink}
+                                        <td style={{color: rankColor, fontWeight: 'bold'}}>
+                                            <RouterLink
                                                 to={getEncounterHref(row.id, {durationResultType})}
                                                 onClick={stopRowClick}
-                                                sx={{textDecoration: 'none', color: 'inherit', '&:hover': {textDecoration: 'underline'}}}
+                                                className="table-link-inherit"
                                             >
-                                                <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+                                                <span className="inline-flex items-center gap-2">
                                                     {actualRank}
-                                                    {actualRank === 1 && <CrownIcon />}
-                                                    {actualRank === 2 && <MedalIcon color={colors.medal.silver} />}
-                                                    {actualRank === 3 && <MedalIcon color={colors.medal.bronze} />}
-                                                </Box>
-                                            </Link>
-                                        </TableCell>
+                                                    {actualRank === 1 && <CrownIcon/>}
+                                                    {actualRank === 2 && <MedalIcon color={colors.medal.silver}/>}
+                                                    {actualRank === 3 && <MedalIcon color={colors.medal.bronze}/>}
+                                                </span>
+                                            </RouterLink>
+                                        </td>
                                         {isHighScoreMode && (
-                                            <TableCell sx={{color: 'white'}}>{row.highScoreLevel ?? '—'}</TableCell>
+                                            <td>{row.highScoreLevel ?? '—'}</td>
                                         )}
-                                        <TableCell sx={{color: 'white'}}>{ticksToTime(row.duration)}</TableCell>
-                                        <TableCell sx={{color: 'white'}}>
+                                        <td>{ticksToTime(row.duration)}</td>
+                                        <td>
                                             {row.players.map((player, i) => (
                                                 <React.Fragment key={player}>
-                                                    <Link component={RouterLink} to={`/player/${player}`}
-                                                          underline="hover" onClick={stopRowClick}>
+                                                    <RouterLink
+                                                        to={`/player/${player}`}
+                                                        className="link"
+                                                        onClick={stopRowClick}
+                                                    >
                                                         {player}
-                                                    </Link>
+                                                    </RouterLink>
                                                     {i < row.players.length - 1 ? ', ' : ''}
                                                 </React.Fragment>
                                             ))}
-                                        </TableCell>
-                                    </TableRow>
+                                        </td>
+                                    </tr>
                                 );
                             })}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                    </tbody>
+                </table>
+            </div>
             {!loading && durationRows.length > 0 && (
-                <Box display="flex" justifyContent="center" pt={0} pb={1}>
-                    <Pagination
-                        count={Math.ceil(durationRows.length / entriesPerPage)}
-                        page={page}
-                        onChange={(_, value) => setPage(value)}
-                        sx={paginationSx}
-                    />
-                </Box>
+                <TablePagination
+                    count={Math.ceil(durationRows.length / entriesPerPage)}
+                    page={page}
+                    onPageChange={setPage}
+                />
             )}
-        </Box>
+        </div>
     );
 
     const renderDpsTable = () => (
-        <Box>
-            <TableContainer>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell sx={{color: 'white'}}>Rank</TableCell>
-                            <TableCell sx={{color: 'white'}}>Player</TableCell>
-                            <TableCell sx={{color: 'white'}}>
+        <div>
+            <div className="app-table-container">
+                <table className="app-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Player</th>
+                            <th>
                                 <TableColumnHeaderTooltip
                                     label="DPS"
                                     tooltip={COLUMN_TOOLTIPS.dps}
                                 />
-                            </TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {loading && renderTableStatusRow(3, <CircularProgress color="inherit" size={28}/>)}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loading && renderTableStatusRow(3, <Spinner className="mx-auto text-white" size="sm"/>)}
                         {!loading && error && renderTableStatusRow(3, (
-                            <Typography color="error">{error}</Typography>
+                            <span className="text-[var(--color-fight-failure)]">{error}</span>
                         ))}
                         {!loading && !error && dpsRows.length === 0 && renderTableStatusRow(3, (
-                            <Typography color="white">No records yet.</Typography>
+                            <span className="text-white">No records yet.</span>
                         ))}
                         {!loading && !error && dpsRows
                             .slice((page - 1) * entriesPerPage, page * entriesPerPage)
@@ -370,70 +374,66 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
                                     : Math.round(((dpsTotal - row.rank) / (dpsTotal - 1)) * 100);
                                 const dpsColor = getDpsPercentileColor(percentile);
                                 const isHighlighted = highlightRank === row.rank;
+                                const rowProps = encounterTableRowProps(navigate, row.encounterId, {
+                                    encounterType: row.encounterType,
+                                    fightKey: selectedFight,
+                                });
 
                                 return (
-                                    <TableRow
+                                    <tr
                                         key={`${row.player}-${row.rank}`}
                                         ref={isHighlighted ? highlightedRowRef : undefined}
-                                        {...encounterTableRowProps(navigate, row.encounterId, {
-                                            encounterType: row.encounterType,
-                                            fightKey: selectedFight,
-                                        })}
-                                        sx={{
-                                            cursor: 'pointer',
-                                            ...(isHighlighted ? highlightedRowSx : {}),
-                                        }}
+                                        className={cn(
+                                            rowProps.className,
+                                            isHighlighted && 'highlighted-leaderboard-row',
+                                        )}
+                                        onClick={rowProps.onClick}
                                     >
-                                        <TableCell sx={{color: dpsColor, fontWeight: 'bold'}}>
-                                            <Link
-                                                component={RouterLink}
+                                        <td style={{color: dpsColor, fontWeight: 'bold'}}>
+                                            <RouterLink
                                                 to={getEncounterHref(row.encounterId, {
                                                     encounterType: row.encounterType,
                                                     fightKey: selectedFight,
                                                 })}
                                                 onClick={stopRowClick}
-                                                sx={{textDecoration: 'none', color: 'inherit', '&:hover': {textDecoration: 'underline'}}}
+                                                className="table-link-inherit"
                                             >
-                                                <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+                                                <span className="inline-flex items-center gap-2">
                                                     {row.rank}
-                                                    {row.rank === 1 && <CrownIcon />}
-                                                    {row.rank === 2 && <MedalIcon color={colors.medal.silver} />}
-                                                    {row.rank === 3 && <MedalIcon color={colors.medal.bronze} />}
-                                                </Box>
-                                            </Link>
-                                        </TableCell>
-                                        <TableCell sx={{color: 'white'}}>
-                                            <Link component={RouterLink} to={`/player/${row.player}`}
-                                                  underline="hover" onClick={stopRowClick}>
+                                                    {row.rank === 1 && <CrownIcon/>}
+                                                    {row.rank === 2 && <MedalIcon color={colors.medal.silver}/>}
+                                                    {row.rank === 3 && <MedalIcon color={colors.medal.bronze}/>}
+                                                </span>
+                                            </RouterLink>
+                                        </td>
+                                        <td>
+                                            <RouterLink
+                                                to={`/player/${row.player}`}
+                                                className="link"
+                                                onClick={stopRowClick}
+                                            >
                                                 {row.player}
-                                            </Link>
-                                        </TableCell>
-                                        <TableCell sx={{color: dpsColor, fontWeight: 'bold'}}>{row.dps}</TableCell>
-                                    </TableRow>
+                                            </RouterLink>
+                                        </td>
+                                        <td style={{color: dpsColor, fontWeight: 'bold'}}>{row.dps}</td>
+                                    </tr>
                                 );
                             })}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                    </tbody>
+                </table>
+            </div>
             {!loading && dpsRows.length > 0 && (
-                <Box display="flex" justifyContent="center" pt={0} pb={1}>
-                    <Pagination
-                        count={Math.ceil(dpsRows.length / entriesPerPage)}
-                        page={page}
-                        onChange={(_, value) => setPage(value)}
-                        sx={paginationSx}
-                    />
-                </Box>
+                <TablePagination
+                    count={Math.ceil(dpsRows.length / entriesPerPage)}
+                    page={page}
+                    onPageChange={setPage}
+                />
             )}
-        </Box>
-    );
-
-    const renderLeaderboardContent = () => (
-        mode === 'dps' ? renderDpsTable() : renderDurationTable()
+        </div>
     );
 
     return (
-        <Box m={0}>
+        <div className="m-0">
             <FilterToolbar
                 leadingFilters={(
                     <>
@@ -444,7 +444,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
                                 value: option.value,
                                 label: option.label,
                             }))}
-                            sx={{minWidth: {xs: 120, sm: 160}}}
+                            className="min-w-[120px] sm:min-w-[160px]"
                             onChange={(nextContentValue) => {
                                 const selectedContent = LEADERBOARD_CONTENT_OPTIONS.find(
                                     (option) => option.value === nextContentValue,
@@ -474,7 +474,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
                             field="team"
                             value={playerCount}
                             compact
-                            sx={filterFieldCompactSx}
+                            className={filterFieldCompactClass}
                             options={buildLeaderboardPlayerCountOptions(content.playerCounts)}
                             onChange={(count) => {
                                 updateSearchParams({playerCount: count.toString()});
@@ -510,7 +510,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
                             value: fight,
                             label: fight,
                         }))}
-                        sx={{minWidth: {xs: 100, sm: 120}}}
+                        className="min-w-[100px] sm:min-w-[120px]"
                         onChange={(fight) => {
                             updateSearchParams({fight});
                         }}
@@ -518,8 +518,8 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
                 ) : undefined}
             />
 
-            {renderLeaderboardContent()}
-        </Box>
+            {mode === 'dps' ? renderDpsTable() : renderDurationTable()}
+        </div>
     );
 };
 

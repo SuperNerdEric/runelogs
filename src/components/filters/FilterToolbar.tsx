@@ -1,10 +1,10 @@
 import React from 'react';
-import {Box, SxProps, Theme} from '@mui/material';
+import {cn} from '@/lib/utils';
 import {
-    filterToolbarDividerSx,
-    filterToolbarFiltersRowSx,
-    filterToolbarSx,
-    filterToolbarWithModeSx,
+    filterToolbarClass,
+    filterToolbarDividerClass,
+    filterToolbarFiltersRowClass,
+    filterToolbarWithModeClass,
 } from './filterStyles';
 
 interface FilterToolbarProps {
@@ -14,7 +14,7 @@ interface FilterToolbarProps {
     /** Filters rendered after the mode selector (e.g. DPS fight picker). */
     trailingFilters?: React.ReactNode;
     children?: React.ReactNode;
-    sx?: SxProps<Theme>;
+    className?: string;
 }
 
 function hasToolbarContent(node?: React.ReactNode): boolean {
@@ -32,7 +32,7 @@ const FilterToolbar: React.FC<FilterToolbarProps> = ({
     modeSelector,
     trailingFilters,
     children,
-    sx,
+    className,
 }) => {
     const hasLeading = hasToolbarContent(leadingFilters);
     const hasTrailing = hasToolbarContent(trailingFilters);
@@ -48,55 +48,55 @@ const FilterToolbar: React.FC<FilterToolbarProps> = ({
         const sectionCount = [hasLeading, hasMode, hasTrailing].filter(Boolean).length;
         const useChipLayout = sectionCount >= 2;
 
-        const embeddedModeSelector = modeSelector && React.isValidElement(modeSelector)
+        const embeddedModeSelector = modeSelector && React.isValidElement<{embeddedEndCap?: boolean}>(modeSelector)
             ? React.cloneElement(modeSelector, {embeddedEndCap: !hasTrailing})
             : modeSelector;
 
         return (
-            <Box
-                sx={[
-                    useChipLayout ? filterToolbarWithModeSx : filterToolbarSx,
-                    ...(Array.isArray(sx) ? sx : sx ? [sx] : []),
-                ]}
+            <div
+                className={cn(
+                    useChipLayout ? filterToolbarWithModeClass : filterToolbarClass,
+                    className,
+                )}
             >
                 {hasLeading && (
-                    <Box sx={filterToolbarFiltersRowSx(useChipLayout)}>
+                    <div className={filterToolbarFiltersRowClass(useChipLayout)}>
                         {leadingFilters}
-                    </Box>
+                    </div>
                 )}
-                {hasLeading && hasMode && <Box sx={filterToolbarDividerSx}/>}
+                {hasLeading && hasMode && <div className={filterToolbarDividerClass}/>}
                 {embeddedModeSelector}
-                {hasMode && hasTrailing && <Box sx={filterToolbarDividerSx}/>}
+                {hasMode && hasTrailing && <div className={filterToolbarDividerClass}/>}
                 {hasTrailing && (
-                    <Box sx={filterToolbarFiltersRowSx(useChipLayout)}>
+                    <div className={filterToolbarFiltersRowClass(useChipLayout)}>
                         {trailingFilters}
-                    </Box>
+                    </div>
                 )}
-            </Box>
+            </div>
         );
     }
 
     const hasModeAndFilters = Boolean(modeSelector && hasChildren);
 
-    const embeddedModeSelector = modeSelector && React.isValidElement(modeSelector)
+    const embeddedModeSelector = modeSelector && React.isValidElement<{embeddedEndCap?: boolean}>(modeSelector)
         ? React.cloneElement(modeSelector, {embeddedEndCap: !hasChildren})
         : modeSelector;
 
     return (
-        <Box
-            sx={[
-                hasModeAndFilters ? filterToolbarWithModeSx : filterToolbarSx,
-                ...(Array.isArray(sx) ? sx : sx ? [sx] : []),
-            ]}
+        <div
+            className={cn(
+                hasModeAndFilters ? filterToolbarWithModeClass : filterToolbarClass,
+                className,
+            )}
         >
             {embeddedModeSelector}
-            {hasModeAndFilters && <Box sx={filterToolbarDividerSx}/>}
+            {hasModeAndFilters && <div className={filterToolbarDividerClass}/>}
             {hasChildren && (
-                <Box sx={filterToolbarFiltersRowSx(hasModeAndFilters)}>
+                <div className={filterToolbarFiltersRowClass(hasModeAndFilters)}>
                     {children}
-                </Box>
+                </div>
             )}
-        </Box>
+        </div>
     );
 };
 

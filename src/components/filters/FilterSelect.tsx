@@ -1,11 +1,20 @@
 import React from 'react';
-import {Box, MenuItem, Select, SelectChangeEvent, SxProps, Theme, useMediaQuery, useTheme} from '@mui/material';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {useIsMobile} from '@/hooks/useMediaQuery';
+import {cn} from '@/lib/utils';
 import {
     FILTER_FIELD_ICON_SIZE,
     FILTER_FIELD_ICON_SIZE_MOBILE,
-    filterMenuPaperSx,
-    filterSelectCompactSx,
-    filterSelectSx,
+    filterFieldWithIconClass,
+    filterMenuPaperClass,
+    filterSelectClass,
+    filterSelectCompactClass,
 } from './filterStyles';
 import FilterFieldIcon, {FilterFieldKind} from './FilterFieldIcon';
 
@@ -26,7 +35,7 @@ interface FilterSelectProps<T extends string | number> {
     options: FilterSelectOption<T>[];
     onChange: (value: T) => void;
     compact?: boolean;
-    sx?: SxProps<Theme>;
+    className?: string;
 }
 
 function FilterSelect<T extends string | number>({
@@ -35,30 +44,40 @@ function FilterSelect<T extends string | number>({
     options,
     onChange,
     compact = false,
-    sx,
+    className,
 }: FilterSelectProps<T>) {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMobile = useIsMobile();
     const fieldIconSize = isMobile ? FILTER_FIELD_ICON_SIZE_MOBILE : FILTER_FIELD_ICON_SIZE;
     const accessibleLabel = field ? FIELD_LABELS[field] : undefined;
 
+    const selectClassName = cn(
+        compact ? filterSelectCompactClass : filterSelectClass,
+        className,
+    );
+
     const select = (
         <Select
-            value={value}
-            onChange={(event: SelectChangeEvent<T>) => onChange(event.target.value as T)}
-            size="small"
-            inputProps={accessibleLabel ? {'aria-label': accessibleLabel} : undefined}
-            MenuProps={{PaperProps: {sx: filterMenuPaperSx}}}
-            sx={[
-                compact ? filterSelectCompactSx : filterSelectSx,
-                ...(Array.isArray(sx) ? sx : sx ? [sx] : []),
-            ] as SxProps<Theme>}
+            value={String(value)}
+            onValueChange={(nextValue) => {
+                const matched = options.find((option) => String(option.value) === nextValue);
+                if (matched) {
+                    onChange(matched.value);
+                }
+            }}
         >
-            {options.map((option) => (
-                <MenuItem key={String(option.value)} value={option.value}>
-                    {option.label}
-                </MenuItem>
-            ))}
+            <SelectTrigger
+                className={selectClassName}
+                aria-label={accessibleLabel}
+            >
+                <SelectValue />
+            </SelectTrigger>
+            <SelectContent className={filterMenuPaperClass}>
+                {options.map((option) => (
+                    <SelectItem key={String(option.value)} value={String(option.value)}>
+                        {option.label}
+                    </SelectItem>
+                ))}
+            </SelectContent>
         </Select>
     );
 
@@ -67,16 +86,15 @@ function FilterSelect<T extends string | number>({
     }
 
     return (
-        <Box sx={{display: 'inline-flex', alignItems: 'center', gap: {xs: 0.4375, sm: 0.75}}}>
-            <Box
-                component="span"
+        <div className={filterFieldWithIconClass}>
+            <span
+                className="filter-field-with-icon__icon"
                 title={FIELD_LABELS.team}
-                sx={{display: 'inline-flex', alignItems: 'center', lineHeight: 0}}
             >
                 <FilterFieldIcon field="team" size={fieldIconSize}/>
-            </Box>
+            </span>
             {select}
-        </Box>
+        </div>
     );
 }
 

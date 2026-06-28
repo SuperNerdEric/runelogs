@@ -1,16 +1,4 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {
-    Box,
-    CircularProgress,
-    Link,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Typography,
-} from '@mui/material';
 import {Link as RouterLink, useNavigate, useParams} from 'react-router-dom';
 import {format} from 'date-fns';
 import {encounterTableRowProps, getEncounterHref, stopRowClick} from '../utils/encounterTableRow';
@@ -20,27 +8,20 @@ import {
     DurationPersonalBestEntry,
     DurationStandaloneFightPersonalBest,
 } from '../utils/personalBests';
-import {media} from "../theme";
-import {colors} from "../theme";
-import {getDpsPercentileColor} from "../utils/TickActivity";
+import {colors} from '../theme';
+import {getDpsPercentileColor} from '../utils/TickActivity';
 import {COLUMN_TOOLTIPS} from '../utils/columnTooltips';
 import TableColumnHeaderTooltip from './TableColumnHeaderTooltip';
-import {getPercentileAccentColor, rankToPercentile} from "../utils/percentile";
-import {ticksToTime} from "../utils/utils";
-import {CrownIcon} from "./CrownIcon";
-import MedalIcon from "./MedalIcon";
-import TrophyIcon from "./TrophyIcon";
+import {getPercentileAccentColor, rankToPercentile} from '../utils/percentile';
+import {ticksToTime} from '../utils/utils';
+import {CrownIcon} from './CrownIcon';
+import MedalIcon from './MedalIcon';
+import TrophyIcon from './TrophyIcon';
 import DurationDpsModeSelector from './DurationDpsModeSelector';
 import FilterSelect from './filters/FilterSelect';
 import FilterToolbar from './filters/FilterToolbar';
-
-const partySizeColumnSx = {
-    color: 'white',
-    whiteSpace: 'nowrap',
-    [media.mobileDown]: {
-        minWidth: 32,
-    },
-} as const;
+import {Spinner} from '@/components/ui/spinner';
+import {cn} from '@/lib/utils';
 
 interface DurationFightGroup extends DurationPersonalBestEntry {}
 
@@ -179,17 +160,17 @@ const PersonalBests: React.FC = () => {
 
     if (loading) {
         return (
-            <Box display="flex" justifyContent="center" alignItems="center" height="50vh">
-                <CircularProgress color="inherit"/>
-            </Box>
+            <div className="flex h-[50vh] items-center justify-center">
+                <Spinner className="text-white"/>
+            </div>
         );
     }
 
     if (error) {
         return (
-            <Box mt={4}>
-                <Typography color="error">{error}</Typography>
-            </Box>
+            <div className="mt-8">
+                <p className="text-[var(--color-fight-failure)]">{error}</p>
+            </div>
         );
     }
 
@@ -204,15 +185,13 @@ const PersonalBests: React.FC = () => {
         }
         return players.map((p, i) => (
             <React.Fragment key={p}>
-                <Link
-                    component={RouterLink}
+                <RouterLink
                     to={`/player/${p}`}
-                    underline="hover"
+                    className={cn('link', p === highlightPlayer && 'link-player')}
                     onClick={stopRowClick}
-                    sx={p === highlightPlayer ? {color: colors.text.player} : undefined}
                 >
                     {p}
-                </Link>
+                </RouterLink>
                 {i < players.length - 1 ? ', ' : ''}
             </React.Fragment>
         ));
@@ -224,12 +203,12 @@ const PersonalBests: React.FC = () => {
         }
         return (
             <>
-                <Box component="span" sx={{[media.desktopUp]: {display: 'none'}}}>
+                <span className="date-responsive-short">
                     {format(new Date(startTime), 'MMM d, yyyy')}
-                </Box>
-                <Box component="span" sx={{display: 'none', [media.desktopUp]: {display: 'inline'}}}>
+                </span>
+                <span className="date-responsive-full">
                     {format(new Date(startTime), 'PPp')}
-                </Box>
+                </span>
             </>
         );
     };
@@ -239,63 +218,46 @@ const PersonalBests: React.FC = () => {
             return '-';
         }
         const content = (
-            <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-                <Typography component="span" sx={{color, fontWeight: 'bold'}}>
-                    {rank}
-                </Typography>
+            <span className="inline-flex items-center gap-2">
+                <span style={{color, fontWeight: 'bold'}}>{rank}</span>
                 {rank === 1 && <CrownIcon/>}
                 {rank === 2 && <MedalIcon color={colors.medal.silver}/>}
                 {rank === 3 && <MedalIcon color={colors.medal.bronze}/>}
-            </Box>
+            </span>
         );
         if (!href) {
             return content;
         }
         return (
-            <Link
-                component={RouterLink}
-                to={href}
-                onClick={stopRowClick}
-                sx={{
-                    textDecoration: 'none',
-                    color: 'inherit',
-                    '&:hover': {textDecoration: 'underline'},
-                }}
-            >
+            <RouterLink to={href} onClick={stopRowClick} className="table-link-inherit">
                 {content}
-            </Link>
+            </RouterLink>
         );
     };
 
     return (
-        <Box mt={4}>
-            <Box pt={0} pb={1} display="flex" alignItems="center" gap={1}>
-                <Box component="span" sx={{display: 'inline-flex', alignItems: 'center', lineHeight: 0}}>
+        <div className="mt-8">
+            <div className="player-section-header pb-2">
+                <span className="inline-flex items-center leading-none">
                     <TrophyIcon size={34}/>
-                </Box>
-                <Typography variant="h4" color="white" sx={{m: 0, lineHeight: 1.2}}>
-                    Personal Bests
-                </Typography>
-            </Box>
+                </span>
+                <h2 className="player-section-title">Personal Bests</h2>
+            </div>
 
-            <FilterToolbar modeSelector={<DurationDpsModeSelector value={mode} onChange={setMode} />}/>
+            <FilterToolbar modeSelector={<DurationDpsModeSelector value={mode} onChange={setMode}/>}/>
 
             {isBusy && (
-                <Box display="flex" justifyContent="center" py={4}>
-                    <CircularProgress color="inherit"/>
-                </Box>
+                <div className="flex justify-center py-8">
+                    <Spinner className="text-white"/>
+                </div>
             )}
 
             {!isBusy && mode === 'time' && !hasDuration && (
-                <Typography variant="body1" color="white">
-                    No personal bests found.
-                </Typography>
+                <p className="text-white">No personal bests found.</p>
             )}
 
             {!isBusy && mode === 'dps' && !hasDps && (
-                <Typography variant="body1" color="white">
-                    No DPS personal bests found.
-                </Typography>
+                <p className="text-white">No DPS personal bests found.</p>
             )}
 
             {!isBusy && mode === 'time' && LEADERBOARD_CONTENT_OPTIONS.map((content) => {
@@ -308,50 +270,47 @@ const PersonalBests: React.FC = () => {
                 }
 
                 return (
-                    <Box key={content.value} mb={3}>
-                        <Typography variant="h6" gutterBottom color="white">
-                            {content.label}
-                        </Typography>
+                    <div key={content.value} className="mb-6">
+                        <h3 className="content-section-title">{content.label}</h3>
 
-                        <TableContainer>
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell sx={partySizeColumnSx}>#</TableCell>
-                                        <TableCell sx={{color: 'white'}}>Rank</TableCell>
-                                        <TableCell sx={{color: 'white'}}>Duration</TableCell>
-                                        <TableCell sx={{color: 'white'}}>Players</TableCell>
-                                        <TableCell sx={{color: 'white', whiteSpace: 'nowrap', [media.mobileDown]: {display: 'none'}}}>Date</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
+                        <div className="app-table-container">
+                            <table className="app-table">
+                                <thead>
+                                    <tr>
+                                        <th className="whitespace-nowrap max-[1279px]:min-w-8">#</th>
+                                        <th>Rank</th>
+                                        <th>Duration</th>
+                                        <th>Players</th>
+                                        <th className="app-table-cell--hide-mobile whitespace-nowrap">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
                                     {content.playerCounts.map((count) => {
                                         const match = relevantFights.find((f) => f.playerCount === count);
 
                                         return (
-                                            <TableRow
+                                            <tr
                                                 key={count}
                                                 {...encounterTableRowProps(navigate, match?.id, {
                                                     durationResultType: match?.resultType,
                                                 })}
                                             >
-                                                <TableCell sx={partySizeColumnSx}>
+                                                <td className="whitespace-nowrap max-[1279px]:min-w-8">
                                                     {match ? (
-                                                        <Link
-                                                            component={RouterLink}
+                                                        <RouterLink
                                                             to={getEncounterHref(match.id, {
                                                                 durationResultType: match.resultType,
                                                             })}
-                                                            underline="hover"
+                                                            className="link"
                                                             onClick={stopRowClick}
                                                         >
                                                             {count}
-                                                        </Link>
+                                                        </RouterLink>
                                                     ) : (
                                                         count
                                                     )}
-                                                </TableCell>
-                                                <TableCell sx={{color: 'white'}} onClick={stopRowClick}>
+                                                </td>
+                                                <td onClick={stopRowClick}>
                                                     {renderRank(
                                                         match?.rank,
                                                         match?.percentile !== undefined
@@ -366,23 +325,21 @@ const PersonalBests: React.FC = () => {
                                                             })
                                                             : undefined,
                                                     )}
-                                                </TableCell>
-                                                <TableCell sx={{color: 'white'}}>
+                                                </td>
+                                                <td>
                                                     {match ? ticksToTime(match.officialDurationTicks) : '-'}
-                                                </TableCell>
-                                                <TableCell sx={{color: 'white'}}>
-                                                    {renderPlayers(match?.players, playerName)}
-                                                </TableCell>
-                                                <TableCell sx={{color: 'white', whiteSpace: 'nowrap', [media.mobileDown]: {display: 'none'}}}>
+                                                </td>
+                                                <td>{renderPlayers(match?.players, playerName)}</td>
+                                                <td className="app-table-cell--hide-mobile whitespace-nowrap">
                                                     {renderDate(match?.startTime)}
-                                                </TableCell>
-                                            </TableRow>
+                                                </td>
+                                            </tr>
                                         );
                                     })}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </Box>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 );
             })}
 
@@ -403,13 +360,11 @@ const PersonalBests: React.FC = () => {
                     .sort((a, b) => a.playerCount - b.playerCount);
 
                 return (
-                    <Box key={content.value} mb={3}>
-                        <Box display="flex" alignItems="center" gap={1.5} flexWrap="wrap" mb={1.5}>
-                            <Typography variant="h6" color="white" sx={{m: 0}}>
-                                {content.label}
-                            </Typography>
+                    <div key={content.value} className="mb-6">
+                        <div className="mb-3 flex flex-wrap items-center gap-3">
+                            <h3 className="content-section-title m-0">{content.label}</h3>
                             {availableFights.length > 1 && (
-                                <Box sx={{minWidth: {xs: '100%', sm: 220}, flex: {sm: '0 0 220px'}}}>
+                                <div className="min-w-full flex-[0_0_220px] sm:min-w-0 sm:w-[220px]">
                                     <FilterSelect
                                         field="fight"
                                         value={selectedFight}
@@ -417,7 +372,7 @@ const PersonalBests: React.FC = () => {
                                             value: fight,
                                             label: fight,
                                         }))}
-                                        sx={{minWidth: 120}}
+                                        className="min-w-[120px]"
                                         onChange={(fight) => {
                                             setSelectedFights((prev) => ({
                                                 ...prev,
@@ -425,26 +380,26 @@ const PersonalBests: React.FC = () => {
                                             }));
                                         }}
                                     />
-                                </Box>
+                                </div>
                             )}
-                        </Box>
+                        </div>
 
-                        <TableContainer>
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell sx={partySizeColumnSx}>#</TableCell>
-                                        <TableCell sx={{color: 'white'}}>Rank</TableCell>
-                                        <TableCell sx={{color: 'white'}}>
+                        <div className="app-table-container">
+                            <table className="app-table">
+                                <thead>
+                                    <tr>
+                                        <th className="whitespace-nowrap max-[1279px]:min-w-8">#</th>
+                                        <th>Rank</th>
+                                        <th>
                                             <TableColumnHeaderTooltip
                                                 label="DPS"
                                                 tooltip={COLUMN_TOOLTIPS.dps}
                                             />
-                                        </TableCell>
-                                        <TableCell sx={{color: 'white', whiteSpace: 'nowrap', [media.mobileDown]: {display: 'none'}}}>Date</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
+                                        </th>
+                                        <th className="app-table-cell--hide-mobile whitespace-nowrap">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
                                     {content.playerCounts.map((count) => {
                                         const match = relevantEntries.find((entry) => entry.playerCount === count);
                                         const rankColor = match
@@ -452,31 +407,30 @@ const PersonalBests: React.FC = () => {
                                             : 'white';
 
                                         return (
-                                            <TableRow
+                                            <tr
                                                 key={count}
                                                 {...encounterTableRowProps(navigate, match?.encounterId, {
                                                     encounterType: match?.encounterType,
                                                     fightKey: selectedFight,
                                                 })}
                                             >
-                                                <TableCell sx={partySizeColumnSx}>
+                                                <td className="whitespace-nowrap max-[1279px]:min-w-8">
                                                     {match ? (
-                                                        <Link
-                                                            component={RouterLink}
+                                                        <RouterLink
                                                             to={getEncounterHref(match.encounterId, {
                                                                 encounterType: match.encounterType,
                                                                 fightKey: selectedFight,
                                                             })}
-                                                            underline="hover"
+                                                            className="link"
                                                             onClick={stopRowClick}
                                                         >
                                                             {count}
-                                                        </Link>
+                                                        </RouterLink>
                                                     ) : (
                                                         count
                                                     )}
-                                                </TableCell>
-                                                <TableCell sx={{color: 'white'}} onClick={stopRowClick}>
+                                                </td>
+                                                <td onClick={stopRowClick}>
                                                     {renderRank(
                                                         match?.rank,
                                                         rankColor,
@@ -490,23 +444,23 @@ const PersonalBests: React.FC = () => {
                                                             })
                                                             : undefined,
                                                     )}
-                                                </TableCell>
-                                                <TableCell sx={{color: rankColor, fontWeight: 'bold'}}>
+                                                </td>
+                                                <td style={{color: rankColor, fontWeight: 'bold'}}>
                                                     {match ? match.dps : '-'}
-                                                </TableCell>
-                                                <TableCell sx={{color: 'white', whiteSpace: 'nowrap', [media.mobileDown]: {display: 'none'}}}>
+                                                </td>
+                                                <td className="app-table-cell--hide-mobile whitespace-nowrap">
                                                     {renderDate(match?.startTime)}
-                                                </TableCell>
-                                            </TableRow>
+                                                </td>
+                                            </tr>
                                         );
                                     })}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </Box>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 );
             })}
-        </Box>
+        </div>
     );
 };
 

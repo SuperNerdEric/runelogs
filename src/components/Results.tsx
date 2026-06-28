@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Fight} from "../models/Fight";
 import {calculateDPS} from "../CalculateDPS";
-import {Table, TableBody, TableCell, TableContainer, TableRow} from '@mui/material';
 import TableColumnHeaderTooltip from './TableColumnHeaderTooltip';
 import {COLUMN_TOOLTIPS} from '../utils/columnTooltips';
 import {calculateAccuracy, formatHHmmss} from "../utils/utils";
@@ -31,50 +30,50 @@ const Results: React.FC<ResultsProps> = ({fight}) => {
     }, [fight]);
 
     return (
-        <TableContainer>
-            <Table>
-                <TableBody>
-                    <TableRow>
-                        <TableCell>
+        <div className="app-table-container">
+            <table className="app-table">
+                <tbody>
+                    <tr>
+                        <td>
                             <strong>Duration</strong>
-                        </TableCell>
-                        <TableCell>
+                        </td>
+                        <td>
                             {fightDuration}
-                        </TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
                             <strong>Damage</strong>
-                        </TableCell>
-                        <TableCell>
+                        </td>
+                        <td>
                             {damage}
-                        </TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
                             <TableColumnHeaderTooltip
                                 label="DPS"
                                 tooltip={COLUMN_TOOLTIPS.dps}
                             />
-                        </TableCell>
-                        <TableCell>
+                        </td>
+                        <td>
                             {isNaN(dps) || !isFinite(dps) ? 'N/A' : dps.toFixed(3)}
-                        </TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
                             <TableColumnHeaderTooltip
                                 label="Accuracy"
                                 tooltip={COLUMN_TOOLTIPS.accuracy}
                             />
-                        </TableCell>
-                        <TableCell>
+                        </td>
+                        <td>
                             {accuracy.toFixed(2)}%
-                        </TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
-        </TableContainer>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     );
 };
 

@@ -1,7 +1,7 @@
 import React, {useMemo, useState} from 'react';
-import {Box, Typography, useMediaQuery} from '@mui/material';
 import AppTooltip from './AppTooltip';
 import {Icon} from '@iconify/react';
+import {useIsMobile} from '@/hooks/useMediaQuery';
 import {
     ColosseumModifierData,
     getModifierImageUrl,
@@ -32,7 +32,7 @@ const ModifierIcon: React.FC<ModifierIconProps> = ({
     const {name, description} = getModifierInfo(modifierId);
 
     const icon = (
-        <Box
+        <div
             className={`colosseum-modifier-icon${dimmed ? ' colosseum-modifier-icon--dimmed' : ''}`}
             aria-label={name}
         >
@@ -44,7 +44,7 @@ const ModifierIcon: React.FC<ModifierIconProps> = ({
                 loading="lazy"
             />
             {levelLabel && <span className="colosseum-modifier-icon__level">{levelLabel}</span>}
-        </Box>
+        </div>
     );
 
     if (!description || !showTooltip) {
@@ -54,17 +54,12 @@ const ModifierIcon: React.FC<ModifierIconProps> = ({
     return (
         <AppTooltip
             title={description}
-            placement="top"
-            arrow
-            slotProps={{
-                tooltip: {
-                    className: 'colosseum-modifier-tooltip',
-                },
-            }}
+            side="top"
+            className="colosseum-modifier-tooltip"
         >
-            <Box component="span" className="colosseum-modifier-icon__tooltip-anchor">
+            <span className="colosseum-modifier-icon__tooltip-anchor">
                 {icon}
-            </Box>
+            </span>
         </AppTooltip>
     );
 };
@@ -87,7 +82,7 @@ const ModifierItem: React.FC<ModifierItemProps> = ({
     const {name, description} = getModifierInfo(modifierId);
 
     return (
-        <Box
+        <div
             className={`colosseum-modifier-item${dimmed ? ' colosseum-modifier-item--dimmed' : ''}${compact ? ' colosseum-modifier-item--compact' : ''}${showDescription ? ' colosseum-modifier-item--with-description' : ''}`}
         >
             <ModifierIcon
@@ -96,21 +91,21 @@ const ModifierItem: React.FC<ModifierItemProps> = ({
                 size={compact ? 40 : 48}
                 showTooltip={showTooltip}
             />
-            <Box className="colosseum-modifier-item__text">
-                <Typography className="colosseum-modifier-item__name">{name}</Typography>
+            <div className="colosseum-modifier-item__text">
+                <span className="colosseum-modifier-item__name">{name}</span>
                 {showDescription && description && (
-                    <Typography className="colosseum-modifier-item__description">
+                    <span className="colosseum-modifier-item__description">
                         {description}
-                    </Typography>
+                    </span>
                 )}
-            </Box>
-        </Box>
+            </div>
+        </div>
     );
 };
 
 const ColosseumModifiers: React.FC<ColosseumModifiersProps> = ({modifiers}) => {
     const [wavesExpanded, setWavesExpanded] = useState(false);
-    const isMobile = useMediaQuery('(max-width:768px)');
+    const isMobile = useIsMobile();
     const waveChoices = modifiers?.waveChoices ?? [];
     const waveDescriptionLines = useMemo(() => {
         if (isMobile || waveChoices.length === 0) {
@@ -128,50 +123,46 @@ const ColosseumModifiers: React.FC<ColosseumModifiersProps> = ({modifiers}) => {
     const activeModifiers = modifiers!.activeModifiers;
 
     return (
-        <Box className="damage-done-container colosseum-modifiers-section" sx={{mb: 2}}>
-            <Box className="encounter-title-bar">
+        <div className="damage-done-container colosseum-modifiers-section mb-4">
+            <div className="encounter-title-bar">
                 <span className="encounter-title-bar-name">Modifiers</span>
-            </Box>
+            </div>
 
-            <Box className="colosseum-modifiers-section__body">
+            <div className="colosseum-modifiers-section__body">
                 {activeModifiers.length > 0 && (
-                    <Box className="colosseum-modifiers-active">
-                        <Box className="colosseum-modifiers-active__grid">
+                    <div className="colosseum-modifiers-active">
+                        <div className="colosseum-modifiers-active__grid">
                             {activeModifiers.map((modifierId) => (
                                 <ModifierItem key={modifierId} modifierId={modifierId} />
                             ))}
-                        </Box>
-                    </Box>
+                        </div>
+                    </div>
                 )}
 
                 {waveChoices.length > 0 && (
-                    <Box className="colosseum-modifiers-waves">
-                        <Box
-                            component="button"
+                    <div className="colosseum-modifiers-waves">
+                        <button
                             type="button"
                             className={`colosseum-modifiers-waves__control${wavesExpanded ? ' colosseum-modifiers-waves__control--expanded' : ''}`}
                             aria-expanded={wavesExpanded}
                             onClick={() => setWavesExpanded((expanded) => !expanded)}
                         >
-                            <Box component="span" className="colosseum-modifiers-waves__chip">
+                            <span className="colosseum-modifiers-waves__chip">
                                 <Icon
                                     icon="mdi:view-list"
                                     className="colosseum-modifiers-waves__chip-icon"
                                 />
-                                <Typography
-                                    component="span"
-                                    className="colosseum-modifiers-waves__chip-label"
-                                >
+                                <span className="colosseum-modifiers-waves__chip-label">
                                     {wavesExpanded ? 'Less Info' : 'More Info'}
-                                </Typography>
+                                </span>
                                 <Icon
                                     icon="mdi:chevron-down"
                                     className={`colosseum-modifiers-waves__chip-chevron${wavesExpanded ? ' colosseum-modifiers-waves__chip-chevron--expanded' : ''}`}
                                 />
-                            </Box>
-                        </Box>
+                            </span>
+                        </button>
                         {wavesExpanded && (
-                            <Box
+                            <div
                                 className="colosseum-modifiers-waves__list"
                                 style={
                                     waveDescriptionLines
@@ -183,11 +174,11 @@ const ColosseumModifiers: React.FC<ColosseumModifiersProps> = ({modifiers}) => {
                                 }
                             >
                                 {waveChoices.map((wave, index) => (
-                                    <Box className="colosseum-modifiers-wave" key={`wave-${index}`}>
-                                        <Typography className="colosseum-modifiers-wave__title">
+                                    <div className="colosseum-modifiers-wave" key={`wave-${index}`}>
+                                        <span className="colosseum-modifiers-wave__title">
                                             Wave {index + 1}
-                                        </Typography>
-                                        <Box className="colosseum-modifiers-wave__options">
+                                        </span>
+                                        <div className="colosseum-modifiers-wave__options">
                                             {wave.options.map((optionId) => (
                                                 <ModifierItem
                                                     key={`${index}-${optionId}`}
@@ -198,15 +189,15 @@ const ColosseumModifiers: React.FC<ColosseumModifiersProps> = ({modifiers}) => {
                                                     showTooltip={isMobile}
                                                 />
                                             ))}
-                                        </Box>
-                                    </Box>
+                                        </div>
+                                    </div>
                                 ))}
-                            </Box>
+                            </div>
                         )}
-                    </Box>
+                    </div>
                 )}
-            </Box>
-        </Box>
+            </div>
+        </div>
     );
 };
 

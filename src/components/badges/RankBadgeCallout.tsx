@@ -1,25 +1,15 @@
 import React from 'react';
-import {Box, SxProps, Theme} from '@mui/material';
+import {cn} from '@/lib/utils';
 
 interface RankBadgeCalloutProps {
     children: React.ReactNode;
-    sx?: SxProps<Theme>;
+    className?: string;
 }
 
-const RankBadgeCallout: React.FC<RankBadgeCalloutProps> = ({children, sx}) => (
-    <Box
-        className="fight-group-rank-callouts"
-        sx={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            gap: 1,
-            width: '100%',
-            ...sx,
-        }}
-    >
+const RankBadgeCallout: React.FC<RankBadgeCalloutProps> = ({children, className}) => (
+    <div className={cn('fight-group-rank-callouts', className)}>
         {children}
-    </Box>
+    </div>
 );
 
 export default RankBadgeCallout;

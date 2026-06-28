@@ -1,34 +1,37 @@
 import React from 'react';
-import Leaderboard from './Leaderboard';
-import {Box, Link, Typography} from '@mui/material';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import {Link as RouterLink} from 'react-router-dom';
-import OverallRecentEncounters from "./OverallRecentEncounters";
-import HistoryIcon from '@mui/icons-material/History';
+import {History, TrendingUp} from 'lucide-react';
 import {useAuth0} from '@auth0/auth0-react';
-import {colors, contentColumnSx, media} from '../theme';
+import Leaderboard from './Leaderboard';
+import OverallRecentEncounters from './OverallRecentEncounters';
 import {HomeHero} from './HomeHero';
 import {HomeHeroSubtitle, HomeHeroTagline} from './homeHeroContent';
 import TrophyIcon from './TrophyIcon';
+import {colors, contentColumnClass} from '../theme';
+import {cn} from '@/lib/utils';
 
 export default function Home() {
     const {isAuthenticated} = useAuth0();
 
     return (
-        <Box sx={{...contentColumnSx, px: 2, pb: 0, [media.mobileDown]: {px: 1}}}>
-            <Box sx={{[media.mobileDown]: {mx: -0.5}}}>
+        <div className={cn(contentColumnClass, 'px-2 pb-0 max-[1279px]:px-1')}>
+            <div className="home-hero-wrap">
                 <HomeHero
-                    icon={TrendingUpIcon}
+                    icon={TrendingUp}
                     iconColor={colors.text.logs}
                     tagline={<HomeHeroTagline/>}
                     subtitle={<HomeHeroSubtitle/>}
                 />
-            </Box>
-            <Typography paragraph>
+            </div>
+            <p className="home-intro">
                 Runelogs works with the{' '}
-                <Link href="https://runelite.net/plugin-hub/show/combat-logger" target="_blank" rel="noopener">
+                <a
+                    href="https://runelite.net/plugin-hub/show/combat-logger"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
                     Combat Logger
-                </Link>{' '}
+                </a>{' '}
                 plugin.{' '}
                 {!isAuthenticated ? (
                     <>
@@ -37,69 +40,43 @@ export default function Home() {
                     </>
                 ) : (
                     <>
-                        <Link component={RouterLink} to="/upload">Upload a log</Link>{' '}
+                        <RouterLink to="/upload">Upload a log</RouterLink>{' '}
                         to get started.
                     </>
                 )}
-            </Typography>
-            <Typography paragraph>
+            </p>
+            <p className="home-intro">
                 We are open to contributions on our{' '}
-                <Link href="https://discord.gg/ZydwX7AJEd" target="_blank" rel="noopener">
+                <a href="https://discord.gg/ZydwX7AJEd" target="_blank" rel="noopener noreferrer">
                     Discord
-                </Link>{' '}
+                </a>{' '}
                 or on our{' '}
-                <Link href="https://github.com/SuperNerdEric/runelogs" target="_blank" rel="noopener">
+                <a href="https://github.com/SuperNerdEric/runelogs" target="_blank" rel="noopener noreferrer">
                     GitHub
-                </Link>.
-            </Typography>
-            <Box mt={4}>
-                <Box pt={0} pb={1} display="flex" alignItems="center" gap={1}>
-                    <Box component="span" sx={{display: 'inline-flex', alignItems: 'center', lineHeight: 0}}>
+                </a>.
+            </p>
+            <section className="home-section">
+                <div className="home-section__header">
+                    <span className="home-section__icon">
                         <TrophyIcon size={34}/>
-                    </Box>
-                    <Typography
-                        component={RouterLink}
-                        to="/leaderboards"
-                        variant="h4"
-                        color="white"
-                        sx={{
-                            m: 0,
-                            lineHeight: 1.2,
-                            textDecoration: 'none',
-                            '&:hover': {
-                                textDecoration: 'underline',
-                            },
-                        }}
-                    >
+                    </span>
+                    <RouterLink to="/leaderboards" className="home-section__title">
                         Leaderboards
-                    </Typography>
-                </Box>
+                    </RouterLink>
+                </div>
                 <Leaderboard entriesPerPage={25}/>
-            </Box>
-            <Box mt={4}>
-                <Box pt={0} pb={1} display="flex" alignItems="center" gap={1}>
-                    <Box component="span" sx={{display: 'inline-flex', alignItems: 'center', lineHeight: 0}}>
-                        <HistoryIcon sx={{color: colors.text.rune, fontSize: '2.125rem'}}/>
-                    </Box>
-                    <Typography
-                        component={RouterLink}
-                        to="/recent-encounters"
-                        variant="h4"
-                        color="white"
-                        sx={{
-                            m: 0,
-                            lineHeight: 1.2,
-                            textDecoration: 'none',
-                            '&:hover': {
-                                textDecoration: 'underline',
-                            },
-                        }}
-                    >
+            </section>
+            <section className="home-section">
+                <div className="home-section__header">
+                    <span className="home-section__icon">
+                        <History size={34} style={{color: colors.text.rune}} aria-hidden/>
+                    </span>
+                    <RouterLink to="/recent-encounters" className="home-section__title">
                         Recent Encounters
-                    </Typography>
-                </Box>
+                    </RouterLink>
+                </div>
                 <OverallRecentEncounters embedded entriesPerPage={10}/>
-            </Box>
-        </Box>
+            </section>
+        </div>
     );
 }

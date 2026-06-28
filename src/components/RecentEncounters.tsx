@@ -1,22 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {
-    Box,
-    CircularProgress,
-    Link,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Typography,
-} from '@mui/material';
 import {Link as RouterLink, useNavigate, useParams} from 'react-router-dom';
-import HistoryIcon from '@mui/icons-material/History';
+import {History} from 'lucide-react';
 import {format} from 'date-fns';
-import {colors, media} from "../theme";
+import {colors} from '../theme';
 import {encounterTableRowProps, stopRowClick} from '../utils/encounterTableRow';
 import {ticksToTime} from '../utils/utils';
+import {Spinner} from '@/components/ui/spinner';
+import {cn} from '@/lib/utils';
 
 interface RecentEncounter {
     type: 'fight' | 'fightGroup';
@@ -61,112 +51,104 @@ const RecentEncounters: React.FC = () => {
         fetchData();
     }, [playerName]);
 
+    const header = (
+        <div className="player-section-header pb-4">
+            <span className="inline-flex items-center leading-none">
+                <History size={34} style={{color: colors.text.rune}} aria-hidden/>
+            </span>
+            <h2 className="player-section-title">Recent Encounters</h2>
+        </div>
+    );
+
     if (loading) {
         return (
-            <Box display="flex" justifyContent="center" alignItems="center" height="50vh">
-                <CircularProgress color="inherit"/>
-            </Box>
+            <div className="flex h-[50vh] items-center justify-center">
+                <Spinner className="text-white"/>
+            </div>
         );
     }
 
     if (error) {
         return (
-            <Box mt={4}>
-                <Typography color="error">{error}</Typography>
-            </Box>
+            <div className="mt-8">
+                <p className="text-[var(--color-fight-failure)]">{error}</p>
+            </div>
         );
     }
 
     const encounters = (data?.recentEncounters || []).sort(
-        (a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+        (a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime(),
     );
 
     if (encounters.length === 0) {
         return (
-            <Box mt={4}>
-                <Box pt={0} pb={2} display="flex" alignItems="center" gap={1}>
-                    <Box component="span" sx={{display: 'inline-flex', alignItems: 'center', lineHeight: 0}}>
-                        <HistoryIcon sx={{color: colors.text.rune, fontSize: '2.125rem'}}/>
-                    </Box>
-                    <Typography variant="h4" color="white" sx={{m: 0, lineHeight: 1.2}}>
-                        Recent Encounters
-                    </Typography>
-                </Box>
-                <Typography color="white">No recent encounters found.</Typography>
-            </Box>
+            <div className="mt-8">
+                {header}
+                <p className="text-white">No recent encounters found.</p>
+            </div>
         );
     }
 
     return (
-        <Box mt={4}>
-            <Box pt={0} pb={2} display="flex" alignItems="center" gap={1}>
-                <Box component="span" sx={{display: 'inline-flex', alignItems: 'center', lineHeight: 0}}>
-                    <HistoryIcon sx={{color: colors.text.rune, fontSize: '2.125rem'}}/>
-                </Box>
-                <Typography variant="h4" color="white" sx={{m: 0, lineHeight: 1.2}}>
-                    Recent Encounters
-                </Typography>
-            </Box>
-            <TableContainer>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell sx={{color: 'white'}}>Name</TableCell>
-                            <TableCell sx={{color: 'white', whiteSpace: 'nowrap'}}>Duration</TableCell>
-                            <TableCell sx={{color: 'white'}}>Players</TableCell>
-                            <TableCell sx={{color: 'white', whiteSpace: 'nowrap'}}>Date</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
+        <div className="mt-8">
+            {header}
+            <div className="app-table-container">
+                <table className="app-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th className="whitespace-nowrap">Duration</th>
+                            <th>Players</th>
+                            <th className="whitespace-nowrap">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         {encounters.map((enc) => (
-                            <TableRow key={enc.id} {...encounterTableRowProps(navigate, enc.id)}>
-                                <TableCell sx={{color: 'white'}}>
-                                    <Link
-                                        component={RouterLink}
+                            <tr key={enc.id} {...encounterTableRowProps(navigate, enc.id)}>
+                                <td>
+                                    <RouterLink
                                         to={`/encounter/${enc.id}`}
-                                        underline="hover"
+                                        className="link"
                                         onClick={stopRowClick}
                                     >
                                         {enc.name}
-                                    </Link>
-                                </TableCell>
-                                <TableCell sx={{color: 'white', whiteSpace: 'nowrap'}}>
+                                    </RouterLink>
+                                </td>
+                                <td className="whitespace-nowrap">
                                     {enc.inProgress
                                         ? 'In Progress'
                                         : enc.officialDurationTicks != null
                                             ? ticksToTime(enc.officialDurationTicks)
                                             : '-'}
-                                </TableCell>
-                                <TableCell sx={{color: 'white'}}>
+                                </td>
+                                <td>
                                     {enc.players?.length ? enc.players.map((p, i) => (
                                         <React.Fragment key={p}>
-                                            <Link
-                                                component={RouterLink}
+                                            <RouterLink
                                                 to={`/player/${p}`}
-                                                underline="hover"
+                                                className={cn('link', p === playerName && 'link-player')}
                                                 onClick={stopRowClick}
-                                                sx={p === playerName ? {color: colors.text.player} : undefined}
                                             >
                                                 {p}
-                                            </Link>
+                                            </RouterLink>
                                             {i < enc.players!.length - 1 ? ', ' : ''}
                                         </React.Fragment>
                                     )) : '-'}
-                                </TableCell>
-                                <TableCell sx={{color: 'white', whiteSpace: 'nowrap'}}>
-                                    <Box component="span" sx={{ [media.desktopUp]: { display: 'none' } }}>
+                                </td>
+                                <td className="whitespace-nowrap">
+                                    <span className="date-responsive-short">
                                         {format(new Date(enc.startTime), 'MMM d, yyyy')}
-                                    </Box>
-                                    <Box component="span" sx={{ display: 'none', [media.desktopUp]: { display: 'inline' } }}>
+                                    </span>
+                                    <span className="date-responsive-full">
                                         {format(new Date(enc.startTime), 'PPp')}
-                                    </Box>
-                                </TableCell>
-                            </TableRow>
+                                    </span>
+                                </td>
+                            </tr>
                         ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Box>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     );
 };
 

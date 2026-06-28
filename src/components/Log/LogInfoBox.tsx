@@ -1,22 +1,16 @@
-import { Link as RouterLink } from 'react-router-dom';
-import {
-    Box,
-    Link,
-    Typography,
-    IconButton,
-    TextField,
-} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import CheckIcon from '@mui/icons-material/Check';
-import { useAuth0 } from '@auth0/auth0-react';
-import { format } from 'date-fns';
-import { useNavigate } from 'react-router-dom';
-import {closeSnackbar, SnackbarKey, useSnackbar} from "notistack";
-import CloseIcon from '@mui/icons-material/Close';
-import React, { useState } from "react";
-import {displayUsername} from "../../utils/utils";
-import { logNameTextSx, accountTextSx } from '../../theme';
+import {Link as RouterLink} from 'react-router-dom';
+import {Check, Pencil, Trash2, X} from 'lucide-react';
+import {useAuth0} from '@auth0/auth0-react';
+import {format} from 'date-fns';
+import {useNavigate} from 'react-router-dom';
+import {closeSnackbar, SnackbarKey, useSnackbar} from 'notistack';
+import React, {useState} from 'react';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {displayUsername} from '../../utils/utils';
+import {logNameTextClass} from '../../theme';
+import {stopRowClick} from '../../utils/encounterTableRow';
+import {cn} from '@/lib/utils';
 
 interface Props {
     uploaderId: string;
@@ -27,13 +21,13 @@ interface Props {
 }
 
 const LogInfoBox: React.FC<Props> = ({
-                                         uploaderId,
-                                         logName,
-                                         logId,
-                                         uploadedAt,
-                                         onLogNameChange,
-                                     }) => {
-    const { user, getAccessTokenSilently } = useAuth0();
+    uploaderId,
+    logName,
+    logId,
+    uploadedAt,
+    onLogNameChange,
+}) => {
+    const {user, getAccessTokenSilently} = useAuth0();
     const navigate = useNavigate();
     const canEdit = user?.username === uploaderId;
     const {enqueueSnackbar} = useSnackbar();
@@ -42,23 +36,24 @@ const LogInfoBox: React.FC<Props> = ({
     const [saving, setSaving] = useState(false);
 
     const action = (snackbarId: SnackbarKey) => (
-        <IconButton
+        <Button
             aria-label="close"
-            size="small"
+            variant="ghost"
+            size="icon"
+            className="size-8 text-inherit"
             onClick={() => closeSnackbar(snackbarId)}
-            sx={{ color: 'inherit' }}
         >
-            <CloseIcon fontSize="small" />
-        </IconButton>
+            <X className="size-4"/>
+        </Button>
     );
 
-    const handleDelete = async (logId: string) => {
+    const handleDelete = async (deleteLogId: string) => {
         const confirmed = window.confirm('Are you sure you want to delete this log?');
         if (!confirmed) return;
 
         try {
             const token = await getAccessTokenSilently();
-            const resp = await fetch(`${import.meta.env.VITE_API_URL}/log/${logId}`, {
+            const resp = await fetch(`${import.meta.env.VITE_API_URL}/log/${deleteLogId}`, {
                 method: 'DELETE',
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -69,7 +64,7 @@ const LogInfoBox: React.FC<Props> = ({
             }
 
             enqueueSnackbar('Log Deleted', {variant: 'success', autoHideDuration: 1000, action});
-            navigate(`/logs/${uploaderId}`, { replace: true });
+            navigate(`/logs/${uploaderId}`, {replace: true});
         } catch (err: any) {
             console.error('Failed to delete log:', err);
             alert(err.message || 'Failed to delete');
@@ -97,7 +92,7 @@ const LogInfoBox: React.FC<Props> = ({
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name: draft.trim() || null }),
+                body: JSON.stringify({name: draft.trim() || null}),
             });
 
             if (!resp.ok) {
@@ -105,55 +100,44 @@ const LogInfoBox: React.FC<Props> = ({
                 throw new Error(body.error || `Rename failed with status ${resp.status}`);
             }
 
-            const data: { name: string | null } = await resp.json();
+            const data: {name: string | null} = await resp.json();
             onLogNameChange(data.name);
             setEditing(false);
-            enqueueSnackbar('Log renamed', { variant: 'success', autoHideDuration: 1000, action });
+            enqueueSnackbar('Log renamed', {variant: 'success', autoHideDuration: 1000, action});
         } catch (err: any) {
             console.error('Failed to rename log:', err);
-            enqueueSnackbar(err.message || 'Failed to rename log', { variant: 'error', action });
+            enqueueSnackbar(err.message || 'Failed to rename log', {variant: 'error', action});
         } finally {
             setSaving(false);
         }
     };
 
     return (
-        <Box
-            className="log-info-box"
-            sx={{ position: 'relative' }}
-        >
+        <div className="log-info-box">
             {canEdit && (
-                <IconButton
+                <Button
                     aria-label="delete"
-                    size="large"
-                    sx={{
-                        position: 'absolute',
-                        top: 4,
-                        right: 4,
-                        color: 'white',
-                    }}
+                    variant="ghost"
+                    size="icon"
+                    className="log-info-delete-btn"
                     onClick={() => handleDelete(logId)}
                 >
-                    <DeleteIcon fontSize="small" />
-                </IconButton>
+                    <Trash2 className="size-4"/>
+                </Button>
             )}
 
-            <Typography className="log-info-label">Uploader</Typography>
-            <Link
-                component={RouterLink}
-                style={{textTransform: 'capitalize'}}
+            <span className="log-info-label">Uploader</span>
+            <RouterLink
                 to={`/logs/${uploaderId}`}
-                underline="hover"
-                variant="body1"
-                sx={accountTextSx}
+                className={cn('link link-account capitalize')}
             >
                 {displayUsername(uploaderId)}
-            </Link>
+            </RouterLink>
 
-            <Typography className="log-info-label">Log&nbsp;Name</Typography>
+            <span className="log-info-label">Log&nbsp;Name</span>
             {editing ? (
-                <Box display="flex" alignItems="center" gap={0.5} className="log-info-value">
-                    <TextField
+                <div className="log-name-edit-row log-info-value" onClick={stopRowClick}>
+                    <Input
                         value={draft}
                         onChange={(e) => setDraft(e.target.value)}
                         onKeyDown={(e) => {
@@ -164,62 +148,59 @@ const LogInfoBox: React.FC<Props> = ({
                                 cancelEditing();
                             }
                         }}
-                        size="small"
                         autoFocus
                         disabled={saving}
-                        fullWidth
-                        inputProps={{ maxLength: 100 }}
-                        sx={{
-                            flex: 1,
-                            minWidth: 0,
-                            '& .MuiInputBase-input': { color: 'white', py: 0.5 },
-                            '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.3)' },
-                        }}
+                        maxLength={100}
+                        className="log-name-edit-input"
                     />
-                    <IconButton aria-label="save log name" size="small" onClick={() => void saveEditing()} disabled={saving} sx={{ flexShrink: 0 }}>
-                        <CheckIcon fontSize="small" sx={{ color: 'white' }} />
-                    </IconButton>
-                    <IconButton aria-label="cancel edit" size="small" onClick={cancelEditing} disabled={saving} sx={{ flexShrink: 0 }}>
-                        <CloseIcon fontSize="small" sx={{ color: 'white' }} />
-                    </IconButton>
-                </Box>
+                    <Button
+                        aria-label="save log name"
+                        variant="ghost"
+                        size="icon"
+                        className="size-8 shrink-0 text-white"
+                        onClick={() => void saveEditing()}
+                        disabled={saving}
+                    >
+                        <Check className="size-4"/>
+                    </Button>
+                    <Button
+                        aria-label="cancel edit"
+                        variant="ghost"
+                        size="icon"
+                        className="size-8 shrink-0 text-white"
+                        onClick={cancelEditing}
+                        disabled={saving}
+                    >
+                        <X className="size-4"/>
+                    </Button>
+                </div>
             ) : (
-                <Box
-                    className="log-info-value"
-                    sx={{ display: 'flex', alignItems: 'flex-start', gap: 0.25, minWidth: 0 }}
-                >
-                    <Typography
-                        component="span"
-                        sx={{
-                            ...logNameTextSx(!!logName),
-                            minWidth: 0,
-                            overflowWrap: 'break-word',
-                            wordBreak: 'break-word',
-                        }}
+                <div className="log-name-display-row log-name-display-row--start log-info-value">
+                    <span
+                        className={cn(logNameTextClass(!!logName), 'min-w-0 break-words')}
                     >
                         {logName ?? 'Unnamed'}
-                    </Typography>
+                    </span>
                     {canEdit && (
-                        <IconButton
+                        <Button
                             aria-label="edit log name"
-                            size="small"
+                            variant="ghost"
+                            size="icon"
+                            className="size-7 shrink-0 p-0.5 text-white/70"
                             onClick={startEditing}
-                            sx={{ flexShrink: 0, p: 0.25 }}
                         >
-                            <EditIcon fontSize="small" sx={{ color: 'rgba(255,255,255,0.7)' }} />
-                        </IconButton>
+                            <Pencil className="size-4"/>
+                        </Button>
                     )}
-                </Box>
+                </div>
             )}
 
-            <Typography className="log-info-label">Log&nbsp;ID</Typography>
-            <Typography className="log-info-value log-info-id">{logId}</Typography>
+            <span className="log-info-label">Log&nbsp;ID</span>
+            <span className="log-info-value log-info-id">{logId}</span>
 
-            <Typography className="log-info-label">Uploaded</Typography>
-            <Typography className="log-info-value">
-                {format(new Date(uploadedAt), 'PPpp')}
-            </Typography>
-        </Box>
+            <span className="log-info-label">Uploaded</span>
+            <span className="log-info-value">{format(new Date(uploadedAt), 'PPpp')}</span>
+        </div>
     );
 };
 

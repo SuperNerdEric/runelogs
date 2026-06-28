@@ -1,8 +1,14 @@
-import React, {useState} from 'react';
-import {Box, Menu, MenuItem, Typography} from '@mui/material';
+import React from 'react';
 import {Icon} from '@iconify/react';
-import {pageHeroTitleSx, media} from '../theme/layout';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {pageHeroTitleClass} from '../theme';
 import {BreadcrumbSegment} from './PageBreadcrumbs';
+import {cn} from '@/lib/utils';
 
 interface EncounterFightTitleProps {
     fightName: string;
@@ -17,100 +23,44 @@ interface MobileFightSelectProps {
 }
 
 const MobileFightSelect: React.FC<MobileFightSelectProps> = ({fightName, fightSelect}) => {
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
-
     return (
-        <>
-            <Box
-                component="button"
-                type="button"
-                aria-label="Select fight"
-                aria-haspopup="listbox"
-                aria-expanded={open}
-                onClick={(event) => setAnchorEl(event.currentTarget)}
-                sx={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 0.25,
-                    maxWidth: '100%',
-                    border: 'none',
-                    borderRadius: '4px',
-                    background: 'transparent',
-                    color: 'inherit',
-                    cursor: 'pointer',
-                    fontFamily: 'inherit',
-                    p: 0,
-                    m: 0,
-                    '&:hover': {
-                        backgroundColor: 'var(--color-bg-surface)',
-                    },
-                    '&:focus-visible': {
-                        outline: '2px solid var(--color-text-link)',
-                        outlineOffset: '2px',
-                    },
-                }}
-            >
-                <Typography
-                    component="span"
-                    sx={{
-                        ...pageHeroTitleSx,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                    }}
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <button
+                    type="button"
+                    aria-label="Select fight"
+                    className="encounter-fight-select-trigger"
                 >
-                    {fightName}
-                </Typography>
-                <Icon
-                    icon="mdi:chevron-down"
-                    style={{
-                        color: 'var(--color-text-muted)',
-                        fontSize: '1.125rem',
-                        flexShrink: 0,
-                    }}
-                />
-            </Box>
-            <Menu
-                anchorEl={anchorEl}
-                open={open}
-                onClose={() => setAnchorEl(null)}
-                slotProps={{
-                    paper: {
-                        sx: {
-                            maxHeight: '50vh',
-                            maxWidth: 'calc(100vw - 32px)',
-                            bgcolor: 'var(--color-bg-surface)',
-                        },
-                    },
-                }}
-                MenuListProps={{
-                    dense: true,
-                    sx: {py: 0.5},
-                }}
-            >
+                    <span
+                        className={cn(pageHeroTitleClass, 'truncate')}
+                    >
+                        {fightName}
+                    </span>
+                    <Icon
+                        icon="mdi:chevron-down"
+                        style={{
+                            color: 'var(--color-text-muted)',
+                            fontSize: '1.125rem',
+                            flexShrink: 0,
+                        }}
+                    />
+                </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="max-h-[50vh] max-w-[calc(100vw-32px)]">
                 {fightSelect.options.map((option) => (
-                    <MenuItem
+                    <DropdownMenuItem
                         key={option.value}
-                        selected={option.value === fightSelect.value}
-                        onClick={() => {
-                            fightSelect.onChange(option.value);
-                            setAnchorEl(null);
-                        }}
-                        sx={{
-                            py: 0.5,
-                            px: 1.5,
-                            minHeight: 32,
-                            fontSize: '0.875rem',
-                            lineHeight: 1.25,
-                            whiteSpace: 'normal',
-                        }}
+                        className={cn(
+                            'py-1 px-3 min-h-8 text-sm leading-tight whitespace-normal',
+                            option.value === fightSelect.value && 'bg-accent',
+                        )}
+                        onSelect={() => fightSelect.onChange(option.value)}
                     >
                         {option.label}
-                    </MenuItem>
+                    </DropdownMenuItem>
                 ))}
-            </Menu>
-        </>
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 };
 
@@ -125,8 +75,7 @@ const EncounterFightTitle: React.FC<EncounterFightTitleProps> = ({
             href={`https://oldschool.runescape.wiki/w/${mainEnemyName}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="link"
-            style={{color: 'inherit'}}
+            className="link link-inherit"
         >
             {fightName}
         </a>
@@ -135,40 +84,22 @@ const EncounterFightTitle: React.FC<EncounterFightTitleProps> = ({
     );
 
     return (
-        <Box className="run-summary-hero" sx={{textAlign: 'center', mb: 2, alignSelf: 'stretch'}}>
+        <div className="run-summary-hero">
             {fightSelect && (
-                <Box
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        width: '100%',
-                        [media.desktopUp]: {
-                            display: 'none',
-                        },
-                    }}
-                >
+                <div className="encounter-fight-select-mobile">
                     <MobileFightSelect fightName={fightName} fightSelect={fightSelect}/>
-                </Box>
+                </div>
             )}
 
-            <Typography
-                component="h1"
-                variant="h4"
-                sx={{
-                    ...pageHeroTitleSx,
-                    ...(fightSelect
-                        ? {
-                            display: 'none',
-                            [media.desktopUp]: {
-                                display: 'block',
-                            },
-                        }
-                        : {}),
-                }}
+            <h1
+                className={cn(
+                    pageHeroTitleClass,
+                    fightSelect && 'encounter-fight-title-desktop',
+                )}
             >
                 {title}
-            </Typography>
-        </Box>
+            </h1>
+        </div>
     );
 };
 

@@ -6,8 +6,15 @@ import {Levels} from "../../models/Levels";
 import {BoostedLevelsLog, filterByType, LogLine, LogTypes} from "../../models/LogLine";
 import {formatHHmmss} from "../../utils/utils";
 import {MAGE_ANIMATION, MELEE_ANIMATIONS, RANGED_ANIMATIONS} from "../../models/Constants";
-import {alpha, Box, FormControl, FormControlLabel, MenuItem, Select, SelectChangeEvent, Switch} from '@mui/material';
-import {styled} from "@mui/material/styles";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {Switch} from '@/components/ui/switch';
+import {Label} from '@/components/ui/label';
 import ActivityTable from "./ActivityTable";
 import SectionBox from "../SectionBox";
 import {colors, layout} from "../../theme";
@@ -69,6 +76,7 @@ export function calculateWeightedAveragesByPlayer(fight: Fight): Map<string, Lev
             magic: [],
             hitpoints: [],
             prayer: [],
+            sailing: [],
         };
 
         const statSums: Partial<Record<keyof Levels, number>> = {};
@@ -101,14 +109,12 @@ export function calculateWeightedAverages(fight: Fight) {
     const startTime = fight.firstLine.fightTimeMs!;
     const endTime = fight.lastLine.fightTimeMs!;
 
-    // Calculate the time difference in seconds
     const totalTimeInSeconds = (endTime - startTime) / 1000;
 
     const filteredLogs = filterByType(fight.data, LogTypes.BOOSTED_LEVELS);
     const pairs: [LogLine, LogLine][] = d3Pairs(filteredLogs);
 
     if (pairs && pairs.length > 0) {
-        // Create one more pair between the last and end of the fight
         pairs.push([fight.data[fight.data.length - 1], fight.lastLine!])
 
         pairs.forEach(pair => {
@@ -144,11 +150,23 @@ export function calculateWeightedAverages(fight: Fight) {
     return averages as Levels;
 }
 
+const playerNamesFromFight = (fight: Fight): string[] => (
+    [...new Set(
+        fight.data
+            .filter(
+                (log) =>
+                    (log.type === LogTypes.PLAYER_ATTACK_ANIMATION) &&
+                    log.source?.name
+            )
+            .map((log) => log.source!.name)
+    )]
+);
+
 const Boosts: React.FC<DPSChartProps> = ({fight}) => {
     const [selectedPlayer, setSelectedPlayer] = useState<string>(fight.loggedInPlayer);
     const [boostedLevelsData, setBoostedLevelsData] = useState<any[] | undefined>();
     const [attackAnimationData, setAttackAnimationData] = useState<any[] | undefined>();
-    const [showAttackAnimations, setShowAttackAnimations] = useState<boolean>(true); // State variable to control visibility
+    const [showAttackAnimations, setShowAttackAnimations] = useState<boolean>(true);
 
     useEffect(() => {
         if (!selectedPlayer) return;
@@ -231,35 +249,25 @@ const Boosts: React.FC<DPSChartProps> = ({fight}) => {
         <div style={{maxWidth: layout.contentMaxWidth, width: '100%'}}>
             <ActivityTable fight={fight}/>
             <SectionBox>
-                <Box sx={{margin: '16px 0', width: 180}}>
-                    <FormControl fullWidth size="small">
-                        <Select
-                            labelId="player-select-label"
-                            id="player-select"
-                            value={selectedPlayer}
-                            onChange={(e: SelectChangeEvent) => setSelectedPlayer(e.target.value)}
-                        >
-                            {[...new Set(
-                                fight.data
-                                    .filter(
-                                        (log) =>
-                                            (log.type === LogTypes.PLAYER_ATTACK_ANIMATION) &&
-                                            log.source?.name
-                                    )
-                                    .map((log) => log.source!.name)
-                            )].map((name) => (
-                                <MenuItem key={name} value={name}>
+                <div style={{margin: '16px 0', width: 180}}>
+                    <Select value={selectedPlayer} onValueChange={setSelectedPlayer}>
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select player"/>
+                        </SelectTrigger>
+                        <SelectContent>
+                            {playerNamesFromFight(fight).map((name) => (
+                                <SelectItem key={name} value={name}>
                                     {name}
-                                </MenuItem>
+                                </SelectItem>
                             ))}
-                        </Select>
-                    </FormControl>
-                </Box>
+                        </SelectContent>
+                    </Select>
+                </div>
                 <ResponsiveContainer width="100%" height={350}>
                     <LineChart data={boostedLevelsData} margin={{top: 11, left: 60, bottom: 50}}>
                         <XAxis
-                            dataKey="timestamp" // Use the actual timestamp as the dataKey
-                            type="number" // Specify the type as "number" for numerical values
+                            dataKey="timestamp"
+                            type="number"
                             tickFormatter={(timestamp) => formatHHmmss(timestamp, true)}
                             domain={[0, boostedLevelsData[boostedLevelsData.length - 1]?.timestamp ?? 0]}
                         />
@@ -278,16 +286,16 @@ const Boosts: React.FC<DPSChartProps> = ({fight}) => {
                         />
                         <Legend content={() => (
                             <div style={{position: 'absolute', top: 0, right: 0}}>
-                                <FormControlLabel
-                                    control={
-                                        <TanToggle
-                                            checked={showAttackAnimations}
-                                            onChange={() => setShowAttackAnimations(!showAttackAnimations)}
-                                            color="default"
-                                        />
-                                    }
-                                    label="Attacks"
-                                />
+                                <div className="flex items-center gap-2">
+                                    <Switch
+                                        id="show-attack-animations"
+                                        checked={showAttackAnimations}
+                                        onCheckedChange={setShowAttackAnimations}
+                                        className="data-[state=checked]:bg-[var(--boosts-switch-checked)] data-[state=unchecked]:bg-muted"
+                                        style={{'--boosts-switch-checked': colors.switch.tanHex} as React.CSSProperties}
+                                    />
+                                    <Label htmlFor="show-attack-animations">Attacks</Label>
+                                </div>
                             </div>
                         )}/>
                         {attackAnimationData.map((line, index) => (
@@ -308,8 +316,8 @@ const Boosts: React.FC<DPSChartProps> = ({fight}) => {
                 <ResponsiveContainer width="100%" height={350}>
                     <LineChart data={boostedLevelsData} margin={{top: 11, left: 60, bottom: 10}}>
                         <XAxis
-                            dataKey="timestamp" // Use the actual timestamp as the dataKey
-                            type="number" // Specify the type as "number" for numerical values
+                            dataKey="timestamp"
+                            type="number"
                             tickFormatter={(timestamp) => formatHHmmss(timestamp, true)}
                             domain={[0, boostedLevelsData[boostedLevelsData.length - 1]?.timestamp ?? 0]}
                         />
@@ -337,18 +345,3 @@ const Boosts: React.FC<DPSChartProps> = ({fight}) => {
 };
 
 export default Boosts;
-
-const TanToggle = styled(Switch)(({theme}) => ({
-    '& .MuiSwitch-switchBase.Mui-checked': {
-        color: colors.switch.tanHex,
-        '&:hover': {
-            backgroundColor: alpha(colors.switch.tanHex, theme.palette.action.hoverOpacity),
-        },
-    },
-    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-        backgroundColor: colors.switch.tanHex,
-    },
-    '& .MuiSwitch-track': {
-        backgroundColor: theme.palette.grey[400],
-    },
-}));
