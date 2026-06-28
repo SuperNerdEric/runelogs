@@ -172,8 +172,10 @@ asset-dumper/
   build.gradle
   config/
     assets.json          # IDs to dump + output paths
+    hiscore-sprites.json # Hiscore panel sprite archive IDs
     last-dump.json       # written after each run (frame counts, lengths)
   run.ps1 / run.sh
+  dump-hiscore-sprites.ps1 / dump-hiscore-sprites.sh
   update-graphic-object-map.py
   src/main/java/
     org/runelogs/assetdumper/   # CLI + config
@@ -182,6 +184,8 @@ asset-dumper/
 ```
 
 The patched `IndexData` (in this repo) ignores unknown index flags found in newer caches. It overrides the copy from the `net.runelite:cache` dependency in the fat jar.
+
+Hiscore sprites: see `dump-hiscore-sprites.ps1` and the `/update-hiscore-sprites` skill.
 
 ---
 
