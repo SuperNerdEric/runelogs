@@ -18,6 +18,7 @@ import {
     isYamaShadowWallVisible,
 } from "../../lib/yamaShadowWall";
 import {
+    getCurrentGameCycle,
     getGraphicObjectAnimationCyclesElapsed,
     isGraphicObjectVisible,
 } from "../../lib/replayTiming";
@@ -37,6 +38,28 @@ interface MapMarkersProps {
     fightEpochCycle?: number;
 }
 
+interface YamaWallRenderData {
+    objectKey: string;
+    displayImage: string;
+    opacity: number;
+    x: number;
+    y: number;
+    diagonal: ReturnType<typeof getYamaWallDiagonal>;
+}
+
+interface GraphicsObjectRenderData {
+    objectKey: string;
+    displayImage: string;
+    bounds: LatLngBounds;
+}
+
+interface SolLaserRenderData {
+    key: string;
+    displayImage: string;
+    bounds: LatLngBounds;
+    opacity: number;
+}
+
 const MapMarkers: React.FC<MapMarkersProps> = ({
                                                    playerPositions,
                                                    npcPositions,
@@ -49,10 +72,151 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
                                                    fightEpochCycle,
                                                }) => {
     const map = useMap();
-    const solLaserBeams = useMemo(
-        () => computeSolLaserBeams(graphicsObjectPositions),
-        [graphicsObjectPositions],
+    const replayClientCycle = useMemo(
+        () => (fightEpochCycle != null ? getCurrentGameCycle(currentTime, fightEpochCycle) : undefined),
+        [currentTime, fightEpochCycle],
     );
+    const solLaserGraphics = useMemo(() => {
+        const result: { [key: string]: GraphicsObjectState } = {};
+        for (const [key, objectState] of Object.entries(graphicsObjectPositions)) {
+            if (isSolLaserGraphic(objectState.id)) {
+                result[key] = objectState;
+            }
+        }
+        return result;
+    }, [graphicsObjectPositions]);
+    const solLaserBeams = useMemo(
+        () => computeSolLaserBeams(solLaserGraphics),
+        [solLaserGraphics],
+    );
+    const renderedSolLaserBeams = useMemo((): SolLaserRenderData[] => {
+        return solLaserBeams.flatMap((beam, index) => {
+            const definition = graphicObjectIdMap[beam.textureId];
+            if (!definition) {
+                return [];
+            }
+
+            const cyclesElapsed = getGraphicObjectAnimationCyclesElapsed(
+                currentTime,
+                {spawnTick: beam.spawnTick},
+                initialTick,
+                fightEpochCycle,
+            );
+            let displayImage = definition.imageUrl;
+            if (definition.frames && definition.frames.length > 0) {
+                const frameIndex = getGraphicObjectFrameIndex(cyclesElapsed, definition);
+                displayImage = definition.frames[frameIndex];
+            }
+
+            return [{
+                key: `sol-laser-${beam.spawnTick}-${beam.orientation}-${beam.fixedCoord}-${index}`,
+                displayImage: displayImage!,
+                bounds: solLaserBeamToBounds(map, beam),
+                opacity: beam.phase === 'shot' ? 1 : 0.85,
+            }];
+        });
+    }, [solLaserBeams, currentTime, initialTick, fightEpochCycle, map]);
+    const renderedYamaWalls = useMemo((): YamaWallRenderData[] => {
+        const walls: YamaWallRenderData[] = [];
+
+        for (const [objectKey, positionData] of Object.entries(graphicsObjectPositions)) {
+            if (!isYamaShadowWallGraphic(positionData.id)) {
+                continue;
+            }
+
+            const spawnTick = positionData.spawnTick ?? 0;
+            const cycleTiming = {
+                startCycle: positionData.startCycle,
+                endCycle: positionData.endCycle,
+                spawnTick,
+            };
+            if (!isYamaShadowWallVisible(currentTime, cycleTiming, initialTick, fightEpochCycle)) {
+                continue;
+            }
+
+            const cyclesElapsed = getYamaShadowWallTileCyclesElapsed(
+                currentTime,
+                positionData,
+                initialTick,
+                fightEpochCycle,
+            );
+            const phase = getYamaShadowWallPhase(cyclesElapsed);
+            if (!phase) {
+                continue;
+            }
+
+            const diagonal = getYamaWallDiagonal(positionData.id);
+            walls.push({
+                objectKey,
+                displayImage: getYamaShadowWallImageUrl(phase, diagonal),
+                opacity: phase === 'active' ? 1 : getYamaShadowWallFadeOpacity(cyclesElapsed),
+                x: positionData.position.x,
+                y: positionData.position.y,
+                diagonal,
+            });
+        }
+
+        return walls;
+    }, [graphicsObjectPositions, currentTime, initialTick, fightEpochCycle, replayClientCycle]);
+    const renderedGraphicsObjects = useMemo((): GraphicsObjectRenderData[] => {
+        const objects: GraphicsObjectRenderData[] = [];
+        const npcRectangleOptions = {
+            color: colors.replay.marker,
+            fillOpacity: 0.0,
+            weight: 2,
+            interactive: true,
+        };
+
+        for (const [objectKey, positionData] of Object.entries(graphicsObjectPositions)) {
+            if (isSolLaserGraphic(positionData.id) || isYamaShadowWallGraphic(positionData.id)) {
+                continue;
+            }
+
+            const definition = graphicObjectIdMap[positionData.id];
+            if (!definition) {
+                continue;
+            }
+
+            const spawnTick = positionData.spawnTick ?? 0;
+            const cycleTiming = {
+                startCycle: positionData.startCycle,
+                endCycle: positionData.endCycle,
+                spawnTick,
+            };
+            const totalCycles = getGraphicObjectTotalCycles(definition);
+            if (!isGraphicObjectVisible(currentTime, cycleTiming, initialTick, fightEpochCycle, totalCycles)) {
+                continue;
+            }
+
+            const cyclesElapsed = getGraphicObjectAnimationCyclesElapsed(
+                currentTime,
+                cycleTiming,
+                initialTick,
+                fightEpochCycle,
+            );
+
+            let displayImage = definition.imageUrl;
+            if (definition.frames && definition.frames.length > 0) {
+                const frameIndex = getGraphicObjectFrameIndex(cyclesElapsed, definition);
+                displayImage = definition.frames[frameIndex];
+            }
+
+            const objectPosition = new Position(
+                positionData.position.x,
+                positionData.position.y,
+                positionData.position.plane,
+            );
+            const rectangle = objectPosition.toLeaflet(map, npcRectangleOptions);
+
+            objects.push({
+                objectKey,
+                displayImage: displayImage!,
+                bounds: rectangle.getBounds(),
+            });
+        }
+
+        return objects;
+    }, [graphicsObjectPositions, currentTime, initialTick, fightEpochCycle, map, replayClientCycle]);
 
     const npcRectangleOptions = {
         color: colors.replay.marker,
@@ -132,141 +296,40 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
 
             })}
             {/* Render Sol laser beams as stretched overlays (per-tile segments do not align). */}
-            {solLaserBeams.map((beam, index) => {
-                const definition = graphicObjectIdMap[beam.textureId];
-                if (!definition) {
-                    return null;
-                }
-
-                const cyclesElapsed = getGraphicObjectAnimationCyclesElapsed(
-                    currentTime,
-                    {spawnTick: beam.spawnTick},
-                    initialTick,
-                    fightEpochCycle,
-                );
-                let displayImage = definition.imageUrl;
-                if (definition.frames && definition.frames.length > 0) {
-                    const frameIndex = getGraphicObjectFrameIndex(cyclesElapsed, definition);
-                    displayImage = definition.frames[frameIndex];
-                }
-
-                return (
-                    <ImageOverlay
-                        key={`sol-laser-${beam.spawnTick}-${beam.orientation}-${beam.fixedCoord}-${index}`}
-                        url={displayImage!}
-                        bounds={solLaserBeamToBounds(map, beam)}
-                        opacity={beam.phase === 'shot' ? 1 : 0.85}
-                        interactive={false}
-                        pane="objects"
-                    />
-                );
-            })}
+            {renderedSolLaserBeams.map((beam) => (
+                <ImageOverlay
+                    key={beam.key}
+                    url={beam.displayImage}
+                    bounds={beam.bounds}
+                    opacity={beam.opacity}
+                    interactive={false}
+                    pane="objects"
+                />
+            ))}
 
             {/* Yama shadow walls — see yamaShadowWall.ts for wave/phase timing. */}
-            {Object.entries(graphicsObjectPositions).map(([objectKey, positionData]) => {
-                if (!isYamaShadowWallGraphic(positionData.id)) {
-                    return null;
-                }
-
-                const spawnTick = positionData.spawnTick ?? 0;
-                const cycleTiming = {
-                    startCycle: positionData.startCycle,
-                    endCycle: positionData.endCycle,
-                    spawnTick,
-                };
-                if (!isYamaShadowWallVisible(currentTime, cycleTiming, initialTick, fightEpochCycle)) {
-                    return null;
-                }
-
-                const cyclesElapsed = getYamaShadowWallTileCyclesElapsed(
-                    currentTime,
-                    positionData,
-                    initialTick,
-                    fightEpochCycle,
-                );
-                const phase = getYamaShadowWallPhase(cyclesElapsed);
-                if (!phase) {
-                    return null;
-                }
-
-                const diagonal = getYamaWallDiagonal(positionData.id);
-                const displayImage = getYamaShadowWallImageUrl(phase, diagonal);
-                const opacity = phase === 'active' ? 1 : getYamaShadowWallFadeOpacity(cyclesElapsed);
-
-                return (
-                    <ImageOverlay
-                        key={`yama-shadow-wall-${objectKey}`}
-                        url={displayImage}
-                        bounds={getYamaShadowWallTileBounds(
-                            map,
-                            positionData.position.x,
-                            positionData.position.y,
-                            diagonal,
-                        )}
-                        opacity={opacity}
-                        interactive={false}
-                        pane="objects"
-                    />
-                );
-            })}
+            {renderedYamaWalls.map((wall) => (
+                <ImageOverlay
+                    key={`yama-shadow-wall-${wall.objectKey}`}
+                    url={wall.displayImage}
+                    bounds={getYamaShadowWallTileBounds(map, wall.x, wall.y, wall.diagonal)}
+                    opacity={wall.opacity}
+                    interactive={false}
+                    pane="objects"
+                />
+            ))}
 
             {/* Render Graphics Object Markers */}
-            {Object.entries(graphicsObjectPositions).map(([objectKey, positionData]) => {
-                if (isSolLaserGraphic(positionData.id)) {
-                    return null;
-                }
-                if (isYamaShadowWallGraphic(positionData.id)) {
-                    return null;
-                }
-
-                const objectPosition = new Position(positionData.position.x, positionData.position.y, positionData.position.plane);
-                const rectangle = objectPosition.toLeaflet(map, npcRectangleOptions);
-
-                // 1. Get the definition from graphicObjectIdMap
-                const definition = graphicObjectIdMap[positionData.id];
-                if (!definition) {
-                    // If we have no definition, skip or fallback
-                    return null;
-                }
-
-                // 2. Determine animation age in client cycles
-                const spawnTick = positionData.spawnTick ?? 0;
-                const cycleTiming = {
-                    startCycle: positionData.startCycle,
-                    endCycle: positionData.endCycle,
-                    spawnTick,
-                };
-                const totalCycles = getGraphicObjectTotalCycles(definition);
-                if (!isGraphicObjectVisible(currentTime, cycleTiming, initialTick, fightEpochCycle, totalCycles)) {
-                    return null;
-                }
-
-                const cyclesElapsed = getGraphicObjectAnimationCyclesElapsed(
-                    currentTime,
-                    cycleTiming,
-                    initialTick,
-                    fightEpochCycle,
-                );
-
-                // 3. If multiple frames exist, pick the correct frame
-                let displayImage = definition.imageUrl;
-                if (definition.frames && definition.frames.length > 0) {
-                    const frameIndex = getGraphicObjectFrameIndex(cyclesElapsed, definition);
-                    displayImage = definition.frames[frameIndex];
-                }
-
-                // 4. Render the overlay with the chosen frame
-                return (
-                    <ImageOverlay
-                        key={`graphics-object-${objectKey}`}
-                        url={displayImage!}
-                        bounds={rectangle.getBounds()}
-                        opacity={1}
-                        interactive={false}
-                        pane="objects"
-                    />
-                );
-            })}
+            {renderedGraphicsObjects.map((object) => (
+                <ImageOverlay
+                    key={`graphics-object-${object.objectKey}`}
+                    url={object.displayImage}
+                    bounds={object.bounds}
+                    opacity={1}
+                    interactive={false}
+                    pane="objects"
+                />
+            ))}
 
             {/* Render Game Object Markers */}
             {Object.entries(gameObjectPositions).map(([objectKey, positionData]) => {
@@ -339,4 +402,4 @@ export function formatActorKey(key: string): string {
 }
 
 
-export default MapMarkers;
+export default React.memo(MapMarkers);
