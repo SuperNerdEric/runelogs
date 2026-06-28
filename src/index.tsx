@@ -24,6 +24,7 @@ import LiveLog from "./components/LiveLog";
 import Login from "./components/Login";
 import Logout from "./components/Logout";
 import MyProfile from "./components/MyProfile";
+import Admin from "./components/Admin";
 import {initGA} from "./Analytics";
 import usePageTracking from "./hooks/usePageTracking";
 import SessionGuard from "./components/SessionGuard";
@@ -69,6 +70,7 @@ function AppRoutes() {
                 <Route path="/profile/:profileId" element={<MyProfile/>}/>
                 <Route path="/log/:logId" element={<Log/>}/>
                 <Route path="/logs/:uploaderId" element={<Logs/>}/>
+                <Route path="/admin" element={<Admin/>}/>
                 <Route path="/dev/logs-header-variants" element={<LogsPageHeaderVariants/>}/>
             </Routes>
             </main>
