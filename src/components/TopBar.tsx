@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {AppBar, Box, Button, ListItemIcon, ListItemText, Menu, MenuItem, Toolbar, Typography, useMediaQuery, useTheme} from '@mui/material';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
@@ -16,6 +17,7 @@ import {displayUsername} from "../utils/utils";
 import {colors, fontSizes, accountTextSx, layout} from "../theme";
 import AvatarIcon from './AvatarIcon';
 import {useUserProfile} from '../hooks/useUserProfile';
+import {useIsAdmin} from '../hooks/useIsAdmin';
 import {AvatarId, isAvatarId} from '../utils/avatars';
 
 const menuItemIconSx = {
@@ -39,6 +41,7 @@ const TopBar: React.FC = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const {profile} = useUserProfile();
+    const {isAdmin} = useIsAdmin();
     const avatarId: AvatarId | null =
         profile?.avatarId && isAvatarId(profile.avatarId) ? profile.avatarId : null;
 
@@ -243,6 +246,18 @@ const TopBar: React.FC = () => {
                                     </ListItemIcon>
                                     <ListItemText>Upload Log</ListItemText>
                                 </MenuItem>
+                                {isAdmin && (
+                                    <MenuItem
+                                        component={Link}
+                                        to="/admin"
+                                        onClick={handleMenuClose}
+                                    >
+                                        <ListItemIcon sx={menuItemIconSx}>
+                                            <AdminPanelSettingsIcon fontSize="small"/>
+                                        </ListItemIcon>
+                                        <ListItemText>Admin</ListItemText>
+                                    </MenuItem>
+                                )}
                                 <MenuItem
                                     onClick={() => {
                                         handleMenuClose();
