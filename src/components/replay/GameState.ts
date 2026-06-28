@@ -14,7 +14,7 @@ import {
     PrayerLog
 } from '../../models/LogLine';
 import {Levels} from "../../models/Levels";
-import {TICK_DURATION_SECONDS} from '../../lib/replayTiming';
+import {getAbsoluteTick} from '../../lib/replayTiming';
 
 export interface GamePosition {
     x: number;
@@ -66,6 +66,36 @@ export interface GameState {
     groundObjects: { [key: string]: GameObjectState };
 }
 
+function clonePlayerMap(players: GameState['players']): GameState['players'] {
+    return JSON.parse(JSON.stringify(players)) as GameState['players'];
+}
+
+function cloneNpcMap(npcs: GameState['npcs']): GameState['npcs'] {
+    return JSON.parse(JSON.stringify(npcs)) as GameState['npcs'];
+}
+
+function cloneObjectMap<T extends GameObjectState>(objects: { [key: string]: T }): { [key: string]: T } {
+    return JSON.parse(JSON.stringify(objects)) as { [key: string]: T };
+}
+
+/** Graphics entries are immutable after creation, so tick snapshots can share object refs. */
+function snapshotGraphicsObjects(
+    graphicsObjects: GameState['graphicsObjects'],
+): GameState['graphicsObjects'] {
+    return {...graphicsObjects};
+}
+
+function snapshotGameState(currentState: GameState, tick: number): GameState {
+    return {
+        tick,
+        players: clonePlayerMap(currentState.players),
+        npcs: cloneNpcMap(currentState.npcs),
+        graphicsObjects: snapshotGraphicsObjects(currentState.graphicsObjects),
+        gameObjects: cloneObjectMap(currentState.gameObjects),
+        groundObjects: cloneObjectMap(currentState.groundObjects),
+    };
+}
+
 export function createGameStates(fight: Fight): GameState[] {
     // Collect all players who appear AFTER the first tick
     // This is kind of hacky, but it's because the LogSplitter brought all the state logs forward into the fight, so that we know what state everyone is in when we started the fight
@@ -98,17 +128,7 @@ export function createGameStates(fight: Fight): GameState[] {
 
         if (tick !== currentTick) {
             if (currentTick !== undefined) {
-                // After processing all logs for the previous tick,
-                // clone the current state and push to gameStates
-                const stateToPush: GameState = {
-                    tick: currentTick,
-                    players: JSON.parse(JSON.stringify(currentState.players)),
-                    npcs: JSON.parse(JSON.stringify(currentState.npcs)),
-                    graphicsObjects: JSON.parse(JSON.stringify(currentState.graphicsObjects)),
-                    gameObjects: JSON.parse(JSON.stringify(currentState.gameObjects)),
-                    groundObjects: JSON.parse(JSON.stringify(currentState.groundObjects)),
-                };
-                gameStates.push(stateToPush);
+                gameStates.push(snapshotGameState(currentState, currentTick));
             }
 
             for (const [key, objectState] of Object.entries(currentState.graphicsObjects)) {
@@ -244,10 +264,13 @@ export function createGameStates(fight: Fight): GameState[] {
                 const objectKey = `${graphicsObjectDespawnedLog.id}-${graphicsObjectDespawnedLog.position.x}-${graphicsObjectDespawnedLog.position.y}-${graphicsObjectDespawnedLog.position.plane}`;
                 const objectState = currentState.graphicsObjects[objectKey];
                 if (objectState) {
-                    if (graphicsObjectDespawnedLog.endCycle != null) {
-                        objectState.endCycle = graphicsObjectDespawnedLog.endCycle;
-                    }
-                    objectState.despawnTick = tick;
+                    currentState.graphicsObjects[objectKey] = {
+                        ...objectState,
+                        ...(graphicsObjectDespawnedLog.endCycle != null
+                            ? {endCycle: graphicsObjectDespawnedLog.endCycle}
+                            : {}),
+                        despawnTick: tick,
+                    };
                 } else {
                     delete currentState.graphicsObjects[objectKey];
                 }
@@ -297,15 +320,7 @@ export function createGameStates(fight: Fight): GameState[] {
 
     // Push the final state after processing all logs
     if (currentTick !== undefined) {
-        const stateToPush: GameState = {
-            tick: currentTick,
-            players: JSON.parse(JSON.stringify(currentState.players)),
-            npcs: JSON.parse(JSON.stringify(currentState.npcs)),
-            graphicsObjects: JSON.parse(JSON.stringify(currentState.graphicsObjects)),
-            gameObjects: JSON.parse(JSON.stringify(currentState.gameObjects)),
-            groundObjects: JSON.parse(JSON.stringify(currentState.groundObjects)),
-        };
-        gameStates.push(stateToPush);
+        gameStates.push(snapshotGameState(currentState, currentTick));
     }
 
     // Remove any player not in playersWithActivity from each GameState
@@ -320,24 +335,57 @@ export function createGameStates(fight: Fight): GameState[] {
     return gameStates;
 }
 
-export function getCurrentGameState(gameStates: GameState[], currentTime: number, initialTick: number): GameState | undefined {
-    const targetTick = Math.floor(currentTime / TICK_DURATION_SECONDS) + initialTick;
+export function getTargetTick(currentTime: number, initialTick: number): number {
+    return Math.floor(getAbsoluteTick(currentTime, initialTick));
+}
 
-    // Find the last gameState with tick <= targetTick
-    let index = gameStates.findIndex((gs) => gs.tick > targetTick);
-
-    let currentGameState: GameState | undefined = undefined;
-
-    if (index === -1) {
-        // All ticks are <= targetTick
-        currentGameState = gameStates[gameStates.length - 1];
-    } else if (index === 0) {
-        // All ticks are > targetTick
-        currentGameState = gameStates[0];
-    } else {
-        // gameStates[index - 1].tick <= targetTick < gameStates[index].tick
-        currentGameState = gameStates[index - 1];
+export function getCurrentGameState(
+    gameStates: GameState[],
+    currentTime: number,
+    initialTick: number,
+): GameState | undefined {
+    if (gameStates.length === 0) {
+        return undefined;
     }
 
-    return currentGameState;
+    const targetTick = getTargetTick(currentTime, initialTick);
+    return getGameStateAtTick(gameStates, targetTick);
+}
+
+export function getGameStateAtTick(gameStates: GameState[], targetTick: number): GameState | undefined {
+    if (gameStates.length === 0) {
+        return undefined;
+    }
+
+    if (targetTick < gameStates[0].tick) {
+        return gameStates[0];
+    }
+
+    const lastState = gameStates[gameStates.length - 1];
+    if (targetTick >= lastState.tick) {
+        return lastState;
+    }
+
+    let low = 0;
+    let high = gameStates.length - 1;
+
+    while (low <= high) {
+        const mid = (low + high) >> 1;
+        const midTick = gameStates[mid].tick;
+
+        if (midTick === targetTick) {
+            return gameStates[mid];
+        }
+
+        if (midTick < targetTick) {
+            if (mid === gameStates.length - 1 || gameStates[mid + 1].tick > targetTick) {
+                return gameStates[mid];
+            }
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
+    }
+
+    return gameStates[0];
 }

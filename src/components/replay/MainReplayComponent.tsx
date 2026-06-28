@@ -3,7 +3,7 @@ import MapComponent from './MapComponent';
 import PlaybackControls from './PlaybackControls';
 import PlayerSelector from './PlayerSelector';
 import {Fight} from '../../models/Fight';
-import {createGameStates, GamePosition, GameState, getCurrentGameState} from './GameState';
+import {createGameStates, GamePosition, getGameStateAtTick, getTargetTick} from './GameState';
 import PlayerEquipment from "./PlayerEquipment";
 import * as semver from "semver";
 import Prayers from './Prayers';
@@ -12,7 +12,7 @@ import TickChart from './TickChart';
 import {useMediaQuery} from "@mui/material";
 import theme from "../../theme";
 import {colors} from "../../theme";
-import {CLIENT_CYCLE_DURATION_SECONDS, computeFightEpochCycle, TICK_DURATION_SECONDS} from '../../lib/replayTiming';
+import {computeFightEpochCycle, TICK_DURATION_SECONDS} from '../../lib/replayTiming';
 import EquipmentIcon from "../../assets/replay-icons/equipment.png";
 import PrayerIcon from "../../assets/replay-icons/prayer.png";
 import StatsIcon from "../../assets/replay-icons/stats.png";
@@ -26,8 +26,6 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [initialPlayerPosition, setInitialPlayerPosition] = useState<GamePosition | undefined>(undefined);
-    const [gameStates, setGameStates] = useState<GameState[]>([]);
-    const [currentGameState, setCurrentGameState] = useState<GameState | undefined>(undefined);
     const [isPlaying, setIsPlaying] = useState(false);
     const [selectedPlayerName, setSelectedPlayerName] = useState<string | undefined>(undefined);
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -41,11 +39,15 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
         () => computeFightEpochCycle(fight.data, initialTick),
         [fight.data, initialTick],
     );
-
-    // Preprocess fight data into game states for easier playback
-    useEffect(() => {
-        setGameStates(createGameStates(fight));
-    }, [fight]);
+    const gameStates = useMemo(() => createGameStates(fight), [fight]);
+    const currentTargetTick = useMemo(
+        () => getTargetTick(currentTime, initialTick),
+        [currentTime, initialTick],
+    );
+    const currentGameState = useMemo(
+        () => getGameStateAtTick(gameStates, currentTargetTick),
+        [gameStates, currentTargetTick],
+    );
 
     // Extract initial player position
     useEffect(() => {
@@ -56,24 +58,39 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
         }
     }, [gameStates]);
 
-    // Update currentGameState based on currentTime
-    useEffect(() => {
-        setCurrentGameState(getCurrentGameState(gameStates, currentTime, initialTick));
-    }, [gameStates, currentTime, initialTick]);
 
     // Handle play/pause functionality
     useEffect(() => {
-        let interval: NodeJS.Timeout;
-        if (isPlaying) {
-            interval = setInterval(() => {
-                setCurrentTime((prevTime) => {
-                    const newTime = prevTime + CLIENT_CYCLE_DURATION_SECONDS;
-                    return newTime >= maxTime ? maxTime : newTime;
-                });
-            }, CLIENT_CYCLE_DURATION_SECONDS * 1000);
+        if (!isPlaying) {
+            return;
         }
+
+        let rafId = 0;
+        let lastTimestamp: number | null = null;
+
+        const step = (timestamp: number) => {
+            if (lastTimestamp === null) {
+                lastTimestamp = timestamp;
+            }
+
+            const elapsedSeconds = (timestamp - lastTimestamp) / 1000;
+            lastTimestamp = timestamp;
+
+            setCurrentTime((prevTime) => {
+                const newTime = Math.min(prevTime + elapsedSeconds, maxTime);
+                if (newTime >= maxTime) {
+                    setIsPlaying(false);
+                }
+                return newTime;
+            });
+
+            rafId = requestAnimationFrame(step);
+        };
+
+        rafId = requestAnimationFrame(step);
+
         return () => {
-            if (interval) clearInterval(interval);
+            cancelAnimationFrame(rafId);
         };
     }, [isPlaying, maxTime]);
 
@@ -131,6 +148,33 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
         }
     };
 
+    const activePlayers = useMemo(
+        () => Object.keys(currentGameState?.players || {}),
+        [currentGameState],
+    );
+    const playerPositions = useMemo(() => {
+        if (!currentGameState) {
+            return {};
+        }
+
+        return Object.fromEntries(
+            Object.entries(currentGameState.players)
+                .filter(([, state]) => state.position !== undefined)
+                .map(([name, state]) => [name, state.position as GamePosition]),
+        );
+    }, [currentGameState]);
+    const npcPositions = useMemo(() => {
+        if (!currentGameState) {
+            return {};
+        }
+
+        return Object.fromEntries(
+            Object.entries(currentGameState.npcs)
+                .filter(([, state]) => state.position !== undefined)
+                .map(([key, state]) => [key, state.position as GamePosition]),
+        );
+    }, [currentGameState]);
+
     const getTabButtonStyle = (tab: 'levels' | 'equipment' | 'prayers'): React.CSSProperties => ({
         backgroundColor: activeTab === tab ? colors.replay.tabActive : colors.replay.tabInactive,
         border: '1px solid black',
@@ -154,7 +198,7 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
                 }}
                 initialTick={initialTick}
                 maxTick={maxTick}
-                activePlayers={Object.keys(currentGameState?.players || {})}
+                activePlayers={activePlayers}
             />
             {currentGameState && initialPlayerPosition && (
                 <>
@@ -183,17 +227,9 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
                             )}
                         </button>
                         <MapComponent
-                        playerPositions={Object.fromEntries(
-                            Object.entries(currentGameState.players)
-                                .filter(([name, state]) => state.position !== undefined)
-                                .map(([name, state]) => [name, state.position as GamePosition])
-                        )}
+                        playerPositions={playerPositions}
                         initialPlayerPosition={initialPlayerPosition}
-                        npcPositions={Object.fromEntries(
-                            Object.entries(currentGameState.npcs)
-                                .filter(([key, state]) => state.position !== undefined)
-                                .map(([key, state]) => [key, state.position as GamePosition])
-                        )}
+                        npcPositions={npcPositions}
                         graphicsObjectPositions={currentGameState.graphicsObjects}
                         gameObjectPositions={currentGameState.gameObjects}
                         groundObjectPositions={currentGameState.groundObjects}
