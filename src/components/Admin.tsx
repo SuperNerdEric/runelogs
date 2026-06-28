@@ -68,6 +68,10 @@ const sectionDescriptionSx = {
   mb: 2,
 } as const;
 
+const adminSectionBoxSx = {
+  p: { xs: 2.25, md: 3 },
+} as const;
+
 const actionRowSx = {
   display: "flex",
   flexWrap: "wrap",
@@ -679,7 +683,7 @@ const Admin: React.FC = () => {
         </Typography>
       </Box>
 
-      <SectionBox sx={{ p: { xs: 2.5, md: 4 } }}>
+      <SectionBox sx={adminSectionBoxSx}>
         <Typography sx={sectionTitleSx}>Reparse All Logs</Typography>
         <Typography sx={sectionDescriptionSx}>
           Reprocess every stored log from its original raw upload. Progress updates automatically while a job is running.
@@ -750,7 +754,7 @@ const Admin: React.FC = () => {
         )}
       </SectionBox>
 
-      <SectionBox sx={{ p: { xs: 2.5, md: 4 } }}>
+      <SectionBox sx={adminSectionBoxSx}>
         <Typography sx={sectionTitleSx}>Reparse Logs</Typography>
         <Typography sx={sectionDescriptionSx}>
           Reprocess specific logs from their original raw uploads. Enter one or more log IDs separated by commas.
@@ -794,7 +798,7 @@ const Admin: React.FC = () => {
         )}
       </SectionBox>
 
-      <SectionBox sx={{ p: { xs: 2.5, md: 4 } }}>
+      <SectionBox sx={adminSectionBoxSx}>
         <Typography sx={sectionTitleSx}>Manage Log</Typography>
         <Typography sx={sectionDescriptionSx}>
           Look up a log by ID to download the raw upload, rename it, reparse it, delete it, or toggle leaderboard eligibility.
