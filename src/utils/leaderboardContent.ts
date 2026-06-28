@@ -23,28 +23,37 @@ export const LEADERBOARD_MODE_HIGH_SCORE = 'high-score' as const;
 export type LeaderboardContentOption = {
     label: string;
     value: string;
+    /** Hiscore sprite filename (without .png) from cache dump. */
+    spriteKey: string;
     playerCounts: number[];
     defaultPlayerCount: number;
 };
 
 export const LEADERBOARD_CONTENT_OPTIONS: LeaderboardContentOption[] = [
-    {label: 'Theatre of Blood', value: 'Theatre of Blood', playerCounts: [1, 2, 3, 4, 5], defaultPlayerCount: 4},
-    {label: 'Theatre of Blood: Hard Mode', value: 'Theatre of Blood: Hard Mode', playerCounts: [1, 2, 3, 4, 5], defaultPlayerCount: 5},
-    {label: 'Tombs of Amascut', value: 'Tombs of Amascut', playerCounts: [1, 2, 3, 4, 5, 6, 7, 8], defaultPlayerCount: 1},
-    {label: 'Tombs of Amascut: Expert Mode', value: 'Tombs of Amascut: Expert Mode', playerCounts: [1, 2, 3, 4, 5, 6, 7, 8], defaultPlayerCount: 1},
-    {label: 'Fight Caves', value: 'Fight Caves', playerCounts: [1], defaultPlayerCount: 1},
-    {label: 'The Inferno', value: 'The Inferno', playerCounts: [1], defaultPlayerCount: 1},
-    {label: 'Fortis Colosseum', value: 'Fortis Colosseum', playerCounts: [1], defaultPlayerCount: 1},
-    {label: 'The Gauntlet', value: 'The Gauntlet', playerCounts: [1], defaultPlayerCount: 1},
-    {label: 'Corrupted Gauntlet', value: 'Corrupted Gauntlet', playerCounts: [1], defaultPlayerCount: 1},
-    {label: 'Doom of Mokhaiotl', value: MOKHAIOTL_CONTENT_NAME, playerCounts: [1], defaultPlayerCount: 1},
-    {label: 'Yama', value: YAMA_CONTENT_NAME, playerCounts: [1, 2], defaultPlayerCount: 2},
+    {label: 'Theatre of Blood', value: 'Theatre of Blood', spriteKey: 'theatre_of_blood', playerCounts: [1, 2, 3, 4, 5], defaultPlayerCount: 4},
+    {label: 'Theatre of Blood: Hard Mode', value: 'Theatre of Blood: Hard Mode', spriteKey: 'theatre_of_blood', playerCounts: [1, 2, 3, 4, 5], defaultPlayerCount: 5},
+    {label: 'Tombs of Amascut', value: 'Tombs of Amascut', spriteKey: 'tombs_of_amascut', playerCounts: [1, 2, 3, 4, 5, 6, 7, 8], defaultPlayerCount: 1},
+    {label: 'Tombs of Amascut: Expert Mode', value: 'Tombs of Amascut: Expert Mode', spriteKey: 'tombs_of_amascut_expert', playerCounts: [1, 2, 3, 4, 5, 6, 7, 8], defaultPlayerCount: 1},
+    {label: 'Fight Caves', value: 'Fight Caves', spriteKey: 'tztok_jad', playerCounts: [1], defaultPlayerCount: 1},
+    {label: 'The Inferno', value: 'The Inferno', spriteKey: 'tzkal_zuk', playerCounts: [1], defaultPlayerCount: 1},
+    {label: 'Fortis Colosseum', value: 'Fortis Colosseum', spriteKey: 'colosseum_glory', playerCounts: [1], defaultPlayerCount: 1},
+    {label: 'The Gauntlet', value: 'The Gauntlet', spriteKey: 'the_gauntlet', playerCounts: [1], defaultPlayerCount: 1},
+    {label: 'Corrupted Gauntlet', value: 'Corrupted Gauntlet', spriteKey: 'the_corrupted_gauntlet', playerCounts: [1], defaultPlayerCount: 1},
+    {label: 'Doom of Mokhaiotl', value: MOKHAIOTL_CONTENT_NAME, spriteKey: 'doom_of_mokhaiotl', playerCounts: [1], defaultPlayerCount: 1},
+    {label: 'Yama', value: YAMA_CONTENT_NAME, spriteKey: 'yama', playerCounts: [1, 2], defaultPlayerCount: 2},
 ];
 
 /** @deprecated Use LEADERBOARD_CONTENT_OPTIONS */
 export const PERSONAL_BESTS_CONTENT_OPTIONS = LEADERBOARD_CONTENT_OPTIONS;
 
 export const RECENT_ENCOUNTERS_ALL_CONTENT = 'all';
+
+export function getLeaderboardContentSpriteKey(contentValue: string): string | undefined {
+    if (contentValue === RECENT_ENCOUNTERS_ALL_CONTENT) {
+        return 'overall';
+    }
+    return LEADERBOARD_CONTENT_OPTIONS.find((option) => option.value === contentValue)?.spriteKey;
+}
 
 export const RECENT_ENCOUNTERS_PARTY_SIZES = [1, 2, 3, 4, 5, 6, 7, 8] as const;
 

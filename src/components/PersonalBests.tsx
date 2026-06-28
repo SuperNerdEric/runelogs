@@ -33,6 +33,9 @@ import TrophyIcon from "./TrophyIcon";
 import DurationDpsModeSelector from './DurationDpsModeSelector';
 import FilterSelect from './filters/FilterSelect';
 import FilterToolbar from './filters/FilterToolbar';
+import ContentLabel from './ContentLabel';
+import {mapFightFilterOptions} from '../utils/contentFilterOptions';
+import {resolveContentSpriteKey} from '../lib/hiscoreSprites';
 
 const partySizeColumnSx = {
     color: 'white',
@@ -309,9 +312,16 @@ const PersonalBests: React.FC = () => {
 
                 return (
                     <Box key={content.value} mb={3}>
-                        <Typography variant="h6" gutterBottom color="white">
-                            {content.label}
-                        </Typography>
+                        <ContentLabel
+                            label={(
+                                <Typography variant="h6" gutterBottom color="white" component="span" sx={{m: 0}}>
+                                    {content.label}
+                                </Typography>
+                            )}
+                            spriteKey={resolveContentSpriteKey(content.value)}
+                            gap={1.25}
+                            sx={{mb: 0}}
+                        />
 
                         <TableContainer>
                             <Table>
@@ -405,18 +415,21 @@ const PersonalBests: React.FC = () => {
                 return (
                     <Box key={content.value} mb={3}>
                         <Box display="flex" alignItems="center" gap={1.5} flexWrap="wrap" mb={1.5}>
-                            <Typography variant="h6" color="white" sx={{m: 0}}>
-                                {content.label}
-                            </Typography>
+                            <ContentLabel
+                                label={(
+                                    <Typography variant="h6" color="white" component="span" sx={{m: 0}}>
+                                        {content.label}
+                                    </Typography>
+                                )}
+                                spriteKey={resolveContentSpriteKey(content.value)}
+                                gap={1.25}
+                            />
                             {availableFights.length > 1 && (
                                 <Box sx={{minWidth: {xs: '100%', sm: 220}, flex: {sm: '0 0 220px'}}}>
                                     <FilterSelect
                                         field="fight"
                                         value={selectedFight}
-                                        options={availableFights.map((fight) => ({
-                                            value: fight,
-                                            label: fight,
-                                        }))}
+                                        options={mapFightFilterOptions(availableFights)}
                                         sx={{minWidth: 120}}
                                         onChange={(fight) => {
                                             setSelectedFights((prev) => ({

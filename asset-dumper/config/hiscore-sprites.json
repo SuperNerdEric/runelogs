@@ -196,17 +196,17 @@
       "comment": "IconBoss25x25.ALCHEMICAL_HYDRA"
     },
     {
-      "archiveId": 5658,
+      "archiveId": 5639,
       "name": "amoxliatl",
       "comment": "IconBoss25x25.AMOXLIATL"
     },
     {
-      "archiveId": 5657,
+      "archiveId": 5638,
       "name": "araxxor",
       "comment": "IconBoss25x25.ARAXXOR"
     },
     {
-      "archiveId": 5641,
+      "archiveId": 5622,
       "name": "artio",
       "comment": "IconBoss25x25.ARTIO_CALLISTO"
     },
@@ -226,12 +226,12 @@
       "comment": "IconBoss25x25.BRYOPHYTA"
     },
     {
-      "archiveId": 5641,
+      "archiveId": 5622,
       "name": "callisto",
       "comment": "IconBoss25x25.ARTIO_CALLISTO"
     },
     {
-      "archiveId": 5642,
+      "archiveId": 5623,
       "name": "calvarion",
       "comment": "IconBoss25x25.CALVARION_VETION"
     },
@@ -256,7 +256,7 @@
       "comment": "IconBoss25x25.CHAOS_ELEMENTAL"
     },
     {
-      "archiveId": 5644,
+      "archiveId": 5625,
       "name": "chaos_fanatic",
       "comment": "IconBoss25x25.CHAOS_FANATIC"
     },
@@ -271,7 +271,7 @@
       "comment": "IconBoss25x25.CORPOREAL_BEAST"
     },
     {
-      "archiveId": 5645,
+      "archiveId": 5626,
       "name": "crazy_archaeologist",
       "comment": "IconBoss25x25.CRAZY_ARCHAEOLOGIST"
     },
@@ -291,7 +291,7 @@
       "comment": "IconBoss25x25.DAGANNOTH_SUPREME"
     },
     {
-      "archiveId": 5646,
+      "archiveId": 5627,
       "name": "deranged_archaeologist",
       "comment": "IconBoss25x25.DERANGED_ARCHAEOLOGIST"
     },
@@ -301,7 +301,7 @@
       "comment": "IconBoss25x25.DOOM_OF_MOKHAIOTL"
     },
     {
-      "archiveId": 5651,
+      "archiveId": 5632,
       "name": "duke_sucellus",
       "comment": "IconBoss25x25.DUKE_SUCELLUS"
     },
@@ -351,7 +351,7 @@
       "comment": "IconBoss25x25.KRIL_TSUTSAROTH"
     },
     {
-      "archiveId": 5656,
+      "archiveId": 5637,
       "name": "lunar_chests",
       "comment": "IconBoss25x25.LUNAR_CHESTS"
     },
@@ -376,7 +376,7 @@
       "comment": "IconBoss25x25.OBOR"
     },
     {
-      "archiveId": 5639,
+      "archiveId": 4299,
       "name": "phantom_muspah",
       "comment": "IconBoss25x25.PHANTOM_MUSPAH"
     },
@@ -386,12 +386,12 @@
       "comment": "IconBoss25x25.SARACHNIS"
     },
     {
-      "archiveId": 5647,
+      "archiveId": 5628,
       "name": "scorpia",
       "comment": "IconBoss25x25.SCORPIA"
     },
     {
-      "archiveId": 5654,
+      "archiveId": 5635,
       "name": "scurrius",
       "comment": "IconBoss25x25.SCURRIUS"
     },
@@ -406,12 +406,12 @@
       "comment": "IconBoss25x25.SKOTIZO"
     },
     {
-      "archiveId": 5655,
+      "archiveId": 5636,
       "name": "sol_heredit",
       "comment": "IconBoss25x25.SOL_HEREDIT"
     },
     {
-      "archiveId": 5643,
+      "archiveId": 5624,
       "name": "spindel",
       "comment": "IconBoss25x25.SPINDEL_VENENATIS"
     },
@@ -431,12 +431,12 @@
       "comment": "IconBoss25x25.THE_CORRUPTED_GAUNTLET"
     },
     {
-      "archiveId": 5659,
+      "archiveId": 5640,
       "name": "the_hueycoatl",
       "comment": "IconBoss25x25.THE_HUEYCOATL"
     },
     {
-      "archiveId": 5652,
+      "archiveId": 5633,
       "name": "the_leviathan",
       "comment": "IconBoss25x25.THE_LEVIATHAN"
     },
@@ -446,7 +446,7 @@
       "comment": "IconBoss25x25.ROYAL_TITANS"
     },
     {
-      "archiveId": 5650,
+      "archiveId": 5631,
       "name": "the_whisperer",
       "comment": "IconBoss25x25.THE_WHISPERER"
     },
@@ -471,27 +471,27 @@
       "comment": "IconBoss25x25.TOMBS_OF_AMASCUT_EXPERT"
     },
     {
-      "archiveId": 5649,
+      "archiveId": 5630,
       "name": "tzkal_zuk",
       "comment": "IconBoss25x25.TZKAL_ZUK"
     },
     {
-      "archiveId": 5648,
+      "archiveId": 5629,
       "name": "tztok_jad",
       "comment": "IconBoss25x25.TZTOK_JAD"
     },
     {
-      "archiveId": 5653,
+      "archiveId": 5634,
       "name": "vardorvis",
       "comment": "IconBoss25x25.VARDORVIS"
     },
     {
-      "archiveId": 5643,
+      "archiveId": 5624,
       "name": "venenatis",
       "comment": "IconBoss25x25.SPINDEL_VENENATIS"
     },
     {
-      "archiveId": 5642,
+      "archiveId": 5623,
       "name": "vetion",
       "comment": "IconBoss25x25.CALVARION_VETION"
     },
@@ -506,7 +506,7 @@
       "comment": "IconBoss25x25.WINTERTODT"
     },
     {
-      "archiveId": 6348,
+      "archiveId": 6346,
       "name": "yama",
       "comment": "IconBoss25x25.YAMA"
     },

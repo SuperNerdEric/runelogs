@@ -11,6 +11,7 @@ import EncounterFightTitle from './EncounterFightTitle';
 import PageBreadcrumbs, {BreadcrumbSegment} from './PageBreadcrumbs';
 import EncounterDpsRankBadges from './badges/EncounterDpsRankBadges';
 import {inferLeaderboardFightGroupName, inferStandaloneLeaderboardContent} from '../utils/leaderboardContent';
+import {resolveLeaderboardSpriteKey} from '../lib/hiscoreSprites';
 import {getRunSummaryHref} from '../utils/encounterTableRow';
 import {ActorFilter, deserializeActorFilter, serializeActorFilter} from "../utils/actorFilter";
 import {deserializeEquipmentFilter, EquipmentFilter, serializeEquipmentFilter} from "../utils/equipmentFilter";
@@ -362,6 +363,7 @@ const Encounter: React.FC = () => {
         breadcrumbSegments.push({
             label: runMeta.name,
             href: getRunSummaryHref(runMeta.id),
+            spriteKey: resolveLeaderboardSpriteKey(leaderboardName),
         });
 
         if (group && selectorMeta.length > 1) {

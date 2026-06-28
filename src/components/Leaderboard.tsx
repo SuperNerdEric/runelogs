@@ -39,6 +39,7 @@ import DurationDpsModeSelector from './DurationDpsModeSelector';
 import FilterSelect from './filters/FilterSelect';
 import FilterToolbar from './filters/FilterToolbar';
 import {filterFieldCompactSx} from './filters/filterStyles';
+import {mapContentFilterOptions, mapFightFilterOptions} from '../utils/contentFilterOptions';
 import MedalIcon from "./MedalIcon";
 
 type DurationEntry = {
@@ -440,10 +441,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
                         <FilterSelect
                             field="content"
                             value={content.value}
-                            options={LEADERBOARD_CONTENT_OPTIONS.map((option) => ({
-                                value: option.value,
-                                label: option.label,
-                            }))}
+                            options={mapContentFilterOptions(LEADERBOARD_CONTENT_OPTIONS)}
                             sx={{minWidth: {xs: 120, sm: 160}}}
                             onChange={(nextContentValue) => {
                                 const selectedContent = LEADERBOARD_CONTENT_OPTIONS.find(
@@ -506,10 +504,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
                     <FilterSelect
                         field="fight"
                         value={selectedFight}
-                        options={availableFights.map((fight) => ({
-                            value: fight,
-                            label: fight,
-                        }))}
+                        options={mapFightFilterOptions(availableFights)}
                         sx={{minWidth: {xs: 100, sm: 120}}}
                         onChange={(fight) => {
                             updateSearchParams({fight});
