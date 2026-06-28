@@ -21,6 +21,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import EditIcon from "@mui/icons-material/Edit";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useSnackbar } from "notistack";
+import { format } from "date-fns";
 import SectionBox from "./SectionBox";
 import ReparseProgressIndicator from "./ReparseProgressIndicator";
 import { useIsAdmin } from "../hooks/useIsAdmin";
@@ -30,6 +31,7 @@ import {
   createInitialReparseProgress,
   streamLogReparse,
 } from "../utils/streamLogReparse";
+import { displayUsername } from "../utils/utils";
 
 interface ReparseAllStatus {
   status: "idle" | "started" | "in_progress" | "completed" | "failed";
@@ -46,6 +48,8 @@ interface ReparseAllStatus {
 interface LogStatusResponse {
   id: string;
   name: string | null;
+  uploaderId: string;
+  uploadedAt: string;
   eligible: boolean;
   saveStatus: "saving" | "complete" | "failed";
   processingProgress: number;
@@ -881,6 +885,18 @@ const Admin: React.FC = () => {
               <Link component={RouterLink} to={`/log/${loadedLog.id}`} sx={linkSx}>
                 {loadedLog.id}
               </Link>
+            </Typography>
+
+            <Typography sx={detailTextSx}>
+              <Box component="span" sx={{ color: colors.text.muted }}>Uploader:</Box>{" "}
+              <Link component={RouterLink} to={`/logs/${loadedLog.uploaderId}`} sx={linkSx}>
+                {displayUsername(loadedLog.uploaderId)}
+              </Link>
+            </Typography>
+
+            <Typography sx={detailTextSx}>
+              <Box component="span" sx={{ color: colors.text.muted }}>Uploaded:</Box>{" "}
+              {format(new Date(loadedLog.uploadedAt), "PPpp")}
             </Typography>
 
             <Typography sx={detailTextSx}>
