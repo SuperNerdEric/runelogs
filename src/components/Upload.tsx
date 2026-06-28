@@ -1,7 +1,7 @@
 import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
 import {Link as RouterLink, useNavigate} from 'react-router-dom';
 import {useAuth0} from '@auth0/auth0-react';
-import {Alert, Box, CircularProgress, Link, TextField, Typography} from '@mui/material';
+import {Alert, Box, CircularProgress, LinearProgress, Link, TextField, Typography} from '@mui/material';
 import AppTooltip from './AppTooltip';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
