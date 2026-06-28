@@ -18,7 +18,9 @@ import SensorsIcon from '@mui/icons-material/Sensors';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import SectionBox from './SectionBox';
+import AllowLiveLoggingScreenshot from '../assets/help/allow_live_logging.png';
 import PanelIcon from '../assets/help/panel_icon.png';
+import StartLiveLoggingScreenshot from '../assets/help/start_live_logging.png';
 import {colors, contentColumnSx, fonts, fontSizes, media, typography} from '../theme';
 
 const STEP_LINE_HEIGHT = 1.4;
@@ -62,6 +64,14 @@ const panelIconInlineSx = {
     display: 'inline-block',
     verticalAlign: '-0.125em',
     mx: 0.25,
+};
+
+const instructionScreenshotSx = {
+    mt: 1.5,
+    maxWidth: 300,
+    width: '100%',
+    height: 'auto',
+    display: 'block',
 };
 
 const NO_ACCESS_KEY_MESSAGE = 'You do not have a live log access key yet.';
@@ -276,23 +286,47 @@ const LiveLog: React.FC = () => {
                         </Box>
                     </Box>
 
-                    <Box sx={stepRowSx}>
+                    <Box sx={{...stepRowSx, alignItems: 'flex-start'}}>
                         <Box component="span" sx={stepBadgeSx}>3</Box>
-                        <Box sx={stepTextSx}>
-                            In RuneLite, open Combat Logger settings and paste the key into{' '}
-                            <Box component="span" sx={{color: 'yellow', fontFamily: 'monospace'}}>
-                                Runelogs Access Key
+                        <Box>
+                            <Box sx={stepTextSx}>
+                                In RuneLite, open Combat Logger settings, click{' '}
+                                <Box component="span" sx={{color: 'yellow', fontFamily: 'monospace'}}>
+                                    Allow Live Logging
+                                </Box>
+                                , and paste the key into{' '}
+                                <Box component="span" sx={{color: 'yellow', fontFamily: 'monospace'}}>
+                                    Runelogs Access Key
+                                </Box>
+                                .
                             </Box>
-                            .
+                            <Box
+                                component="img"
+                                src={AllowLiveLoggingScreenshot}
+                                alt="Allow Live Logging and Runelogs Access Key settings"
+                                sx={instructionScreenshotSx}
+                            />
                         </Box>
                     </Box>
 
-                    <Box sx={stepRowSx}>
+                    <Box sx={{...stepRowSx, alignItems: 'flex-start'}}>
                         <Box component="span" sx={stepBadgeSx}>4</Box>
-                        <Box sx={stepTextSx}>
-                            Click the Combat Logger{' '}
-                            <Box component="img" src={PanelIcon} alt="Panel Icon" sx={panelIconInlineSx} />
-                            {' '}panel icon in the RuneLite sidebar and enable live logging.
+                        <Box>
+                            <Box sx={stepTextSx}>
+                                Click the Combat Logger{' '}
+                                <Box component="img" src={PanelIcon} alt="Panel Icon" sx={panelIconInlineSx} />
+                                {' '}panel icon in the RuneLite sidebar and click{' '}
+                                <Box component="span" sx={{color: 'yellow', fontFamily: 'monospace'}}>
+                                    Start Live Logging
+                                </Box>
+                                .
+                            </Box>
+                            <Box
+                                component="img"
+                                src={StartLiveLoggingScreenshot}
+                                alt="Start Live Logging button"
+                                sx={instructionScreenshotSx}
+                            />
                         </Box>
                     </Box>
                 </Box>
