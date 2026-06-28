@@ -106,8 +106,12 @@ export const RANGED_ANIMATIONS = [
     8194, // Dragon knife
     8195, // Dragon knife poisoned
     8291, // Dragon knife spec
-    5061, // Blowpipe
-    10656, // Blazing Blowpipe
+    5061, // Toxic blowpipe
+    10656, // Blazing blowpipe
+    13142, // Camphor blowpipe
+    13143, // Ironwood blowpipe
+    13144, // Rosewood blowpipe
+    13145, // Rosewood blowpipe spec
     7554, // Dart throw
     7618, // Chinchompa
     2075, // Karil's crossbow
