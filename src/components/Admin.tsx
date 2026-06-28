@@ -684,19 +684,12 @@ const Admin: React.FC = () => {
       </Box>
 
       <SectionBox sx={adminSectionBoxSx}>
-        <Typography sx={sectionTitleSx}>Reparse All Logs</Typography>
+        <Typography sx={sectionTitleSx}>
+          Reparse All Logs
+          {totalLogCount != null && ` (${totalLogCount.toLocaleString()})`}
+        </Typography>
         <Typography sx={sectionDescriptionSx}>
           Reprocess every stored log from its original raw upload. Progress updates automatically while a job is running.
-          {totalLogCount != null && (
-            <>
-              {" "}
-              There {totalLogCount === 1 ? "is" : "are"} currently{" "}
-              <Box component="span" sx={{ color: colors.text.primary, fontWeight: 600 }}>
-                {totalLogCount.toLocaleString()}
-              </Box>{" "}
-              log{totalLogCount === 1 ? "" : "s"} in the system.
-            </>
-          )}
         </Typography>
 
         <Box
