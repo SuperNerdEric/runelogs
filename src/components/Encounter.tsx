@@ -143,6 +143,13 @@ const Encounter: React.FC = () => {
                         ? `${import.meta.env.VITE_API_URL}/fight/aggregate/${encounterId}`
                         : `${import.meta.env.VITE_API_URL}/encounter/${encounterId}`
                 );
+                if (res.status === 410) {
+                    const body = await res.json();
+                    if (body.redirectTo) {
+                        navigate(body.redirectTo);
+                        return;
+                    }
+                }
                 if (!res.ok) throw new Error(`Server returned ${res.status}`);
                 const data: EncounterApi = await res.json();
 
@@ -186,7 +193,7 @@ const Encounter: React.FC = () => {
                 }
             }
         },
-        [isAggregate]
+        [isAggregate, navigate]
     );
 
     const handleSelectFight = useCallback(
