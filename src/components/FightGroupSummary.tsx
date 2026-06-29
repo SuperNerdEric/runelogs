@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {Link as RouterLink, useParams} from 'react-router-dom';
+import {Link as RouterLink, useNavigate, useParams} from 'react-router-dom';
 import {
     Alert,
     Box,
@@ -87,6 +87,7 @@ const TOP_RANK_CATEGORIES = new Set(['Duration', 'Overall DPS', MOKHAIOTL_HIGH_S
 
 const FightGroupSummary: React.FC = () => {
     const {id} = useParams<{ id: string }>();
+    const navigate = useNavigate();
     const [data, setData] = useState<FightGroupSummaryData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -105,6 +106,13 @@ const FightGroupSummary: React.FC = () => {
 
         try {
             const res = await fetch(`${import.meta.env.VITE_API_URL}/fightGroup/${id}`);
+            if (res.status === 410) {
+                const body = await res.json();
+                if (body.redirectTo) {
+                    navigate(body.redirectTo);
+                    return;
+                }
+            }
             if (!res.ok) {
                 throw new Error(`Server responded with status ${res.status}`);
             }
