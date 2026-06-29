@@ -5346,15 +5346,6 @@
     "speed": 0
   },
   {
-    "name": "Berserker ring (Last Man Standing)",
-    "id": 23595,
-    "version": "",
-    "slot": "ring",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
     "name": "Berserker ring (i)",
     "id": 26770,
     "version": "Emir's Arena",
@@ -5376,6 +5367,15 @@
     "name": "Berserker ring (i)",
     "id": 25264,
     "version": "Soul Wars",
+    "slot": "ring",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Berserker ring (i) (Last Man Standing)",
+    "id": 23595,
+    "version": "",
     "slot": "ring",
     "category": "",
     "isTwoHanded": false,
@@ -13123,7 +13123,7 @@
   },
   {
     "name": "Crate of glassmaking supplies",
-    "id": 32640,
+    "id": 32488,
     "version": "",
     "slot": "weapon",
     "category": "Unarmed",
@@ -18658,15 +18658,6 @@
   },
   {
     "name": "Dizana's quiver",
-    "id": 28826,
-    "version": "Broken",
-    "slot": "cape",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Dizana's quiver",
     "id": 28951,
     "version": "Charged",
     "slot": "cape",
@@ -18676,26 +18667,8 @@
   },
   {
     "name": "Dizana's quiver",
-    "id": 28953,
-    "version": "Charged + Locked",
-    "slot": "cape",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Dizana's quiver",
     "id": 28947,
     "version": "Uncharged",
-    "slot": "cape",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Dizana's quiver",
-    "id": 28949,
-    "version": "Uncharged + Locked",
     "slot": "cape",
     "category": "",
     "isTwoHanded": false,
@@ -19010,6 +18983,15 @@
   {
     "name": "Dragon crossbow",
     "id": 21902,
+    "version": "",
+    "slot": "weapon",
+    "category": "Crossbow",
+    "isTwoHanded": false,
+    "speed": 5
+  },
+  {
+    "name": "Dragon crossbow (Last Man Standing)",
+    "id": 33460,
     "version": "",
     "slot": "weapon",
     "category": "Crossbow",
@@ -27424,15 +27406,6 @@
   },
   {
     "name": "Infernal cape",
-    "id": 21287,
-    "version": "Broken",
-    "slot": "cape",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Infernal cape",
     "id": 24224,
     "version": "Locked",
     "slot": "cape",
@@ -32933,6 +32906,15 @@
   {
     "name": "Oathplate helm",
     "id": 30750,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Oathplate helm (Last Man Standing)",
+    "id": 33462,
     "version": "",
     "slot": "head",
     "category": "",
