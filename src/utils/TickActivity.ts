@@ -149,7 +149,6 @@ export function getFightPerformanceByPlayer(fight: Fight): Map<string, FightPerf
         if (log.type === LogTypes.PLAYER_EQUIPMENT && log.playerEquipment) {
             for (const itemId of log.playerEquipment) {
                 const weapon = weaponMap[parseInt(itemId)];
-                console.log("Weapon", weapon);
                 if (!weapon) continue;
 
                 if (state.currentWeaponSpeed) {
@@ -201,8 +200,6 @@ export function getFightPerformanceByPlayer(fight: Fight): Map<string, FightPerf
             state.activeTime += weaponSpeedSeconds;
         }
     }
-
-    console.log("State by player:", stateByPlayer);
 
     // Finalize expected hits after the last event
     for (const [playerName, state] of stateByPlayer.entries()) {
