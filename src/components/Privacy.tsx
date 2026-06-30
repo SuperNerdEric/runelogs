@@ -252,8 +252,18 @@ const Privacy: React.FC = () => {
                     11. Contact us
                 </Typography>
                 <Typography variant="body1" sx={bodyTextSx}>
-                    If you have questions about this Privacy Policy or want to make a privacy
-                    request, contact us on{' '}
+                    For privacy-related questions or to exercise your data rights, email us at{' '}
+                    <Link href="mailto:privacy@runelogs.com" sx={linkSx}>
+                        privacy@runelogs.com
+                    </Link>
+                    .
+                </Typography>
+                <Typography variant="body1" sx={bodyTextSx}>
+                    For general product support, email{' '}
+                    <Link href="mailto:support@runelogs.com" sx={linkSx}>
+                        support@runelogs.com
+                    </Link>
+                    , reach out on{' '}
                     <Link
                         href="https://discord.gg/ZydwX7AJEd"
                         target="_blank"
@@ -270,8 +280,8 @@ const Privacy: React.FC = () => {
                             }}
                         />
                         Discord
-                    </Link>{' '}
-                    or open an issue on{' '}
+                    </Link>
+                    , or open an issue on{' '}
                     <Link
                         href="https://github.com/SuperNerdEric/runelogs"
                         target="_blank"
@@ -287,7 +297,7 @@ const Privacy: React.FC = () => {
                     <Link component={RouterLink} to="/help" sx={linkSx}>
                         Help
                     </Link>{' '}
-                    page for product support.
+                    page for FAQs and setup guides.
                 </Typography>
             </Box>
         </Box>

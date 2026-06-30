@@ -27,6 +27,11 @@ const externalLinks = [
     {label: 'GitHub', href: 'https://github.com/SuperNerdEric/runelogs'},
 ] as const;
 
+const contactLinks = [
+    {label: 'support@runelogs.com', href: 'mailto:support@runelogs.com'},
+    {label: 'privacy@runelogs.com', href: 'mailto:privacy@runelogs.com'},
+] as const;
+
 const SiteFooter: React.FC = () => {
     const year = new Date().getFullYear();
 
@@ -72,6 +77,15 @@ const SiteFooter: React.FC = () => {
                             href={link.href}
                             target="_blank"
                             rel="noopener noreferrer"
+                            sx={footerLinkSx}
+                        >
+                            {link.label}
+                        </Link>
+                    ))}
+                    {contactLinks.map((link) => (
+                        <Link
+                            key={link.href}
+                            href={link.href}
                             sx={footerLinkSx}
                         >
                             {link.label}
