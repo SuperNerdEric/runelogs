@@ -450,7 +450,7 @@ const Encounter: React.FC = () => {
                 />
                 {receivingData && (
                     <Alert severity="info" sx={{alignSelf: 'stretch', mb: 1}}>
-                        Log is receiving more data — this page will refresh while new data arrives.
+                        Live log in progress — this page will refresh while new data is received.
                     </Alert>
                 )}
                 <EncounterDpsRankBadges
