@@ -6,7 +6,7 @@ import {chromium} from '@playwright/test';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT_DIR = join(__dirname, '..');
-const BUILD_DIR = join(ROOT_DIR, 'build');
+const BUILD_DIR = join(ROOT_DIR, 'build', '_prerender');
 const PORT = 4173;
 const PREVIEW_HOST = '127.0.0.1';
 
@@ -84,6 +84,8 @@ function outputPathForRoute(route) {
 
     return join(BUILD_DIR, route.slice(1), 'index.html');
 }
+
+/** Bot-only HTML snapshots for crawlers — not deployed to user-facing paths. Run via `npm run build:prerender`. */
 
 async function prerenderRoutes() {
     const browser = await chromium.launch();
