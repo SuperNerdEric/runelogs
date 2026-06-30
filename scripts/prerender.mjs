@@ -1,4 +1,4 @@
-import {spawn} from 'node:child_process';
+import {execSync, spawn} from 'node:child_process';
 import {mkdirSync, writeFileSync} from 'node:fs';
 import {dirname, join} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -22,18 +22,40 @@ const ROUTES = [
 ];
 
 function startPreviewServer() {
-    const server = spawn(
-        'npm',
+    const isWindows = process.platform === 'win32';
+
+    return spawn(
+        isWindows ? 'npm' : 'npm',
         ['run', 'preview', '--', '--host', PREVIEW_HOST, '--port', String(PORT), '--strictPort'],
         {
             cwd: ROOT_DIR,
-            stdio: ['ignore', 'pipe', 'pipe'],
-            shell: true,
+            detached: !isWindows,
+            stdio: 'ignore',
+            shell: isWindows,
             env: {...process.env, NODE_ENV: 'production'},
         },
     );
+}
 
-    return server;
+function stopPreviewServer(server) {
+    if (!server?.pid) {
+        return;
+    }
+
+    try {
+        if (process.platform === 'win32') {
+            execSync(`taskkill /pid ${server.pid} /T /F`, {stdio: 'ignore'});
+            return;
+        }
+
+        process.kill(-server.pid, 'SIGTERM');
+    } catch {
+        try {
+            server.kill('SIGKILL');
+        } catch {
+            // Process already exited.
+        }
+    }
 }
 
 async function waitForPreviewServer() {
@@ -89,24 +111,20 @@ async function prerenderRoutes() {
 async function main() {
     const server = startPreviewServer();
 
-    const fail = (error) => {
-        console.error(error);
-        server.kill();
-        process.exit(1);
-    };
-
-    server.on('error', fail);
-
     try {
         await waitForPreviewServer();
-
         await prerenderRoutes();
-    } catch (error) {
-        fail(error);
-        return;
+    } finally {
+        stopPreviewServer(server);
     }
-
-    server.kill();
 }
 
-main();
+main()
+    .then(() => {
+        console.log('Prerender complete.');
+        process.exit(0);
+    })
+    .catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });
