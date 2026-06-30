@@ -6,6 +6,7 @@ import {SnackbarProvider} from 'notistack';
 import {Auth0Provider} from "@auth0/auth0-react";
 import {BrowserRouter, Navigate, Route, Routes, useParams} from 'react-router-dom';
 import TopBar from "./components/TopBar";
+import SiteFooter from "./components/SiteFooter";
 import Upload from "./components/Upload";
 import Log from "./components/Log/Log";
 import Logs from "./components/Logs";
@@ -76,6 +77,7 @@ function AppRoutes() {
                 <Route path="/dev/logs-header-variants" element={<LogsPageHeaderVariants/>}/>
             </Routes>
             </main>
+            <SiteFooter/>
         </div>
     );
 }
