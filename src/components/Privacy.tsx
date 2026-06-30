@@ -3,13 +3,27 @@ import {Box, Link, Typography} from '@mui/material';
 import PrivacyTipIcon from '@mui/icons-material/PrivacyTip';
 import {Link as RouterLink} from 'react-router-dom';
 import {Icon} from '@iconify/react';
-import {colors, contentColumnSx, media} from '../theme';
+import {colors, contentColumnSx, fontSizes, media} from '../theme';
 
 const bodyTextSx = {
     color: colors.text.primary,
+    fontSize: fontSizes.base,
     lineHeight: 1.65,
     mb: 1.5,
     '&:last-child': {mb: 0},
+};
+
+const listSx = {
+    color: colors.text.primary,
+    fontSize: fontSizes.base,
+    lineHeight: 1.65,
+    pl: 3,
+    mb: 1.5,
+    mt: 0,
+    '& li': {
+        mb: 0.75,
+        '&:last-child': {mb: 0},
+    },
 };
 
 const sectionTitleSx = {
@@ -115,7 +129,7 @@ const Privacy: React.FC = () => {
                 <Typography variant="body1" sx={bodyTextSx}>
                     We use the information above to:
                 </Typography>
-                <Box component="ul" sx={{...bodyTextSx, pl: 3, mb: 1.5}}>
+                <Box component="ul" sx={listSx}>
                     <li>Provide, maintain, and improve Runelogs</li>
                     <li>Parse, store, and display combat logs and related statistics</li>
                     <li>Operate leaderboards, profiles, and other site features</li>
@@ -143,7 +157,7 @@ const Privacy: React.FC = () => {
                     <strong>Service providers.</strong> We use trusted third parties to operate
                     Runelogs, including:
                 </Typography>
-                <Box component="ul" sx={{...bodyTextSx, pl: 3, mb: 1.5}}>
+                <Box component="ul" sx={listSx}>
                     <li>Auth0 for authentication and account-related email delivery</li>
                     <li>Amazon Web Services for hosting, storage, and email infrastructure</li>
                     <li>Google Analytics for aggregated site analytics</li>
