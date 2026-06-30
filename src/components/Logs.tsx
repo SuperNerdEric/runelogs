@@ -21,6 +21,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
+import SensorsIcon from '@mui/icons-material/Sensors';
 import { format } from 'date-fns';
 import { useAuth0 } from '@auth0/auth0-react';
 import {closeSnackbar, SnackbarKey, useSnackbar} from "notistack";
@@ -35,6 +36,7 @@ import {
     pageHeaderTitleTypographySx,
     pageHeaderTitleWrapperSx,
 } from './pageHeaderStyles';
+import AppTooltip from './AppTooltip';
 import FilterSelect from './filters/FilterSelect';
 import FilterToolbar from './filters/FilterToolbar';
 import {filterFieldCompactSx} from './filters/filterStyles';
@@ -57,6 +59,9 @@ interface LogItem {
     name: string | null;
     uploadedAt: string;
     eligible: boolean;
+    wasLiveLogged?: boolean;
+    isLive?: boolean;
+    receivingData?: boolean;
     saveStatus?: 'saving' | 'complete' | 'failed';
     processingProgress?: number;
     _count: {
@@ -73,6 +78,9 @@ interface LogStatusResponse {
     id: string;
     name: string | null;
     eligible: boolean;
+    wasLiveLogged: boolean;
+    isLive: boolean;
+    receivingData: boolean;
     saveStatus: 'saving' | 'complete' | 'failed';
     processingProgress: number;
     _count: {
@@ -186,6 +194,36 @@ const getComparator = (order: Order, orderBy: SortKey) => {
     };
 };
 
+const liveLogIconSx = {
+    flexShrink: 0,
+    fontSize: 16,
+} as const;
+
+interface LiveLogIndicatorProps {
+    log: Pick<LogItem, 'wasLiveLogged' | 'isLive'>;
+}
+
+const LiveLogIndicator: React.FC<LiveLogIndicatorProps> = ({ log }) => {
+    if (!log.wasLiveLogged) {
+        return null;
+    }
+
+    const active = log.isLive ?? false;
+    const tooltip = active ? 'Live log in progress' : 'Uploaded via live logging';
+
+    return (
+        <AppTooltip title={tooltip} arrow placement="top" disableTouch>
+            <SensorsIcon
+                aria-label={tooltip}
+                sx={{
+                    ...liveLogIconSx,
+                    color: active ? colors.replay.marker : colors.text.muted,
+                }}
+            />
+        </AppTooltip>
+    );
+};
+
 interface LogNameCellProps {
     log: LogItem;
     canEdit: boolean;
@@ -256,22 +294,33 @@ const LogNameCell: React.FC<LogNameCellProps> = ({ log, canEdit, onRename }) => 
 
     return (
         <Box display="flex" alignItems="center" width="100%" gap={1}>
-            <Link
-                component={RouterLink}
-                to={`/log/${log.id}`}
-                onClick={stopRowClick}
-                underline="hover"
+            <Box
                 sx={{
-                    ...logNameTextSx(!!log.name),
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.5,
                     flex: 1,
                     minWidth: 0,
                     overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
                 }}
             >
-                {log.name ?? 'Unnamed'}
-            </Link>
+                <Link
+                    component={RouterLink}
+                    to={`/log/${log.id}`}
+                    onClick={stopRowClick}
+                    underline="hover"
+                    sx={{
+                        ...logNameTextSx(!!log.name),
+                        minWidth: 0,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                    }}
+                >
+                    {log.name ?? 'Unnamed'}
+                </Link>
+                <LiveLogIndicator log={log} />
+            </Box>
             {canEdit && (
                 <IconButton
                     aria-label="edit log name"
@@ -420,19 +469,32 @@ const Logs: React.FC = () => {
         [logs],
     );
 
+    const liveLogIds = useMemo(
+        () =>
+            logs
+                ?.filter((log) => (log.isLive ?? false) && (log.receivingData ?? false))
+                .map((log) => log.id) ?? [],
+        [logs],
+    );
+
+    const statusPollingLogIds = useMemo(
+        () => [...new Set([...parsingLogIds, ...liveLogIds])],
+        [parsingLogIds, liveLogIds],
+    );
+
     useEffect(() => {
         void fetchLogs();
     }, [fetchLogs]);
 
     useEffect(() => {
-        if (parsingLogIds.length === 0) {
+        if (statusPollingLogIds.length === 0) {
             return;
         }
 
-        const refreshParsingLogs = async () => {
+        const refreshPollingLogs = async () => {
             try {
                 const results = await Promise.all(
-                    parsingLogIds.map((logId) => fetchLogStatus(logId)),
+                    statusPollingLogIds.map((logId) => fetchLogStatus(logId)),
                 );
 
                 setLogs((prev) => {
@@ -461,6 +523,9 @@ const Logs: React.FC = () => {
                                 ...log,
                                 name: update.name,
                                 eligible: update.eligible,
+                                wasLiveLogged: update.wasLiveLogged,
+                                isLive: update.isLive,
+                                receivingData: update.receivingData,
                                 saveStatus: update.saveStatus,
                                 processingProgress: update.processingProgress,
                                 _count: update._count,
@@ -474,13 +539,13 @@ const Logs: React.FC = () => {
         };
 
         const intervalId = window.setInterval(() => {
-            void refreshParsingLogs();
+            void refreshPollingLogs();
         }, 5000);
 
-        void refreshParsingLogs();
+        void refreshPollingLogs();
 
         return () => window.clearInterval(intervalId);
-    }, [parsingLogIds]);
+    }, [statusPollingLogIds]);
 
     const handleRename = async (logId: string, name: string) => {
         try {
@@ -688,6 +753,7 @@ const Logs: React.FC = () => {
                                             <Typography sx={{...logNameTextSx, color: colors.text.muted}}>
                                                 Parsing {log.processingProgress ?? 0}%
                                             </Typography>
+                                            <LiveLogIndicator log={log} />
                                         </Box>
                                     ) : (
                                         <LogNameCell log={log} canEdit={canEditLogs} onRename={handleRename} />
