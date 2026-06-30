@@ -25,6 +25,7 @@ for (const [path, url] of Object.entries(spriteModules)) {
 const BOSS_NAME_SPRITE_KEYS: Record<string, HiscoreSpriteKey> = {
     'TzTok-Jad': 'tztok_jad',
     'TzKal-Zuk': 'tzkal_zuk',
+    'Maggot King': 'maggot_king',
 };
 
 export function getHiscoreSpriteUrl(spriteKey: string | null | undefined): string | undefined {

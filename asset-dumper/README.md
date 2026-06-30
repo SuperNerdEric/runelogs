@@ -17,13 +17,13 @@ Renders game object and spotanim (graphics object) models from an OSRS cache int
 .\setup.ps1
 
 # 2. Dump assets (writes directly to ../src/assets/)
-$env:OSRS_CACHE_DIR = "C:\Users\YourName\.qodat\downloads\2026-06-17-rev238\cache"
+$env:OSRS_CACHE_DIR = "C:\Users\YourName\.qodat\downloads\2026-06-30-rev239-2\cache"
 .\run.ps1
 ```
 
 ```bash
 # From runelogs/asset-dumper/
-export OSRS_CACHE_DIR="$HOME/.qodat/downloads/2026-06-17-rev238/cache"
+export OSRS_CACHE_DIR="$HOME/.qodat/downloads/2026-06-30-rev239-2/cache"
 ./run.sh
 ```
 
@@ -60,7 +60,7 @@ OpenRS2 offers two layouts. This tool supports **both**:
 **qodat** uses the **disk** layout. Example:
 
 ```
-2026-06-17-rev238/
+2026-06-30-rev239-2/
   gamepack.jar
   params.txt
   cache/
@@ -74,13 +74,13 @@ OpenRS2 offers two layouts. This tool supports **both**:
 Pass the inner **`cache/`** directory (the one with `main_file_cache.dat2`), not the qodat download root:
 
 ```powershell
-$env:OSRS_CACHE_DIR = "C:\Users\YourName\.qodat\downloads\2026-06-17-rev238\cache"
+$env:OSRS_CACHE_DIR = "C:\Users\YourName\.qodat\downloads\2026-06-30-rev239-2\cache"
 ```
 
 ### Option A: qodat
 
 1. Install [qodat](https://github.com/dglynch/qodat) (or your usual qodat build).
-2. Download a cache revision from the app (e.g. `2026-06-17-rev238`).
+2. Download a cache revision from the app (e.g. `2026-06-30-rev239-2`).
 3. Point `OSRS_CACHE_DIR` at the `cache` subfolder inside the download.
 
 ### Option B: OpenRS2 direct download

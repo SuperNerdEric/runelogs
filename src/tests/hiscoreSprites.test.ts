@@ -36,6 +36,7 @@ describe('hiscoreSprites', () => {
     it('resolves wave boss names on encounter rows', () => {
         expect(resolveEncounterRowSpriteKey('fight', 'TzTok-Jad', 'Fight Caves')).toBe('tztok_jad');
         expect(resolveEncounterRowSpriteKey('fight', 'TzKal-Zuk', 'The Inferno')).toBe('tzkal_zuk');
+        expect(resolveEncounterRowSpriteKey('fight', 'Maggot King', null)).toBe('maggot_king');
         expect(resolveFightGroupSpriteKey('TzTok-Jad')).toBe('tztok_jad');
     });
 

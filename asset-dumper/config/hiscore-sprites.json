@@ -356,6 +356,11 @@
       "comment": "IconBoss25x25.LUNAR_CHESTS"
     },
     {
+      "archiveId": 8358,
+      "name": "maggot_king",
+      "comment": "IconBoss25x25.MAGGOT_KING"
+    },
+    {
       "archiveId": 4260,
       "name": "mimic",
       "comment": "IconBoss25x25.MIMIC"
