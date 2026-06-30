@@ -17,6 +17,7 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import PrivacyTipIcon from '@mui/icons-material/PrivacyTip';
 import HistoryIcon from '@mui/icons-material/History';
 import {Icon} from '@iconify/react';
 import {Link as RouterLink} from 'react-router-dom';
@@ -341,6 +342,18 @@ const TopBarNavMenu: React.FC<TopBarNavMenuProps> = ({iconButtonSx, onOpenChange
                                 <HelpOutlineIcon fontSize="small"/>
                             </ListItemIcon>
                             <ListItemText primary="Help"/>
+                        </ListItemButton>
+
+                        <ListItemButton
+                            component={RouterLink}
+                            to="/privacy"
+                            onClick={closeMenu}
+                            sx={navItemSx}
+                        >
+                            <ListItemIcon sx={menuItemIconSx}>
+                                <PrivacyTipIcon fontSize="small"/>
+                            </ListItemIcon>
+                            <ListItemText primary="Privacy"/>
                         </ListItemButton>
                     </List>
                 </Box>
