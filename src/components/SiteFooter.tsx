@@ -14,6 +14,7 @@ const footerLinkSx = {
 };
 
 const internalLinks = [
+    {label: 'About', to: '/about'},
     {label: 'Help', to: '/help'},
     {label: 'Privacy Policy', to: '/privacy'},
 ] as const;
