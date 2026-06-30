@@ -4,6 +4,11 @@ import PrivacyTipIcon from '@mui/icons-material/PrivacyTip';
 import {Link as RouterLink} from 'react-router-dom';
 import {Icon} from '@iconify/react';
 import {colors, contentColumnSx, fontSizes, media} from '../theme';
+import {
+    pageHeaderContainerSx,
+    pageHeaderIconBoxSx,
+    pageHeaderSubtitleSx,
+} from './pageHeaderStyles';
 
 const bodyTextSx = {
     color: colors.text.primary,
@@ -45,34 +50,15 @@ const linkSx = {
 const Privacy: React.FC = () => {
     return (
         <Box sx={{...contentColumnSx, mt: 2, px: 2, pb: 4, [media.mobileDown]: {px: 1}}}>
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1.5,
-                    mb: 2,
-                    pt: 1,
-                }}
-            >
-                <Box
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 56,
-                        height: 56,
-                        borderRadius: 2,
-                        bgcolor: colors.background.surfaceAlt,
-                        border: `1px solid ${colors.border.default}`,
-                    }}
-                >
+            <Box sx={pageHeaderContainerSx}>
+                <Box sx={pageHeaderIconBoxSx}>
                     <PrivacyTipIcon sx={{fontSize: 32, color: colors.upload.dragActive}}/>
                 </Box>
                 <Box>
-                    <Typography variant="h4" sx={{m: 0, fontWeight: 600, color: colors.text.primary}}>
+                    <Typography variant="h4" sx={{m: 0, fontWeight: 600, color: colors.text.primary, lineHeight: 1.15}}>
                         Privacy Policy
                     </Typography>
-                    <Typography variant="body2" sx={{color: colors.text.muted, mt: 0.5}}>
+                    <Typography component="span" sx={pageHeaderSubtitleSx}>
                         Effective date: June 30, 2026
                     </Typography>
                 </Box>
