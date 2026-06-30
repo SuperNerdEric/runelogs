@@ -1,6 +1,6 @@
 {
   "short_name": "Runelogs",
-  "name": "Runelogs - Combat analysis for Old School RuneScape",
+  "name": "Runelogs - OSRS Combat Log Analysis",
   "icons": [
     {
       "src": "/favicon.ico",
@@ -22,7 +22,7 @@
   "display": "standalone",
   "theme_color": "#0d1117",
   "background_color": "#0d1117",
-  "description": "Runelogs: A combat log analysis tool for Old School RuneScape.",
+  "description": "Runelogs is an OSRS combat log analyzer for the RuneLite Combat Logger plugin. Upload logs, review DPS, replay fights, and compare raid leaderboards.",
   "categories": [
     "games",
     "tools"

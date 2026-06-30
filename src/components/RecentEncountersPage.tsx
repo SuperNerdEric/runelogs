@@ -3,8 +3,12 @@ import {Box, Typography} from '@mui/material';
 import HistoryIcon from '@mui/icons-material/History';
 import OverallRecentEncounters from './OverallRecentEncounters';
 import {colors, contentColumnSx, media} from '../theme';
+import {usePageMeta} from '../hooks/usePageMeta';
+import {RECENT_ENCOUNTERS_PAGE_META} from '../utils/seoContent';
 
 const RecentEncountersPage: React.FC = () => {
+    usePageMeta(RECENT_ENCOUNTERS_PAGE_META);
+
     return (
         <Box sx={{...contentColumnSx, mt: 2, px: 2, pb: 4, [media.mobileDown]: {px: 1}}}>
             <Box

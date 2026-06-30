@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {Box, Link, Typography} from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import {Link as RouterLink} from 'react-router-dom';
@@ -9,48 +9,8 @@ import {
     pageHeaderSubtitleSx,
 } from './pageHeaderStyles';
 import {LEADERBOARD_CONTENT_OPTIONS} from '../utils/leaderboardContent';
-
-const DEFAULT_TITLE = 'Runelogs - Combat analysis for Old School RuneScape';
-const DEFAULT_DESCRIPTION =
-    'Runelogs: A combat log analysis tool for Old School RuneScape.';
-const ABOUT_TITLE =
-    'About Runelogs - OSRS Combat Log Analysis, DPS Tracking & Leaderboards';
-const ABOUT_DESCRIPTION =
-    'Runelogs is an OSRS combat log analyzer for RuneLite Combat Logger. Upload logs or live log fights, view DPS meters, tick replays, and leaderboards for Theatre of Blood, Tombs of Amascut, Inferno, Colosseum, and more.';
-
-const ABOUT_FAQ = [
-    {
-        question: 'Do I need RuneLite?',
-        answer:
-            'Yes. Runelogs only reads logs from the Combat Logger plugin on RuneLite. OSRS mobile and the official client are not supported.',
-    },
-    {
-        question: 'Is Runelogs free?',
-        answer: 'Yes. Creating an account and uploading logs is free.',
-    },
-    {
-        question: 'How is this different from the in-game damage meter?',
-        answer:
-            "The plugin's damage meter is live in your client for your last few fights. Runelogs keeps the full log, breaks it into shareable web pages, adds leaderboards, replay, and filters you can use after the fact.",
-    },
-    {
-        question: 'Why does some damage show as "Unknown"?',
-        answer:
-            'OSRS does not always expose who dealt darker hitsplats. If a party member runs Combat Logger, their damage is usually attributed correctly.',
-    },
-    {
-        question: 'Can I log while playing on a second account?',
-        answer:
-            'The log records whichever account is logged in on that RuneLite client. Upload it from the Runelogs account you want the log tied to.',
-    },
-    {
-        question: 'What is live logging?',
-        answer:
-            'Live logging sends events to Runelogs as you play instead of uploading a file afterward. Set it up on the Live Log page with an access key in the plugin settings.',
-    },
-] as const;
-
-const ABOUT_JSON_LD_ID = 'about-page-jsonld';
+import {usePageMeta} from '../hooks/usePageMeta';
+import {ABOUT_PAGE_META} from '../utils/seoContent';
 
 const bodyTextSx = {
     color: colors.text.primary,
@@ -97,49 +57,8 @@ const linkSx = {
     },
 };
 
-function setMetaDescription(content: string) {
-    let meta = document.querySelector('meta[name="description"]');
-    if (!meta) {
-        meta = document.createElement('meta');
-        meta.setAttribute('name', 'description');
-        document.head.appendChild(meta);
-    }
-    meta.setAttribute('content', content);
-}
-
-function setJsonLd(id: string, data: object) {
-    let script = document.getElementById(id) as HTMLScriptElement | null;
-    if (!script) {
-        script = document.createElement('script');
-        script.id = id;
-        script.type = 'application/ld+json';
-        document.head.appendChild(script);
-    }
-    script.textContent = JSON.stringify(data);
-}
-
 const About: React.FC = () => {
-    useEffect(() => {
-        document.title = ABOUT_TITLE;
-        setMetaDescription(ABOUT_DESCRIPTION);
-        setJsonLd(ABOUT_JSON_LD_ID, {
-            '@context': 'https://schema.org',
-            '@type': 'FAQPage',
-            mainEntity: ABOUT_FAQ.map(({question, answer}) => ({
-                '@type': 'Question',
-                name: question,
-                acceptedAnswer: {
-                    '@type': 'Answer',
-                    text: answer,
-                },
-            })),
-        });
-        return () => {
-            document.title = DEFAULT_TITLE;
-            setMetaDescription(DEFAULT_DESCRIPTION);
-            document.getElementById(ABOUT_JSON_LD_ID)?.remove();
-        };
-    }, []);
+    usePageMeta(ABOUT_PAGE_META);
 
     const supportedContent = LEADERBOARD_CONTENT_OPTIONS.map((option) => option.label);
 

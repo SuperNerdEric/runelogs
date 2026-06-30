@@ -17,6 +17,8 @@ import TintedHitsplat from '../assets/help/tinted_hitsplat.png';
 import PanelIcon from '../assets/help/panel_icon.png';
 import FolderIcon from '../assets/help/folder_icon.png';
 import {colors, contentColumnSx, media} from '../theme';
+import {usePageMeta} from '../hooks/usePageMeta';
+import {HELP_PAGE_META} from '../utils/seoContent';
 
 type FaqItem = { id: string; title: string; body: React.ReactNode };
 
@@ -89,6 +91,7 @@ const supportLinkSx = {
 };
 
 const Help: React.FC = () => {
+    usePageMeta(HELP_PAGE_META);
     const {hash} = useLocation();
     const openId = useMemo(() => (hash ? hash.slice(1) : null), [hash]);
     const [expandedId, setExpandedId] = useState<string | false>(openId ?? false);

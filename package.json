@@ -37,7 +37,7 @@
     "generateEquipment": "python3 scripts/generateEquipment.py",
     "createIdMaps": "python3 scripts/createIdMaps.py",
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/prerender.mjs",
     "preview": "vite preview",
     "test": "vitest",
     "test:e2e": "playwright test",

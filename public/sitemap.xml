@@ -24,4 +24,37 @@
     <url>
         <loc>https://www.runelogs.com/live-log</loc>
     </url>
+    <url>
+        <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Theatre+of+Blood&amp;playerCount=4</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Theatre+of+Blood%3A+Hard+Mode&amp;playerCount=5</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Tombs+of+Amascut&amp;playerCount=1</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Tombs+of+Amascut%3A+Expert+Mode&amp;playerCount=1</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Fight+Caves&amp;playerCount=1</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=The+Inferno&amp;playerCount=1</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Fortis+Colosseum&amp;playerCount=1</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=The+Gauntlet&amp;playerCount=1</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Corrupted+Gauntlet&amp;playerCount=1</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Doom+of+Mokhaiotl&amp;playerCount=1</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Yama&amp;playerCount=2</loc>
+    </url>
 </urlset>
