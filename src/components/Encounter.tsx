@@ -153,9 +153,9 @@ const Encounter: React.FC = () => {
                     }
                 }
                 if (res.status === 404) {
-                    if (showLoading || receivingData) {
+                    if (showLoading || receivingData || retryingAfter404) {
                         setRetryingAfter404(true);
-                        keepLoading = showLoading;
+                        keepLoading = showLoading || retryingAfter404;
                         return;
                     }
                     throw new Error(`Server returned ${res.status}`);
@@ -204,7 +204,7 @@ const Encounter: React.FC = () => {
                 }
             }
         },
-        [isAggregate, navigate, receivingData]
+        [isAggregate, navigate, receivingData, retryingAfter404]
     );
 
     useEffect(() => {
