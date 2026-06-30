@@ -9,6 +9,8 @@ import {
     pageHeaderIconBoxSx,
     pageHeaderSubtitleSx,
 } from './pageHeaderStyles';
+import {usePageMeta} from '../hooks/usePageMeta';
+import {PRIVACY_PAGE_META} from '../utils/seoContent';
 
 const bodyTextSx = {
     color: colors.text.primary,
@@ -48,6 +50,8 @@ const linkSx = {
 };
 
 const Privacy: React.FC = () => {
+    usePageMeta(PRIVACY_PAGE_META);
+
     return (
         <Box sx={{...contentColumnSx, mt: 2, px: 2, pb: 4, [media.mobileDown]: {px: 1}}}>
             <Box sx={pageHeaderContainerSx}>

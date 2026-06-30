@@ -12,6 +12,9 @@ import {flushSync} from 'react-dom';
 import SectionBox from "./SectionBox";
 import {useStableDropzone} from "../hooks/useStableDropzone";
 import {colors, contentColumnSx, fonts, fontSizes, media, typography} from "../theme";
+import {isPrerenderPass} from '../utils/isPrerenderPass';
+import {usePageMeta} from '../hooks/usePageMeta';
+import {UPLOAD_PAGE_META} from '../utils/seoContent';
 import {
     combineOverallUploadProgress,
 } from '../utils/uploadProgress';
@@ -259,6 +262,7 @@ function UploadProgressIndicator({
 const Upload: React.FC = () => {
     const {isAuthenticated, isLoading, getAccessTokenSilently} = useAuth0();
     const navigate = useNavigate();
+    usePageMeta(UPLOAD_PAGE_META);
 
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [logName, setLogName] = useState('');
@@ -270,7 +274,7 @@ const Upload: React.FC = () => {
     const [recovering, setRecovering] = useState(false);
 
     useEffect(() => {
-        if (!isLoading && !isAuthenticated) {
+        if (!isLoading && !isAuthenticated && !isPrerenderPass()) {
             navigate('/');
         }
     }, [isLoading, isAuthenticated, navigate]);

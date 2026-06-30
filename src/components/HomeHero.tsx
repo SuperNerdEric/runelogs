@@ -64,6 +64,7 @@ export function HomeHero({icon: Icon = QueryStatsIcon, iconColor, iconBg, iconBo
                     {iconWrapperSx ? <Box sx={iconWrapperSx}>{icon}</Box> : icon}
                 </Box>
                 <Typography
+                    component="h1"
                     variant="h4"
                     sx={{
                         textAlign: 'center',

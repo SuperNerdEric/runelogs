@@ -10,9 +10,12 @@ import {colors, contentColumnSx, media} from '../theme';
 import {HomeHero} from './HomeHero';
 import {HomeHeroSubtitle, HomeHeroTagline} from './homeHeroContent';
 import TrophyIcon from './TrophyIcon';
+import {usePageMeta} from '../hooks/usePageMeta';
+import {HOME_PAGE_META} from '../utils/seoContent';
 
 export default function Home() {
     const {isAuthenticated} = useAuth0();
+    usePageMeta(HOME_PAGE_META);
 
     return (
         <Box sx={{...contentColumnSx, px: 2, pb: 0, [media.mobileDown]: {px: 1}}}>
@@ -29,7 +32,9 @@ export default function Home() {
                 <Link href="https://runelite.net/plugin-hub/show/combat-logger" target="_blank" rel="noopener">
                     Combat Logger
                 </Link>{' '}
-                plugin.{' '}
+                RuneLite plugin. See the{' '}
+                <Link component={RouterLink} to="/about">About</Link> page for supported raids and bosses, or{' '}
+                <Link component={RouterLink} to="/help">Help</Link> for upload instructions.{' '}
                 {!isAuthenticated ? (
                     <>
                         To upload a log please{' '}

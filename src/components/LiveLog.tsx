@@ -22,6 +22,9 @@ import AllowLiveLoggingScreenshot from '../assets/help/allow_live_logging.png';
 import PanelIcon from '../assets/help/panel_icon.png';
 import StartLiveLoggingScreenshot from '../assets/help/start_live_logging.png';
 import {colors, contentColumnSx, fonts, fontSizes, media, typography} from '../theme';
+import {isPrerenderPass} from '../utils/isPrerenderPass';
+import {usePageMeta} from '../hooks/usePageMeta';
+import {LIVE_LOG_PAGE_META} from '../utils/seoContent';
 
 const STEP_LINE_HEIGHT = 1.4;
 
@@ -125,6 +128,7 @@ interface AccessKeyResponse {
 const LiveLog: React.FC = () => {
     const {isAuthenticated, isLoading, getAccessTokenSilently} = useAuth0();
     const navigate = useNavigate();
+    usePageMeta(LIVE_LOG_PAGE_META);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [accessKey, setAccessKey] = useState<string | null>(null);
@@ -133,7 +137,7 @@ const LiveLog: React.FC = () => {
     const [copied, setCopied] = useState(false);
 
     useEffect(() => {
-        if (!isLoading && !isAuthenticated) {
+        if (!isLoading && !isAuthenticated && !isPrerenderPass()) {
             navigate('/');
         }
     }, [isLoading, isAuthenticated, navigate]);

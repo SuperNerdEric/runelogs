@@ -1,10 +1,17 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {Box, Typography} from '@mui/material';
+import {useSearchParams} from 'react-router-dom';
 import Leaderboard from './Leaderboard';
 import TrophyIcon from './TrophyIcon';
 import {colors, contentColumnSx, media} from '../theme';
+import {usePageMeta} from '../hooks/usePageMeta';
+import {getLeaderboardPageMeta} from '../utils/leaderboardPageMeta';
 
 const LeaderboardsPage: React.FC = () => {
+    const [searchParams] = useSearchParams();
+    const pageMeta = useMemo(() => getLeaderboardPageMeta(searchParams), [searchParams]);
+    usePageMeta(pageMeta);
+
     return (
         <Box sx={{...contentColumnSx, mt: 2, px: 2, pb: 4, [media.mobileDown]: {px: 1}}}>
             <Box
