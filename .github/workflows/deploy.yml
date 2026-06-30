@@ -19,11 +19,7 @@ jobs:
       - name: Install Dependencies
         run: npm install #should be ci, but eslintrc is failing
 
-      - name: Install Playwright Chromium
-        run: npx playwright install chromium
-
       - name: Build
-        timeout-minutes: 20
         run: npm run build -- --mode production
 
       - name: Upload to S3

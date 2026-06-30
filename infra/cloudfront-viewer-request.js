@@ -1,8 +1,9 @@
 // CloudFront viewer-request function for S3-hosted prerendered SPA routes.
-// Attach to the distribution behavior that serves the site origin.
+// Attach ONLY if you serve bot-only snapshots from build/_prerender/ to crawlers.
+// Do NOT serve prerender HTML to normal browsers — it flashes before React loads.
 //
-// Without this rewrite, /about returns the root index.html fallback and crawlers
-// never see build/about/index.html from the prerender step.
+// Typical setup: detect crawler User-Agent, rewrite request to /_prerender{uri}/index.html
+// for bots only; everyone else gets the normal SPA shell (index.html fallback).
 function handler(event) {
     var request = event.request;
     var uri = request.uri;
