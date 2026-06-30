@@ -10,7 +10,7 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import {Icon} from '@iconify/react';
-import {useLocation} from 'react-router-dom';
+import {useLocation, Link as RouterLink} from 'react-router-dom';
 import FindCombatLogIcon from '../assets/help/find_combat_log.png';
 import BrightHitsplat from '../assets/help/bright_hitsplat.png';
 import TintedHitsplat from '../assets/help/tinted_hitsplat.png';
@@ -202,6 +202,11 @@ const Help: React.FC = () => {
                         GitHub
                     </Link>
                     .
+                </Typography>
+                <Typography variant="body2" sx={{color: colors.text.muted, mt: 2}}>
+                    <Link component={RouterLink} to="/privacy" sx={supportLinkSx}>
+                        Privacy Policy
+                    </Link>
                 </Typography>
             </Box>
             </Box>
