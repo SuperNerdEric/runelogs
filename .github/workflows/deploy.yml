@@ -23,6 +23,7 @@ jobs:
         run: npx playwright install chromium
 
       - name: Build
+        timeout-minutes: 20
         run: npm run build -- --mode production
 
       - name: Upload to S3
