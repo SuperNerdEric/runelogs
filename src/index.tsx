@@ -20,6 +20,7 @@ import Player from "./components/Player";
 import Home from "./components/Home";
 import Help from "./components/Help";
 import Privacy from "./components/Privacy";
+import About from "./components/About";
 import LeaderboardsPage from "./components/LeaderboardsPage";
 import RecentEncountersPage from "./components/RecentEncountersPage";
 import LiveLog from "./components/LiveLog";
@@ -59,6 +60,7 @@ function AppRoutes() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/logout" element={<Logout />} />
                 <Route path="/help" element={<Help/>}/>
+                <Route path="/about" element={<About/>}/>
                 <Route path="/privacy" element={<Privacy/>}/>
                 <Route path="/player/:playerName" element={<Player/>}/>
                 <Route path="/encounter/:id" element={<Encounter />} />
