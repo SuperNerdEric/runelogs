@@ -60,6 +60,7 @@ const Encounter: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [receivingData, setReceivingData] = useState(false);
+    const [retryingAfter404, setRetryingAfter404] = useState(false);
     const [dpsPercentiles, setDpsPercentiles] = useState<Record<string, number>>({});
     const [dpsRanks, setDpsRanks] = useState<Record<string, number>>({});
     const [dpsLeaderboardKey, setDpsLeaderboardKey] = useState<string | null>(null);
@@ -137,6 +138,7 @@ const Encounter: React.FC = () => {
                 setLoading(true);
             }
             setError(null);
+            let keepLoading = false;
             try {
                 const res = await fetch(
                     isAggregate
@@ -150,7 +152,16 @@ const Encounter: React.FC = () => {
                         return;
                     }
                 }
+                if (res.status === 404) {
+                    if (showLoading || receivingData) {
+                        setRetryingAfter404(true);
+                        keepLoading = showLoading;
+                        return;
+                    }
+                    throw new Error(`Server returned ${res.status}`);
+                }
                 if (!res.ok) throw new Error(`Server returned ${res.status}`);
+                setRetryingAfter404(false);
                 const data: EncounterApi = await res.json();
 
                 if (data.type === 'fight') {
@@ -188,13 +199,34 @@ const Encounter: React.FC = () => {
             } catch (e: any) {
                 setError(e.message || 'Unknown error');
             } finally {
-                if (showLoading) {
+                if (showLoading && !keepLoading) {
                     setLoading(false);
                 }
             }
         },
-        [isAggregate, navigate]
+        [isAggregate, navigate, receivingData]
     );
+
+    useEffect(() => {
+        if (!id || !retryingAfter404) {
+            return;
+        }
+
+        const interval = window.setInterval(() => {
+            fetchEncounter(id, false, false);
+        }, 5000);
+
+        const timeout = window.setTimeout(() => {
+            setRetryingAfter404(false);
+            setError('Encounter data is not available yet');
+            setLoading(false);
+        }, 60000);
+
+        return () => {
+            window.clearInterval(interval);
+            window.clearTimeout(timeout);
+        };
+    }, [id, retryingAfter404, fetchEncounter]);
 
     const handleSelectFight = useCallback(
         (index: number) => {
@@ -301,6 +333,7 @@ const Encounter: React.FC = () => {
             setLeaderboardName(null);
             setOptimisticTab(null);
             setShowTabContent(true);
+            setRetryingAfter404(false);
             fetchEncounter(id, true, true);
         }
     }, [id, fetchEncounter]);
