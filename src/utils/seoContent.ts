@@ -92,6 +92,7 @@ export const HOME_PAGE_META = PAGE_META.home;
 export const ABOUT_PAGE_META = {...PAGE_META.about, jsonLd: ABOUT_JSON_LD};
 export const HELP_PAGE_META = {...PAGE_META.help, jsonLd: HELP_JSON_LD};
 export const PRIVACY_PAGE_META = PAGE_META.privacy;
+export const BLOG_PAGE_META = PAGE_META.blog;
 export const UPLOAD_PAGE_META = PAGE_META.upload;
 export const LIVE_LOG_PAGE_META = PAGE_META.liveLog;
 export const RECENT_ENCOUNTERS_PAGE_META = PAGE_META.recentEncounters;

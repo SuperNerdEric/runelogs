@@ -25,6 +25,12 @@ export const PAGE_META = {
             'Runelogs privacy policy. How we handle accounts, uploaded combat logs, profile data, and contact information for Old School RuneScape log analysis.',
         canonicalPath: '/privacy',
     },
+    blog: {
+        title: 'Blog & Release Notes | Runelogs',
+        description:
+            'Release notes and updates for Runelogs and the RuneLite Combat Logger plugin. Site launches, new leaderboards, live logging, and plugin version history.',
+        canonicalPath: '/blog',
+    },
     upload: {
         title: 'Upload OSRS Combat Log | Runelogs',
         description:
