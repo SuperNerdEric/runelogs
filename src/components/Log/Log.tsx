@@ -10,7 +10,7 @@ import {getEncounterHref, getRunSummaryHref} from '../../utils/encounterTableRow
 import {inferLeaderboardFightGroupName} from '../../utils/leaderboardContent';
 import {
     isFightGroupRunInProgress,
-    resolveLiveFightTileInProgress,
+    resolveLiveFightTileState,
 } from '../../utils/fightDisplayStatus';
 import {
     LIVE_PAGE_RETRY_INTERVAL_MS,
@@ -78,6 +78,7 @@ interface ApiResponse {
     isLive?: boolean;
     receivingData?: boolean;
     liveActiveEncounterId?: string | null;
+    liveActiveFightId?: string | null;
     encounters: ApiEncounter[];
 }
 
@@ -164,12 +165,8 @@ const Log: React.FC = () => {
                         order: f.order,
                     }));
 
-                    const childFights: FightMetaData[] = sortedFights.map((f) => ({
-                        name: f.name,
-                        startTime: f.startTime,
-                        fightDurationTicks: f.fightDurationTicks,
-                        success: f.success,
-                        inProgress: resolveLiveFightTileInProgress(
+                    const childFights: FightMetaData[] = sortedFights.map((f) => {
+                        const tileState = resolveLiveFightTileState(
                             Boolean(body.receivingData),
                             enc.success,
                             fightStates,
@@ -179,8 +176,17 @@ const Log: React.FC = () => {
                                 order: f.order,
                             },
                             body.liveActiveEncounterId,
-                        ),
-                    }));
+                            body.liveActiveFightId,
+                        );
+
+                        return {
+                            name: f.name,
+                            startTime: f.startTime,
+                            fightDurationTicks: f.fightDurationTicks,
+                            success: tileState.displaySuccess,
+                            inProgress: tileState.inProgress,
+                        };
+                    });
 
                     const fgMeta = {
                         name: enc.name,
