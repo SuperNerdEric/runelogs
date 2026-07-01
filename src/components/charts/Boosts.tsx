@@ -154,8 +154,8 @@ const Boosts: React.FC<DPSChartProps> = ({fight}) => {
         if (!selectedPlayer) return;
 
         let currentBoost: Levels;
-        let tempBoost: any[] = [];
-        let tempAttack: any[] = [];
+        const tempBoost: any[] = [];
+        const tempAttack: any[] = [];
 
         fight.data.forEach(log => {
             if (log.type === LogTypes.BOOSTED_LEVELS && log.source?.name === selectedPlayer) {

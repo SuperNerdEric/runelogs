@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Link as RouterLink, useNavigate, useParams} from 'react-router-dom';
 import {
     Alert,
@@ -12,7 +12,6 @@ import {FightGroupFightRows} from './sections/LogFightList';
 import RunInfoBox from './RunInfoBox';
 import PageBreadcrumbs from './PageBreadcrumbs';
 import {contentColumnSx, pageHeroTitleSx} from '../theme';
-import {colors} from '../theme';
 import {displayUsername, ticksToTime} from '../utils/utils';
 import {getEncounterHref} from '../utils/encounterTableRow';
 import {isUnknownPlayer, UNKNOWN_PLAYER_NAME} from '../utils/actorUtils';
@@ -24,7 +23,7 @@ import {hasColosseumModifierData} from '../utils/colosseumModifiers';
 import {MOKHAIOTL_HIGH_SCORE_MODE_LABEL} from '../utils/leaderboardContent';
 import {resolveFightGroupSpriteKey} from '../lib/hiscoreSprites';
 import {FightGroupExtraInfo} from '../utils/fightGroupExtraInfo';
-import {resolvePlayerRankPercentile} from './badges/playerRankPercentile';
+import {resolveFightOutcomeColor, isFightLiveInProgress} from '../utils/fightDisplayStatus';
 import '../App.css';
 
 interface PlayerDpsRow {
@@ -71,6 +70,7 @@ interface FightGroupSummaryData {
         uploaderId: string;
         uploadedAt: string;
         name: string | null;
+        liveActiveEncounterId?: string | null;
     };
     receivingData?: boolean;
     players: string[];
@@ -91,8 +91,10 @@ const FightGroupSummary: React.FC = () => {
     const [data, setData] = useState<FightGroupSummaryData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [receivingData, setReceivingData] = useState(false);
+    const [retryingAfter404, setRetryingAfter404] = useState(false);
 
-    const loadSummary = async (showLoading = true) => {
+    const loadSummary = useCallback(async (showLoading = true) => {
         if (!id) {
             setError('No run id provided in URL');
             setLoading(false);
@@ -103,6 +105,7 @@ const FightGroupSummary: React.FC = () => {
             setLoading(true);
         }
         setError(null);
+        let keepLoading = false;
 
         try {
             const res = await fetch(`${import.meta.env.VITE_API_URL}/fightGroup/${id}`);
@@ -113,32 +116,66 @@ const FightGroupSummary: React.FC = () => {
                     return;
                 }
             }
+            if (res.status === 404) {
+                if (showLoading || receivingData || retryingAfter404) {
+                    setRetryingAfter404(true);
+                    keepLoading = showLoading || retryingAfter404;
+                    return;
+                }
+                throw new Error(`Server responded with status ${res.status}`);
+            }
             if (!res.ok) {
                 throw new Error(`Server responded with status ${res.status}`);
             }
+            setRetryingAfter404(false);
             const body: FightGroupSummaryData = await res.json();
             setData(body);
+            setReceivingData(Boolean(body.receivingData));
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : 'Unknown error';
             setError(message);
         } finally {
-            if (showLoading) {
+            if (showLoading && !keepLoading) {
                 setLoading(false);
             }
         }
-    };
+    }, [id, navigate, receivingData, retryingAfter404]);
 
     useEffect(() => {
+        setData(null);
+        setReceivingData(false);
+        setRetryingAfter404(false);
         loadSummary(true);
-    }, [id]);
+    }, [id, loadSummary]);
 
     useEffect(() => {
-        if (!data?.receivingData) {
+        if (!id || !retryingAfter404) {
+            return;
+        }
+
+        const interval = window.setInterval(() => {
+            loadSummary(false);
+        }, 5000);
+
+        const timeout = window.setTimeout(() => {
+            setRetryingAfter404(false);
+            setError('Run data is not available yet');
+            setLoading(false);
+        }, 60000);
+
+        return () => {
+            window.clearInterval(interval);
+            window.clearTimeout(timeout);
+        };
+    }, [id, retryingAfter404, loadSummary]);
+
+    useEffect(() => {
+        if (!id || !receivingData) {
             return;
         }
         const interval = window.setInterval(() => loadSummary(false), 5000);
         return () => window.clearInterval(interval);
-    }, [data?.receivingData, id]);
+    }, [id, receivingData, loadSummary]);
 
     const topRankBadges = useMemo(() => {
         if (!data) {
@@ -198,7 +235,8 @@ const FightGroupSummary: React.FC = () => {
     }
 
     const {displayDurationTicks, delve1to8DisplayDurationTicks} = data;
-    const durationColor = data.success ? colors.fight.success : colors.fight.failure;
+    const runInProgress = Boolean(data.receivingData);
+    const durationColor = resolveFightOutcomeColor(data.success, runInProgress);
 
     const topRankLabel = (entry: PlayerRank) => {
         if (entry.category === 'Duration' || entry.category === MOKHAIOTL_HIGH_SCORE_MODE_LABEL) {
@@ -239,19 +277,35 @@ const FightGroupSummary: React.FC = () => {
                 >
                     {data.name}
                 </Typography>
-                {displayDurationTicks != null && displayDurationTicks > 0 && (
+                {(runInProgress || (displayDurationTicks != null && displayDurationTicks > 0)) && (
                     <Box sx={{m: 0}}>
-                        <Typography
-                            component="p"
-                            sx={{
-                                color: durationColor,
-                                fontWeight: 700,
-                                fontSize: {xs: '1.25rem', sm: '1.75rem'},
-                                m: 0,
-                            }}
-                        >
-                            {ticksToTime(displayDurationTicks)}
-                        </Typography>
+                        {displayDurationTicks != null && displayDurationTicks > 0 && (
+                            <Typography
+                                component="p"
+                                sx={{
+                                    color: durationColor,
+                                    fontWeight: 700,
+                                    fontSize: {xs: '1.25rem', sm: '1.75rem'},
+                                    m: 0,
+                                }}
+                            >
+                                {ticksToTime(displayDurationTicks)}
+                            </Typography>
+                        )}
+                        {runInProgress && (
+                            <Typography
+                                component="p"
+                                variant="body2"
+                                sx={{
+                                    color: durationColor,
+                                    fontWeight: 600,
+                                    mt: displayDurationTicks != null && displayDurationTicks > 0 ? 0.5 : 0,
+                                    mb: 0,
+                                }}
+                            >
+                                In Progress
+                            </Typography>
+                        )}
                         {delve1to8DisplayDurationTicks != null && (
                             <Typography
                                 component="p"
@@ -344,6 +398,11 @@ const FightGroupSummary: React.FC = () => {
                                 startTime: fight.startTime,
                                 fightDurationTicks: fight.fightDurationTicks,
                                 success: fight.success,
+                                inProgress: isFightLiveInProgress(
+                                    runInProgress,
+                                    fight.id,
+                                    data.log.liveActiveEncounterId,
+                                ),
                             },
                             index: 0,
                             fightGroupIndex,

@@ -5,7 +5,7 @@ import {convertTimeToMillis} from "../utils/utils";
 
 describe('calculateWeightedAverages', () => {
     test('should calculate stat average correctly', () => {
-        let logLines: LogLine[] = [
+        const logLines: LogLine[] = [
             {
                 type: LogTypes.BOOSTED_LEVELS,
                 date: "02-04-2024",

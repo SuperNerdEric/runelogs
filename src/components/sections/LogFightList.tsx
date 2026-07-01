@@ -28,6 +28,7 @@ interface FightTileProps {
   fightDurationTicks: number;
   startTime: string;
   success: boolean;
+  inProgress?: boolean;
   href?: string;
   onClick?: () => void;
   showGoldStar?: boolean;
@@ -39,6 +40,7 @@ const FightTile: React.FC<FightTileProps> = ({
   fightDurationTicks,
   startTime,
   success,
+  inProgress = false,
   href,
   onClick,
   showGoldStar = false,
@@ -50,7 +52,11 @@ const FightTile: React.FC<FightTileProps> = ({
     minute: "numeric",
     hour12: true,
   });
-  const nameColor = success ? colors.fight.success : colors.fight.failure;
+  const nameColor = inProgress
+    ? colors.text.link
+    : success
+      ? colors.fight.success
+      : colors.fight.failure;
   const formattedDuration = formatHHmmss(fightDurationTicks * 600, false);
 
   const content = (
@@ -60,6 +66,11 @@ const FightTile: React.FC<FightTileProps> = ({
         <span className="fight-tile-duration"> ({formattedDuration})</span>
       </div>
       <div className="fight-tile-start-time">{formattedTime}</div>
+      {inProgress && (
+        <div className="fight-tile-status" style={{ color: nameColor }}>
+          In Progress
+        </div>
+      )}
       {showGoldStar && <div className="gold-star">&#9733;</div>}
       <FightTileRankBadges badges={rankBadges} />
     </>
@@ -88,6 +99,7 @@ export interface FightTileGridItem {
   fightDurationTicks: number;
   startTime: string;
   success: boolean;
+  inProgress?: boolean;
   href?: string;
   onClick?: () => void;
   showGoldStar?: boolean;
@@ -142,6 +154,7 @@ export const FightTileGrid: React.FC<FightTileGridProps> = ({
               fightDurationTicks={tile.fightDurationTicks}
               startTime={tile.startTime}
               success={tile.success}
+              inProgress={tile.inProgress}
               href={tile.href}
               onClick={tile.onClick}
               showGoldStar={tile.showGoldStar}
@@ -181,6 +194,7 @@ export const FightGroupFightRows: React.FC<FightGroupFightRowsProps> = ({
       fightDurationTicks: row.fight.fightDurationTicks ?? 0,
       startTime: row.fight.startTime,
       success: row.fight.success,
+      inProgress: row.fight.inProgress,
       href: row.href,
       onClick: row.href
         ? undefined
@@ -195,6 +209,7 @@ export interface EncounterTitleBarProps {
   leaderboardName?: string | null;
   officialDurationTicks?: number;
   success?: boolean;
+  inProgress?: boolean;
   href?: string;
   onClick?: () => void;
 }
@@ -204,11 +219,16 @@ export const EncounterTitleBar: React.FC<EncounterTitleBarProps> = ({
   leaderboardName,
   officialDurationTicks,
   success,
+  inProgress = false,
   href,
   onClick,
 }) => {
   const className = `encounter-title-bar${href || onClick ? " encounter-title-bar--clickable" : ""}`;
-  const durationColor = success ? colors.fight.success : colors.fight.failure;
+  const durationColor = inProgress
+    ? colors.text.link
+    : success
+      ? colors.fight.success
+      : colors.fight.failure;
   const spriteKey = resolveFightGroupSpriteKey(name, leaderboardName);
   const content = (
     <>
@@ -216,15 +236,38 @@ export const EncounterTitleBar: React.FC<EncounterTitleBarProps> = ({
         <HiscoreSpriteIcon spriteKey={spriteKey} height="1em" alt="" />
         <span className="encounter-title-bar-name">{name}</span>
       </span>
-      {officialDurationTicks != null && (
-        <Typography
-          component="span"
-          variant="body2"
-          sx={{ color: durationColor }}
-          display="block"
-        >
-          Overall - ({ticksToTime(officialDurationTicks)})
-        </Typography>
+      {inProgress ? (
+        <>
+          {officialDurationTicks != null && officialDurationTicks > 0 && (
+            <Typography
+              component="span"
+              variant="body2"
+              sx={{ color: durationColor }}
+              display="block"
+            >
+              Overall - ({ticksToTime(officialDurationTicks)})
+            </Typography>
+          )}
+          <Typography
+            component="span"
+            variant="body2"
+            sx={{ color: durationColor }}
+            display="block"
+          >
+            In Progress
+          </Typography>
+        </>
+      ) : (
+        officialDurationTicks != null && (
+          <Typography
+            component="span"
+            variant="body2"
+            sx={{ color: durationColor }}
+            display="block"
+          >
+            Overall - ({ticksToTime(officialDurationTicks)})
+          </Typography>
+        )
       )}
     </>
   );
@@ -249,6 +292,7 @@ type FightGroupMap = {
     isRaid: boolean;
     officialDurationTicks?: number;
     success?: boolean;
+    inProgress?: boolean;
     fightGroupId?: string;
     isLeaderboardContent?: boolean;
     leaderboardName?: string | null;
@@ -312,6 +356,7 @@ const LogFightList: React.FC<LogFightListProps> = ({
           isRaid: true,
           officialDurationTicks: fight.officialDurationTicks,
           success: fight.success,
+          inProgress: fight.inProgress,
           fightGroupId: fight.id,
           leaderboardName: resolvedLeaderboardName,
           isLeaderboardContent: isLeaderboardFightGroup(
@@ -380,6 +425,7 @@ const LogFightList: React.FC<LogFightListProps> = ({
                 leaderboardName={fightGroup.leaderboardName}
                 officialDurationTicks={fightGroup.officialDurationTicks}
                 success={fightGroup.success}
+                inProgress={fightGroup.inProgress}
                 href={fightGroupHref}
                 onClick={handleTitleClick}
               />
@@ -429,6 +475,7 @@ const LogFightList: React.FC<LogFightListProps> = ({
                 fightDurationTicks: fight.fight.fightDurationTicks ?? 0,
                 startTime: fight.fight.startTime,
                 success: fight.fight.success,
+                inProgress: fight.fight.inProgress,
                 href: getFightHref?.(fight.index),
                 onClick: getFightHref?.(fight.index)
                   ? undefined

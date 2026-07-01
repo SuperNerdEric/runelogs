@@ -33,7 +33,7 @@ const Combobox = <T extends ComboboxItem>(props: IComboboxProps<T>) => {
     const filteredItems = useMemo(() => {
         // When the input value changes, change the filtered items
         if (inputValue) {
-            let newFilteredItems = fuzzyFilter(preprocessedItems, inputValue, {fields: ['valueToFilter']}).map((match) => match.item.item);
+            const newFilteredItems = fuzzyFilter(preprocessedItems, inputValue, {fields: ['valueToFilter']}).map((match) => match.item.item);
 
             return newFilteredItems;
         }

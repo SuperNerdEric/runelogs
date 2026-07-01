@@ -17,6 +17,7 @@ export interface FightGroupMetaData {
     name: string;
     officialDurationTicks?: number;
     success?: boolean;
+    inProgress?: boolean;
     fights: FightMetaData[];
     id?: string;
     leaderboardName?: string | null;

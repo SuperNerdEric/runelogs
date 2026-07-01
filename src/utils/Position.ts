@@ -25,7 +25,7 @@ export class Position {
         const point = map.project(latLng, RS_MAP_NATIVE_MAX_ZOOM);
         let y = MAP_HEIGHT_MAX_ZOOM_PX - point.y + RS_TILE_HEIGHT_PX / 4;
         y = Math.round((y - RS_TILE_HEIGHT_PX) / RS_TILE_HEIGHT_PX) + RS_OFFSET_Y;
-        let x = Math.round((point.x - RS_TILE_WIDTH_PX) / RS_TILE_WIDTH_PX) + RS_OFFSET_X;
+        const x = Math.round((point.x - RS_TILE_WIDTH_PX) / RS_TILE_WIDTH_PX) + RS_OFFSET_X;
         return new Position(x, y, z);
     }
 
