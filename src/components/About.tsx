@@ -8,7 +8,10 @@ import {
     pageHeaderIconBoxSx,
     pageHeaderSubtitleSx,
 } from './pageHeaderStyles';
-import {LEADERBOARD_CONTENT_OPTIONS} from '../utils/leaderboardContent';
+import {
+    LEADERBOARD_CONTENT_OPTIONS,
+    LEADERBOARD_DPS_BOSS_NAMES,
+} from '../utils/leaderboardContent';
 import {usePageMeta} from '../hooks/usePageMeta';
 import {ABOUT_PAGE_META} from '../utils/seoContent';
 
@@ -31,6 +34,13 @@ const listSx = {
         mb: 0.75,
         '&:last-child': {mb: 0},
     },
+};
+
+const nestedListSx = {
+    ...listSx,
+    mb: 0,
+    mt: 0.5,
+    pl: 2.5,
 };
 
 const sectionTitleSx = {
@@ -59,8 +69,6 @@ const linkSx = {
 
 const About: React.FC = () => {
     usePageMeta(ABOUT_PAGE_META);
-
-    const supportedContent = LEADERBOARD_CONTENT_OPTIONS.map((option) => option.label);
 
     return (
         <Box sx={{...contentColumnSx, mt: 2, px: 2, pb: 4, [media.mobileDown]: {px: 1}}}>
@@ -93,8 +101,10 @@ const About: React.FC = () => {
                         Combat Logger
                     </Link>{' '}
                     RuneLite plugin and turns them into fight pages you can browse on the web —
-                    DPS breakdowns, event timelines, replays, and leaderboards. It works with raids,
-                    bosses, and other PvM content that the plugin records.
+                    DPS breakdowns, event timelines, replays, and leaderboards. Any encounter the
+                    plugin records works — solo bosses, slayer tasks, raids, and everything else
+                    Combat Logger supports. Leaderboards cover a specific set of content (see below),
+                    but you are not limited to those activities.
                 </Typography>
                 <Typography variant="body1" sx={bodyTextSx}>
                     Runelogs is free to use. You need a RuneLite client, the Combat Logger plugin,
@@ -241,60 +251,43 @@ const About: React.FC = () => {
                     <Link component={RouterLink} to="/leaderboards" sx={linkSx}>
                         Leaderboards
                     </Link>{' '}
-                    track run times and DPS for uploaded logs. Supported content:
+                    track run times and DPS for uploaded logs. Only the content below has
+                    leaderboards — everything else Combat Logger records still gets full fight pages,
+                    just without ranks. Chambers of Xeric (CoX) is a common example: logs parse
+                    normally, but CoX is not on the leaderboard list yet.
                 </Typography>
                 <Box component="ul" sx={listSx}>
-                    {supportedContent.map((label) => (
-                        <li key={label}>{label}</li>
-                    ))}
+                    {LEADERBOARD_CONTENT_OPTIONS.map((option) => {
+                        const bosses = LEADERBOARD_DPS_BOSS_NAMES[option.value];
+                        return (
+                            <li key={option.value}>
+                                {option.label}
+                                {bosses && bosses.length > 0 && (
+                                    <Box component="ul" sx={nestedListSx}>
+                                        {bosses.map((boss) => (
+                                            <li key={boss}>{boss}</li>
+                                        ))}
+                                    </Box>
+                                )}
+                            </li>
+                        );
+                    })}
                 </Box>
                 <Typography variant="body1" sx={bodyTextSx}>
                     Duration boards rank full run times. DPS boards rank individual boss fights
-                    (e.g. Verzik phases, ToA wardens, Sol Heredit, TzKal-Zuk). Mokhaiotl has a
-                    Deep Delve high-score board. Player profiles show personal bests.
+                    listed above (plus an Overall aggregate where applicable). Mokhaiotl also has a
+                    Deep Delve high-score board. Yama has separate solo and duo (2-player) boards.
+                    Player profiles show personal bests.
                 </Typography>
 
                 <Typography variant="h6" component="h2" sx={sectionTitleSx}>
                     PvM content on Runelogs
                 </Typography>
                 <Typography variant="body1" sx={bodyTextSx}>
-                    Leaderboards and run summaries currently cover the content below. Other bosses
-                    and activities still parse into fight pages if Combat Logger records them —
-                    Chambers of Xeric (CoX) logs work, for example, but CoX is not on the
-                    leaderboard list yet.
+                    Anything Combat Logger records can be uploaded and browsed, whether or not it
+                    appears on a leaderboard. Slayer bosses, GWD, Nex, Barrows, Chambers of Xeric,
+                    and other activities all get fight pages with the same tabs and tools.
                 </Typography>
-                <Box component="ul" sx={listSx}>
-                    <li>
-                        <strong>Theatre of Blood (TOB)</strong> and <strong>Hard Mode (TOB HM)</strong>{' '}
-                        — full raid duration and per-boss DPS (Maiden, Bloat, Nylos, Sotetseg,
-                        Xarpus, Verzik).
-                    </li>
-                    <li>
-                        <strong>Tombs of Amascut (TOA)</strong> and <strong>Expert Mode (TOA EM)</strong>{' '}
-                        — raid time, path bosses, and Wardens phases. Raid level is shown on the
-                        run summary.
-                    </li>
-                    <li>
-                        <strong>Fight Caves</strong> — TzTok-Jad fight and duration.
-                    </li>
-                    <li>
-                        <strong>The Inferno</strong> — TzKal-Zuk and full run time.
-                    </li>
-                    <li>
-                        <strong>Fortis Colosseum</strong> — wave modifiers, Sol Heredit, and run
-                        duration.
-                    </li>
-                    <li>
-                        <strong>The Gauntlet</strong> and <strong>Corrupted Gauntlet (CG)</strong>.
-                    </li>
-                    <li>
-                        <strong>Doom of Mokhaiotl</strong> — delve progression, Deep Delve
-                        high-scores, and fight DPS.
-                    </li>
-                    <li>
-                        <strong>Yama</strong> — solo and duo (2-player) leaderboards.
-                    </li>
-                </Box>
 
                 <Typography variant="h6" component="h2" sx={sectionTitleSx}>
                     Recent encounters and profiles
