@@ -17,6 +17,8 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import HistoryIcon from '@mui/icons-material/History';
 import {Icon} from '@iconify/react';
 import {Link as RouterLink} from 'react-router-dom';
@@ -341,6 +343,30 @@ const TopBarNavMenu: React.FC<TopBarNavMenuProps> = ({iconButtonSx, onOpenChange
                                 <HelpOutlineIcon fontSize="small"/>
                             </ListItemIcon>
                             <ListItemText primary="Help"/>
+                        </ListItemButton>
+
+                        <ListItemButton
+                            component={RouterLink}
+                            to="/blog"
+                            onClick={closeMenu}
+                            sx={navItemSx}
+                        >
+                            <ListItemIcon sx={menuItemIconSx}>
+                                <ArticleOutlinedIcon fontSize="small"/>
+                            </ListItemIcon>
+                            <ListItemText primary="Blog"/>
+                        </ListItemButton>
+
+                        <ListItemButton
+                            component={RouterLink}
+                            to="/about"
+                            onClick={closeMenu}
+                            sx={navItemSx}
+                        >
+                            <ListItemIcon sx={menuItemIconSx}>
+                                <InfoOutlinedIcon fontSize="small"/>
+                            </ListItemIcon>
+                            <ListItemText primary="About"/>
                         </ListItemButton>
                     </List>
                 </Box>
