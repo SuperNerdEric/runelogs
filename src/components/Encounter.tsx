@@ -16,6 +16,11 @@ import {getRunSummaryHref} from '../utils/encounterTableRow';
 import {ActorFilter, deserializeActorFilter, serializeActorFilter} from "../utils/actorFilter";
 import {deserializeEquipmentFilter, EquipmentFilter, serializeEquipmentFilter} from "../utils/equipmentFilter";
 import {deserializePrayerFilter, PrayerFilter, serializePrayerFilter} from "../utils/prayerFilter";
+import {
+    LIVE_PAGE_RETRY_INTERVAL_MS,
+    LIVE_PAGE_RETRY_TIMEOUT_MS,
+    useLiveFetchRetryState,
+} from '../utils/livePageFetchRetry';
 
 type EncounterApiFG = {
     type: 'fightGroup';
@@ -61,6 +66,10 @@ const Encounter: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [receivingData, setReceivingData] = useState(false);
     const [retryingAfter404, setRetryingAfter404] = useState(false);
+    const { receivingDataRef, retryingRef } = useLiveFetchRetryState(
+        receivingData,
+        retryingAfter404,
+    );
     const [dpsPercentiles, setDpsPercentiles] = useState<Record<string, number>>({});
     const [dpsRanks, setDpsRanks] = useState<Record<string, number>>({});
     const [dpsLeaderboardKey, setDpsLeaderboardKey] = useState<string | null>(null);
@@ -153,9 +162,13 @@ const Encounter: React.FC = () => {
                     }
                 }
                 if (res.status === 404) {
-                    if (showLoading || receivingData || retryingAfter404) {
+                    if (
+                        showLoading ||
+                        receivingDataRef.current ||
+                        retryingRef.current
+                    ) {
                         setRetryingAfter404(true);
-                        keepLoading = showLoading || retryingAfter404;
+                        keepLoading = showLoading || retryingRef.current;
                         return;
                     }
                     throw new Error(`Server returned ${res.status}`);
@@ -204,7 +217,7 @@ const Encounter: React.FC = () => {
                 }
             }
         },
-        [isAggregate, navigate, receivingData, retryingAfter404]
+        [isAggregate, navigate]
     );
 
     useEffect(() => {
@@ -214,13 +227,13 @@ const Encounter: React.FC = () => {
 
         const interval = window.setInterval(() => {
             fetchEncounter(id, false, false);
-        }, 5000);
+        }, LIVE_PAGE_RETRY_INTERVAL_MS);
 
         const timeout = window.setTimeout(() => {
             setRetryingAfter404(false);
             setError('Encounter data is not available yet');
             setLoading(false);
-        }, 60000);
+        }, LIVE_PAGE_RETRY_TIMEOUT_MS);
 
         return () => {
             window.clearInterval(interval);
@@ -351,7 +364,7 @@ const Encounter: React.FC = () => {
 
         const interval = window.setInterval(() => {
             fetchEncounter(id, false, false);
-        }, 5000);
+        }, LIVE_PAGE_RETRY_INTERVAL_MS);
 
         return () => window.clearInterval(interval);
     }, [id, receivingData, isAggregate, fetchEncounter]);
