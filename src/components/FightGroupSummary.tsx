@@ -24,11 +24,13 @@ import {MOKHAIOTL_HIGH_SCORE_MODE_LABEL} from '../utils/leaderboardContent';
 import {resolveFightGroupSpriteKey} from '../lib/hiscoreSprites';
 import {FightGroupExtraInfo} from '../utils/fightGroupExtraInfo';
 import {resolveFightOutcomeColor, resolveLiveFightTileState} from '../utils/fightDisplayStatus';
+import LiveLogProgressAlert from './LiveLogProgressAlert';
 import {
     LIVE_PAGE_RETRY_INTERVAL_MS,
     LIVE_PAGE_RETRY_TIMEOUT_MS,
     useLiveFetchRetryState,
 } from '../utils/livePageFetchRetry';
+import {useLivePageRefreshPulse} from '../utils/useLivePageRefreshPulse';
 import '../App.css';
 
 interface PlayerDpsRow {
@@ -103,8 +105,10 @@ const FightGroupSummary: React.FC = () => {
         receivingData,
         retryingAfter404,
     );
+    const {refreshing, runBackgroundRefresh} = useLivePageRefreshPulse();
 
     const loadSummary = useCallback(async (showLoading = true) => {
+        const execute = async () => {
         if (!id) {
             setError('No run id provided in URL');
             setLoading(false);
@@ -153,7 +157,13 @@ const FightGroupSummary: React.FC = () => {
                 setLoading(false);
             }
         }
-    }, [id, navigate]);
+        };
+
+        if (showLoading) {
+            return execute();
+        }
+        return runBackgroundRefresh(execute);
+    }, [id, navigate, runBackgroundRefresh]);
 
     useEffect(() => {
         setData(null);
@@ -262,9 +272,7 @@ const FightGroupSummary: React.FC = () => {
     return (
         <Box p={2} sx={contentColumnSx} className="fight-group-summary">
             {data.receivingData && (
-                <Alert severity="info" sx={{mb: 2}}>
-                    Live log in progress — this page will refresh while new data is received.
-                </Alert>
+                <LiveLogProgressAlert refreshing={refreshing} sx={{mb: 2}}/>
             )}
 
             <PageBreadcrumbs

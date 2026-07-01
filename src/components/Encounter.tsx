@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {flushSync} from 'react-dom';
 import {useNavigate, useParams, useSearchParams} from 'react-router-dom';
-import {Box, CircularProgress, Tab, Tabs, Typography, Alert} from '@mui/material';
+import {Box, CircularProgress, Tab, Tabs, Typography} from '@mui/material';
 import {TabsEnum} from './Tabs';
 import EncounterTabContent from './EncounterTabContent';
 import {Fight, FightMetaData, isFight} from '../models/Fight';
@@ -16,12 +16,14 @@ import {getRunSummaryHref} from '../utils/encounterTableRow';
 import {ActorFilter, deserializeActorFilter, serializeActorFilter} from "../utils/actorFilter";
 import {deserializeEquipmentFilter, EquipmentFilter, serializeEquipmentFilter} from "../utils/equipmentFilter";
 import {deserializePrayerFilter, PrayerFilter, serializePrayerFilter} from "../utils/prayerFilter";
+import LiveLogProgressAlert from './LiveLogProgressAlert';
 import {
     LIVE_PAGE_RETRY_INTERVAL_MS,
     LIVE_PAGE_RETRY_TIMEOUT_MS,
     shouldRetryTransientPageFetch,
     useLiveFetchRetryState,
 } from '../utils/livePageFetchRetry';
+import {useLivePageRefreshPulse} from '../utils/useLivePageRefreshPulse';
 
 type EncounterApiFG = {
     type: 'fightGroup';
@@ -72,6 +74,7 @@ const Encounter: React.FC = () => {
         receivingData,
         retryingAfter404,
     );
+    const {refreshing, runBackgroundRefresh} = useLivePageRefreshPulse();
     const [dpsPercentiles, setDpsPercentiles] = useState<Record<string, number>>({});
     const [dpsRanks, setDpsRanks] = useState<Record<string, number>>({});
     const [dpsLeaderboardKey, setDpsLeaderboardKey] = useState<string | null>(null);
@@ -145,6 +148,7 @@ const Encounter: React.FC = () => {
 
     const fetchEncounter = useCallback(
         async (encounterId: string, asInitial = false, showLoading = true) => {
+            const execute = async () => {
             if (showLoading) {
                 setLoading(true);
                 setError(null);
@@ -229,8 +233,14 @@ const Encounter: React.FC = () => {
                     setLoading(false);
                 }
             }
+            };
+
+            if (showLoading) {
+                return execute();
+            }
+            return runBackgroundRefresh(execute);
         },
-        [isAggregate, navigate]
+        [isAggregate, navigate, runBackgroundRefresh]
     );
 
     useEffect(() => {
@@ -476,9 +486,7 @@ const Encounter: React.FC = () => {
                     }
                 />
                 {receivingData && (
-                    <Alert severity="info" sx={{alignSelf: 'stretch', mb: 1}}>
-                        Live log in progress — this page will refresh while new data is received.
-                    </Alert>
+                    <LiveLogProgressAlert refreshing={refreshing} sx={{alignSelf: 'stretch', mb: 1}}/>
                 )}
                 <EncounterDpsRankBadges
                     dpsRanks={dpsRanks}
