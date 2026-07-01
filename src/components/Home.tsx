@@ -32,9 +32,7 @@ export default function Home() {
                 <Link href="https://runelite.net/plugin-hub/show/combat-logger" target="_blank" rel="noopener">
                     Combat Logger
                 </Link>{' '}
-                RuneLite plugin. See the{' '}
-                <Link component={RouterLink} to="/about">About</Link> page for supported raids and bosses, or{' '}
-                <Link component={RouterLink} to="/help">Help</Link> for upload instructions.{' '}
+                RuneLite plugin.{' '}
                 {!isAuthenticated ? (
                     <>
                         To upload a log please{' '}

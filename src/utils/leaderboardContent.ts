@@ -29,6 +29,58 @@ export type LeaderboardContentOption = {
     defaultPlayerCount: number;
 };
 
+/** Per-boss DPS categories for multi-fight leaderboard content (About page, etc.). */
+export const LEADERBOARD_DPS_BOSS_NAMES: Partial<Record<string, readonly string[]>> = {
+    'Theatre of Blood': [
+        'The Maiden of Sugadinti',
+        'Pestilent Bloat',
+        'Nylocas Vasilias',
+        'Sotetseg',
+        'Xarpus',
+        'Verzik P1',
+        'Verzik P2',
+        'Verzik P3',
+    ],
+    'Theatre of Blood: Hard Mode': [
+        'The Maiden of Sugadinti',
+        'Pestilent Bloat',
+        'Nylocas Vasilias',
+        'Sotetseg',
+        'Xarpus',
+        'Verzik P1',
+        'Verzik P2',
+        'Verzik P3',
+    ],
+    'Tombs of Amascut': [
+        'Ba-Ba',
+        'Kephri',
+        'Zebak',
+        'Akkha',
+        'Wardens P1',
+        'Wardens P2',
+        'Wardens P3',
+    ],
+    'Tombs of Amascut: Expert Mode': [
+        'Ba-Ba',
+        'Kephri',
+        'Zebak',
+        'Akkha',
+        'Wardens P1',
+        'Wardens P2',
+        'Wardens P3',
+    ],
+    'Doom of Mokhaiotl': [
+        'Delve 1',
+        'Delve 2',
+        'Delve 3',
+        'Delve 4',
+        'Delve 5',
+        'Delve 6',
+        'Delve 7',
+        'Delve 8',
+    ],
+};
+
 export const LEADERBOARD_CONTENT_OPTIONS: LeaderboardContentOption[] = [
     {label: 'Theatre of Blood', value: 'Theatre of Blood', spriteKey: 'theatre_of_blood', playerCounts: [1, 2, 3, 4, 5], defaultPlayerCount: 4},
     {label: 'Theatre of Blood: Hard Mode', value: 'Theatre of Blood: Hard Mode', spriteKey: 'theatre_of_blood', playerCounts: [1, 2, 3, 4, 5], defaultPlayerCount: 5},
