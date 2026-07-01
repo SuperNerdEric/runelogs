@@ -38,8 +38,8 @@ function getBoostedHitWeight(fight: Fight, combatClass: CombatClass, weapon: Wea
     let magicBoost = 13;
 
     // todo maybe make it so user can select if they want to use salts / overloads
-    let toa = fight.enemyNames.some(enemy => TOA_MONSTERS.includes(enemy));
-    let cox = fight.enemyNames.some(enemy => COX_MONSTERS.includes(enemy));
+    const toa = fight.enemyNames.some(enemy => TOA_MONSTERS.includes(enemy));
+    const cox = fight.enemyNames.some(enemy => COX_MONSTERS.includes(enemy));
 
     if (toa) {
         meleeBoost = 26;

@@ -298,6 +298,12 @@ a.fight-tile:hover {
     margin-top: 2px;
 }
 
+.fight-tile-status {
+    margin-top: 2px;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+}
+
 .fight-title {
     font-size: var(--font-size-lg);
     overflow-wrap: break-word;

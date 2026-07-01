@@ -25,6 +25,7 @@ export interface FightMetaData {
     startTime: string;
     fightDurationTicks: number;
     success: boolean;
+    inProgress?: boolean;
 }
 
 export function isFight(fight: Encounter): fight is Fight {

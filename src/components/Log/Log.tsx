@@ -8,6 +8,10 @@ import LogInfoBox from "./LogInfoBox";
 import {contentColumnSx} from '../../theme';
 import {getEncounterHref, getRunSummaryHref} from '../../utils/encounterTableRow';
 import {inferLeaderboardFightGroupName} from '../../utils/leaderboardContent';
+import {
+    isFightGroupLiveInProgress,
+    isFightLiveInProgress,
+} from '../../utils/fightDisplayStatus';
 
 interface ApiFight {
     id: string;
@@ -123,22 +127,34 @@ const Log: React.FC = () => {
 
             for (const enc of body.encounters) {
                 if (enc.type === 'fightGroup') {
-                    const childFights: FightMetaData[] = enc.fights
+                    const sortedFights = enc.fights
                         .slice()
-                        .sort((a, b) => a.order - b.order)
-                        .map((f) => {
-                            return {
-                                name: f.name,
-                                startTime: f.startTime,
-                                fightDurationTicks: f.fightDurationTicks,
-                                success: f.success
-                            };
-                        });
+                        .sort((a, b) => a.order - b.order);
+                    const fightIds = sortedFights.map((f) => f.id);
+                    const groupInProgress = isFightGroupLiveInProgress(
+                        Boolean(body.receivingData),
+                        enc.id,
+                        fightIds,
+                        body.liveActiveEncounterId,
+                    );
+
+                    const childFights: FightMetaData[] = sortedFights.map((f) => ({
+                        name: f.name,
+                        startTime: f.startTime,
+                        fightDurationTicks: f.fightDurationTicks,
+                        success: f.success,
+                        inProgress: isFightLiveInProgress(
+                            Boolean(body.receivingData),
+                            f.id,
+                            body.liveActiveEncounterId,
+                        ),
+                    }));
 
                     const fgMeta = {
                         name: enc.name,
                         officialDurationTicks: enc.displayDurationTicks ?? undefined,
                         success: enc.success,
+                        inProgress: groupInProgress,
                         fights: childFights,
                         id: enc.id,
                         leaderboardName: enc.leaderboardName ?? inferLeaderboardFightGroupName(enc.name),

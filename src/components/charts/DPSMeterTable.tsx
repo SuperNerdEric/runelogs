@@ -112,7 +112,7 @@ const getDPSData = (fight: Fight, filteredFight: Fight, type: "damage-done" | "d
         return {actor, damage: data.totalDamage, accuracy, dps};
     });
 
-    for (let dpsDataKey in dpsData) {
+    for (const dpsDataKey in dpsData) {
         const dpsDataValue = dpsData[dpsDataKey];
         const dpsDataEntry = dpsArray.find(entry => entry.actor === dpsDataKey);
         if (dpsDataEntry) {
