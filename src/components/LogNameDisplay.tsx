@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, type SxProps, type Theme } from '@mui/material';
+import { Box, Typography, type SxProps, type Theme } from '@mui/material';
 import {
     isLiveEmptyLogName,
     LIVE_LOG_WAITING_SUFFIX,
@@ -24,25 +24,35 @@ const LogNameDisplay: React.FC<LogNameDisplayProps> = ({
     const showWaitingSuffix = isLiveEmptyLogName(name, isLive);
 
     return (
-        <>
-            <Typography component="span" sx={sx}>
-                {displayName}
-            </Typography>
+        <Typography
+            component="span"
+            sx={{
+                ...(sx
+                    ? {}
+                    : {
+                          fontSize: 'inherit',
+                          fontWeight: 'inherit',
+                          lineHeight: 'inherit',
+                      }),
+                ...sx,
+            }}
+        >
+            {displayName}
             {showWaitingSuffix && (
-                <Typography
+                <Box
                     component="span"
                     sx={{
                         color: 'text.secondary',
-                        fontSize: '0.875em',
+                        fontSize: '0.75em',
                         fontWeight: 400,
                         ml: 0.5,
                         ...waitingSuffixSx,
                     }}
                 >
                     {LIVE_LOG_WAITING_SUFFIX}
-                </Typography>
+                </Box>
             )}
-        </>
+        </Typography>
     );
 };
 
