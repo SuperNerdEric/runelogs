@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {flushSync} from 'react-dom';
 import {useNavigate, useParams, useSearchParams} from 'react-router-dom';
 import {Box, CircularProgress, Tab, Tabs, Typography, Alert} from '@mui/material';
@@ -19,6 +19,7 @@ import {deserializePrayerFilter, PrayerFilter, serializePrayerFilter} from "../u
 import {
     LIVE_PAGE_RETRY_INTERVAL_MS,
     LIVE_PAGE_RETRY_TIMEOUT_MS,
+    shouldRetryTransientPageFetch,
     useLiveFetchRetryState,
 } from '../utils/livePageFetchRetry';
 
@@ -66,6 +67,7 @@ const Encounter: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [receivingData, setReceivingData] = useState(false);
     const [retryingAfter404, setRetryingAfter404] = useState(false);
+    const fightRef = useRef<Fight | null>(null);
     const { receivingDataRef, retryingRef } = useLiveFetchRetryState(
         receivingData,
         retryingAfter404,
@@ -145,8 +147,8 @@ const Encounter: React.FC = () => {
         async (encounterId: string, asInitial = false, showLoading = true) => {
             if (showLoading) {
                 setLoading(true);
+                setError(null);
             }
-            setError(null);
             let keepLoading = false;
             try {
                 const res = await fetch(
@@ -161,17 +163,16 @@ const Encounter: React.FC = () => {
                         return;
                     }
                 }
-                if (res.status === 404) {
-                    if (
-                        showLoading ||
-                        receivingDataRef.current ||
-                        retryingRef.current
-                    ) {
-                        setRetryingAfter404(true);
-                        keepLoading = showLoading || retryingRef.current;
-                        return;
-                    }
-                    throw new Error(`Server returned ${res.status}`);
+                if (
+                    shouldRetryTransientPageFetch(res.status, {
+                        showLoading,
+                        receivingData: receivingDataRef.current,
+                        retryingAfterNotFound: retryingRef.current,
+                    })
+                ) {
+                    setRetryingAfter404(true);
+                    keepLoading = showLoading || retryingRef.current;
+                    return;
                 }
                 if (!res.ok) throw new Error(`Server returned ${res.status}`);
                 setRetryingAfter404(false);
@@ -180,6 +181,7 @@ const Encounter: React.FC = () => {
                 if (data.type === 'fight') {
                     if (!isFight(data.fight)) throw new Error('Malformed fight payload');
                     setFight(data.fight);
+                    fightRef.current = data.fight;
                     setLogId(data.meta.log.id);
                     setLogName(data.meta.log.name ?? null);
                     setFightGroupMeta(data.meta.fightGroup ?? null);
@@ -195,9 +197,12 @@ const Encounter: React.FC = () => {
                                 : null)
                             ?? inferStandaloneLeaderboardContent(data.meta.mainEnemyName),
                     );
+                    if (showLoading) {
+                        setError(null);
+                    }
 
                     if (asInitial && data.meta.fightGroup?.id) {
-                        await fetchEncounter(data.meta.fightGroup.id, false, showLoading);
+                        await fetchEncounter(data.meta.fightGroup.id, false, false);
                     }
                 } else {
                     setGroup(data);
@@ -205,12 +210,20 @@ const Encounter: React.FC = () => {
                     setLeaderboardName(
                         data.leaderboardName ?? inferLeaderboardFightGroupName(data.name),
                     );
+                    if (showLoading) {
+                        setError(null);
+                    }
                     if (asInitial && data.fights.length) {
                         await fetchEncounter(data.fights[0].id, false, showLoading);
                     }
                 }
-            } catch (e: any) {
-                setError(e.message || 'Unknown error');
+            } catch (e: unknown) {
+                const message = e instanceof Error ? e.message : 'Unknown error';
+                if (showLoading || !fightRef.current) {
+                    setError(message);
+                } else {
+                    console.error('Background encounter refresh failed:', e);
+                }
             } finally {
                 if (showLoading && !keepLoading) {
                     setLoading(false);
@@ -338,6 +351,7 @@ const Encounter: React.FC = () => {
         if (id) {
             setGroup(null);
             setFight(null);
+            fightRef.current = null;
             setLogName(null);
             setFightGroupMeta(null);
             setDpsRanks({});
