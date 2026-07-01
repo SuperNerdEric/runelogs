@@ -14,6 +14,15 @@ export function useLiveFetchRetryState(
     return { receivingDataRef, retryingRef };
 }
 
+/**
+ * Whether to keep polling after a transient live-ingest response.
+ *
+ * Intermittent 404 during live logging is a backend bug. The frontend must not
+ * retry 404s; the backend should return stable encounters or redirect (410) if
+ * an encounter was removed after parsing.
+ *
+ * Only 409 (conflict while ingest is still settling) may be retried.
+ */
 export function shouldRetryTransientPageFetch(
     status: number,
     options: {
@@ -22,7 +31,7 @@ export function shouldRetryTransientPageFetch(
         retryingAfterNotFound: boolean;
     },
 ): boolean {
-    if (status !== 404 && status !== 409) {
+    if (status !== 409) {
         return false;
     }
 

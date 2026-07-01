@@ -6,9 +6,9 @@ import {
 } from '../utils/livePageFetchRetry';
 
 describe('livePageFetchRetry', () => {
-    it('retries 404 and 409 while loading or receiving live data', () => {
+    it('retries 409 while loading or receiving live data', () => {
         expect(
-            shouldRetryTransientPageFetch(404, {
+            shouldRetryTransientPageFetch(409, {
                 showLoading: true,
                 receivingData: false,
                 retryingAfterNotFound: false,
@@ -22,7 +22,7 @@ describe('livePageFetchRetry', () => {
             }),
         ).toBe(true);
         expect(
-            shouldRetryTransientPageFetch(404, {
+            shouldRetryTransientPageFetch(409, {
                 showLoading: false,
                 receivingData: false,
                 retryingAfterNotFound: true,
@@ -30,9 +30,16 @@ describe('livePageFetchRetry', () => {
         ).toBe(true);
     });
 
-    it('does not retry permanent failures after live ingest has stopped', () => {
+    it('never retries 404 and does not retry 409 after live ingest has stopped', () => {
         expect(
             shouldRetryTransientPageFetch(404, {
+                showLoading: true,
+                receivingData: true,
+                retryingAfterNotFound: true,
+            }),
+        ).toBe(false);
+        expect(
+            shouldRetryTransientPageFetch(409, {
                 showLoading: false,
                 receivingData: false,
                 retryingAfterNotFound: false,

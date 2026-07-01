@@ -125,6 +125,7 @@ const Log: React.FC = () => {
                 }
             });
 
+            // 404 fast-fail: intermittent 404 during live logging is a backend bug; see livePageFetchRetry.
             if (shouldRetryTransientPageFetch(res.status, {
                 showLoading,
                 receivingData: receivingDataRef.current,
