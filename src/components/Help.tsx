@@ -180,11 +180,12 @@ const Help: React.FC = () => {
                 <Typography variant="body1" sx={{...bodyTextSx, mb: 1.5}}>
                     Runelogs is a community-driven project, and we&apos;re happy to help if you
                     run into any issues.
-                    Our Discord is usually the quickest way to get answers, while GitHub is best for
-                    reporting bugs or suggesting features.
+                    Our Discord is usually the quickest way to get answers — use #issues and
+                    #suggestions for bugs and feature ideas.
+                    GitHub is also a good place for issues, discussions, and pull requests.
                 </Typography>
                 <Typography variant="body1" sx={{color: colors.text.primary, lineHeight: 1.6}}>
-                    Reach out to us on{' '}
+                    Reach out on{' '}
                     <Link
                         href="https://discord.gg/ZydwX7AJEd"
                         target="_blank"
@@ -194,7 +195,7 @@ const Help: React.FC = () => {
                         <Icon icon="logos:discord-icon" style={supportLinkIconStyle}/>
                         Discord
                     </Link>
-                    {' '}or open an issue on{' '}
+                    {' '}or on{' '}
                     <Link
                         href="https://github.com/SuperNerdEric/runelogs"
                         target="_blank"

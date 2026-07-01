@@ -11,7 +11,8 @@ export type BreadcrumbSelectOption = {
 };
 
 export type BreadcrumbSegment = {
-    label: string;
+    label: React.ReactNode;
+    title?: string;
     href?: string;
     spriteKey?: string | null;
     select?: {
@@ -68,8 +69,15 @@ const ellipsisSx = {
     minWidth: 0,
 } as const;
 
+function segmentTitle(segment: BreadcrumbSegment): string | undefined {
+    if (segment.title != null) {
+        return segment.title;
+    }
+    return typeof segment.label === 'string' ? segment.label : undefined;
+}
+
 function renderSegmentLabel(segment: BreadcrumbSegment) {
-    if (segment.spriteKey) {
+    if (segment.spriteKey && typeof segment.label === 'string') {
         return (
             <ContentLabel
                 label={segment.label}
@@ -166,7 +174,7 @@ const PageBreadcrumbs: React.FC<PageBreadcrumbsProps> = ({segments, sx}) => {
             >
                 {segments.map((segment, index) => {
                     const isLast = index === segments.length - 1;
-                    const key = segment.select ? 'breadcrumb-select' : `${segment.label}-${index}`;
+                    const key = segment.select ? 'breadcrumb-select' : `breadcrumb-${index}`;
 
                     if (segment.select) {
                         return <BreadcrumbSelect key={key} segment={segment}/>;
@@ -227,7 +235,7 @@ const PageBreadcrumbs: React.FC<PageBreadcrumbsProps> = ({segments, sx}) => {
                             to={parent.href}
                             underline="hover"
                             color="primary"
-                            title={parent.label}
+                            title={segmentTitle(parent)}
                             sx={{
                                 display: 'inline-flex',
                                 alignItems: 'center',
@@ -253,7 +261,7 @@ const PageBreadcrumbs: React.FC<PageBreadcrumbsProps> = ({segments, sx}) => {
                     ) : (
                         <Typography
                             component="span"
-                            title={parent.label}
+                            title={segmentTitle(parent)}
                             sx={{
                                 ...ellipsisSx,
                                 flex: '1 1 auto',

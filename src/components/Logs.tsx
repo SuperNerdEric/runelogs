@@ -26,6 +26,7 @@ import { format } from 'date-fns';
 import { useAuth0 } from '@auth0/auth0-react';
 import {closeSnackbar, SnackbarKey, useSnackbar} from "notistack";
 import {colors, contentColumnSx, logNameTextSx, media} from "../theme";
+import LogNameDisplay from './LogNameDisplay';
 import {displayUsername} from "../utils/utils";
 import {buildProfileHref} from '../utils/profile';
 import {logTableRowProps, stopRowClick} from "../utils/encounterTableRow";
@@ -310,14 +311,25 @@ const LogNameCell: React.FC<LogNameCellProps> = ({ log, canEdit, onRename }) => 
                     onClick={stopRowClick}
                     underline="hover"
                     sx={{
-                        ...logNameTextSx(!!log.name),
+                        display: 'inline-flex',
+                        alignItems: 'baseline',
                         minWidth: 0,
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
                     }}
                 >
-                    {log.name ?? 'Unnamed'}
+                    <LogNameDisplay
+                        name={log.name}
+                        isLive={Boolean(log.isLive)}
+                        sx={{
+                            ...logNameTextSx(!!log.name),
+                            minWidth: 0,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                        }}
+                    />
                 </Link>
                 <LiveLogIndicator log={log} />
             </Box>
