@@ -304,7 +304,7 @@ const Log: React.FC = () => {
             {receivingData && (
                 <LiveLogProgressAlert refreshing={refreshing} sx={{mb: 2}}/>
             )}
-            <LogInfoBox uploaderId={uploaderId} logName={logName} logId={logId!} uploadedAt={uploadedAt} onLogNameChange={setLogName}/>
+            <LogInfoBox uploaderId={uploaderId} logName={logName} logId={logId!} uploadedAt={uploadedAt} receivingData={receivingData} onLogNameChange={setLogName}/>
 
             {hasEncounters ? (
                 <FightSelector

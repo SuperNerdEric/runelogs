@@ -17,6 +17,7 @@ import {ActorFilter, deserializeActorFilter, serializeActorFilter} from "../util
 import {deserializeEquipmentFilter, EquipmentFilter, serializeEquipmentFilter} from "../utils/equipmentFilter";
 import {deserializePrayerFilter, PrayerFilter, serializePrayerFilter} from "../utils/prayerFilter";
 import LiveLogProgressAlert from './LiveLogProgressAlert';
+import LogNameDisplay from './LogNameDisplay';
 import {
     LIVE_PAGE_RETRY_INTERVAL_MS,
     LIVE_PAGE_RETRY_TIMEOUT_MS,
@@ -431,7 +432,13 @@ const Encounter: React.FC = () => {
 
     const breadcrumbSegments: BreadcrumbSegment[] = [
         {
-            label: logName ?? 'Unnamed',
+            label: (
+                <LogNameDisplay
+                    name={logName}
+                    isLive={receivingData}
+                />
+            ),
+            title: logName ?? 'Unnamed',
             href: `/log/${logId}`,
         },
     ];

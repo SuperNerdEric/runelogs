@@ -84,14 +84,15 @@ const About: React.FC = () => {
                         About Runelogs
                     </Typography>
                     <Typography component="span" sx={pageHeaderSubtitleSx}>
-                        Combat log analysis for Old School RuneScape
+                        Live combat logging and analysis for Old School RuneScape
                     </Typography>
                 </Box>
             </Box>
 
             <Box sx={{px: 0.5}} component="article">
                 <Typography variant="body1" sx={bodyTextSx}>
-                    Runelogs reads combat logs from the{' '}
+                    Runelogs is a modern combat log viewer for Old School RuneScape, built around
+                    the{' '}
                     <Link
                         href="https://runelite.net/plugin-hub/show/combat-logger"
                         target="_blank"
@@ -100,15 +101,17 @@ const About: React.FC = () => {
                     >
                         Combat Logger
                     </Link>{' '}
-                    RuneLite plugin and turns them into fight pages you can browse on the web —
-                    DPS breakdowns, event timelines, replays, and leaderboards. Any encounter the
-                    plugin records works — solo bosses, slayer tasks, raids, and everything else
-                    Combat Logger supports. Leaderboards cover a specific set of content (see below),
-                    but you are not limited to those activities.
+                    RuneLite plugin. Logs become fight pages on the web — DPS breakdowns, event
+                    timelines, replays, and leaderboards. Stream fights live or send a log file
+                    after a session; parsing runs automatically either way. Any encounter the plugin
+                    records works — solo bosses, slayer tasks, raids, and everything else Combat
+                    Logger supports. Leaderboards cover a specific set of content (see below), but
+                    you are not limited to those activities.
                 </Typography>
                 <Typography variant="body1" sx={bodyTextSx}>
-                    Runelogs is free to use. You need a RuneLite client, the Combat Logger plugin,
-                    and a Runelogs account to upload or live log. The site is at{' '}
+                    Runelogs is free to use. You need RuneLite with Combat Logger and a free
+                    Runelogs account — then live-log as you play or send log files when you are
+                    done. The site is at{' '}
                     <Link href="https://www.runelogs.com" sx={linkSx}>
                         runelogs.com
                     </Link>
@@ -123,7 +126,7 @@ const About: React.FC = () => {
                     <li>Comparing run times on leaderboards (TOB, TOA, Inferno, etc.)</li>
                     <li>Reviewing deaths — what hit you, when you prayed wrong, gear at the time</li>
                     <li>Sharing a fight or full raid link with your team</li>
-                    <li>Watching a live raid on the website while someone else is playing</li>
+                    <li>Following a live raid in real time while someone else is playing</li>
                     <li>Stepping through a fight tick-by-tick in the replay viewer</li>
                 </Box>
 
@@ -131,10 +134,10 @@ const About: React.FC = () => {
                     How it works
                 </Typography>
                 <Typography variant="body1" sx={bodyTextSx}>
-                    Combat Logger writes a text file on your PC while you play. You upload that file
-                    to Runelogs (or stream it live — see below). Our server parses the log and splits
-                    it into fights. Each fight gets its own page with a URL you can share or come
-                    back to later.
+                    Combat Logger records combat events while you play. Stream them to Runelogs in
+                    real time with live logging, or send the log file afterward — the server parses
+                    events automatically and splits them into fights. Each fight gets its own page
+                    with a URL you can share or come back to later.
                 </Typography>
                 <Typography variant="body1" sx={bodyTextSx}>
                     Full runs — a TOB clear, a TOA raid, a Colosseum run, and so on — are grouped
@@ -175,15 +178,15 @@ const About: React.FC = () => {
                     Uploading logs
                 </Typography>
                 <Typography variant="body1" sx={bodyTextSx}>
-                    You need a free account. Go to{' '}
+                    You need a free account. From{' '}
                     <Link component={RouterLink} to="/upload" sx={linkSx}>
                         Upload
-                    </Link>{' '}
-                    and submit your log file. Big logs are parsed in batches — you can open the log
-                    page while the rest is still processing.
+                    </Link>
+                    , drop in your log file and parsing starts right away. Large logs process in
+                    batches — you can open the log page while the rest finishes in the background.
                 </Typography>
                 <Typography variant="body1" sx={bodyTextSx}>
-                    Uploads show up on your{' '}
+                    Logs show up on your{' '}
                     <Link component={RouterLink} to="/profile" sx={linkSx}>
                         profile
                     </Link>
@@ -194,13 +197,13 @@ const About: React.FC = () => {
                     Live logging
                 </Typography>
                 <Typography variant="body1" sx={bodyTextSx}>
-                    Instead of uploading after the fact, you can stream combat events to Runelogs
-                    as you play. Generate an access key on the{' '}
+                    Live logging streams combat events to Runelogs as you play — a streamlined way
+                    to skip file uploads. Generate an access key on the{' '}
                     <Link component={RouterLink} to="/live-log" sx={linkSx}>
                         Live Log
                     </Link>{' '}
-                    page and paste it into the plugin settings. Anyone with the log link can watch
-                    fights show up in real time.
+                    page and paste it into the plugin settings. Anyone with the log link can follow
+                    fights as they happen, with pages updating in real time.
                 </Typography>
 
                 <Typography variant="h6" component="h2" sx={sectionTitleSx}>
@@ -251,10 +254,11 @@ const About: React.FC = () => {
                     <Link component={RouterLink} to="/leaderboards" sx={linkSx}>
                         Leaderboards
                     </Link>{' '}
-                    track run times and DPS for uploaded logs. Only the content below has
-                    leaderboards — everything else Combat Logger records still gets full fight pages,
-                    just without ranks. Chambers of Xeric (CoX) is a common example: logs parse
-                    normally, but CoX is not on the leaderboard list yet.
+                    track run times and DPS from your logs, staying up to date as new runs are
+                    logged. Only the content below has leaderboards — everything else Combat Logger
+                    records still gets full fight pages, just without ranks. Chambers of Xeric (CoX)
+                    is a common example: logs parse normally, but CoX is not on the leaderboard list
+                    yet.
                 </Typography>
                 <Box component="ul" sx={listSx}>
                     {LEADERBOARD_CONTENT_OPTIONS.map((option) => {
@@ -284,9 +288,9 @@ const About: React.FC = () => {
                     PvM content on Runelogs
                 </Typography>
                 <Typography variant="body1" sx={bodyTextSx}>
-                    Anything Combat Logger records can be uploaded and browsed, whether or not it
-                    appears on a leaderboard. Slayer bosses, GWD, Nex, Barrows, Chambers of Xeric,
-                    and other activities all get fight pages with the same tabs and tools.
+                    Anything Combat Logger records can be sent to Runelogs and browsed, whether or
+                    not it appears on a leaderboard. Slayer bosses, GWD, Nex, Barrows, Chambers of
+                    Xeric, and other activities all get fight pages with the same tabs and tools.
                 </Typography>
 
                 <Typography variant="h6" component="h2" sx={sectionTitleSx}>
@@ -296,7 +300,8 @@ const About: React.FC = () => {
                     <Link component={RouterLink} to="/recent-encounters" sx={linkSx}>
                         Recent Encounters
                     </Link>{' '}
-                    lists the latest uploads from everyone, filterable by content and team size.
+                    stays current with the latest logs from everyone, filterable by content and team
+                    size.
                     Search for a player in the header to open their profile, logs, and personal
                     bests. Profiles can include a bio, avatar, and contact links.
                 </Typography>
@@ -342,8 +347,8 @@ const About: React.FC = () => {
                 </Typography>
                 <Typography variant="body1" sx={bodyTextSx}>
                     The plugin&apos;s damage meter is live in your client for your last few fights.
-                    Runelogs keeps the full log, breaks it into shareable web pages, adds
-                    leaderboards, replay, and filters you can use after the fact.
+                    Runelogs keeps the full history, builds shareable web pages, and adds
+                    leaderboards, replay, and filters designed for digging in after the fight.
                 </Typography>
                 <Typography component="h3" sx={subsectionTitleSx}>
                     Why does some damage show as &quot;Unknown&quot;?
@@ -367,8 +372,8 @@ const About: React.FC = () => {
                     What is live logging?
                 </Typography>
                 <Typography variant="body1" sx={bodyTextSx}>
-                    Live logging sends events to Runelogs as you play instead of uploading a file
-                    afterward. Set it up on the{' '}
+                    Live logging streams events to Runelogs as you play — no file upload needed.
+                    Set it up on the{' '}
                     <Link component={RouterLink} to="/live-log" sx={linkSx}>
                         Live Log
                     </Link>{' '}

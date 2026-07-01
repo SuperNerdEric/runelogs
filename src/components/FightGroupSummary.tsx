@@ -25,6 +25,7 @@ import {resolveFightGroupSpriteKey} from '../lib/hiscoreSprites';
 import {FightGroupExtraInfo} from '../utils/fightGroupExtraInfo';
 import {resolveFightOutcomeColor, resolveLiveFightTileState} from '../utils/fightDisplayStatus';
 import LiveLogProgressAlert from './LiveLogProgressAlert';
+import LogNameDisplay from './LogNameDisplay';
 import {
     LIVE_PAGE_RETRY_INTERVAL_MS,
     LIVE_PAGE_RETRY_TIMEOUT_MS,
@@ -278,7 +279,13 @@ const FightGroupSummary: React.FC = () => {
             <PageBreadcrumbs
                 segments={[
                     {
-                        label: data.log.name ?? 'Unnamed',
+                        label: (
+                            <LogNameDisplay
+                                name={data.log.name}
+                                isLive={Boolean(data.receivingData)}
+                            />
+                        ),
+                        title: data.log.name ?? 'Unnamed',
                         href: `/log/${data.log.id}`,
                     },
                     {

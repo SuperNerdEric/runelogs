@@ -69,6 +69,11 @@ export const LEADERBOARD_DPS_BOSS_NAMES: Partial<Record<string, readonly string[
         'Wardens P2',
         'Wardens P3',
     ],
+    'Fight Caves': ['TzTok-Jad'],
+    'The Inferno': ['TzKal-Zuk'],
+    'Fortis Colosseum': ['Sol Heredit'],
+    'The Gauntlet': ['Crystalline Hunllef'],
+    'Corrupted Gauntlet': ['Corrupted Hunllef'],
     'Doom of Mokhaiotl': [
         'Delve 1',
         'Delve 2',

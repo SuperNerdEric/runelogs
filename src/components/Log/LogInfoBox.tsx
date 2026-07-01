@@ -17,12 +17,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import React, { useState } from "react";
 import {displayUsername} from "../../utils/utils";
 import { logNameTextSx, accountTextSx } from '../../theme';
+import LogNameDisplay from '../LogNameDisplay';
 
 interface Props {
     uploaderId: string;
     logName: string | null;
     logId: string;
     uploadedAt: string;
+    receivingData?: boolean;
     onLogNameChange: (name: string | null) => void;
 }
 
@@ -31,6 +33,7 @@ const LogInfoBox: React.FC<Props> = ({
                                          logName,
                                          logId,
                                          uploadedAt,
+                                         receivingData = false,
                                          onLogNameChange,
                                      }) => {
     const { user, getAccessTokenSilently } = useAuth0();
@@ -188,17 +191,17 @@ const LogInfoBox: React.FC<Props> = ({
                     className="log-info-value"
                     sx={{ display: 'flex', alignItems: 'flex-start', gap: 0.25, minWidth: 0 }}
                 >
-                    <Typography
-                        component="span"
+                    <LogNameDisplay
+                        name={logName}
+                        isLive={receivingData}
                         sx={{
                             ...logNameTextSx(!!logName),
                             minWidth: 0,
                             overflowWrap: 'break-word',
                             wordBreak: 'break-word',
                         }}
-                    >
-                        {logName ?? 'Unnamed'}
-                    </Typography>
+                        waitingSuffixSx={{ color: 'rgba(255,255,255,0.55)' }}
+                    />
                     {canEdit && (
                         <IconButton
                             aria-label="edit log name"
