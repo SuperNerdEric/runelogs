@@ -23,7 +23,12 @@ import {hasColosseumModifierData} from '../utils/colosseumModifiers';
 import {MOKHAIOTL_HIGH_SCORE_MODE_LABEL} from '../utils/leaderboardContent';
 import {resolveFightGroupSpriteKey} from '../lib/hiscoreSprites';
 import {FightGroupExtraInfo} from '../utils/fightGroupExtraInfo';
-import {resolveFightOutcomeColor, isFightLiveInProgress} from '../utils/fightDisplayStatus';
+import {resolveFightOutcomeColor, resolveLiveFightTileInProgress} from '../utils/fightDisplayStatus';
+import {
+    LIVE_PAGE_RETRY_INTERVAL_MS,
+    LIVE_PAGE_RETRY_TIMEOUT_MS,
+    useLiveFetchRetryState,
+} from '../utils/livePageFetchRetry';
 import '../App.css';
 
 interface PlayerDpsRow {
@@ -93,6 +98,10 @@ const FightGroupSummary: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [receivingData, setReceivingData] = useState(false);
     const [retryingAfter404, setRetryingAfter404] = useState(false);
+    const { receivingDataRef, retryingRef } = useLiveFetchRetryState(
+        receivingData,
+        retryingAfter404,
+    );
 
     const loadSummary = useCallback(async (showLoading = true) => {
         if (!id) {
@@ -117,9 +126,13 @@ const FightGroupSummary: React.FC = () => {
                 }
             }
             if (res.status === 404) {
-                if (showLoading || receivingData || retryingAfter404) {
+                if (
+                    showLoading ||
+                    receivingDataRef.current ||
+                    retryingRef.current
+                ) {
                     setRetryingAfter404(true);
-                    keepLoading = showLoading || retryingAfter404;
+                    keepLoading = showLoading || retryingRef.current;
                     return;
                 }
                 throw new Error(`Server responded with status ${res.status}`);
@@ -139,13 +152,13 @@ const FightGroupSummary: React.FC = () => {
                 setLoading(false);
             }
         }
-    }, [id, navigate, receivingData, retryingAfter404]);
+    }, [id, navigate]);
 
     useEffect(() => {
         setData(null);
         setReceivingData(false);
         setRetryingAfter404(false);
-        loadSummary(true);
+        void loadSummary(true);
     }, [id, loadSummary]);
 
     useEffect(() => {
@@ -155,13 +168,13 @@ const FightGroupSummary: React.FC = () => {
 
         const interval = window.setInterval(() => {
             loadSummary(false);
-        }, 5000);
+        }, LIVE_PAGE_RETRY_INTERVAL_MS);
 
         const timeout = window.setTimeout(() => {
             setRetryingAfter404(false);
             setError('Run data is not available yet');
             setLoading(false);
-        }, 60000);
+        }, LIVE_PAGE_RETRY_TIMEOUT_MS);
 
         return () => {
             window.clearInterval(interval);
@@ -173,7 +186,7 @@ const FightGroupSummary: React.FC = () => {
         if (!id || !receivingData) {
             return;
         }
-        const interval = window.setInterval(() => loadSummary(false), 5000);
+        const interval = window.setInterval(() => loadSummary(false), LIVE_PAGE_RETRY_INTERVAL_MS);
         return () => window.clearInterval(interval);
     }, [id, receivingData, loadSummary]);
 
@@ -392,15 +405,26 @@ const FightGroupSummary: React.FC = () => {
                             rank: entry.rank,
                             percentile: resolvePlayerRankPercentile(entry, percentileContext),
                         }));
+                        const fightStates = data.fights.map((entry) => ({
+                            id: entry.id,
+                            success: entry.success,
+                            order: entry.order,
+                        }));
                         return {
                             fight: {
                                 name: fight.name,
                                 startTime: fight.startTime,
                                 fightDurationTicks: fight.fightDurationTicks,
                                 success: fight.success,
-                                inProgress: isFightLiveInProgress(
+                                inProgress: resolveLiveFightTileInProgress(
                                     runInProgress,
-                                    fight.id,
+                                    data.success,
+                                    fightStates,
+                                    {
+                                        id: fight.id,
+                                        success: fight.success,
+                                        order: fight.order,
+                                    },
                                     data.log.liveActiveEncounterId,
                                 ),
                             },

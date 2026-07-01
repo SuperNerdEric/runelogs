@@ -12,6 +12,7 @@ import HiscoreSpriteIcon from "../HiscoreSpriteIcon";
 import { Typography } from "@mui/material";
 import { colors } from "../../theme";
 import { formatHHmmss, ticksToTime } from "../../utils/utils";
+import { resolveFightOutcomeColor } from "../../utils/fightDisplayStatus";
 import {
   buildFightGridCompactContainerQueryCss,
   formatFightDurationLabel,
@@ -224,11 +225,10 @@ export const EncounterTitleBar: React.FC<EncounterTitleBarProps> = ({
   onClick,
 }) => {
   const className = `encounter-title-bar${href || onClick ? " encounter-title-bar--clickable" : ""}`;
-  const durationColor = inProgress
-    ? colors.text.link
-    : success
-      ? colors.fight.success
-      : colors.fight.failure;
+  const durationColor = resolveFightOutcomeColor(
+    success ?? false,
+    inProgress,
+  );
   const spriteKey = resolveFightGroupSpriteKey(name, leaderboardName);
   const content = (
     <>

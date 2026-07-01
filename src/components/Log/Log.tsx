@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {Alert, Box, CircularProgress, Typography,} from '@mui/material';
 import FightSelector from '../sections/FightSelector';
@@ -9,9 +9,15 @@ import {contentColumnSx} from '../../theme';
 import {getEncounterHref, getRunSummaryHref} from '../../utils/encounterTableRow';
 import {inferLeaderboardFightGroupName} from '../../utils/leaderboardContent';
 import {
-    isFightGroupLiveInProgress,
-    isFightLiveInProgress,
+    isFightGroupRunInProgress,
+    resolveLiveFightTileInProgress,
 } from '../../utils/fightDisplayStatus';
+import {
+    LIVE_PAGE_RETRY_INTERVAL_MS,
+    LIVE_PAGE_RETRY_TIMEOUT_MS,
+    shouldRetryTransientPageFetch,
+    useLiveFetchRetryState,
+} from '../../utils/livePageFetchRetry';
 
 interface ApiFight {
     id: string;
@@ -87,8 +93,13 @@ const Log: React.FC = () => {
     const [uploadedAt, setUploadedAt] = useState<string>('');
     const [encounters, setEncounters] = useState<ApiEncounter[]>([]);
     const [receivingData, setReceivingData] = useState<boolean>(false);
+    const [retryingAfterNotFound, setRetryingAfterNotFound] = useState(false);
+    const { receivingDataRef, retryingRef } = useLiveFetchRetryState(
+        receivingData,
+        retryingAfterNotFound,
+    );
 
-    const loadLog = async (showLoading = true) => {
+    const loadLog = useCallback(async (showLoading = true) => {
         if (!logId) {
             setError('No logId provided in URL');
             setLoading(false);
@@ -99,6 +110,7 @@ const Log: React.FC = () => {
             setLoading(true);
         }
         setError(null);
+        let keepLoading = false;
 
         try {
             const token = await (window as any).auth0?.getAccessTokenSilently?.();
@@ -108,10 +120,21 @@ const Log: React.FC = () => {
                 }
             });
 
+            if (shouldRetryTransientPageFetch(res.status, {
+                showLoading,
+                receivingData: receivingDataRef.current,
+                retryingAfterNotFound: retryingRef.current,
+            })) {
+                setRetryingAfterNotFound(true);
+                keepLoading = showLoading || retryingRef.current;
+                return;
+            }
+
             if (!res.ok) {
                 throw new Error(`Server responded with status ${res.status}`);
             }
 
+            setRetryingAfterNotFound(false);
             const body: ApiResponse = await res.json();
             setEncounters(body.encounters);
             setReceivingData(Boolean(body.receivingData));
@@ -130,22 +153,31 @@ const Log: React.FC = () => {
                     const sortedFights = enc.fights
                         .slice()
                         .sort((a, b) => a.order - b.order);
-                    const fightIds = sortedFights.map((f) => f.id);
-                    const groupInProgress = isFightGroupLiveInProgress(
+                    const groupInProgress = isFightGroupRunInProgress(
                         Boolean(body.receivingData),
-                        enc.id,
-                        fightIds,
-                        body.liveActiveEncounterId,
+                        enc.success,
                     );
+
+                    const fightStates = sortedFights.map((f) => ({
+                        id: f.id,
+                        success: f.success,
+                        order: f.order,
+                    }));
 
                     const childFights: FightMetaData[] = sortedFights.map((f) => ({
                         name: f.name,
                         startTime: f.startTime,
                         fightDurationTicks: f.fightDurationTicks,
                         success: f.success,
-                        inProgress: isFightLiveInProgress(
+                        inProgress: resolveLiveFightTileInProgress(
                             Boolean(body.receivingData),
-                            f.id,
+                            enc.success,
+                            fightStates,
+                            {
+                                id: f.id,
+                                success: f.success,
+                                order: f.order,
+                            },
                             body.liveActiveEncounterId,
                         ),
                     }));
@@ -178,15 +210,40 @@ const Log: React.FC = () => {
             console.error(err);
             setError(err.message || 'Unknown error fetching log');
         } finally {
-            if (showLoading) {
+            if (showLoading && !keepLoading) {
                 setLoading(false);
             }
         }
-    };
+    }, [logId]);
 
     useEffect(() => {
-        loadLog(true);
-    }, [logId]);
+        setMetadata(null);
+        setEncounters([]);
+        setReceivingData(false);
+        setRetryingAfterNotFound(false);
+        void loadLog(true);
+    }, [logId, loadLog]);
+
+    useEffect(() => {
+        if (!logId || !retryingAfterNotFound) {
+            return;
+        }
+
+        const interval = window.setInterval(() => {
+            loadLog(false);
+        }, LIVE_PAGE_RETRY_INTERVAL_MS);
+
+        const timeout = window.setTimeout(() => {
+            setRetryingAfterNotFound(false);
+            setError('Log data is not available yet');
+            setLoading(false);
+        }, LIVE_PAGE_RETRY_TIMEOUT_MS);
+
+        return () => {
+            window.clearInterval(interval);
+            window.clearTimeout(timeout);
+        };
+    }, [logId, retryingAfterNotFound, loadLog]);
 
     useEffect(() => {
         if (!logId || !receivingData) {
@@ -195,10 +252,10 @@ const Log: React.FC = () => {
 
         const interval = window.setInterval(() => {
             loadLog(false);
-        }, 5000);
+        }, LIVE_PAGE_RETRY_INTERVAL_MS);
 
         return () => window.clearInterval(interval);
-    }, [logId, receivingData]);
+    }, [logId, receivingData, loadLog]);
 
     if (loading) {
         return (

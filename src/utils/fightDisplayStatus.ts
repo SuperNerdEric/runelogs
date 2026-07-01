@@ -34,3 +34,45 @@ export function isFightGroupLiveInProgress(
     }
     return fightIds.includes(liveActiveEncounterId);
 }
+
+/** Run-level in-progress styling for a fight group on live log pages. */
+export function isFightGroupRunInProgress(
+    receivingData: boolean,
+    groupSuccess: boolean,
+): boolean {
+    return receivingData && !groupSuccess;
+}
+
+export type LiveFightTileState = {
+    id: string;
+    success: boolean;
+    order: number;
+};
+
+function findCurrentLiveFight(
+    fights: LiveFightTileState[],
+): LiveFightTileState | undefined {
+    return fights
+        .filter((entry) => !entry.success)
+        .sort((a, b) => b.order - a.order)[0];
+}
+
+/** Marks the active boss blue during a live run when ids may not match yet. */
+export function resolveLiveFightTileInProgress(
+    receivingData: boolean,
+    groupSuccess: boolean,
+    fights: LiveFightTileState[],
+    fight: LiveFightTileState,
+    liveActiveEncounterId?: string | null,
+): boolean {
+    if (!receivingData || groupSuccess) {
+        return false;
+    }
+
+    if (isFightLiveInProgress(receivingData, fight.id, liveActiveEncounterId)) {
+        return true;
+    }
+
+    const currentFight = findCurrentLiveFight(fights);
+    return currentFight?.id === fight.id;
+}
