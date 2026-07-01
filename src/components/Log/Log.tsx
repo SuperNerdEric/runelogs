@@ -12,12 +12,14 @@ import {
     isFightGroupRunInProgress,
     resolveLiveFightTileState,
 } from '../../utils/fightDisplayStatus';
+import LiveLogProgressAlert from '../LiveLogProgressAlert';
 import {
     LIVE_PAGE_RETRY_INTERVAL_MS,
     LIVE_PAGE_RETRY_TIMEOUT_MS,
     shouldRetryTransientPageFetch,
     useLiveFetchRetryState,
 } from '../../utils/livePageFetchRetry';
+import {useLivePageRefreshPulse} from '../../utils/useLivePageRefreshPulse';
 
 interface ApiFight {
     id: string;
@@ -99,8 +101,10 @@ const Log: React.FC = () => {
         receivingData,
         retryingAfterNotFound,
     );
+    const {refreshing, runBackgroundRefresh} = useLivePageRefreshPulse();
 
     const loadLog = useCallback(async (showLoading = true) => {
+        const execute = async () => {
         if (!logId) {
             setError('No logId provided in URL');
             setLoading(false);
@@ -220,7 +224,13 @@ const Log: React.FC = () => {
                 setLoading(false);
             }
         }
-    }, [logId]);
+        };
+
+        if (showLoading) {
+            return execute();
+        }
+        return runBackgroundRefresh(execute);
+    }, [logId, runBackgroundRefresh]);
 
     useEffect(() => {
         setMetadata(null);
@@ -292,9 +302,7 @@ const Log: React.FC = () => {
     return (
         <Box p={2} sx={contentColumnSx}>
             {receivingData && (
-                <Alert severity="info" sx={{mb: 2}}>
-                    Live log in progress — this page will refresh while new data is received.
-                </Alert>
+                <LiveLogProgressAlert refreshing={refreshing} sx={{mb: 2}}/>
             )}
             <LogInfoBox uploaderId={uploaderId} logName={logName} logId={logId!} uploadedAt={uploadedAt} onLogNameChange={setLogName}/>
 
