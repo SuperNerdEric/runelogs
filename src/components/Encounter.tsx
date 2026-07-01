@@ -168,6 +168,7 @@ const Encounter: React.FC = () => {
                         return;
                     }
                 }
+                // 404 fast-fail: see shouldRetryTransientPageFetch — do not retry missing encounters.
                 if (
                     shouldRetryTransientPageFetch(res.status, {
                         showLoading,

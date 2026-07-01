@@ -26,11 +26,7 @@ import {FightGroupExtraInfo} from '../utils/fightGroupExtraInfo';
 import {resolveFightOutcomeColor, resolveLiveFightTileState} from '../utils/fightDisplayStatus';
 import LiveLogProgressAlert from './LiveLogProgressAlert';
 import LogNameDisplay from './LogNameDisplay';
-import {
-    LIVE_PAGE_RETRY_INTERVAL_MS,
-    LIVE_PAGE_RETRY_TIMEOUT_MS,
-    useLiveFetchRetryState,
-} from '../utils/livePageFetchRetry';
+import {LIVE_PAGE_RETRY_INTERVAL_MS} from '../utils/livePageFetchRetry';
 import {useLivePageRefreshPulse} from '../utils/useLivePageRefreshPulse';
 import '../App.css';
 
@@ -101,11 +97,6 @@ const FightGroupSummary: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [receivingData, setReceivingData] = useState(false);
-    const [retryingAfter404, setRetryingAfter404] = useState(false);
-    const { receivingDataRef, retryingRef } = useLiveFetchRetryState(
-        receivingData,
-        retryingAfter404,
-    );
     const {refreshing, runBackgroundRefresh} = useLivePageRefreshPulse();
 
     const loadSummary = useCallback(async (showLoading = true) => {
@@ -120,7 +111,6 @@ const FightGroupSummary: React.FC = () => {
             setLoading(true);
         }
         setError(null);
-        let keepLoading = false;
 
         try {
             const res = await fetch(`${import.meta.env.VITE_API_URL}/fightGroup/${id}`);
@@ -131,22 +121,10 @@ const FightGroupSummary: React.FC = () => {
                     return;
                 }
             }
-            if (res.status === 404) {
-                if (
-                    showLoading ||
-                    receivingDataRef.current ||
-                    retryingRef.current
-                ) {
-                    setRetryingAfter404(true);
-                    keepLoading = showLoading || retryingRef.current;
-                    return;
-                }
-                throw new Error(`Server responded with status ${res.status}`);
-            }
+            // 404 fast-fail: intermittent 404 during live logging is a backend bug; see livePageFetchRetry.
             if (!res.ok) {
                 throw new Error(`Server responded with status ${res.status}`);
             }
-            setRetryingAfter404(false);
             const body: FightGroupSummaryData = await res.json();
             setData(body);
             setReceivingData(Boolean(body.receivingData));
@@ -154,7 +132,7 @@ const FightGroupSummary: React.FC = () => {
             const message = err instanceof Error ? err.message : 'Unknown error';
             setError(message);
         } finally {
-            if (showLoading && !keepLoading) {
+            if (showLoading) {
                 setLoading(false);
             }
         }
@@ -169,30 +147,8 @@ const FightGroupSummary: React.FC = () => {
     useEffect(() => {
         setData(null);
         setReceivingData(false);
-        setRetryingAfter404(false);
         void loadSummary(true);
     }, [id, loadSummary]);
-
-    useEffect(() => {
-        if (!id || !retryingAfter404) {
-            return;
-        }
-
-        const interval = window.setInterval(() => {
-            loadSummary(false);
-        }, LIVE_PAGE_RETRY_INTERVAL_MS);
-
-        const timeout = window.setTimeout(() => {
-            setRetryingAfter404(false);
-            setError('Run data is not available yet');
-            setLoading(false);
-        }, LIVE_PAGE_RETRY_TIMEOUT_MS);
-
-        return () => {
-            window.clearInterval(interval);
-            window.clearTimeout(timeout);
-        };
-    }, [id, retryingAfter404, loadSummary]);
 
     useEffect(() => {
         if (!id || !receivingData) {
