@@ -23,7 +23,7 @@ import {hasColosseumModifierData} from '../utils/colosseumModifiers';
 import {MOKHAIOTL_HIGH_SCORE_MODE_LABEL} from '../utils/leaderboardContent';
 import {resolveFightGroupSpriteKey} from '../lib/hiscoreSprites';
 import {FightGroupExtraInfo} from '../utils/fightGroupExtraInfo';
-import {resolveFightOutcomeColor, resolveLiveFightTileInProgress} from '../utils/fightDisplayStatus';
+import {resolveFightOutcomeColor, resolveLiveFightTileState} from '../utils/fightDisplayStatus';
 import {
     LIVE_PAGE_RETRY_INTERVAL_MS,
     LIVE_PAGE_RETRY_TIMEOUT_MS,
@@ -76,6 +76,7 @@ interface FightGroupSummaryData {
         uploadedAt: string;
         name: string | null;
         liveActiveEncounterId?: string | null;
+        liveActiveFightId?: string | null;
     };
     receivingData?: boolean;
     players: string[];
@@ -410,23 +411,25 @@ const FightGroupSummary: React.FC = () => {
                             success: entry.success,
                             order: entry.order,
                         }));
+                        const tileState = resolveLiveFightTileState(
+                            runInProgress,
+                            data.success,
+                            fightStates,
+                            {
+                                id: fight.id,
+                                success: fight.success,
+                                order: fight.order,
+                            },
+                            data.log.liveActiveEncounterId,
+                            data.log.liveActiveFightId,
+                        );
                         return {
                             fight: {
                                 name: fight.name,
                                 startTime: fight.startTime,
                                 fightDurationTicks: fight.fightDurationTicks,
-                                success: fight.success,
-                                inProgress: resolveLiveFightTileInProgress(
-                                    runInProgress,
-                                    data.success,
-                                    fightStates,
-                                    {
-                                        id: fight.id,
-                                        success: fight.success,
-                                        order: fight.order,
-                                    },
-                                    data.log.liveActiveEncounterId,
-                                ),
+                                success: tileState.displaySuccess,
+                                inProgress: tileState.inProgress,
                             },
                             index: 0,
                             fightGroupIndex,

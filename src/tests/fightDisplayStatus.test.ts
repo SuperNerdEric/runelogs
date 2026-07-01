@@ -4,8 +4,12 @@ import {
     isFightGroupLiveInProgress,
     isFightGroupRunInProgress,
     isFightLiveInProgress,
+    isLiveFightOutcomePending,
+    isStaleLiveSyncedFight,
     resolveFightOutcomeColor,
+    resolveLiveFightDisplaySuccess,
     resolveLiveFightTileInProgress,
+    resolveLiveFightTileState,
 } from '../utils/fightDisplayStatus';
 import { colors } from '../theme';
 
@@ -87,5 +91,121 @@ describe('fightDisplayStatus', () => {
         expect(
             resolveLiveFightTileInProgress(true, false, fights, fights[2], 'checkpoint-nylo'),
         ).toBe(true);
+    });
+
+    it('prefers liveActiveFightId from the checkpoint over a later stale unfinished row', () => {
+        const fights = [
+            { id: 'nylo-db', success: false, order: 2 },
+            { id: 'sote-db', success: false, order: 3 },
+            { id: 'xarpus-db', success: false, order: 4 },
+        ];
+
+        const soteState = resolveLiveFightTileState(
+            true,
+            false,
+            fights,
+            fights[1],
+            'group-1',
+            'sote-db',
+        );
+
+        expect(soteState.inProgress).toBe(true);
+        expect(soteState.displaySuccess).toBe(false);
+        expect(resolveFightOutcomeColor(soteState.displaySuccess, soteState.inProgress)).toBe(
+            FIGHT_IN_PROGRESS_COLOR,
+        );
+
+        const nyloState = resolveLiveFightTileState(
+            true,
+            false,
+            fights,
+            fights[0],
+            'group-1',
+            'sote-db',
+        );
+        expect(nyloState.inProgress).toBe(false);
+        expect(nyloState.displaySuccess).toBe(true);
+        expect(resolveFightOutcomeColor(nyloState.displaySuccess, nyloState.inProgress)).toBe(
+            colors.fight.success,
+        );
+    });
+
+    it('never shows failure red for any unfinished row while the log is live', () => {
+        const fights = [
+            { id: 'nylo-db', success: false, order: 2 },
+            { id: 'sote-db', success: false, order: 3 },
+            { id: 'xarpus-db', success: false, order: 4 },
+        ];
+
+        expect(isLiveFightOutcomePending(true, false, false)).toBe(true);
+
+        for (const fight of fights) {
+            const tileState = resolveLiveFightTileState(
+                true,
+                false,
+                fights,
+                fight,
+                'group-1',
+            );
+            const color = resolveFightOutcomeColor(
+                tileState.displaySuccess,
+                tileState.inProgress,
+            );
+            expect(color).not.toBe(colors.fight.failure);
+        }
+
+        const soteState = resolveLiveFightTileState(
+            true,
+            false,
+            fights,
+            fights[1],
+            'group-1',
+            'sote-db',
+        );
+        expect(soteState.inProgress).toBe(true);
+        expect(resolveFightOutcomeColor(soteState.displaySuccess, soteState.inProgress)).toBe(
+            FIGHT_IN_PROGRESS_COLOR,
+        );
+    });
+
+    it('treats earlier unfinished rows as synced-complete during backlog without checkpoint id', () => {
+        const fights = [
+            { id: 'nylo-db', success: false, order: 2 },
+            { id: 'sote-db', success: false, order: 3 },
+        ];
+        const activeFight = fights[1];
+
+        expect(
+            isStaleLiveSyncedFight(true, false, fights[0], activeFight),
+        ).toBe(true);
+        expect(
+            resolveLiveFightDisplaySuccess(
+                fights[0],
+                true,
+                false,
+            ),
+        ).toBe(true);
+    });
+
+    it('keeps real failures red when the log is no longer live', () => {
+        const fights = [
+            { id: 'nylo-db', success: false, order: 2 },
+            { id: 'sote-db', success: false, order: 3 },
+        ];
+
+        const nyloState = resolveLiveFightTileState(
+            false,
+            false,
+            fights,
+            fights[0],
+            'group-1',
+            'sote-db',
+        );
+
+        expect(nyloState.inProgress).toBe(false);
+        expect(nyloState.displaySuccess).toBe(false);
+        expect(resolveFightOutcomeColor(nyloState.displaySuccess, nyloState.inProgress)).toBe(
+            colors.fight.failure,
+        );
     });
 });
