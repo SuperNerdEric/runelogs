@@ -69,13 +69,13 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
     },
     {
         date: '2026-06-30',
-        title: 'Runelogs — About Page, Privacy Policy, and SEO',
+        title: 'Runelogs — About Page, Privacy Policy, and Discoverability',
         category: 'runelogs',
         body: {
             paragraphs: [
                 'Runelogs covers combat-log viewing, leaderboards, and live logging — and this release adds the public documentation to match. A new About page explains what Runelogs does, how Combat Logger fits in, and common questions about uploads, leaderboards, and live logs.',
-                'The About page includes structured FAQ data (JSON-LD) so search engines can surface accurate summaries. A privacy policy is available at /privacy with contact emails for support and privacy questions, plus a site footer linking legal pages and community resources.',
-                'Site-wide SEO improvements include per-page meta tags, Open Graph previews, prerendered HTML for key routes, and an expanded sitemap. Prerendering no longer serves stale HTML on first load or hangs after builds.',
+                'The About page includes structured FAQ data (JSON-LD) so search engines can show accurate summaries when someone looks up Runelogs. A privacy policy is available at /privacy with contact emails for support and privacy questions, plus a site footer linking legal pages and community resources.',
+                'Public pages are easier to find and share: each route has its own title and description, Open Graph previews for pasted links, prerendered HTML so crawlers can read key pages, and an expanded sitemap listing release notes and major sections. Prerendering no longer serves stale HTML on first load or hangs after builds.',
             ],
         },
     },
