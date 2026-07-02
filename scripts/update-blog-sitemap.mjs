@@ -45,9 +45,18 @@ function buildBlogSitemapXml(posts) {
         .join('\n');
 }
 
+function stripBlogPostUrls(sitemap) {
+    return sitemap.replace(
+        /\s*<url>\s*\n\s*<loc>https:\/\/www\.runelogs\.com\/blog\/[^<]+<\/loc>(?:\s*\n\s*<lastmod>[^<]+<\/lastmod>)?\s*\n\s*<\/url>/g,
+        '',
+    );
+}
+
 function updateSitemap(posts) {
     const blogXml = buildBlogSitemapXml(posts);
     let sitemap = readFileSync(sitemapPath, 'utf8');
+
+    sitemap = stripBlogPostUrls(sitemap);
 
     const blogIndexPattern = /    <url>\s*\n\s*<loc>https:\/\/www\.runelogs\.com\/blog<\/loc>\s*\n\s*<\/url>/;
     if (!blogIndexPattern.test(sitemap)) {

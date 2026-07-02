@@ -51,6 +51,23 @@ export function getBlogPostSummary(post: BlogPost, maxLength = 220): string {
 const BLOG_POSTS_RAW: BlogPostInput[] = [
     // — Runelogs —
     {
+        date: '2026-07-02',
+        title: 'Runelogs — Maggot King',
+        category: 'runelogs',
+        body: {
+            paragraphs: [
+                'Runelogs now supports Maggot King — solo kill times, DPS leaderboards, log parsing, and replay for the new boss fight.',
+                'Uploaded Combat Logger logs recognize Maggot King fights and mark them DPS-eligible with official duration timing. The Maggot King leaderboard compares solo kill times and boss DPS, with a hiscore sprite on leaderboard rows and encounter lists.',
+                'Replay tooling includes Maggot King mechanics: poison splat game objects (small, medium, and large), dust wave graphics, and shadow warnings. Replay controls add object highlighting so splats and warnings are easier to follow tick by tick.',
+            ],
+            bullets: [
+                'Maggot King DPS leaderboard and personal bests (solo)',
+                'Fight parsing and fixture coverage on the backend',
+                'Replay assets and object highlighting for poison splats and shadow warnings',
+            ],
+        },
+    },
+    {
         date: '2026-07-01',
         title: 'Runelogs — Live Log Reliability',
         category: 'runelogs',
@@ -286,6 +303,23 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
     },
 
     // — Combat Logger —
+    {
+        date: '2026-07-02',
+        title: 'Combat Logger 1.6.6 Release',
+        category: 'combat-logger',
+        body: {
+            paragraphs: [
+                'Combat Logger 1.6.6 adds full Maggot King tracking so uploaded and live logs capture the boss fight on Runelogs.',
+                'Maggot King and Ur-maggot larvae NPCs are tracked, along with poison splat game objects and dust wave and shadow warning graphics. Maggot King is registered as a boss ID so fight splitting and DPS meters treat the encounter correctly.',
+                'Install 1.6.6 before logging Maggot King kills you plan to upload or live-stream — older plugin versions will miss the new NPCs, objects, and graphics that Runelogs replay and leaderboards expect.',
+            ],
+            bullets: [
+                'Maggot King (15742) and Ur-maggot larvae (15743) NPC tracking',
+                'Poison splat game objects and dust wave / shadow warning graphics',
+                'Boss ID registration for correct fight detection',
+            ],
+        },
+    },
     {
         date: '2026-06-29',
         title: 'Combat Logger 1.6.5 Release',
