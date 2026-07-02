@@ -209,7 +209,7 @@ const FightGroupSummary: React.FC = () => {
 
     if (error || !data) {
         return (
-            <Box p={4}>
+            <Box display="flex" justifyContent="center" alignItems="center" height="100vh" p={4}>
                 <Alert severity="error">{error ?? 'Run not found'}</Alert>
             </Box>
         );
