@@ -6903,6 +6903,24 @@
     "speed": 5
   },
   {
+    "name": "Blisterwood sickle (e)",
+    "id": 33713,
+    "version": "",
+    "slot": "weapon",
+    "category": "Slash Sword",
+    "isTwoHanded": false,
+    "speed": 5
+  },
+  {
+    "name": "Blisterwood stake",
+    "id": 33716,
+    "version": "",
+    "slot": "weapon",
+    "category": "Thrown",
+    "isTwoHanded": false,
+    "speed": 2
+  },
+  {
     "name": "Blood ancient sceptre",
     "id": 28238,
     "version": "Broken",
@@ -15309,6 +15327,15 @@
     "speed": 0
   },
   {
+    "name": "Crimson kisten",
+    "id": 33631,
+    "version": "",
+    "slot": "weapon",
+    "category": "Axe",
+    "isTwoHanded": true,
+    "speed": 4
+  },
+  {
     "name": "Crone-made amulet",
     "id": 10500,
     "version": "",
@@ -18522,6 +18549,15 @@
     "speed": 0
   },
   {
+    "name": "Diamond sickle (b)",
+    "id": 33709,
+    "version": "",
+    "slot": "weapon",
+    "category": "Slash Sword",
+    "isTwoHanded": false,
+    "speed": 5
+  },
+  {
     "name": "Diamond speedrun trophy",
     "id": 27783,
     "version": "",
@@ -20133,6 +20169,15 @@
     "speed": 5
   },
   {
+    "name": "Dummy stymphike feather",
+    "id": 33644,
+    "version": "",
+    "slot": "weapon",
+    "category": "Blunt",
+    "isTwoHanded": false,
+    "speed": 3
+  },
+  {
     "name": "Dust battlestaff",
     "id": 20736,
     "version": "",
@@ -21337,6 +21382,15 @@
     "category": "Blaster",
     "isTwoHanded": false,
     "speed": -1
+  },
+  {
+    "name": "Enchanted diamond sickle (b)",
+    "id": 33711,
+    "version": "",
+    "slot": "weapon",
+    "category": "Slash Sword",
+    "isTwoHanded": false,
+    "speed": 5
   },
   {
     "name": "Enchanted emerald sickle (b)",
@@ -25873,6 +25927,15 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Hallowed flail",
+    "id": 33718,
+    "version": "",
+    "slot": "weapon",
+    "category": "Flail",
+    "isTwoHanded": false,
+    "speed": 4
   },
   {
     "name": "Hallowed focus",
@@ -32634,6 +32697,15 @@
     "speed": 0
   },
   {
+    "name": "Necklace of rupture",
+    "id": 33639,
+    "version": "",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Neitiznot faceguard",
     "id": 24271,
     "version": "",
@@ -39384,6 +39456,87 @@
     "speed": 0
   },
   {
+    "name": "Seeking adamant arrow",
+    "id": 33577,
+    "version": "",
+    "slot": "ammo",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Seeking amethyst arrow",
+    "id": 33589,
+    "version": "",
+    "slot": "ammo",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Seeking broad arrows",
+    "id": 33601,
+    "version": "",
+    "slot": "ammo",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Seeking bronze arrow",
+    "id": 33553,
+    "version": "",
+    "slot": "ammo",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Seeking dragon arrow",
+    "id": 33595,
+    "version": "",
+    "slot": "ammo",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Seeking iron arrow",
+    "id": 33559,
+    "version": "",
+    "slot": "ammo",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Seeking mithril arrow",
+    "id": 33571,
+    "version": "",
+    "slot": "ammo",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Seeking rune arrow",
+    "id": 33583,
+    "version": "",
+    "slot": "ammo",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Seeking steel arrow",
+    "id": 33565,
+    "version": "",
+    "slot": "ammo",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Seercull",
     "id": 6724,
     "version": "",
@@ -40255,6 +40408,24 @@
     "category": "Slash Sword",
     "isTwoHanded": false,
     "speed": 5
+  },
+  {
+    "name": "Silvthrill ballista",
+    "id": 33800,
+    "version": "",
+    "slot": "weapon",
+    "category": "Crossbow",
+    "isTwoHanded": true,
+    "speed": 5
+  },
+  {
+    "name": "Silvthrill javelin",
+    "id": 33801,
+    "version": "",
+    "slot": "ammo",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
   },
   {
     "name": "Sinhaza shroud tier 1",
@@ -41236,6 +41407,15 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Spine",
+    "id": 33790,
+    "version": "",
+    "slot": "weapon",
+    "category": "Thrown",
+    "isTwoHanded": false,
+    "speed": 2
   },
   {
     "name": "Spined body",
@@ -43009,6 +43189,15 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Sunspear",
+    "id": 33722,
+    "version": "",
+    "slot": "weapon",
+    "category": "Spear",
+    "isTwoHanded": true,
+    "speed": 5
   },
   {
     "name": "Superior calamity breeches",
