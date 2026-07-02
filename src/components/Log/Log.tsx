@@ -5,7 +5,7 @@ import FightSelector from '../sections/FightSelector';
 import {FightMetaData} from '../../models/Fight';
 import {EncounterMetaData} from '../../models/LogLine';
 import LogInfoBox from "./LogInfoBox";
-import {contentColumnSx} from '../../theme';
+import {centeredPageStateSx, contentColumnSx} from '../../theme';
 import {getEncounterHref, getRunSummaryHref} from '../../utils/encounterTableRow';
 import {inferLeaderboardFightGroupName} from '../../utils/leaderboardContent';
 import {
@@ -276,12 +276,7 @@ const Log: React.FC = () => {
 
     if (loading) {
         return (
-            <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                height="100vh"
-            >
+            <Box sx={centeredPageStateSx}>
                 <CircularProgress/>
             </Box>
         );
@@ -289,7 +284,7 @@ const Log: React.FC = () => {
 
     if (error) {
         return (
-            <Box display="flex" justifyContent="center" alignItems="center" height="100vh" p={4}>
+            <Box sx={{...centeredPageStateSx, p: 4}}>
                 <Alert severity="error">
                     <Typography variant="h6">Error loading log:</Typography>
                     <Typography>{error}</Typography>

@@ -7,6 +7,16 @@ export const contentColumnSx = {
     boxSizing: 'border-box',
 } as const;
 
+/** Fills `.app-main-content` and centers loading/error states vertically and horizontally. */
+export const centeredPageStateSx = {
+    flex: 1,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    boxSizing: 'border-box',
+} as const;
+
 export const logNameTextSx = (hasName: boolean) => ({
     color: hasName ? 'var(--color-text-gold)' : 'var(--color-text-muted)',
     fontStyle: hasName ? 'normal' as const : 'italic' as const,
