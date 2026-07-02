@@ -1,7 +1,8 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {flushSync} from 'react-dom';
 import {useNavigate, useParams, useSearchParams} from 'react-router-dom';
-import {Box, CircularProgress, Tab, Tabs, Typography} from '@mui/material';
+import {Alert, Box, CircularProgress, Tab, Tabs} from '@mui/material';
+import {centeredPageStateSx} from '../theme';
 import {TabsEnum} from './Tabs';
 import EncounterTabContent from './EncounterTabContent';
 import {Fight, FightMetaData, isFight} from '../models/Fight';
@@ -415,15 +416,15 @@ const Encounter: React.FC = () => {
 
     if (loading)
         return (
-            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+            <Box sx={centeredPageStateSx}>
                 <CircularProgress color="inherit"/>
             </Box>
         );
 
     if (error || !fight)
         return (
-            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-                <Typography color="error">{error ?? 'Encounter not found'}</Typography>
+            <Box sx={{...centeredPageStateSx, p: 4}}>
+                <Alert severity="error">{error ?? 'Encounter not found'}</Alert>
             </Box>
         );
 

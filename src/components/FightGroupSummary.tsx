@@ -11,7 +11,7 @@ import DamageMeterTable from './charts/DamageMeterTable';
 import {FightGroupFightRows} from './sections/LogFightList';
 import RunInfoBox from './RunInfoBox';
 import PageBreadcrumbs from './PageBreadcrumbs';
-import {contentColumnSx, pageHeroTitleSx} from '../theme';
+import {centeredPageStateSx, contentColumnSx, pageHeroTitleSx} from '../theme';
 import {displayUsername, ticksToTime} from '../utils/utils';
 import {getEncounterHref} from '../utils/encounterTableRow';
 import {isUnknownPlayer, UNKNOWN_PLAYER_NAME} from '../utils/actorUtils';
@@ -201,7 +201,7 @@ const FightGroupSummary: React.FC = () => {
 
     if (loading) {
         return (
-            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+            <Box sx={centeredPageStateSx}>
                 <CircularProgress/>
             </Box>
         );
@@ -209,7 +209,7 @@ const FightGroupSummary: React.FC = () => {
 
     if (error || !data) {
         return (
-            <Box display="flex" justifyContent="center" alignItems="center" height="100vh" p={4}>
+            <Box sx={{...centeredPageStateSx, p: 4}}>
                 <Alert severity="error">{error ?? 'Run not found'}</Alert>
             </Box>
         );
