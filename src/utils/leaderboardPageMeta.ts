@@ -1,8 +1,11 @@
 import {
   buildLeaderboardHref,
+  buildRecentEncountersHref,
   getLeaderboardModeLabel,
+  isRecentEncountersAllContent,
   LEADERBOARD_CONTENT_OPTIONS,
   LeaderboardMode,
+  RECENT_ENCOUNTERS_CONTENT_OPTIONS,
   resolveLeaderboardStateFromSearchParams,
 } from "./leaderboardContent";
 
@@ -125,6 +128,18 @@ export function buildLeaderboardSitemapUrls(siteUrl: string): string[] {
     const path = buildLeaderboardHref({
       mode: "time",
       leaderboard: option.value,
+      playerCount: option.defaultPlayerCount,
+    });
+    return `${siteUrl}${path}`;
+  });
+}
+
+export function buildRecentEncountersSitemapUrls(siteUrl: string): string[] {
+  return RECENT_ENCOUNTERS_CONTENT_OPTIONS.filter(
+    (option) => !isRecentEncountersAllContent(option.value),
+  ).map((option) => {
+    const path = buildRecentEncountersHref({
+      content: option.value,
       playerCount: option.defaultPlayerCount,
     });
     return `${siteUrl}${path}`;

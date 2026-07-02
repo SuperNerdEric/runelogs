@@ -43,7 +43,10 @@
     "test": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "update-sitemap:blog": "node scripts/update-blog-sitemap.mjs",
+    "update-sitemap:discover": "node scripts/update-discover-sitemap.mjs",
+    "update-sitemap": "npm run update-sitemap:blog && npm run update-sitemap:discover"
   },
   "browserslist": {
     "production": [

@@ -239,13 +239,11 @@
         <loc>https://www.runelogs.com/upload</loc>
     </url>
     <url>
-        <loc>https://www.runelogs.com/leaderboards</loc>
-    </url>
-    <url>
-        <loc>https://www.runelogs.com/recent-encounters</loc>
-    </url>
-    <url>
         <loc>https://www.runelogs.com/live-log</loc>
+    </url>
+    <!-- generated:discover -->
+    <url>
+        <loc>https://www.runelogs.com/leaderboards</loc>
     </url>
     <url>
         <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Theatre+of+Blood&amp;playerCount=4</loc>
@@ -280,4 +278,47 @@
     <url>
         <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Yama&amp;playerCount=2</loc>
     </url>
+    <url>
+        <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Maggot+King&amp;playerCount=1</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/recent-encounters</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/recent-encounters?content=Theatre+of+Blood&amp;playerCount=4</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/recent-encounters?content=Theatre+of+Blood%3A+Hard+Mode&amp;playerCount=5</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/recent-encounters?content=Tombs+of+Amascut&amp;playerCount=1</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/recent-encounters?content=Tombs+of+Amascut%3A+Expert+Mode&amp;playerCount=1</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/recent-encounters?content=Fight+Caves&amp;playerCount=1</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/recent-encounters?content=The+Inferno&amp;playerCount=1</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/recent-encounters?content=Fortis+Colosseum&amp;playerCount=1</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/recent-encounters?content=The+Gauntlet&amp;playerCount=1</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/recent-encounters?content=Corrupted+Gauntlet&amp;playerCount=1</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/recent-encounters?content=Doom+of+Mokhaiotl&amp;playerCount=1</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/recent-encounters?content=Yama&amp;playerCount=2</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/recent-encounters?content=Maggot+King&amp;playerCount=1</loc>
+    </url>
+    <!-- /generated:discover -->
 </urlset>
