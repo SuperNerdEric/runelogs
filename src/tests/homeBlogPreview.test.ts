@@ -1,0 +1,72 @@
+import {describe, expect, it} from 'vitest';
+import {
+    BLOG_POSTS_SORTED,
+    formatBlogPostRecency,
+    getRecentHomeBlogPosts,
+    getBlogPostShortTitle,
+    isBlogPostWithinDays,
+} from '../data/blogPosts';
+
+describe('getRecentHomeBlogPosts', () => {
+    it('returns at most one post per category, newest first within each', () => {
+        const posts = getRecentHomeBlogPosts(14, new Date(2026, 6, 2));
+        expect(posts).toHaveLength(2);
+        expect(posts[0].category).toBe('runelogs');
+        expect(posts[0].title).toBe('Runelogs — Maggot King');
+        expect(posts[1].category).toBe('combat-logger');
+        expect(posts[1].title).toBe('Combat Logger 1.6.6 Release');
+    });
+
+    it('excludes posts older than the max age', () => {
+        const posts = getRecentHomeBlogPosts(14, new Date(2026, 6, 17));
+        expect(posts).toHaveLength(0);
+    });
+
+    it('includes posts published exactly on the cutoff day', () => {
+        const posts = getRecentHomeBlogPosts(14, new Date(2026, 6, 16));
+        expect(posts.some((post) => post.title === 'Runelogs — Maggot King')).toBe(true);
+    });
+
+    it('returns only categories with a recent post', () => {
+        const posts = getRecentHomeBlogPosts(3, new Date(2026, 6, 2));
+        expect(posts.every((post) => post.date >= '2026-06-29')).toBe(true);
+    });
+});
+
+describe('isBlogPostWithinDays', () => {
+    it('uses local calendar days for the cutoff', () => {
+        const post = BLOG_POSTS_SORTED.find((entry) => entry.slug === 'runelogs-maggot-king');
+        expect(post).toBeDefined();
+        expect(isBlogPostWithinDays(post!, 14, new Date(2026, 6, 16))).toBe(true);
+        expect(isBlogPostWithinDays(post!, 14, new Date(2026, 6, 17))).toBe(false);
+    });
+});
+
+describe('getBlogPostShortTitle', () => {
+    it('strips category prefixes for compact homepage cards', () => {
+        expect(getBlogPostShortTitle({
+            date: '2026-07-02',
+            title: 'Runelogs — Maggot King',
+            slug: 'runelogs-maggot-king',
+            category: 'runelogs',
+            body: {paragraphs: ['']},
+        })).toBe('Maggot King');
+
+        expect(getBlogPostShortTitle({
+            date: '2026-07-02',
+            title: 'Combat Logger 1.6.6 Release',
+            slug: 'combat-logger-1-6-6-release',
+            category: 'combat-logger',
+            body: {paragraphs: ['']},
+        })).toBe('1.6.6 Release');
+    });
+});
+
+describe('formatBlogPostRecency', () => {
+    it('uses calendar days instead of time-of-day for date-only posts', () => {
+        expect(formatBlogPostRecency('2026-07-02', new Date(2026, 6, 2, 18, 20))).toBe('Today');
+        expect(formatBlogPostRecency('2026-07-01', new Date(2026, 6, 2, 18, 20))).toBe('Yesterday');
+        expect(formatBlogPostRecency('2026-06-29', new Date(2026, 6, 2, 18, 20))).toBe('3 days ago');
+        expect(formatBlogPostRecency('2026-06-20', new Date(2026, 6, 2, 18, 20))).toBe('June 20, 2026');
+    });
+});

@@ -12,6 +12,7 @@ import {HomeHeroSubtitle, HomeHeroTagline} from './homeHeroContent';
 import TrophyIcon from './TrophyIcon';
 import {usePageMeta} from '../hooks/usePageMeta';
 import {HOME_PAGE_META} from '../utils/seoContent';
+import HomeBlogPreview from './HomeBlogPreview';
 
 export default function Home() {
     const {isAuthenticated} = useAuth0();
@@ -55,6 +56,7 @@ export default function Home() {
                     GitHub
                 </Link>.
             </Typography>
+            <HomeBlogPreview/>
             <Box mt={4}>
                 <Box pt={0} pb={1} display="flex" alignItems="center" gap={1}>
                     <Box component="span" sx={{display: 'inline-flex', alignItems: 'center', lineHeight: 0}}>

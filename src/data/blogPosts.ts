@@ -738,6 +738,64 @@ export function formatBlogDate(isoDate: string): string {
     });
 }
 
+/** Calendar-based recency for date-only blog posts (no publish time). */
+export function formatBlogPostRecency(isoDate: string, now = new Date()): string {
+    const today = new Date(now);
+    today.setHours(0, 0, 0, 0);
+    const postDate = parseBlogPostDate(isoDate);
+    const daysAgo = Math.round((today.getTime() - postDate.getTime()) / (24 * 60 * 60 * 1000));
+
+    if (daysAgo === 0) {
+        return 'Today';
+    }
+    if (daysAgo === 1) {
+        return 'Yesterday';
+    }
+    if (daysAgo <= 6) {
+        return `${daysAgo} days ago`;
+    }
+    return formatBlogDate(isoDate);
+}
+
 export const BLOG_POSTS_SORTED = [...BLOG_POSTS].sort(
     (a, b) => b.date.localeCompare(a.date) || b.title.localeCompare(a.title),
 );
+
+export const HOME_BLOG_MAX_AGE_DAYS = 14;
+
+const HOME_BLOG_CATEGORY_ORDER: BlogCategory[] = ['runelogs', 'combat-logger'];
+
+export function parseBlogPostDate(isoDate: string): Date {
+    const [year, month, day] = isoDate.split('-').map(Number);
+    return new Date(year, month - 1, day);
+}
+
+export function isBlogPostWithinDays(post: BlogPost, maxAgeDays: number, now = new Date()): boolean {
+    const cutoff = new Date(now);
+    cutoff.setHours(0, 0, 0, 0);
+    cutoff.setDate(cutoff.getDate() - maxAgeDays);
+    return parseBlogPostDate(post.date) >= cutoff;
+}
+
+/** Latest Runelogs and Combat Logger posts for the homepage, at most one per category. */
+export function getRecentHomeBlogPosts(
+    maxAgeDays = HOME_BLOG_MAX_AGE_DAYS,
+    now = new Date(),
+): BlogPost[] {
+    return HOME_BLOG_CATEGORY_ORDER.flatMap((category) => {
+        const post = BLOG_POSTS_SORTED.find(
+            (candidate) => candidate.category === category && isBlogPostWithinDays(candidate, maxAgeDays, now),
+        );
+        return post ? [post] : [];
+    });
+}
+
+export function getBlogPostShortTitle(post: BlogPost): string {
+    if (post.category === 'runelogs' && post.title.startsWith('Runelogs — ')) {
+        return post.title.slice('Runelogs — '.length);
+    }
+    if (post.category === 'combat-logger' && post.title.startsWith('Combat Logger ')) {
+        return post.title.slice('Combat Logger '.length);
+    }
+    return post.title;
+}
