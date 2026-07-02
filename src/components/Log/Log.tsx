@@ -289,7 +289,7 @@ const Log: React.FC = () => {
 
     if (error) {
         return (
-            <Box p={4}>
+            <Box display="flex" justifyContent="center" alignItems="center" height="100vh" p={4}>
                 <Alert severity="error">
                     <Typography variant="h6">Error loading log:</Typography>
                     <Typography>{error}</Typography>

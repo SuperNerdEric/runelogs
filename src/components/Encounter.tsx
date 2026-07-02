@@ -422,7 +422,7 @@ const Encounter: React.FC = () => {
 
     if (error || !fight)
         return (
-            <Box m={2}>
+            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
                 <Typography color="error">{error ?? 'Encounter not found'}</Typography>
             </Box>
         );
