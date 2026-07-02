@@ -19,6 +19,9 @@ import o56338 from '../assets/gameObjects/56338.png';
 import o56339 from '../assets/gameObjects/56339.png';
 import o56369 from '../assets/gameObjects/56369.png';
 import o56370 from '../assets/gameObjects/56370.png';
+import o33423 from '../assets/gameObjects/33423.png';
+import o33424 from '../assets/gameObjects/33424.png';
+import o33425 from '../assets/gameObjects/33425.png';
 export interface GameObject {
     name: string;
     imageUrl: string;
@@ -66,4 +69,7 @@ export const gameObjectIdMap: Record<number, GameObject> = {
     56339: { name: "Yama glyph (full 2 deactivate)", imageUrl: o56339 },
     56369: { name: "Yama COF firewall", imageUrl: o56369 },
     56370: { name: "Yama COF firewall (active)", imageUrl: o56370 },
+    33423: { name: "Poisonous bile", imageUrl: o33423 },
+    33424: { name: "Sticky bile", imageUrl: o33424 },
+    33425: { name: "Carrion", imageUrl: o33425 },
 };

@@ -19,7 +19,10 @@
     { "id": 56338, "comment": "Yama glyph (full 1 deactivate)", "overrides": { "width": 384, "height": 384, "zoom": 1500, "postRotateDegrees": 18, "cropToContent": true } },
     { "id": 56339, "comment": "Yama glyph (full 2 deactivate)", "overrides": { "width": 384, "height": 384, "zoom": 1500, "postRotateDegrees": 18, "cropToContent": true } },
     { "id": 56369, "comment": "Yama COF firewall" },
-    { "id": 56370, "comment": "Yama COF firewall (active)" }
+    { "id": 56370, "comment": "Yama COF firewall (active)" },
+    { "id": 33423, "comment": "Maggot King poison splat (small)" },
+    { "id": 33424, "comment": "Maggot King poison splat (medium)" },
+    { "id": 33425, "comment": "Maggot King poison splat (large)" }
   ],
   "graphicObjects": [
     { "id": 505, "animated": true, "comment": "Sotetseg maze rag" },
@@ -58,7 +61,9 @@
     { "id": 3267, "animated": true, "comment": "Yama fire wall 1" },
     { "id": 3268, "animated": true, "comment": "Yama fire wall 2" },
     { "id": 3269, "animated": true, "comment": "Yama fire wall 3" },
-    { "id": 3280, "animated": true, "comment": "Yama fire immunity" }
+    { "id": 3280, "animated": true, "comment": "Yama fire immunity" },
+    { "id": 2953, "animated": true, "comment": "Maggot King dust wave" },
+    { "id": 3998, "animated": true, "comment": "Maggot King shadow warning" }
   ],
   "render": {
     "gameObject": {

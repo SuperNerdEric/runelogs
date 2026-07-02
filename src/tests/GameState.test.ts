@@ -62,6 +62,36 @@ describe('createGameStates', () => {
         });
         expect(tick10?.graphicsObjects['3264-100-200-0']).not.toHaveProperty('despawnTick');
     });
+
+    it('tracks ground objects across spawn and despawn ticks', () => {
+        const fight = makeFight([
+            {
+                type: LogTypes.GROUND_OBJECT_SPAWNED,
+                tick: 10,
+                id: 32743,
+                position: {x: 3169, y: 4393, plane: 1},
+            },
+            {
+                type: LogTypes.GROUND_OBJECT_DESPAWNED,
+                tick: 12,
+                id: 32743,
+                position: {x: 3169, y: 4393, plane: 1},
+            },
+        ]);
+
+        const gameStates = createGameStates(fight);
+        const tick10 = gameStates.find((state) => state.tick === 10);
+        const tick12 = gameStates.find((state) => state.tick === 12);
+
+        expect(tick10?.groundObjects['32743-3169-4393-1']).toMatchObject({
+            id: 32743,
+            position: {x: 3169, y: 4393, plane: 1},
+        });
+        expect(getGameStateAtTick(gameStates, 11)?.groundObjects['32743-3169-4393-1']).toMatchObject({
+            id: 32743,
+        });
+        expect(tick12?.groundObjects['32743-3169-4393-1']).toBeUndefined();
+    });
 });
 
 describe('getGameStateAtTick', () => {

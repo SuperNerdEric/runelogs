@@ -27,6 +27,9 @@ import o1595 from '../assets/graphicObjects/1595.png';
 
 
 
+
+
+
 import o505_0 from '../assets/graphicObjects/505_0.png';
 import o505_1 from '../assets/graphicObjects/505_1.png';
 import o505_2 from '../assets/graphicObjects/505_2.png';
@@ -711,6 +714,31 @@ import o3280_6 from '../assets/graphicObjects/3280_6.png';
 import o3280_7 from '../assets/graphicObjects/3280_7.png';
 import o3280_8 from '../assets/graphicObjects/3280_8.png';
 import o3280_9 from '../assets/graphicObjects/3280_9.png';
+import o2953_0 from '../assets/graphicObjects/2953_0.png';
+import o2953_1 from '../assets/graphicObjects/2953_1.png';
+import o2953_2 from '../assets/graphicObjects/2953_2.png';
+import o2953_3 from '../assets/graphicObjects/2953_3.png';
+import o2953_4 from '../assets/graphicObjects/2953_4.png';
+import o2953_5 from '../assets/graphicObjects/2953_5.png';
+import o2953_6 from '../assets/graphicObjects/2953_6.png';
+import o2953_7 from '../assets/graphicObjects/2953_7.png';
+import o2953_8 from '../assets/graphicObjects/2953_8.png';
+import o2953_9 from '../assets/graphicObjects/2953_9.png';
+import o2953_10 from '../assets/graphicObjects/2953_10.png';
+import o2953_11 from '../assets/graphicObjects/2953_11.png';
+import o2953_12 from '../assets/graphicObjects/2953_12.png';
+import o2953_13 from '../assets/graphicObjects/2953_13.png';
+import o2953_14 from '../assets/graphicObjects/2953_14.png';
+import o3998_0 from '../assets/graphicObjects/3998_0.png';
+import o3998_1 from '../assets/graphicObjects/3998_1.png';
+import o3998_2 from '../assets/graphicObjects/3998_2.png';
+import o3998_3 from '../assets/graphicObjects/3998_3.png';
+import o3998_4 from '../assets/graphicObjects/3998_4.png';
+import o3998_5 from '../assets/graphicObjects/3998_5.png';
+import o3998_6 from '../assets/graphicObjects/3998_6.png';
+import o3998_7 from '../assets/graphicObjects/3998_7.png';
+import o3998_8 from '../assets/graphicObjects/3998_8.png';
+import o3998_9 from '../assets/graphicObjects/3998_9.png';
 
 export interface GraphicObject {
     name: string;
@@ -985,6 +1013,16 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
         name: "Yama fire immunity",
         frameLengths: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
         frames: [o3280_0, o3280_1, o3280_2, o3280_3, o3280_4, o3280_5, o3280_6, o3280_7, o3280_8, o3280_9],
+    },
+    2953: {
+        name: "Maggot King dust wave",
+        frameLengths: [4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 2],
+        frames: [o2953_0, o2953_1, o2953_2, o2953_3, o2953_4, o2953_5, o2953_6, o2953_7, o2953_8, o2953_9, o2953_10, o2953_11, o2953_12, o2953_13, o2953_14],
+    },
+    3998: {
+        name: "Maggot King shadow warning",
+        frameLengths: [5, 5, 5, 5, 5, 5, 7, 7, 7, 5],
+        frames: [o3998_0, o3998_1, o3998_2, o3998_3, o3998_4, o3998_5, o3998_6, o3998_7, o3998_8, o3998_9],
     },
 };
 

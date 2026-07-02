@@ -18,6 +18,7 @@ interface MapComponentProps {
     currentTime: number;
     initialTick: number;
     fightEpochCycle?: number;
+    highlightObjects?: boolean;
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({
@@ -32,6 +33,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
                                                        currentTime,
                                                        initialTick,
                                                        fightEpochCycle,
+                                                       highlightObjects,
                                                    }) => {
     return (
         <MapContainer
@@ -53,15 +55,18 @@ const MapComponent: React.FC<MapComponentProps> = ({
             <MapCenterSetter initialPlayerPosition={initialPlayerPosition}/>
             <Pane name="players" style={{ zIndex: 400 }} />
             <Pane name="objects" style={{ zIndex: 500 }} />
+            <Pane name="objectHighlights" style={{ zIndex: 550 }} />
             <Pane name="npcs" style={{ zIndex: 600 }} />
             <MapMarkers playerPositions={playerPositions} npcPositions={npcPositions}
                         graphicsObjectPositions={graphicsObjectPositions}
                         gameObjectPositions={gameObjectPositions}
                         groundObjectPositions={groundObjectPositions}
+                        plane={plane}
                         selectedPlayerName={selectedPlayerName}
                         currentTime={currentTime}
                         initialTick={initialTick}
                         fightEpochCycle={fightEpochCycle}
+                        highlightObjects={highlightObjects}
             />
             <MouseHover plane={plane}/>
         </MapContainer>

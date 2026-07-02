@@ -32,10 +32,12 @@ interface MapMarkersProps {
     graphicsObjectPositions: { [key: string]: GraphicsObjectState };
     gameObjectPositions: { [key: string]: GameObjectState };
     groundObjectPositions: { [key: string]: GameObjectState };
+    plane: number;
     selectedPlayerName?: string;
     currentTime: number;
     initialTick: number;
     fightEpochCycle?: number;
+    highlightObjects?: boolean;
 }
 
 interface YamaWallRenderData {
@@ -60,16 +62,58 @@ interface SolLaserRenderData {
     opacity: number;
 }
 
+type HighlightObjectType = 'graphics' | 'game' | 'ground';
+
+interface ObjectHighlightRenderData {
+    key: string;
+    bounds: LatLngBounds;
+    objectType: HighlightObjectType;
+    id: number;
+    name?: string;
+}
+
+function isOnMapPlane(position: GamePosition, plane: number): boolean {
+    return position.plane === plane;
+}
+
+function getHighlightRectangleOptions(objectType: HighlightObjectType) {
+    const color = objectType === 'ground'
+        ? colors.map.marker
+        : objectType === 'game'
+            ? '#d29922'
+            : colors.replay.marker;
+
+    return {
+        color,
+        fillColor: color,
+        fillOpacity: 0.12,
+        weight: 2,
+        interactive: true,
+    };
+}
+
+function getObjectHighlightLabel(objectType: HighlightObjectType): string {
+    if (objectType === 'graphics') {
+        return 'Graphics';
+    }
+    if (objectType === 'game') {
+        return 'Game object';
+    }
+    return 'Ground object';
+}
+
 const MapMarkers: React.FC<MapMarkersProps> = ({
                                                    playerPositions,
                                                    npcPositions,
                                                    graphicsObjectPositions,
                                                    gameObjectPositions,
                                                    groundObjectPositions,
+                                                   plane,
                                                    selectedPlayerName,
                                                    currentTime,
                                                    initialTick,
                                                    fightEpochCycle,
+                                                   highlightObjects = false,
                                                }) => {
     const map = useMap();
     const replayClientCycle = useMemo(
@@ -120,6 +164,10 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
         const walls: YamaWallRenderData[] = [];
 
         for (const [objectKey, positionData] of Object.entries(graphicsObjectPositions)) {
+            if (!isOnMapPlane(positionData.position, plane)) {
+                continue;
+            }
+
             if (!isYamaShadowWallGraphic(positionData.id)) {
                 continue;
             }
@@ -157,7 +205,7 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
         }
 
         return walls;
-    }, [graphicsObjectPositions, currentTime, initialTick, fightEpochCycle, replayClientCycle]);
+    }, [graphicsObjectPositions, currentTime, initialTick, fightEpochCycle, replayClientCycle, plane]);
     const renderedGraphicsObjects = useMemo((): GraphicsObjectRenderData[] => {
         const objects: GraphicsObjectRenderData[] = [];
         const npcRectangleOptions = {
@@ -168,6 +216,10 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
         };
 
         for (const [objectKey, positionData] of Object.entries(graphicsObjectPositions)) {
+            if (!isOnMapPlane(positionData.position, plane)) {
+                continue;
+            }
+
             if (isSolLaserGraphic(positionData.id) || isYamaShadowWallGraphic(positionData.id)) {
                 continue;
             }
@@ -216,7 +268,93 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
         }
 
         return objects;
-    }, [graphicsObjectPositions, currentTime, initialTick, fightEpochCycle, map, replayClientCycle]);
+    }, [graphicsObjectPositions, currentTime, initialTick, fightEpochCycle, map, replayClientCycle, plane]);
+
+    const objectHighlights = useMemo((): ObjectHighlightRenderData[] => {
+        if (!highlightObjects) {
+            return [];
+        }
+
+        const highlights: ObjectHighlightRenderData[] = [];
+
+        for (const [objectKey, positionData] of Object.entries(graphicsObjectPositions)) {
+            if (!isOnMapPlane(positionData.position, plane)) {
+                continue;
+            }
+
+            const objectPosition = new Position(
+                positionData.position.x,
+                positionData.position.y,
+                positionData.position.plane,
+            );
+            const rectangle = objectPosition.toLeaflet(map, getHighlightRectangleOptions('graphics'));
+
+            highlights.push({
+                key: `highlight-graphics-${objectKey}`,
+                bounds: rectangle.getBounds(),
+                objectType: 'graphics',
+                id: positionData.id,
+                name: graphicObjectIdMap[positionData.id]?.name,
+            });
+        }
+
+        for (const [objectKey, positionData] of Object.entries(gameObjectPositions)) {
+            if (!isOnMapPlane(positionData.position, plane)) {
+                continue;
+            }
+
+            const tileSize = getGameObjectTileSize(positionData.id);
+            const anchorOffset = getGameObjectAnchorOffset(positionData.id);
+            const objectPosition = new Position(
+                positionData.position.x - anchorOffset,
+                positionData.position.y - anchorOffset,
+                positionData.position.plane,
+            );
+            const rectangle = objectPosition.toLeaflet(
+                map,
+                getHighlightRectangleOptions('game'),
+                tileSize,
+            );
+
+            highlights.push({
+                key: `highlight-game-${objectKey}`,
+                bounds: rectangle.getBounds(),
+                objectType: 'game',
+                id: positionData.id,
+                name: gameObjectIdMap[positionData.id]?.name,
+            });
+        }
+
+        for (const [objectKey, positionData] of Object.entries(groundObjectPositions)) {
+            if (!isOnMapPlane(positionData.position, plane)) {
+                continue;
+            }
+
+            const objectPosition = new Position(
+                positionData.position.x,
+                positionData.position.y,
+                positionData.position.plane,
+            );
+            const rectangle = objectPosition.toLeaflet(map, getHighlightRectangleOptions('ground'));
+
+            highlights.push({
+                key: `highlight-ground-${objectKey}`,
+                bounds: rectangle.getBounds(),
+                objectType: 'ground',
+                id: positionData.id,
+                name: groundObjectIdMap[positionData.id]?.name,
+            });
+        }
+
+        return highlights;
+    }, [
+        highlightObjects,
+        graphicsObjectPositions,
+        gameObjectPositions,
+        groundObjectPositions,
+        plane,
+        map,
+    ]);
 
     const npcRectangleOptions = {
         color: colors.replay.marker,
@@ -333,6 +471,10 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
 
             {/* Render Game Object Markers */}
             {Object.entries(gameObjectPositions).map(([objectKey, positionData]) => {
+                if (!isOnMapPlane(positionData.position, plane)) {
+                    return null;
+                }
+
                 const tileSize = getGameObjectTileSize(positionData.id);
                 const anchorOffset = getGameObjectAnchorOffset(positionData.id);
                 const objectPosition = new Position(
@@ -357,6 +499,10 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
 
             {/* Render Ground Object Markers */}
             {Object.entries(groundObjectPositions).map(([objectKey, positionData]) => {
+                if (!isOnMapPlane(positionData.position, plane)) {
+                    return null;
+                }
+
                 const objectPosition = new Position(
                     positionData.position.x,
                     positionData.position.y,
@@ -376,6 +522,23 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
                     />
                 ) : null;
             })}
+
+            {objectHighlights.map((highlight) => (
+                <Rectangle
+                    key={highlight.key}
+                    bounds={highlight.bounds}
+                    pathOptions={getHighlightRectangleOptions(highlight.objectType)}
+                    pane="objectHighlights"
+                >
+                    <Popup>
+                        {formatObjectPopup(
+                            getObjectHighlightLabel(highlight.objectType),
+                            highlight.id,
+                            highlight.name,
+                        )}
+                    </Popup>
+                </Rectangle>
+            ))}
 
         </>
     );
@@ -399,6 +562,17 @@ export function formatActorKey(key: string): string {
 
     const [name, id, index] = parts;
     return `${name} ${id}-${index}`;
+}
+
+export function formatObjectPopup(
+    objectType: string,
+    id: number,
+    name?: string,
+): string {
+    if (name) {
+        return `${objectType}: ${id} (${name})`;
+    }
+    return `${objectType}: ${id}`;
 }
 
 

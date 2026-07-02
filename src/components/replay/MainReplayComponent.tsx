@@ -28,6 +28,7 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
     const [initialPlayerPosition, setInitialPlayerPosition] = useState<GamePosition | undefined>(undefined);
     const [isPlaying, setIsPlaying] = useState(false);
     const [selectedPlayerName, setSelectedPlayerName] = useState<string | undefined>(undefined);
+    const [highlightObjects, setHighlightObjects] = useState(false);
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [activeTab, setActiveTab] = useState<'levels' | 'equipment' | 'prayers'>('levels');
 
@@ -203,29 +204,39 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
             {currentGameState && initialPlayerPosition && (
                 <>
                     <div className="replay-map-section">
-                        <button
-                            type="button"
-                            className="replay-fullscreen-button"
-                            onClick={toggleFullscreen}
-                            aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-                            title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
-                        >
-                            {isFullscreen ? (
-                                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
-                                    <path
-                                        fill="currentColor"
-                                        d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"
-                                    />
-                                </svg>
-                            ) : (
-                                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
-                                    <path
-                                        fill="currentColor"
-                                        d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"
-                                    />
-                                </svg>
-                            )}
-                        </button>
+                        <div className="replay-map-controls">
+                            <button
+                                type="button"
+                                className="replay-fullscreen-button"
+                                onClick={toggleFullscreen}
+                                aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+                                title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+                            >
+                                {isFullscreen ? (
+                                    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path
+                                            fill="currentColor"
+                                            d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"
+                                        />
+                                    </svg>
+                                ) : (
+                                    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path
+                                            fill="currentColor"
+                                            d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"
+                                        />
+                                    </svg>
+                                )}
+                            </button>
+                            <label className="replay-highlight-objects-control">
+                                <input
+                                    type="checkbox"
+                                    checked={highlightObjects}
+                                    onChange={(event) => setHighlightObjects(event.target.checked)}
+                                />
+                                Highlight objects (graphics, game & ground)
+                            </label>
+                        </div>
                         <MapComponent
                         playerPositions={playerPositions}
                         initialPlayerPosition={initialPlayerPosition}
@@ -238,21 +249,11 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
                         currentTime={currentTime}
                         initialTick={initialTick}
                         fightEpochCycle={fightEpochCycle}
+                        highlightObjects={highlightObjects}
                     />
                     </div>
                     {fight.logVersion && semver.gte(fight.logVersion, "1.3.0") &&
-                        <div
-                            style={{
-                                position: 'absolute',
-                                bottom: '10px',
-                                right: 'clamp(6px, 1vw, 10px)',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'flex-end',
-                                width: '100%',
-                                pointerEvents: 'none', // Or else it blocks clicks on the map, but now we have to add pointerEvents: 'auto', to the children we want to be clickable
-                            }}
-                        >
+                        <div className="replay-player-overlay">
                             {selectedPlayerName &&
                                 currentGameState &&
                                 currentGameState.players[selectedPlayerName] && (() => {
@@ -260,7 +261,7 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
 
                                     return (
                                         isMobile ? (
-                                            <div style={{zIndex: 10, marginBottom: '15px',}}>
+                                            <div className="replay-player-panel replay-player-panel--mobile">
                                                 {/* Tab buttons for mobile view */}
                                                 <div style={{
                                                     display: 'flex',
@@ -308,13 +309,7 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({fight}) => {
                                                 )}
                                             </div>
                                         ) : (
-                                            <div style={{
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                alignItems: 'flex-end',
-                                                zIndex: 10,
-                                                marginBottom: '30px',
-                                            }}>
+                                            <div className="replay-player-panel">
                                                 {/* Stacked for desktop view */}
                                                 {selectedPlayer.baseLevels && selectedPlayer.boostedLevels && (
                                                     <CombatLevels

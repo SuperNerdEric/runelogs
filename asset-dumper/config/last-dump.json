@@ -837,56 +837,6 @@
         2
       ]
     },
-    "3264": {
-      "animationId": 12122,
-      "frameCount": 12,
-      "frameLengths": [
-        2,
-        2,
-        2,
-        3,
-        3,
-        3,
-        3,
-        3,
-        3,
-        2,
-        2,
-        2
-      ]
-    },
-    "3265": {
-      "animationId": 12123,
-      "frameCount": 10,
-      "frameLengths": [
-        2,
-        2,
-        2,
-        3,
-        3,
-        3,
-        3,
-        3,
-        3,
-        3
-      ]
-    },
-    "3266": {
-      "animationId": 12124,
-      "frameCount": 10,
-      "frameLengths": [
-        2,
-        2,
-        2,
-        3,
-        3,
-        3,
-        3,
-        3,
-        3,
-        3
-      ]
-    },
     "3267": {
       "animationId": 12125,
       "frameCount": 13,
@@ -958,6 +908,43 @@
         3,
         3,
         3
+      ]
+    },
+    "2953": {
+      "animationId": 11596,
+      "frameCount": 15,
+      "frameLengths": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "3998": {
+      "animationId": 9470,
+      "frameCount": 10,
+      "frameLengths": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        7,
+        7,
+        7,
+        5
       ]
     }
   }

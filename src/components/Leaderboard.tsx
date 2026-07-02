@@ -22,6 +22,7 @@ import {
     getLeaderboardModesForContent,
     getHighScoreLevelColumnLabel,
     isMokhaiotlLeaderboardContent,
+    isStandaloneLeaderboardContent,
     LEADERBOARD_CONTENT_OPTIONS,
     LEADERBOARD_MODE_HIGH_SCORE,
     LeaderboardDpsConfigGroup,
@@ -500,7 +501,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({entriesPerPage = 25}) => {
                         }}
                     />
                 )}
-                trailingFilters={mode === 'dps' && availableFights.length > 0 ? (
+                trailingFilters={mode === 'dps' && availableFights.length > 0 && !isStandaloneLeaderboardContent(content.value) ? (
                     <FilterSelect
                         field="fight"
                         value={selectedFight}
