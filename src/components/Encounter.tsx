@@ -1,5 +1,6 @@
 import React, {
   useCallback,
+  useDeferredValue,
   useEffect,
   useMemo,
   useRef,
@@ -38,6 +39,16 @@ import {
   PrayerFilter,
   serializePrayerFilter,
 } from "../utils/prayerFilter";
+import {
+  deserializeHitsplatFilter,
+  HitsplatFilter,
+  serializeHitsplatFilter,
+} from "../utils/hitsplatFilter";
+import {
+  deserializeHitsplatTypeFilter,
+  HitsplatTypeFilter,
+  serializeHitsplatTypeFilter,
+} from "../utils/hitsplatTypeFilter";
 import LiveLogProgressAlert from "./LiveLogProgressAlert";
 import LogNameDisplay from "./LogNameDisplay";
 import {
@@ -136,7 +147,33 @@ const Encounter: React.FC = () => {
     () => deserializePrayerFilter(searchParams.get("prayer")),
     [searchParams],
   );
+  const hitsplatFilter = useMemo(
+    () => deserializeHitsplatFilter(searchParams.get("hitsplat")),
+    [searchParams],
+  );
+  const hitsplatTypeFilter = useMemo(
+    () => deserializeHitsplatTypeFilter(searchParams.get("hitsplatType")),
+    [searchParams],
+  );
   const eventTypeFilter = searchParams.get("eventType");
+
+  const deferredSourceFilter = useDeferredValue(sourceFilter);
+  const deferredTargetFilter = useDeferredValue(targetFilter);
+  const deferredEquipmentFilter = useDeferredValue(equipmentFilter);
+  const deferredPrayerFilter = useDeferredValue(prayerFilter);
+  const deferredHitsplatFilter = useDeferredValue(hitsplatFilter);
+  const deferredHitsplatTypeFilter = useDeferredValue(hitsplatTypeFilter);
+  const deferredEventTypeFilter = useDeferredValue(eventTypeFilter);
+
+  const filtersPending =
+    deferredSourceFilter !== sourceFilter ||
+    deferredTargetFilter !== targetFilter ||
+    deferredEquipmentFilter !== equipmentFilter ||
+    deferredPrayerFilter !== prayerFilter ||
+    deferredHitsplatFilter !== hitsplatFilter ||
+    deferredHitsplatTypeFilter !== hitsplatTypeFilter ||
+    deferredEventTypeFilter !== eventTypeFilter;
+
   const isValidTab = Object.values(TabsEnum).includes(tabParam as TabsEnum);
   const tabFromUrl: TabsEnum = isValidTab
     ? (tabParam as TabsEnum)
@@ -375,6 +412,32 @@ const Encounter: React.FC = () => {
     [navigate, searchParams],
   );
 
+  const updateHitsplatFilter = useCallback(
+    (filter: HitsplatFilter | null) => {
+      const newParams = new URLSearchParams(searchParams);
+      if (filter) {
+        newParams.set("hitsplat", serializeHitsplatFilter(filter));
+      } else {
+        newParams.delete("hitsplat");
+      }
+      navigate(`${window.location.pathname}?${newParams.toString()}`);
+    },
+    [navigate, searchParams],
+  );
+
+  const updateHitsplatTypeFilter = useCallback(
+    (filter: HitsplatTypeFilter | null) => {
+      const newParams = new URLSearchParams(searchParams);
+      if (filter) {
+        newParams.set("hitsplatType", serializeHitsplatTypeFilter(filter));
+      } else {
+        newParams.delete("hitsplatType");
+      }
+      navigate(`${window.location.pathname}?${newParams.toString()}`);
+    },
+    [navigate, searchParams],
+  );
+
   const onSelectSourceFilter = useCallback(
     (filter: ActorFilter) => updateActorFilter("source", filter),
     [updateActorFilter],
@@ -411,6 +474,14 @@ const Encounter: React.FC = () => {
   const onClearPrayerFilter = useCallback(
     () => updatePrayerFilter(null),
     [updatePrayerFilter],
+  );
+  const onClearHitsplatFilter = useCallback(
+    () => updateHitsplatFilter(null),
+    [updateHitsplatFilter],
+  );
+  const onClearHitsplatTypeFilter = useCallback(
+    () => updateHitsplatTypeFilter(null),
+    [updateHitsplatTypeFilter],
   );
 
   useEffect(() => {
@@ -470,6 +541,8 @@ const Encounter: React.FC = () => {
     displayTab === TabsEnum.EVENTS ||
     (showTabContent && displayTab === renderedTab);
   const showParentSpinner = isTabLoading && displayTab !== TabsEnum.EVENTS;
+  const showFilterOverlaySpinner =
+    filtersPending && displayTab !== TabsEnum.EVENTS;
 
   if (loading)
     return (
@@ -617,6 +690,22 @@ const Encounter: React.FC = () => {
               <CircularProgress color="inherit" />
             </Box>
           )}
+          {showFilterOverlaySpinner && (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              py={8}
+              sx={{
+                position: "absolute",
+                inset: 0,
+                zIndex: 1,
+                pointerEvents: "none",
+              }}
+            >
+              <CircularProgress color="inherit" />
+            </Box>
+          )}
           {showTabShell && (
             <EncounterTabContent
               renderedTab={displayTab}
@@ -626,15 +715,28 @@ const Encounter: React.FC = () => {
               targetFilter={targetFilter}
               equipmentFilter={equipmentFilter}
               prayerFilter={prayerFilter}
+              hitsplatFilter={hitsplatFilter}
+              hitsplatTypeFilter={hitsplatTypeFilter}
               eventTypeFilter={eventTypeFilter}
+              dataSourceFilter={deferredSourceFilter}
+              dataTargetFilter={deferredTargetFilter}
+              dataEquipmentFilter={deferredEquipmentFilter}
+              dataPrayerFilter={deferredPrayerFilter}
+              dataHitsplatFilter={deferredHitsplatFilter}
+              dataHitsplatTypeFilter={deferredHitsplatTypeFilter}
+              dataEventTypeFilter={deferredEventTypeFilter}
               onSelectSourceFilter={onSelectSourceFilter}
               onSelectTargetFilter={onSelectTargetFilter}
               onSelectEquipmentFilter={updateEquipmentFilter}
               onSelectPrayerFilter={updatePrayerFilter}
+              onSelectHitsplatFilter={updateHitsplatFilter}
+              onSelectHitsplatTypeFilter={updateHitsplatTypeFilter}
               onClearSourceFilter={onClearSourceFilter}
               onClearTargetFilter={onClearTargetFilter}
               onClearEquipmentFilter={onClearEquipmentFilter}
               onClearPrayerFilter={onClearPrayerFilter}
+              onClearHitsplatFilter={onClearHitsplatFilter}
+              onClearHitsplatTypeFilter={onClearHitsplatTypeFilter}
               onSelectEventTypeFilter={onSelectEventTypeFilter}
               onClearEventTypeFilter={onClearEventTypeFilter}
             />

@@ -10,6 +10,8 @@ import {
 import { Fight } from "../models/Fight";
 import { ActorFilter } from "../utils/actorFilter";
 import { EquipmentFilter } from "../utils/equipmentFilter";
+import { HitsplatFilter } from "../utils/hitsplatFilter";
+import { HitsplatTypeFilter } from "../utils/hitsplatTypeFilter";
 import { PrayerFilter } from "../utils/prayerFilter";
 
 export interface EncounterTabContentProps {
@@ -20,15 +22,28 @@ export interface EncounterTabContentProps {
   targetFilter: ActorFilter | null;
   equipmentFilter: EquipmentFilter | null;
   prayerFilter: PrayerFilter | null;
+  hitsplatFilter: HitsplatFilter | null;
+  hitsplatTypeFilter: HitsplatTypeFilter | null;
   eventTypeFilter: string | null;
+  dataSourceFilter: ActorFilter | null;
+  dataTargetFilter: ActorFilter | null;
+  dataEquipmentFilter: EquipmentFilter | null;
+  dataPrayerFilter: PrayerFilter | null;
+  dataHitsplatFilter: HitsplatFilter | null;
+  dataHitsplatTypeFilter: HitsplatTypeFilter | null;
+  dataEventTypeFilter: string | null;
   onSelectSourceFilter: (filter: ActorFilter) => void;
   onSelectTargetFilter: (filter: ActorFilter) => void;
   onSelectEquipmentFilter: (filter: EquipmentFilter) => void;
   onSelectPrayerFilter: (filter: PrayerFilter) => void;
+  onSelectHitsplatFilter: (filter: HitsplatFilter) => void;
+  onSelectHitsplatTypeFilter: (filter: HitsplatTypeFilter) => void;
   onClearSourceFilter: () => void;
   onClearTargetFilter: () => void;
   onClearEquipmentFilter: () => void;
   onClearPrayerFilter: () => void;
+  onClearHitsplatFilter: () => void;
+  onClearHitsplatTypeFilter: () => void;
   onSelectEventTypeFilter: (eventType: string) => void;
   onClearEventTypeFilter: () => void;
 }
@@ -41,15 +56,28 @@ const EncounterTabContent: React.FC<EncounterTabContentProps> = ({
   targetFilter,
   equipmentFilter,
   prayerFilter,
+  hitsplatFilter,
+  hitsplatTypeFilter: _hitsplatTypeFilter,
   eventTypeFilter,
+  dataSourceFilter,
+  dataTargetFilter,
+  dataEquipmentFilter,
+  dataPrayerFilter,
+  dataHitsplatFilter,
+  dataHitsplatTypeFilter,
+  dataEventTypeFilter,
   onSelectSourceFilter,
   onSelectTargetFilter,
   onSelectEquipmentFilter,
   onSelectPrayerFilter,
+  onSelectHitsplatFilter,
+  onSelectHitsplatTypeFilter,
   onClearSourceFilter,
   onClearTargetFilter,
   onClearEquipmentFilter,
   onClearPrayerFilter,
+  onClearHitsplatFilter,
+  onClearHitsplatTypeFilter,
   onSelectEventTypeFilter,
   onClearEventTypeFilter,
 }) => {
@@ -59,36 +87,48 @@ const EncounterTabContent: React.FC<EncounterTabContentProps> = ({
         <DamageDoneTab
           selectedLogs={fight}
           dpsPercentiles={dpsPercentiles}
-          sourceFilter={sourceFilter}
-          targetFilter={targetFilter}
-          equipmentFilter={equipmentFilter}
-          prayerFilter={prayerFilter}
+          sourceFilter={dataSourceFilter}
+          targetFilter={dataTargetFilter}
+          equipmentFilter={dataEquipmentFilter}
+          prayerFilter={dataPrayerFilter}
+          hitsplatFilter={dataHitsplatFilter}
+          hitsplatTypeFilter={dataHitsplatTypeFilter}
           onSelectSourceFilter={onSelectSourceFilter}
           onSelectTargetFilter={onSelectTargetFilter}
           onSelectEquipmentFilter={onSelectEquipmentFilter}
           onSelectPrayerFilter={onSelectPrayerFilter}
+          onSelectHitsplatFilter={onSelectHitsplatFilter}
+          onSelectHitsplatTypeFilter={onSelectHitsplatTypeFilter}
           onClearSourceFilter={onClearSourceFilter}
           onClearTargetFilter={onClearTargetFilter}
           onClearEquipmentFilter={onClearEquipmentFilter}
           onClearPrayerFilter={onClearPrayerFilter}
+          onClearHitsplatFilter={onClearHitsplatFilter}
+          onClearHitsplatTypeFilter={onClearHitsplatTypeFilter}
         />
       );
     case TabsEnum.DAMAGE_TAKEN:
       return (
         <DamageTakenTab
           selectedLogs={fight}
-          sourceFilter={sourceFilter}
-          targetFilter={targetFilter}
-          equipmentFilter={equipmentFilter}
-          prayerFilter={prayerFilter}
+          sourceFilter={dataSourceFilter}
+          targetFilter={dataTargetFilter}
+          equipmentFilter={dataEquipmentFilter}
+          prayerFilter={dataPrayerFilter}
+          hitsplatFilter={dataHitsplatFilter}
+          hitsplatTypeFilter={dataHitsplatTypeFilter}
           onSelectSourceFilter={onSelectSourceFilter}
           onSelectTargetFilter={onSelectTargetFilter}
           onSelectEquipmentFilter={onSelectEquipmentFilter}
           onSelectPrayerFilter={onSelectPrayerFilter}
+          onSelectHitsplatFilter={onSelectHitsplatFilter}
+          onSelectHitsplatTypeFilter={onSelectHitsplatTypeFilter}
           onClearSourceFilter={onClearSourceFilter}
           onClearTargetFilter={onClearTargetFilter}
           onClearEquipmentFilter={onClearEquipmentFilter}
           onClearPrayerFilter={onClearPrayerFilter}
+          onClearHitsplatFilter={onClearHitsplatFilter}
+          onClearHitsplatTypeFilter={onClearHitsplatTypeFilter}
         />
       );
     case TabsEnum.BOOSTS:
@@ -101,14 +141,23 @@ const EncounterTabContent: React.FC<EncounterTabContentProps> = ({
           targetFilter={targetFilter}
           equipmentFilter={equipmentFilter}
           prayerFilter={prayerFilter}
+          hitsplatFilter={hitsplatFilter}
+          dataSourceFilter={dataSourceFilter}
+          dataTargetFilter={dataTargetFilter}
+          dataEquipmentFilter={dataEquipmentFilter}
+          dataPrayerFilter={dataPrayerFilter}
+          dataHitsplatFilter={dataHitsplatFilter}
+          dataEventTypeFilter={dataEventTypeFilter}
           onSelectSourceFilter={onSelectSourceFilter}
           onSelectTargetFilter={onSelectTargetFilter}
           onSelectEquipmentFilter={onSelectEquipmentFilter}
           onSelectPrayerFilter={onSelectPrayerFilter}
+          onSelectHitsplatFilter={onSelectHitsplatFilter}
           onClearSourceFilter={onClearSourceFilter}
           onClearTargetFilter={onClearTargetFilter}
           onClearEquipmentFilter={onClearEquipmentFilter}
           onClearPrayerFilter={onClearPrayerFilter}
+          onClearHitsplatFilter={onClearHitsplatFilter}
           eventTypeFilter={eventTypeFilter}
           onSelectEventTypeFilter={onSelectEventTypeFilter}
           onClearEventTypeFilter={onClearEventTypeFilter}

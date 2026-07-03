@@ -20,6 +20,14 @@ import {
   matchesPrayerFilter,
   PrayerFilter,
 } from "../../utils/prayerFilter";
+import {
+  HitsplatFilter,
+  matchesHitsplatFilter,
+} from "../../utils/hitsplatFilter";
+import {
+  HitsplatTypeFilter,
+  matchesHitsplatTypeFilter,
+} from "../../utils/hitsplatTypeFilter";
 
 interface LogsSelectionProps {
   fight: Fight;
@@ -28,14 +36,20 @@ interface LogsSelectionProps {
   targetFilter: ActorFilter | null;
   equipmentFilter?: EquipmentFilter | null;
   prayerFilter?: PrayerFilter | null;
+  hitsplatFilter?: HitsplatFilter | null;
+  hitsplatTypeFilter?: HitsplatTypeFilter | null;
   onSelectSourceFilter: (filter: ActorFilter) => void;
   onSelectTargetFilter: (filter: ActorFilter) => void;
   onSelectEquipmentFilter?: (filter: EquipmentFilter) => void;
   onSelectPrayerFilter?: (filter: PrayerFilter) => void;
+  onSelectHitsplatFilter?: (filter: HitsplatFilter) => void;
+  onSelectHitsplatTypeFilter?: (filter: HitsplatTypeFilter) => void;
   onClearSourceFilter: () => void;
   onClearTargetFilter: () => void;
   onClearEquipmentFilter?: () => void;
   onClearPrayerFilter?: () => void;
+  onClearHitsplatFilter?: () => void;
+  onClearHitsplatTypeFilter?: () => void;
   dpsPercentiles?: Record<string, number>;
 }
 
@@ -46,37 +60,45 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
   targetFilter,
   equipmentFilter = null,
   prayerFilter = null,
+  hitsplatFilter = null,
+  hitsplatTypeFilter = null,
   onSelectSourceFilter,
   onSelectTargetFilter,
   onSelectEquipmentFilter,
   onSelectPrayerFilter,
+  onSelectHitsplatFilter,
+  onSelectHitsplatTypeFilter,
   onClearSourceFilter,
   onClearTargetFilter,
   onClearEquipmentFilter,
   onClearPrayerFilter,
+  onClearHitsplatFilter,
+  onClearHitsplatTypeFilter,
   dpsPercentiles,
 }) => {
-  const filteredLogs = filterByType(fight.data, LogTypes.DAMAGE);
+  const filteredLogs = useMemo(
+    () => filterByType(fight.data, LogTypes.DAMAGE),
+    [fight.data],
+  );
 
-  let fightWithFilteredLogs;
-  if (type === "damage-done") {
-    fightWithFilteredLogs = {
+  const fightWithFilteredLogs = useMemo(() => {
+    if (type === "damage-done") {
+      return {
+        ...fight,
+        data: filteredLogs.filter((log) => {
+          const damageLog = log as DamageLog;
+          return (
+            Boolean(damageLog.target.index) &&
+            (!damageLog.target.id || !BOAT_IDS.includes(damageLog.target.id))
+          );
+        }),
+      };
+    }
+
+    return {
       ...fight,
       data: filteredLogs.filter((log) => {
         const damageLog = log as DamageLog;
-        // Include if target has index (monster) AND target is NOT a boat
-        return (
-          Boolean(damageLog.target.index) &&
-          (!damageLog.target.id || !BOAT_IDS.includes(damageLog.target.id))
-        );
-      }),
-    };
-  } else {
-    fightWithFilteredLogs = {
-      ...fight,
-      data: filteredLogs.filter((log) => {
-        const damageLog = log as DamageLog;
-        // Include if target has no index (player) OR target IS a boat
         return (
           !damageLog.target.index ||
           (Boolean(damageLog.target.id) &&
@@ -84,7 +106,7 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
         );
       }),
     };
-  }
+  }, [fight, filteredLogs, type]);
 
   const equipmentTimelines = useMemo(
     () => buildEquipmentTimelines(fight.data),
@@ -96,56 +118,78 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
     [fight.data],
   );
 
-  const fightWithActorFilters = {
-    ...fightWithFilteredLogs,
-    data: fightWithFilteredLogs.data.filter((log) => {
-      if (log.type !== LogTypes.DAMAGE) {
-        return false;
-      }
+  const fightWithActorFilters = useMemo(
+    () => ({
+      ...fightWithFilteredLogs,
+      data: fightWithFilteredLogs.data.filter((log) => {
+        if (log.type !== LogTypes.DAMAGE) {
+          return false;
+        }
 
-      const damageLog = log as DamageLog;
-      if (!matchesActorFilter(damageLog.source, sourceFilter)) {
-        return false;
-      }
+        const damageLog = log as DamageLog;
+        if (!matchesActorFilter(damageLog.source, sourceFilter)) {
+          return false;
+        }
 
-      const matchesTarget =
-        type === "damage-done"
-          ? matchesMonsterTargetFilter(damageLog.target, targetFilter)
-          : matchesActorFilter(damageLog.target, targetFilter);
-      if (!matchesTarget) {
-        return false;
-      }
+        const matchesTarget =
+          type === "damage-done"
+            ? matchesMonsterTargetFilter(damageLog.target, targetFilter)
+            : matchesActorFilter(damageLog.target, targetFilter);
+        if (!matchesTarget) {
+          return false;
+        }
 
-      if (
-        !matchesEquipmentFilter(
-          log,
-          equipmentTimelines,
-          equipmentFilter ?? null,
-          sourceFilter,
-          targetFilter,
-        )
-      ) {
-        return false;
-      }
+        if (
+          !matchesEquipmentFilter(
+            log,
+            equipmentTimelines,
+            equipmentFilter ?? null,
+            sourceFilter,
+            targetFilter,
+          )
+        ) {
+          return false;
+        }
 
-      return matchesPrayerFilter(
-        log,
-        prayerTimelines,
-        prayerFilter ?? null,
-        sourceFilter,
-        targetFilter,
-      );
+        return (
+          matchesPrayerFilter(
+            log,
+            prayerTimelines,
+            prayerFilter ?? null,
+            sourceFilter,
+            targetFilter,
+          ) &&
+          matchesHitsplatFilter(log, hitsplatFilter ?? null) &&
+          matchesHitsplatTypeFilter(log, hitsplatTypeFilter ?? null)
+        );
+      }),
     }),
-  };
+    [
+      fightWithFilteredLogs,
+      type,
+      sourceFilter,
+      targetFilter,
+      equipmentFilter,
+      prayerFilter,
+      hitsplatFilter,
+      hitsplatTypeFilter,
+      equipmentTimelines,
+      prayerTimelines,
+    ],
+  );
 
-  const drillDownLogs = fightWithFilteredLogs.data.filter((log) => {
-    if (log.type !== LogTypes.DAMAGE) {
-      return false;
-    }
+  const drillDownLogs = useMemo(
+    () =>
+      fightWithFilteredLogs.data.filter((log) => {
+        if (log.type !== LogTypes.DAMAGE) {
+          return false;
+        }
 
-    const damageLog = log as DamageLog;
-    return matchesActorFilter(damageLog.source, sourceFilter);
-  }) as DamageLog[];
+        const damageLog = log as DamageLog;
+        return matchesActorFilter(damageLog.source, sourceFilter);
+      }) as DamageLog[],
+    [fightWithFilteredLogs.data, sourceFilter],
+  );
 
   return (
     <div>
@@ -171,7 +215,11 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
               {fightWithActorFilters &&
                 fightWithActorFilters.data &&
                 fightWithActorFilters.data.length > 0 && (
-                  <HitDistributionChart fight={fightWithActorFilters} />
+                  <HitDistributionChart
+                    fight={fightWithActorFilters}
+                    hitsplatFilter={hitsplatFilter}
+                    onSelectHitsplatFilter={onSelectHitsplatFilter}
+                  />
                 )}
             </div>
           </SectionBox>
@@ -190,18 +238,25 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
             fight={fightWithActorFilters}
             allLogs={fight.data}
             maxHeight={"60vh"}
+            variant="damage"
             sourceFilter={sourceFilter}
             targetFilter={targetFilter}
             equipmentFilter={equipmentFilter}
             prayerFilter={prayerFilter}
+            hitsplatFilter={hitsplatFilter}
+            hitsplatTypeFilter={hitsplatTypeFilter}
             onSelectSourceFilter={onSelectSourceFilter}
             onSelectTargetFilter={onSelectTargetFilter}
             onSelectEquipmentFilter={onSelectEquipmentFilter}
             onSelectPrayerFilter={onSelectPrayerFilter}
+            onSelectHitsplatFilter={onSelectHitsplatFilter}
+            onSelectHitsplatTypeFilter={onSelectHitsplatTypeFilter}
             onClearSourceFilter={onClearSourceFilter}
             onClearTargetFilter={onClearTargetFilter}
             onClearEquipmentFilter={onClearEquipmentFilter}
             onClearPrayerFilter={onClearPrayerFilter}
+            onClearHitsplatFilter={onClearHitsplatFilter}
+            onClearHitsplatTypeFilter={onClearHitsplatTypeFilter}
           />
         </div>
       )}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
   Chip,
@@ -53,26 +53,50 @@ import {
   getDistinctTargetIndexes,
   getDistinctTargetNpcIds,
 } from "../utils/targetDrillDown";
+import {
+  formatHitsplatFilterLabel,
+  HitsplatFilter,
+  matchesHitsplatFilter,
+} from "../utils/hitsplatFilter";
+import {
+  formatHitsplatTypeFilterLabel,
+  HitsplatTypeFilter,
+  matchesHitsplatTypeFilter,
+} from "../utils/hitsplatTypeFilter";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 interface EventsTableProps {
   fight: Fight;
   allLogs?: LogLine[];
   maxHeight: string;
+  variant?: "default" | "damage";
   showSource?: boolean;
   sourceFilter?: ActorFilter | null;
   targetFilter?: ActorFilter | null;
+  dataSourceFilter?: ActorFilter | null;
+  dataTargetFilter?: ActorFilter | null;
   onSelectSourceFilter?: (filter: ActorFilter) => void;
   onSelectTargetFilter?: (filter: ActorFilter) => void;
   onClearSourceFilter?: () => void;
   onClearTargetFilter?: () => void;
   equipmentFilter?: EquipmentFilter | null;
+  dataEquipmentFilter?: EquipmentFilter | null;
   onSelectEquipmentFilter?: (filter: EquipmentFilter) => void;
   onClearEquipmentFilter?: () => void;
   prayerFilter?: PrayerFilter | null;
+  dataPrayerFilter?: PrayerFilter | null;
   onSelectPrayerFilter?: (filter: PrayerFilter) => void;
   onClearPrayerFilter?: () => void;
+  hitsplatFilter?: HitsplatFilter | null;
+  dataHitsplatFilter?: HitsplatFilter | null;
+  onSelectHitsplatFilter?: (filter: HitsplatFilter) => void;
+  onClearHitsplatFilter?: () => void;
+  hitsplatTypeFilter?: HitsplatTypeFilter | null;
+  dataHitsplatTypeFilter?: HitsplatTypeFilter | null;
+  onSelectHitsplatTypeFilter?: (filter: HitsplatTypeFilter) => void;
+  onClearHitsplatTypeFilter?: () => void;
   eventTypeFilter?: string | null;
+  dataEventTypeFilter?: string | null;
   onSelectEventTypeFilter?: (eventType: string) => void;
   onClearEventTypeFilter?: () => void;
 }
@@ -154,53 +178,81 @@ const EventsTable: React.FC<EventsTableProps> = ({
   fight,
   allLogs,
   maxHeight,
+  variant = "default",
   showSource: _showSource = false,
   sourceFilter = null,
   targetFilter = null,
+  dataSourceFilter = sourceFilter,
+  dataTargetFilter = targetFilter,
   onSelectSourceFilter,
   onSelectTargetFilter,
   onClearSourceFilter,
   onClearTargetFilter,
   equipmentFilter = null,
+  dataEquipmentFilter = equipmentFilter,
   onSelectEquipmentFilter,
   onClearEquipmentFilter,
   prayerFilter = null,
+  dataPrayerFilter = prayerFilter,
   onSelectPrayerFilter,
   onClearPrayerFilter,
+  hitsplatFilter = null,
+  dataHitsplatFilter = hitsplatFilter,
+  onSelectHitsplatFilter,
+  onClearHitsplatFilter,
+  hitsplatTypeFilter = null,
+  dataHitsplatTypeFilter = hitsplatTypeFilter,
+  onSelectHitsplatTypeFilter,
+  onClearHitsplatTypeFilter,
   eventTypeFilter = null,
+  dataEventTypeFilter = eventTypeFilter,
   onSelectEventTypeFilter,
   onClearEventTypeFilter,
 }) => {
   const loggedInPlayer = fight.loggedInPlayer;
+  const isDamageVariant = variant === "damage";
   const [sourceMenuAnchor, setSourceMenuAnchor] = useState<null | HTMLElement>(
     null,
   );
   const [targetMenuAnchor, setTargetMenuAnchor] = useState<null | HTMLElement>(
     null,
   );
-  const [logs, setLogs] = useState<LogLine[] | null>(null);
-  const [sourceSpecificIds, setSourceSpecificIds] = useState<number[]>([]);
-  const [targetMenuNpcIds, setTargetMenuNpcIds] = useState<number[]>([]);
-  const [targetMenuIndexes, setTargetMenuIndexes] = useState<number[]>([]);
+
+  const dataSource = allLogs ?? fight.data;
+
+  const equipmentTimelines = useMemo(
+    () => buildEquipmentTimelines(dataSource),
+    [dataSource],
+  );
+
+  const prayerTimelines = useMemo(
+    () => buildPrayerTimelines(dataSource),
+    [dataSource],
+  );
+
+  const [asyncLogs, setAsyncLogs] = useState<LogLine[] | null>(
+    isDamageVariant ? [] : null,
+  );
 
   useEffect(() => {
-    setLogs(null);
+    if (isDamageVariant) {
+      return;
+    }
+
+    setAsyncLogs(null);
 
     const timeoutId = window.setTimeout(() => {
-      const dataSource = allLogs ?? fight.data;
-      const equipmentTimelines = buildEquipmentTimelines(dataSource);
-      const prayerTimelines = buildPrayerTimelines(dataSource);
       const filteredLogs = fight.data.filter((log) => {
-        if (!matchesLogActorFilters(log, sourceFilter, targetFilter)) {
+        if (!matchesLogActorFilters(log, dataSourceFilter, dataTargetFilter)) {
           return false;
         }
         if (
           !matchesEquipmentFilter(
             log,
             equipmentTimelines,
-            equipmentFilter,
-            sourceFilter,
-            targetFilter,
+            dataEquipmentFilter,
+            dataSourceFilter,
+            dataTargetFilter,
           )
         ) {
           return false;
@@ -209,53 +261,83 @@ const EventsTable: React.FC<EventsTableProps> = ({
           !matchesPrayerFilter(
             log,
             prayerTimelines,
-            prayerFilter,
-            sourceFilter,
-            targetFilter,
+            dataPrayerFilter,
+            dataSourceFilter,
+            dataTargetFilter,
           )
         ) {
           return false;
         }
-        if (eventTypeFilter && log.type !== eventTypeFilter) {
+        if (!matchesHitsplatFilter(log, dataHitsplatFilter)) {
+          return false;
+        }
+        if (!matchesHitsplatTypeFilter(log, dataHitsplatTypeFilter)) {
+          return false;
+        }
+        if (dataEventTypeFilter && log.type !== dataEventTypeFilter) {
           return false;
         }
         return true;
       });
 
-      setLogs(filteredLogs);
-      setSourceSpecificIds(
-        sourceFilter
-          ? getActorSpecificIds(fight.data, "source", sourceFilter.name)
-          : [],
-      );
-      if (targetFilter) {
-        const damageLogs = fight.data.filter(
-          (log) => log.type === LogTypes.DAMAGE,
-        ) as DamageLog[];
-        setTargetMenuNpcIds(getDistinctTargetNpcIds(damageLogs, targetFilter));
-        setTargetMenuIndexes(
-          targetFilter.id !== undefined
-            ? getDistinctTargetIndexes(damageLogs, targetFilter)
-            : [],
-        );
-      } else {
-        setTargetMenuNpcIds([]);
-        setTargetMenuIndexes([]);
-      }
+      setAsyncLogs(filteredLogs);
     }, 0);
 
     return () => window.clearTimeout(timeoutId);
   }, [
-    allLogs,
+    isDamageVariant,
     fight.data,
-    sourceFilter,
-    targetFilter,
-    equipmentFilter,
-    prayerFilter,
-    eventTypeFilter,
+    dataSourceFilter,
+    dataTargetFilter,
+    dataEquipmentFilter,
+    dataPrayerFilter,
+    dataHitsplatFilter,
+    dataHitsplatTypeFilter,
+    dataEventTypeFilter,
+    equipmentTimelines,
+    prayerTimelines,
   ]);
 
-  const isLoading = logs === null;
+  const logs = isDamageVariant ? fight.data : (asyncLogs ?? []);
+  const filtersPending =
+    dataSourceFilter !== sourceFilter ||
+    dataTargetFilter !== targetFilter ||
+    dataEquipmentFilter !== equipmentFilter ||
+    dataPrayerFilter !== prayerFilter ||
+    dataHitsplatFilter !== hitsplatFilter ||
+    dataHitsplatTypeFilter !== hitsplatTypeFilter ||
+    dataEventTypeFilter !== eventTypeFilter;
+  const isLoading = !isDamageVariant && (asyncLogs === null || filtersPending);
+
+  const sourceSpecificIds = useMemo(
+    () =>
+      sourceFilter
+        ? getActorSpecificIds(dataSource, "source", sourceFilter.name)
+        : [],
+    [dataSource, sourceFilter],
+  );
+
+  const targetMenuNpcIds = useMemo(() => {
+    if (!targetFilter) {
+      return [];
+    }
+
+    const damageLogs = dataSource.filter(
+      (log) => log.type === LogTypes.DAMAGE,
+    ) as DamageLog[];
+    return getDistinctTargetNpcIds(damageLogs, targetFilter);
+  }, [dataSource, targetFilter]);
+
+  const targetMenuIndexes = useMemo(() => {
+    if (!targetFilter || targetFilter.id === undefined) {
+      return [];
+    }
+
+    const damageLogs = dataSource.filter(
+      (log) => log.type === LogTypes.DAMAGE,
+    ) as DamageLog[];
+    return getDistinctTargetIndexes(damageLogs, targetFilter);
+  }, [dataSource, targetFilter]);
 
   const renderPrayerImages = (prayers: string[]) => {
     return (
@@ -307,23 +389,30 @@ const EventsTable: React.FC<EventsTableProps> = ({
     onSelectSourceFilter ||
     onSelectTargetFilter ||
     onSelectEquipmentFilter ||
-    onSelectPrayerFilter;
+    onSelectPrayerFilter ||
+    onSelectHitsplatTypeFilter ||
+    onSelectHitsplatFilter;
 
   return (
     <>
       {hasFilterControls && (
         <FilterSearchBar
           fight={{ ...fight, data: allLogs ?? fight.data }}
+          variant={variant}
           onSelectSourceFilter={onSelectSourceFilter}
           onSelectTargetFilter={onSelectTargetFilter}
           onSelectEquipmentFilter={onSelectEquipmentFilter}
           onSelectPrayerFilter={onSelectPrayerFilter}
+          onSelectHitsplatTypeFilter={onSelectHitsplatTypeFilter}
+          onSelectHitsplatFilter={onSelectHitsplatFilter}
         />
       )}
       {(sourceFilter ||
         targetFilter ||
         equipmentFilter ||
         prayerFilter ||
+        hitsplatTypeFilter ||
+        hitsplatFilter ||
         eventTypeFilter) && (
         <Box
           sx={{
@@ -465,9 +554,7 @@ const EventsTable: React.FC<EventsTableProps> = ({
                     targetFilter.index === undefined
                   }
                 >
-                  {targetFilter.index !== undefined
-                    ? "All indexes"
-                    : "All IDs"}
+                  {targetFilter.index !== undefined ? "All indexes" : "All IDs"}
                 </MenuItem>
                 {targetFilter.id === undefined &&
                   targetFilter.index === undefined &&
@@ -615,6 +702,58 @@ const EventsTable: React.FC<EventsTableProps> = ({
               }}
             />
           )}
+          {hitsplatTypeFilter && (
+            <Chip
+              label={formatHitsplatTypeFilterLabel(hitsplatTypeFilter)}
+              onDelete={onClearHitsplatTypeFilter}
+              size="small"
+              sx={{
+                bgcolor: colors.background.surface,
+                color: "white",
+                border: "1px solid grey",
+                borderRadius: "5px",
+                "& .MuiChip-label": {
+                  fontSize: "0.9rem",
+                  paddingLeft: "10px",
+                  paddingRight: "10px",
+                },
+                "& .MuiChip-deleteIcon": {
+                  color: "white",
+                  fontSize: "1.05rem",
+                  marginRight: "6px",
+                },
+                "& .MuiChip-deleteIcon:hover": {
+                  color: "white",
+                },
+              }}
+            />
+          )}
+          {hitsplatFilter && (
+            <Chip
+              label={formatHitsplatFilterLabel(hitsplatFilter)}
+              onDelete={onClearHitsplatFilter}
+              size="small"
+              sx={{
+                bgcolor: colors.background.surface,
+                color: "white",
+                border: "1px solid grey",
+                borderRadius: "5px",
+                "& .MuiChip-label": {
+                  fontSize: "0.9rem",
+                  paddingLeft: "10px",
+                  paddingRight: "10px",
+                },
+                "& .MuiChip-deleteIcon": {
+                  color: "white",
+                  fontSize: "1.05rem",
+                  marginRight: "6px",
+                },
+                "& .MuiChip-deleteIcon:hover": {
+                  color: "white",
+                },
+              }}
+            />
+          )}
           {eventTypeFilter && (
             <Chip
               label={`Type: ${eventTypeFilter}`}
@@ -669,23 +808,27 @@ const EventsTable: React.FC<EventsTableProps> = ({
           <Table style={{ tableLayout: "auto" }}>
             <TableHead>
               <TableRow>
-                <TableCell style={{ width: "50px", textAlign: "center" }}>
+                <TableCell style={{ width: "100px", textAlign: "center" }}>
                   Time
                 </TableCell>
                 <TableCell
                   style={{
-                    width: "120px",
+                    width: isDamageVariant ? "200px" : "120px",
                     textAlign: "right",
                     paddingBottom: "2px",
                   }}
                 >
                   Type
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>Event</TableCell>
-                <TableCell style={{ width: "100px", textAlign: "center" }}>
+                {isDamageVariant ? (
+                  <TableCell style={{ textAlign: "left" }}>Amount</TableCell>
+                ) : (
+                  <TableCell style={{ textAlign: "center" }}>Event</TableCell>
+                )}
+                <TableCell align="left" style={{ width: "200px" }}>
                   Source
                 </TableCell>
-                <TableCell style={{ width: "100px", textAlign: "center" }}>
+                <TableCell align="left" style={{ width: "200px" }}>
                   Target
                 </TableCell>
               </TableRow>
@@ -720,157 +863,205 @@ const EventsTable: React.FC<EventsTableProps> = ({
                       <TableCell>
                         {formatHHmmss(log.fightTimeMs!, true)}
                       </TableCell>
-                      <TableCell style={{ width: "120px", textAlign: "right" }}>
-                        {onSelectEventTypeFilter ? (
-                          <span
-                            className="link"
-                            onClick={() => onSelectEventTypeFilter(log.type)}
-                          >
-                            {log.type}
-                          </span>
-                        ) : (
-                          log.type
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {log.type === LogTypes.LOG_VERSION
-                          ? `Log version ${log.logVersion}`
-                          : ""}
-                        {log.type === LogTypes.LOGGED_IN_PLAYER
-                          ? `Logged in player ${log.loggedInPlayer}`
-                          : ""}
-                        {log.type === LogTypes.PLAYER_REGION
-                          ? `${log.playerRegion}`
-                          : ""}
-                        {log.type === LogTypes.BASE_LEVELS
-                          ? renderStatImages(log.baseLevels)
-                          : ""}
-                        {log.type === LogTypes.BOOSTED_LEVELS
-                          ? renderStatImages(log.boostedLevels)
-                          : ""}
-                        {log.type === LogTypes.PRAYER
-                          ? renderPrayerImages(log.prayers)
-                          : ""}
-                        {log.type === LogTypes.OVERHEAD
-                          ? renderPrayerImages([log.overhead])
-                          : ""}
-                        {log.type === LogTypes.PLAYER_EQUIPMENT &&
-                        Array.isArray(log.playerEquipment) ? (
-                          <div style={{ display: "flex" }}>
-                            {log.playerEquipment.map(
-                              (itemId: string, i: number) => {
-                                const id = parseInt(itemId);
-                                return id > 0 ? (
-                                  <div
-                                    key={i}
-                                    className={
-                                      onSelectEquipmentFilter
-                                        ? "link"
-                                        : undefined
-                                    }
-                                    style={{
-                                      width: "22px",
-                                      overflow: "hidden",
-                                      marginRight: "5px",
-                                      backgroundColor: "#494945",
-                                      display: "flex",
-                                      justifyContent: "center",
-                                      alignItems: "center",
-                                      cursor: onSelectEquipmentFilter
-                                        ? "pointer"
-                                        : "default",
-                                    }}
-                                    onClick={() => {
-                                      if (onSelectEquipmentFilter) {
-                                        onSelectEquipmentFilter({
-                                          id,
-                                          name: itemIdMap[id] || `Item ${id}`,
-                                        });
-                                      }
-                                    }}
-                                  >
-                                    <img
-                                      src={getItemImageUrl(id)}
-                                      alt={`Item ${itemId}`}
-                                      style={{ height: "22px" }}
-                                    />
-                                  </div>
-                                ) : null;
-                              },
+                      {isDamageVariant ? (
+                        <>
+                          <TableCell style={{ textAlign: "right" }}>
+                            {onSelectHitsplatTypeFilter ? (
+                              <span
+                                className="link hitsplat-name"
+                                onClick={() =>
+                                  onSelectHitsplatTypeFilter({
+                                    type: (log as DamageLog).hitsplatName,
+                                  })
+                                }
+                              >
+                                {(log as DamageLog).hitsplatName}
+                              </span>
+                            ) : (
+                              <span className="hitsplat-name">
+                                {(log as DamageLog).hitsplatName}
+                              </span>
                             )}
-                          </div>
-                        ) : (
-                          ""
-                        )}
-                        {log.type === LogTypes.DAMAGE ? (
-                          <>
-                            <span className="hitsplat-name">
-                              {log.hitsplatName}{" "}
-                            </span>
-                            <span className="damage-amount">
-                              {log.damageAmount}
-                            </span>
-                          </>
-                        ) : (
-                          ""
-                        )}
-                        {log.type === LogTypes.HEAL ? (
-                          <>
-                            <span className="hitsplat-name">
-                              {log.hitsplatName}{" "}
-                            </span>
-                            <span className="heal-amount">
-                              {log.healAmount}
-                            </span>
-                          </>
-                        ) : (
-                          ""
-                        )}
-                        {log.type === LogTypes.PLAYER_ATTACK_ANIMATION ? (
-                          <>
-                            <span className="attack-animation-text">
-                              {log.animationId}{" "}
-                            </span>
-                          </>
-                        ) : (
-                          ""
-                        )}
-                        {log.type === LogTypes.POSITION
-                          ? `(${log.position.x}, ${log.position.y}, ${log.position.plane})`
-                          : ""}
-                        {log.type === LogTypes.GRAPHICS_OBJECT_SPAWNED
-                          ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
-                          : ""}
-                        {log.type === LogTypes.GRAPHICS_OBJECT_DESPAWNED
-                          ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
-                          : ""}
-                        {log.type === LogTypes.GAME_OBJECT_SPAWNED
-                          ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
-                          : ""}
-                        {log.type === LogTypes.GAME_OBJECT_DESPAWNED
-                          ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
-                          : ""}
-                        {log.type === LogTypes.GROUND_OBJECT_SPAWNED
-                          ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
-                          : ""}
-                        {log.type === LogTypes.GROUND_OBJECT_DESPAWNED
-                          ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
-                          : ""}
-                        {log.type === LogTypes.NPC_CHANGED
-                          ? `Changed ID: ${log.oldNpc.id} -> ${log.newNpc.id}`
-                          : ""}
-                        {log.type === LogTypes.WAVE_START}
-                        {log.type === LogTypes.WAVE_END}
-                        {log.type === LogTypes.PATH_START
-                          ? `${log.pathName}`
-                          : ""}
-                        {log.type === LogTypes.PATH_COMPLETE
-                          ? `${log.pathName}`
-                          : ""}
-                        {log.type === LogTypes.DURATION
-                          ? `${log.duration}`
-                          : ""}
-                      </TableCell>
+                          </TableCell>
+                          <TableCell style={{ textAlign: "left" }}>
+                            {onSelectHitsplatFilter ? (
+                              <span
+                                className="link damage-amount"
+                                onClick={() =>
+                                  onSelectHitsplatFilter({
+                                    amount: (log as DamageLog).damageAmount,
+                                  })
+                                }
+                              >
+                                {(log as DamageLog).damageAmount}
+                              </span>
+                            ) : (
+                              <span className="damage-amount">
+                                {(log as DamageLog).damageAmount}
+                              </span>
+                            )}
+                          </TableCell>
+                        </>
+                      ) : (
+                        <>
+                          <TableCell
+                            style={{ width: "120px", textAlign: "right" }}
+                          >
+                            {onSelectEventTypeFilter ? (
+                              <span
+                                className="link"
+                                onClick={() =>
+                                  onSelectEventTypeFilter(log.type)
+                                }
+                              >
+                                {log.type}
+                              </span>
+                            ) : (
+                              log.type
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {log.type === LogTypes.LOG_VERSION
+                              ? `Log version ${log.logVersion}`
+                              : ""}
+                            {log.type === LogTypes.LOGGED_IN_PLAYER
+                              ? `Logged in player ${log.loggedInPlayer}`
+                              : ""}
+                            {log.type === LogTypes.PLAYER_REGION
+                              ? `${log.playerRegion}`
+                              : ""}
+                            {log.type === LogTypes.BASE_LEVELS
+                              ? renderStatImages(log.baseLevels)
+                              : ""}
+                            {log.type === LogTypes.BOOSTED_LEVELS
+                              ? renderStatImages(log.boostedLevels)
+                              : ""}
+                            {log.type === LogTypes.PRAYER
+                              ? renderPrayerImages(log.prayers)
+                              : ""}
+                            {log.type === LogTypes.OVERHEAD
+                              ? renderPrayerImages([log.overhead])
+                              : ""}
+                            {log.type === LogTypes.PLAYER_EQUIPMENT &&
+                            Array.isArray(log.playerEquipment) ? (
+                              <div style={{ display: "flex" }}>
+                                {log.playerEquipment.map(
+                                  (itemId: string, i: number) => {
+                                    const id = parseInt(itemId);
+                                    return id > 0 ? (
+                                      <div
+                                        key={i}
+                                        className={
+                                          onSelectEquipmentFilter
+                                            ? "link"
+                                            : undefined
+                                        }
+                                        style={{
+                                          width: "22px",
+                                          overflow: "hidden",
+                                          marginRight: "5px",
+                                          backgroundColor: "#494945",
+                                          display: "flex",
+                                          justifyContent: "center",
+                                          alignItems: "center",
+                                          cursor: onSelectEquipmentFilter
+                                            ? "pointer"
+                                            : "default",
+                                        }}
+                                        onClick={() => {
+                                          if (onSelectEquipmentFilter) {
+                                            onSelectEquipmentFilter({
+                                              id,
+                                              name:
+                                                itemIdMap[id] || `Item ${id}`,
+                                            });
+                                          }
+                                        }}
+                                      >
+                                        <img
+                                          src={getItemImageUrl(id)}
+                                          alt={`Item ${itemId}`}
+                                          style={{ height: "22px" }}
+                                        />
+                                      </div>
+                                    ) : null;
+                                  },
+                                )}
+                              </div>
+                            ) : (
+                              ""
+                            )}
+                            {log.type === LogTypes.DAMAGE ? (
+                              <>
+                                <span className="hitsplat-name">
+                                  {log.hitsplatName}{" "}
+                                </span>
+                                <span className="damage-amount">
+                                  {log.damageAmount}
+                                </span>
+                              </>
+                            ) : (
+                              ""
+                            )}
+                            {log.type === LogTypes.HEAL ? (
+                              <>
+                                <span className="hitsplat-name">
+                                  {log.hitsplatName}{" "}
+                                </span>
+                                <span className="heal-amount">
+                                  {log.healAmount}
+                                </span>
+                              </>
+                            ) : (
+                              ""
+                            )}
+                            {log.type === LogTypes.PLAYER_ATTACK_ANIMATION ? (
+                              <>
+                                <span className="attack-animation-text">
+                                  {log.animationId}{" "}
+                                </span>
+                              </>
+                            ) : (
+                              ""
+                            )}
+                            {log.type === LogTypes.POSITION
+                              ? `(${log.position.x}, ${log.position.y}, ${log.position.plane})`
+                              : ""}
+                            {log.type === LogTypes.GRAPHICS_OBJECT_SPAWNED
+                              ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
+                              : ""}
+                            {log.type === LogTypes.GRAPHICS_OBJECT_DESPAWNED
+                              ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
+                              : ""}
+                            {log.type === LogTypes.GAME_OBJECT_SPAWNED
+                              ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
+                              : ""}
+                            {log.type === LogTypes.GAME_OBJECT_DESPAWNED
+                              ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
+                              : ""}
+                            {log.type === LogTypes.GROUND_OBJECT_SPAWNED
+                              ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
+                              : ""}
+                            {log.type === LogTypes.GROUND_OBJECT_DESPAWNED
+                              ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
+                              : ""}
+                            {log.type === LogTypes.NPC_CHANGED
+                              ? `Changed ID: ${log.oldNpc.id} -> ${log.newNpc.id}`
+                              : ""}
+                            {log.type === LogTypes.WAVE_START}
+                            {log.type === LogTypes.WAVE_END}
+                            {log.type === LogTypes.PATH_START
+                              ? `${log.pathName}`
+                              : ""}
+                            {log.type === LogTypes.PATH_COMPLETE
+                              ? `${log.pathName}`
+                              : ""}
+                            {log.type === LogTypes.DURATION
+                              ? `${log.duration}`
+                              : ""}
+                          </TableCell>
+                        </>
+                      )}
                       <TableCell
                         className={getSourceTextClass(source, loggedInPlayer)}
                       >

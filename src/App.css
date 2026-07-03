@@ -460,6 +460,14 @@ a.encounter-title-bar.encounter-title-bar--clickable:hover {
   text-decoration: underline;
 }
 
+.link.hitsplat-name {
+  color: var(--color-text-gold);
+}
+
+.link.damage-amount {
+  color: var(--color-text-damage);
+}
+
 /* Map Container Styling */
 .leaflet-container {
   background: var(--color-bg-map);

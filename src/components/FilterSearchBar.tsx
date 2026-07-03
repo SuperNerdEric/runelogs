@@ -17,6 +17,14 @@ import { LogTypes } from "../models/LogLine";
 import { ActorFilter } from "../utils/actorFilter";
 import { EquipmentFilter } from "../utils/equipmentFilter";
 import { PrayerFilter } from "../utils/prayerFilter";
+import {
+  getDistinctHitsplatAmounts,
+  HitsplatFilter,
+} from "../utils/hitsplatFilter";
+import {
+  getDistinctHitsplatTypes,
+  HitsplatTypeFilter,
+} from "../utils/hitsplatTypeFilter";
 import { colors, layout } from "../theme";
 import { getActorFromLog } from "../utils/actorUtils";
 import { itemIdMap } from "../lib/itemIdMap";
@@ -28,7 +36,11 @@ export type FilterOption =
   | { kind: "source"; label: string; filter: ActorFilter }
   | { kind: "target"; label: string; filter: ActorFilter }
   | { kind: "equipment"; label: string; filter: EquipmentFilter }
-  | { kind: "prayer"; label: string; filter: PrayerFilter };
+  | { kind: "prayer"; label: string; filter: PrayerFilter }
+  | { kind: "hitsplatType"; label: string; filter: HitsplatTypeFilter }
+  | { kind: "hitsplat"; label: string; filter: HitsplatFilter };
+
+export type FilterSearchBarVariant = "default" | "damage";
 
 type FilterCategory = FilterOption["kind"];
 
@@ -39,10 +51,13 @@ type DisplayOption =
 
 interface FilterSearchBarProps {
   fight: Fight;
+  variant?: FilterSearchBarVariant;
   onSelectSourceFilter?: (filter: ActorFilter) => void;
   onSelectTargetFilter?: (filter: ActorFilter) => void;
   onSelectEquipmentFilter?: (filter: EquipmentFilter) => void;
   onSelectPrayerFilter?: (filter: PrayerFilter) => void;
+  onSelectHitsplatTypeFilter?: (filter: HitsplatTypeFilter) => void;
+  onSelectHitsplatFilter?: (filter: HitsplatFilter) => void;
 }
 
 const CATEGORY_LABELS: Record<FilterCategory, string> = {
@@ -50,6 +65,8 @@ const CATEGORY_LABELS: Record<FilterCategory, string> = {
   target: "Target",
   equipment: "Equipment",
   prayer: "Prayers",
+  hitsplatType: "Hitsplat type",
+  hitsplat: "Hitsplat amount",
 };
 
 const FILTER_ICON_COLUMN_WIDTH = 28;
@@ -60,10 +77,13 @@ const getCategoryLabel = (option: FilterOption): string =>
 
 const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
   fight,
+  variant = "default",
   onSelectSourceFilter,
   onSelectTargetFilter,
   onSelectEquipmentFilter,
   onSelectPrayerFilter,
+  onSelectHitsplatTypeFilter,
+  onSelectHitsplatFilter,
 }) => {
   const [inputValue, setInputValue] = useState("");
   const [open, setOpen] = useState(false);
@@ -166,8 +186,26 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
         });
       });
 
+    if (variant === "damage") {
+      getDistinctHitsplatTypes(fight.data).forEach((type) => {
+        filterOptions.push({
+          kind: "hitsplatType",
+          label: type,
+          filter: { type },
+        });
+      });
+    }
+
+    getDistinctHitsplatAmounts(fight.data).forEach((amount) => {
+      filterOptions.push({
+        kind: "hitsplat",
+        label: String(amount),
+        filter: { amount },
+      });
+    });
+
     return filterOptions;
-  }, [fight.data]);
+  }, [fight.data, variant]);
 
   const goBackToCategories = () => {
     keepOpenRef.current = true;
@@ -201,12 +239,17 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
       return [{ type: "back" as const, label: "Back" }, ...items];
     }
 
-    const categories: FilterCategory[] = [
-      "source",
-      "target",
-      "equipment",
-      "prayer",
-    ];
+    const categories: FilterCategory[] =
+      variant === "damage"
+        ? [
+            "source",
+            "target",
+            "equipment",
+            "prayer",
+            "hitsplatType",
+            "hitsplat",
+          ]
+        : ["source", "target", "equipment", "prayer", "hitsplat"];
     return categories
       .filter((category) =>
         itemOptions.some((option) => option.kind === category),
@@ -216,7 +259,7 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
         category,
         label: CATEGORY_LABELS[category],
       }));
-  }, [activeCategory, inputValue, itemOptions]);
+  }, [activeCategory, inputValue, itemOptions, variant]);
 
   const applyFilter = (option: FilterOption) => {
     if (option.kind === "source") {
@@ -225,8 +268,12 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
       onSelectTargetFilter?.(option.filter);
     } else if (option.kind === "equipment") {
       onSelectEquipmentFilter?.(option.filter);
-    } else {
+    } else if (option.kind === "prayer") {
       onSelectPrayerFilter?.(option.filter);
+    } else if (option.kind === "hitsplatType") {
+      onSelectHitsplatTypeFilter?.(option.filter);
+    } else {
+      onSelectHitsplatFilter?.(option.filter);
     }
   };
 
@@ -239,7 +286,9 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
     !onSelectSourceFilter &&
     !onSelectTargetFilter &&
     !onSelectEquipmentFilter &&
-    !onSelectPrayerFilter
+    !onSelectPrayerFilter &&
+    !onSelectHitsplatTypeFilter &&
+    !onSelectHitsplatFilter
   ) {
     return null;
   }

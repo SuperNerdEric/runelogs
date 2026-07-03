@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import {
   Bar,
   BarChart,
+  Cell,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -9,9 +10,14 @@ import {
 } from "recharts";
 import { Fight } from "../../models/Fight";
 import { filterByType, LogTypes } from "../../models/LogLine";
+import { HitsplatFilter } from "../../utils/hitsplatFilter";
+
+const HITSPLAT_BAR_COLOR = "tan";
 
 interface HitDistributionChartProps {
   fight: Fight;
+  hitsplatFilter?: HitsplatFilter | null;
+  onSelectHitsplatFilter?: (filter: HitsplatFilter) => void;
 }
 
 const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
@@ -35,7 +41,11 @@ const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
 
 const HitDistributionChart: React.FC<HitDistributionChartProps> = ({
   fight,
+  hitsplatFilter = null,
+  onSelectHitsplatFilter,
 }) => {
+  const [tooltipSuppressed, setTooltipSuppressed] = useState(false);
+
   const filteredLogs = filterByType(fight.data, LogTypes.DAMAGE);
   const hitsplatAmounts = filteredLogs.map((log) => log.damageAmount);
 
@@ -48,36 +58,73 @@ const HitDistributionChart: React.FC<HitDistributionChartProps> = ({
   );
 
   const chartData = Object.keys(data).map((key) => ({
-    hitsplatAmount: parseInt(key),
-    frequency: data[parseInt(key)],
+    hitsplatAmount: parseInt(key, 10),
+    frequency: data[parseInt(key, 10)],
   }));
 
-  return (
-    <ResponsiveContainer width="100%" height={180}>
-      <BarChart data={chartData} margin={{ top: 11, left: 60, bottom: 30 }}>
-        <XAxis
-          dataKey="hitsplatAmount"
-          label={{ value: "Hitsplat", position: "insideBottom", offset: -20 }}
-        />
-        <YAxis
-          dataKey="frequency"
-          label={{
-            value: "Frequency",
-            position: "insideLeft",
-            angle: -90,
-            offset: -25,
-            style: { textAnchor: "middle" },
-          }}
-          width={35}
-        />
-        <Tooltip
-          content={(props) => <CustomTooltip {...props} />}
-          cursor={{ fill: "#3c3226" }}
-        />
+  const chartKey = useMemo(
+    () =>
+      `${hitsplatFilter?.amount ?? "all"}:${chartData
+        .map((entry) => entry.hitsplatAmount)
+        .join(",")}`,
+    [chartData, hitsplatFilter?.amount],
+  );
 
-        <Bar dataKey="frequency" fill="tan" isAnimationActive={false} />
-      </BarChart>
-    </ResponsiveContainer>
+  return (
+    <div
+      onMouseLeave={() => setTooltipSuppressed(false)}
+      style={{ width: "100%", height: 180 }}
+    >
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart
+          key={chartKey}
+          data={chartData}
+          margin={{ top: 11, left: 60, bottom: 30 }}
+        >
+          <XAxis
+            dataKey="hitsplatAmount"
+            label={{ value: "Hitsplat", position: "insideBottom", offset: -20 }}
+          />
+          <YAxis
+            dataKey="frequency"
+            label={{
+              value: "Frequency",
+              position: "insideLeft",
+              angle: -90,
+              offset: -25,
+              style: { textAnchor: "middle" },
+            }}
+            width={35}
+          />
+          <Tooltip
+            content={(props) => <CustomTooltip {...props} />}
+            active={tooltipSuppressed ? false : undefined}
+            cursor={tooltipSuppressed ? false : { fill: "#3c3226" }}
+          />
+
+          <Bar
+            dataKey="frequency"
+            fill={HITSPLAT_BAR_COLOR}
+            isAnimationActive={false}
+            cursor={onSelectHitsplatFilter ? "pointer" : "default"}
+            onClick={(barData) => {
+              if (
+                !onSelectHitsplatFilter ||
+                barData?.hitsplatAmount === undefined
+              ) {
+                return;
+              }
+              setTooltipSuppressed(true);
+              onSelectHitsplatFilter({ amount: barData.hitsplatAmount });
+            }}
+          >
+            {chartData.map((entry) => (
+              <Cell key={entry.hitsplatAmount} fill={HITSPLAT_BAR_COLOR} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
   );
 };
 

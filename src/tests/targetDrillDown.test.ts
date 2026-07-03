@@ -25,43 +25,22 @@ function damageLog(target: DamageLog["target"], damageAmount = 10): DamageLog {
 
 describe("targetDrillDown", () => {
   it("groups by monster name when only source is filtered", () => {
-    const logs = [
-      damageLog({ name: "Aberrant spectre", id: 2, index: 1 }),
-      damageLog({ name: "Aberrant spectre", id: 3, index: 2 }),
-      damageLog({ name: "Nechryael", id: 8, index: 1 }),
-    ];
-
     expect(resolveTargetDrillDownGrouping(null)).toBe("monster-name");
   });
 
   it("groups by id when a filtered monster name has only one id", () => {
-    const logs = [
-      damageLog({ name: "Nechryael", id: 8, index: 1 }),
-      damageLog({ name: "Nechryael", id: 8, index: 2 }),
-    ];
-
     expect(resolveTargetDrillDownGrouping({ name: "Nechryael" })).toBe(
       "monster-id",
     );
   });
 
   it("groups by id when a filtered monster name has multiple ids", () => {
-    const logs = [
-      damageLog({ name: "Aberrant spectre", id: 2, index: 1 }),
-      damageLog({ name: "Aberrant spectre", id: 3, index: 2 }),
-    ];
-
-    expect(
-      resolveTargetDrillDownGrouping({ name: "Aberrant spectre" }),
-    ).toBe("monster-id");
+    expect(resolveTargetDrillDownGrouping({ name: "Aberrant spectre" })).toBe(
+      "monster-id",
+    );
   });
 
   it("advances to id filter when clicking a monster name", () => {
-    const logs = [
-      damageLog({ name: "Nechryael", id: 8, index: 1 }),
-      damageLog({ name: "Nechryael", id: 8, index: 2 }),
-    ];
-
     expect(
       getNextTargetFilter({ name: "Nechryael", id: 8 }, "monster-name"),
     ).toEqual({ name: "Nechryael" });
@@ -70,9 +49,9 @@ describe("targetDrillDown", () => {
   it("shows index grouping for a single index and allows clicking into it", () => {
     const logs = [damageLog({ name: "Nechryael", id: 8, index: 1 })];
 
-    expect(
-      resolveTargetDrillDownGrouping({ name: "Nechryael", id: 8 }),
-    ).toBe("monster-index");
+    expect(resolveTargetDrillDownGrouping({ name: "Nechryael", id: 8 })).toBe(
+      "monster-index",
+    );
     expect(
       canDrillDownTargetRow(
         logs,
