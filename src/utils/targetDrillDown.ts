@@ -36,13 +36,8 @@ const uniqueDefined = <T>(values: (T | undefined)[]): T[] => [
 ];
 
 export function resolveTargetDrillDownGrouping(
-  drillDownLogs: DamageLog[],
   targetFilter: ActorFilter | null,
 ): TargetDrillDownGrouping {
-  const scopedLogs = drillDownLogs.filter((log) =>
-    matchesMonsterTargetFilter(log.target, targetFilter),
-  );
-
   if (!targetFilter) {
     return "monster-name";
   }
@@ -52,11 +47,6 @@ export function resolveTargetDrillDownGrouping(
   }
 
   if (targetFilter.id !== undefined) {
-    return "monster-index";
-  }
-
-  const ids = uniqueDefined(scopedLogs.map((log) => log.target.id));
-  if (ids.length <= 1) {
     return "monster-index";
   }
 
@@ -94,9 +84,7 @@ export function getTargetDrillDownDisplayName(
       return actor.id !== undefined ? String(actor.id) : canonicalName;
     case "monster-index":
     case "leaf":
-      return actor.index !== undefined
-        ? `${canonicalName} - ${actor.index}`
-        : canonicalName;
+      return actor.index !== undefined ? String(actor.index) : canonicalName;
   }
 }
 
@@ -125,26 +113,12 @@ export function getTargetDrillDownRowActor(
 }
 
 export function getNextTargetFilter(
-  drillDownLogs: DamageLog[],
   rowTarget: Actor,
   grouping: TargetDrillDownGrouping,
 ): ActorFilter {
   const canonicalName = getMonsterCanonicalName(rowTarget);
 
   if (grouping === "monster-name") {
-    const scoped = drillDownLogs.filter(
-      (log) => getMonsterCanonicalName(log.target) === canonicalName,
-    );
-    const ids = uniqueDefined(scoped.map((log) => log.target.id));
-
-    if (ids.length <= 1) {
-      const singleId = ids[0] ?? rowTarget.id;
-      return {
-        name: canonicalName,
-        ...(singleId !== undefined ? { id: singleId } : {}),
-      };
-    }
-
     return { name: canonicalName };
   }
 
@@ -182,7 +156,7 @@ export function canDrillDownTargetRow(
       (log) => getMonsterCanonicalName(log.target) === canonicalName,
     );
     const ids = uniqueDefined(scoped.map((log) => log.target.id));
-    if (ids.length > 1) {
+    if (ids.length >= 1) {
       return true;
     }
     return uniqueDefined(scoped.map((log) => log.target.index)).length >= 1;
@@ -200,4 +174,45 @@ export function isTargetDrillDownActive(
   sourceFilter: ActorFilter | null,
 ): boolean {
   return type === "damage-done" && sourceFilter !== null;
+}
+
+export function formatTargetFilterLabel(filter: ActorFilter): string {
+  if (filter.index !== undefined) {
+    return `Target index: ${filter.index}`;
+  }
+  if (filter.id !== undefined) {
+    return `Target ID: ${filter.id}`;
+  }
+  return `Target name: ${filter.name}`;
+}
+
+export function getDistinctTargetNpcIds(
+  logs: DamageLog[],
+  filter: ActorFilter,
+): number[] {
+  return uniqueDefined(
+    logs
+      .filter(
+        (log) =>
+          getMonsterCanonicalName(log.target) === filter.name ||
+          log.target.name === filter.name,
+      )
+      .map((log) => log.target.id),
+  ).sort((a, b) => a - b);
+}
+
+export function getDistinctTargetIndexes(
+  logs: DamageLog[],
+  filter: ActorFilter,
+): number[] {
+  return uniqueDefined(
+    logs
+      .filter((log) =>
+        matchesMonsterTargetFilter(log.target, {
+          name: filter.name,
+          ...(filter.id !== undefined ? { id: filter.id } : {}),
+        }),
+      )
+      .map((log) => log.target.index),
+  ).sort((a, b) => a - b);
 }

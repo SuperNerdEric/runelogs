@@ -74,7 +74,7 @@ const getDPSData = (
   const dpsData: Record<string, DPSData> = {};
   const targetDrillDownActive = isTargetDrillDownActive(type, sourceFilter);
   const targetDrillDownGrouping = targetDrillDownActive
-    ? resolveTargetDrillDownGrouping(drillDownLogs, targetFilter ?? null)
+    ? resolveTargetDrillDownGrouping(targetFilter ?? null)
     : null;
 
   for (const logLine of filteredFight.data) {
@@ -270,6 +270,19 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
     (a, b) => b[1].totalDamage - a[1].totalDamage,
   );
 
+  const nameColumnHeader =
+    targetDrillDownGrouping === "monster-id" ? (
+      <TableColumnHeaderTooltip label="ID" tooltip={COLUMN_TOOLTIPS.npcId} />
+    ) : targetDrillDownGrouping === "monster-index" ||
+      targetDrillDownGrouping === "leaf" ? (
+      <TableColumnHeaderTooltip
+        label="Index"
+        tooltip={COLUMN_TOOLTIPS.npcIndex}
+      />
+    ) : (
+      "Name"
+    );
+
   return (
     <TableContainer
       sx={{
@@ -286,7 +299,7 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
         <TableHead>
           <TableRow>
             <TableCell style={{ width: "100px", textAlign: "center" }}>
-              Name
+              {nameColumnHeader}
             </TableCell>
             <TableCell style={{ textAlign: "center", paddingBottom: "2px" }}>
               Amount
@@ -373,7 +386,6 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
 
                           onSelectTargetFilter(
                             getNextTargetFilter(
-                              drillDownLogs,
                               data.actor,
                               targetDrillDownGrouping,
                             ),

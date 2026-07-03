@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { DamageLog, LogTypes } from "../models/LogLine";
 import {
   canDrillDownTargetRow,
+  formatTargetFilterLabel,
   getMonsterCanonicalName,
   getNextTargetFilter,
   matchesMonsterTargetFilter,
@@ -30,17 +31,17 @@ describe("targetDrillDown", () => {
       damageLog({ name: "Nechryael", id: 8, index: 1 }),
     ];
 
-    expect(resolveTargetDrillDownGrouping(logs, null)).toBe("monster-name");
+    expect(resolveTargetDrillDownGrouping(null)).toBe("monster-name");
   });
 
-  it("skips id grouping when a filtered monster name has only one id", () => {
+  it("groups by id when a filtered monster name has only one id", () => {
     const logs = [
       damageLog({ name: "Nechryael", id: 8, index: 1 }),
       damageLog({ name: "Nechryael", id: 8, index: 2 }),
     ];
 
-    expect(resolveTargetDrillDownGrouping(logs, { name: "Nechryael" })).toBe(
-      "monster-index",
+    expect(resolveTargetDrillDownGrouping({ name: "Nechryael" })).toBe(
+      "monster-id",
     );
   });
 
@@ -51,26 +52,26 @@ describe("targetDrillDown", () => {
     ];
 
     expect(
-      resolveTargetDrillDownGrouping(logs, { name: "Aberrant spectre" }),
+      resolveTargetDrillDownGrouping({ name: "Aberrant spectre" }),
     ).toBe("monster-id");
   });
 
-  it("advances to index filter when clicking a name with a single id", () => {
+  it("advances to id filter when clicking a monster name", () => {
     const logs = [
       damageLog({ name: "Nechryael", id: 8, index: 1 }),
       damageLog({ name: "Nechryael", id: 8, index: 2 }),
     ];
 
     expect(
-      getNextTargetFilter(logs, { name: "Nechryael", id: 8 }, "monster-name"),
-    ).toEqual({ name: "Nechryael", id: 8 });
+      getNextTargetFilter({ name: "Nechryael", id: 8 }, "monster-name"),
+    ).toEqual({ name: "Nechryael" });
   });
 
   it("shows index grouping for a single index and allows clicking into it", () => {
     const logs = [damageLog({ name: "Nechryael", id: 8, index: 1 })];
 
     expect(
-      resolveTargetDrillDownGrouping(logs, { name: "Nechryael", id: 8 }),
+      resolveTargetDrillDownGrouping({ name: "Nechryael", id: 8 }),
     ).toBe("monster-index");
     expect(
       canDrillDownTargetRow(
@@ -81,7 +82,7 @@ describe("targetDrillDown", () => {
       ),
     ).toBe(true);
     expect(
-      resolveTargetDrillDownGrouping(logs, {
+      resolveTargetDrillDownGrouping({
         name: "Nechryael",
         id: 8,
         index: 1,
@@ -99,5 +100,17 @@ describe("targetDrillDown", () => {
     expect(getMonsterCanonicalName({ name: "foo", id: 2, index: 1 })).toBe(
       "Aberrant spectre",
     );
+  });
+
+  it("formats target filter labels by drill-down level", () => {
+    expect(formatTargetFilterLabel({ name: "Nechryael" })).toBe(
+      "Target name: Nechryael",
+    );
+    expect(formatTargetFilterLabel({ name: "Nechryael", id: 8 })).toBe(
+      "Target ID: 8",
+    );
+    expect(
+      formatTargetFilterLabel({ name: "Nechryael", id: 8, index: 1 }),
+    ).toBe("Target index: 1");
   });
 });

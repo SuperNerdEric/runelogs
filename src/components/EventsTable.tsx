@@ -15,7 +15,7 @@ import {
 import AppTooltip from "./AppTooltip";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { Fight } from "../models/Fight";
-import { LogLine, LogTypes } from "../models/LogLine";
+import { DamageLog, LogLine, LogTypes } from "../models/LogLine";
 import { Levels } from "../models/Levels";
 import attackImage from "../assets/Attack.webp";
 import strengthImage from "../assets/Strength.webp";
@@ -48,6 +48,11 @@ import { itemIdMap } from "../lib/itemIdMap";
 import { prayerIdMap } from "../lib/prayerIdMap";
 import { prayerImages } from "../lib/prayerImages";
 import FilterSearchBar from "./FilterSearchBar";
+import {
+  formatTargetFilterLabel,
+  getDistinctTargetIndexes,
+  getDistinctTargetNpcIds,
+} from "../utils/targetDrillDown";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 
 interface EventsTableProps {
@@ -99,6 +104,17 @@ const getFilterTextColor = (
   }
   return colors.text.other;
 };
+
+const getFilterMenuPaperProps = (anchorEl: HTMLElement | null) => ({
+  sx: {
+    maxHeight: "200px",
+    minWidth: Math.max(anchorEl?.offsetWidth ?? 0, 160),
+    bgcolor: colors.background.surface,
+    "& .MuiMenuItem-root": {
+      whiteSpace: "nowrap",
+    },
+  },
+});
 
 const getSourceTextClass = (source: string, loggedInPlayer: string): string => {
   if (source === loggedInPlayer) {
@@ -164,7 +180,8 @@ const EventsTable: React.FC<EventsTableProps> = ({
   );
   const [logs, setLogs] = useState<LogLine[] | null>(null);
   const [sourceSpecificIds, setSourceSpecificIds] = useState<number[]>([]);
-  const [targetSpecificIds, setTargetSpecificIds] = useState<number[]>([]);
+  const [targetMenuNpcIds, setTargetMenuNpcIds] = useState<number[]>([]);
+  const [targetMenuIndexes, setTargetMenuIndexes] = useState<number[]>([]);
 
   useEffect(() => {
     setLogs(null);
@@ -211,11 +228,20 @@ const EventsTable: React.FC<EventsTableProps> = ({
           ? getActorSpecificIds(fight.data, "source", sourceFilter.name)
           : [],
       );
-      setTargetSpecificIds(
-        targetFilter
-          ? getActorSpecificIds(fight.data, "target", targetFilter.name)
-          : [],
-      );
+      if (targetFilter) {
+        const damageLogs = fight.data.filter(
+          (log) => log.type === LogTypes.DAMAGE,
+        ) as DamageLog[];
+        setTargetMenuNpcIds(getDistinctTargetNpcIds(damageLogs, targetFilter));
+        setTargetMenuIndexes(
+          targetFilter.id !== undefined
+            ? getDistinctTargetIndexes(damageLogs, targetFilter)
+            : [],
+        );
+      } else {
+        setTargetMenuNpcIds([]);
+        setTargetMenuIndexes([]);
+      }
     }, 0);
 
     return () => window.clearTimeout(timeoutId);
@@ -347,15 +373,7 @@ const EventsTable: React.FC<EventsTableProps> = ({
                 anchorEl={sourceMenuAnchor}
                 open={Boolean(sourceMenuAnchor)}
                 onClose={() => setSourceMenuAnchor(null)}
-                PaperProps={{
-                  sx: {
-                    maxHeight: "200px",
-                    minWidth: "100px",
-                    "& .MuiMenu-list": {
-                      paddingRight: "12px",
-                    },
-                  },
-                }}
+                PaperProps={getFilterMenuPaperProps(sourceMenuAnchor)}
               >
                 <MenuItem
                   onClick={() => {
@@ -389,7 +407,7 @@ const EventsTable: React.FC<EventsTableProps> = ({
           {targetFilter && (
             <>
               <Chip
-                label={`Target: ${targetFilter.name}${targetFilter.index !== undefined ? ` - ${targetFilter.index}` : ""}`}
+                label={formatTargetFilterLabel(targetFilter)}
                 onDelete={onClearTargetFilter}
                 onClick={(e) => setTargetMenuAnchor(e.currentTarget)}
                 icon={
@@ -424,42 +442,92 @@ const EventsTable: React.FC<EventsTableProps> = ({
                 anchorEl={targetMenuAnchor}
                 open={Boolean(targetMenuAnchor)}
                 onClose={() => setTargetMenuAnchor(null)}
-                PaperProps={{
-                  sx: {
-                    maxHeight: "200px",
-                    width: "100px",
-                    "& .MuiMenu-list": {
-                      paddingRight: "12px",
-                    },
-                  },
-                }}
+                PaperProps={getFilterMenuPaperProps(targetMenuAnchor)}
               >
                 <MenuItem
                   onClick={() => {
                     if (onSelectTargetFilter) {
-                      onSelectTargetFilter({ name: targetFilter.name });
+                      if (targetFilter.index !== undefined) {
+                        onSelectTargetFilter({
+                          name: targetFilter.name,
+                          ...(targetFilter.id !== undefined
+                            ? { id: targetFilter.id }
+                            : {}),
+                        });
+                      } else if (targetFilter.id !== undefined) {
+                        onSelectTargetFilter({ name: targetFilter.name });
+                      }
                     }
                     setTargetMenuAnchor(null);
                   }}
+                  disabled={
+                    targetFilter.id === undefined &&
+                    targetFilter.index === undefined
+                  }
                 >
-                  All IDs
+                  {targetFilter.index !== undefined
+                    ? "All indexes"
+                    : "All IDs"}
                 </MenuItem>
-                {targetSpecificIds.map((specificId) => (
-                  <MenuItem
-                    key={`target-id-${specificId}`}
-                    onClick={() => {
-                      if (onSelectTargetFilter) {
-                        onSelectTargetFilter({
-                          name: targetFilter.name,
-                          index: specificId,
-                        });
-                      }
-                      setTargetMenuAnchor(null);
-                    }}
-                  >
-                    {specificId}
-                  </MenuItem>
-                ))}
+                {targetFilter.id === undefined &&
+                  targetFilter.index === undefined &&
+                  targetMenuNpcIds.map((npcId) => (
+                    <MenuItem
+                      key={`target-npc-id-${npcId}`}
+                      onClick={() => {
+                        if (onSelectTargetFilter) {
+                          onSelectTargetFilter({
+                            name: targetFilter.name,
+                            id: npcId,
+                          });
+                        }
+                        setTargetMenuAnchor(null);
+                      }}
+                    >
+                      ID {npcId}
+                    </MenuItem>
+                  ))}
+                {targetFilter.id !== undefined &&
+                  targetFilter.index === undefined &&
+                  targetMenuIndexes.map((index) => (
+                    <MenuItem
+                      key={`target-index-${index}`}
+                      onClick={() => {
+                        if (onSelectTargetFilter) {
+                          onSelectTargetFilter({
+                            name: targetFilter.name,
+                            id: targetFilter.id,
+                            index,
+                          });
+                        }
+                        setTargetMenuAnchor(null);
+                      }}
+                    >
+                      Index {index}
+                    </MenuItem>
+                  ))}
+                {targetFilter.index !== undefined &&
+                  targetMenuIndexes
+                    .filter((index) => index !== targetFilter.index)
+                    .map((index) => (
+                      <MenuItem
+                        key={`target-index-${index}`}
+                        onClick={() => {
+                          if (onSelectTargetFilter) {
+                            onSelectTargetFilter({
+                              name: targetFilter.name,
+                              ...(targetFilter.id !== undefined
+                                ? { id: targetFilter.id }
+                                : {}),
+                              index,
+                            });
+                          }
+                          setTargetMenuAnchor(null);
+                        }}
+                      >
+                        Index {index}
+                      </MenuItem>
+                    ))}
               </Menu>
             </>
           )}
