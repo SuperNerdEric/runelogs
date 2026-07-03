@@ -4,17 +4,18 @@
 //
 // Typical setup: detect crawler User-Agent, rewrite request to /_prerender{uri}/index.html
 // for bots only; everyone else gets the normal SPA shell (index.html fallback).
+/* eslint-disable @typescript-eslint/no-unused-vars -- CloudFront exports `handler` by name */
 function handler(event) {
-    var request = event.request;
-    var uri = request.uri;
+  var request = event.request;
+  var uri = request.uri;
 
-    if (!uri.includes('.')) {
-        if (uri.endsWith('/')) {
-            request.uri += 'index.html';
-        } else {
-            request.uri += '/index.html';
-        }
+  if (!uri.includes(".")) {
+    if (uri.endsWith("/")) {
+      request.uri += "index.html";
+    } else {
+      request.uri += "/index.html";
     }
+  }
 
-    return request;
+  return request;
 }

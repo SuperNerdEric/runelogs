@@ -37,9 +37,9 @@ describe("discover sitemap URLs", () => {
     const parsedOptions = parseLeaderboardContentOptions();
 
     expect(parsedOptions).toHaveLength(LEADERBOARD_CONTENT_OPTIONS.length);
-    expect(buildLeaderboardSitemapUrlsFromScript(SITE_URL, parsedOptions)).toEqual(
-      buildLeaderboardSitemapUrls(SITE_URL),
-    );
+    expect(
+      buildLeaderboardSitemapUrlsFromScript(SITE_URL, parsedOptions),
+    ).toEqual(buildLeaderboardSitemapUrls(SITE_URL));
     expect(
       buildRecentEncountersSitemapUrlsFromScript(SITE_URL, parsedOptions),
     ).toEqual(buildRecentEncountersSitemapUrls(SITE_URL));

@@ -1,9 +1,8 @@
-import {Fight} from "../models/Fight";
-import {LogLine, LogTypes} from "../models/LogLine";
+import { Fight } from "../models/Fight";
+import { LogLine, LogTypes } from "../models/LogLine";
 import moment from "moment/moment";
-import {npcIdMap} from '../lib/npcIdMap';
-import {Actor} from "../models/Actor";
-
+import { npcIdMap } from "../lib/npcIdMap";
+import { Actor } from "../models/Actor";
 
 /**
  * Formats a given number of milliseconds into a string in the format "HH:mm:ss".
@@ -15,47 +14,53 @@ import {Actor} from "../models/Actor";
  * @returns {string} A string representing the formatted time.
  */
 export function formatHHmmss(milliseconds: number, includeMs: boolean): string {
-    if (!includeMs) {
-        // Round milliseconds to the nearest second
-        milliseconds = Math.round(milliseconds / 1000) * 1000;
-    }
+  if (!includeMs) {
+    // Round milliseconds to the nearest second
+    milliseconds = Math.round(milliseconds / 1000) * 1000;
+  }
 
-    const duration = moment.utc(milliseconds);
-    let formatString = duration.hours() > 0 ? 'HH:mm:ss' : 'mm:ss';
-    if (includeMs) {
-        formatString += '.SSS';
-    }
-    return duration.format(formatString);
+  const duration = moment.utc(milliseconds);
+  let formatString = duration.hours() > 0 ? "HH:mm:ss" : "mm:ss";
+  if (includeMs) {
+    formatString += ".SSS";
+  }
+  return duration.format(formatString);
 }
 
 export const ticksToTime = (ticks: number): string => {
-    const totalSeconds = Math.round(ticks * 0.6);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
+  const totalSeconds = Math.round(ticks * 0.6);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
 
-    const mm = minutes.toString().padStart(2, '0');
-    const ss = seconds.toString().padStart(2, '0');
+  const mm = minutes.toString().padStart(2, "0");
+  const ss = seconds.toString().padStart(2, "0");
 
-
-    return hours > 0
-        ? `${hours}:${mm}:${ss}`
-        : `${minutes}:${ss}`;
+  return hours > 0 ? `${hours}:${mm}:${ss}` : `${minutes}:${ss}`;
 };
 
 export function calculateAccuracy(fight: Fight) {
-    const hitsplatsCount = fight.data.filter(log => log.type === LogTypes.DAMAGE).length;
-    const successfulHitsplatsCount = fight.data.filter(log => log.type === LogTypes.DAMAGE && (log as LogLine & {
-        type: LogTypes.DAMAGE
-    }).damageAmount > 0).length;
-    const accuracyPercentage = hitsplatsCount > 0 ? (successfulHitsplatsCount / hitsplatsCount) * 100 : 0;
-    return accuracyPercentage;
+  const hitsplatsCount = fight.data.filter(
+    (log) => log.type === LogTypes.DAMAGE,
+  ).length;
+  const successfulHitsplatsCount = fight.data.filter(
+    (log) =>
+      log.type === LogTypes.DAMAGE &&
+      (
+        log as LogLine & {
+          type: LogTypes.DAMAGE;
+        }
+      ).damageAmount > 0,
+  ).length;
+  const accuracyPercentage =
+    hitsplatsCount > 0 ? (successfulHitsplatsCount / hitsplatsCount) * 100 : 0;
+  return accuracyPercentage;
 }
 
 export const convertTimeToMillis = (time: string): number => {
-    const [hours, minutes, seconds] = time.split(':').map(Number);
-    const milliseconds = hours * 3600000 + minutes * 60000 + seconds * 1000;
-    return milliseconds;
+  const [hours, minutes, seconds] = time.split(":").map(Number);
+  const milliseconds = hours * 3600000 + minutes * 60000 + seconds * 1000;
+  return milliseconds;
 };
 
 /**
@@ -65,26 +70,26 @@ export const convertTimeToMillis = (time: string): number => {
  * @returns {Actor} An object representing the actor
  */
 export const getActor = (actorString: string): Actor => {
-    const [id, index] = actorString.split("-");
-    if (index) {
-        const monster = npcIdMap[Number(id)];
-        if (!monster) {
-            return {
-                name: actorString,
-            }
-        }
-        return {
-            name: monster.name,
-            id: Number(id),
-            index: Number(index),
-        };
-    }
-
-    return {
+  const [id, index] = actorString.split("-");
+  if (index) {
+    const monster = npcIdMap[Number(id)];
+    if (!monster) {
+      return {
         name: actorString,
+      };
     }
-}
+    return {
+      name: monster.name,
+      id: Number(id),
+      index: Number(index),
+    };
+  }
+
+  return {
+    name: actorString,
+  };
+};
 
 export const displayUsername = (username: string): string => {
-    return username.replace(/_/g, ' ');
+  return username.replace(/_/g, " ");
 };

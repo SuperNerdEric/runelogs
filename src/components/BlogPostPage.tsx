@@ -1,312 +1,238 @@
-import React, {useMemo} from 'react';
+import React, { useMemo } from "react";
 
-import {Link as RouterLink, Navigate, useParams} from 'react-router-dom';
+import { Link as RouterLink, Navigate, useParams } from "react-router-dom";
 
-import {Box, Chip, Link, Typography} from '@mui/material';
+import { Box, Chip, Link, Typography } from "@mui/material";
 
-import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
+import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-import {colors, contentColumnSx, fontSizes, media} from '../theme';
+import { colors, contentColumnSx, fontSizes, media } from "../theme";
 
 import {
+  pageHeaderContainerSx,
+  pageHeaderIconBoxSx,
+  pageHeaderSubtitleSx,
+} from "./pageHeaderStyles";
 
-    pageHeaderContainerSx,
+import { usePageMeta } from "../hooks/usePageMeta";
 
-    pageHeaderIconBoxSx,
+import {
+  getBlogPostBySlug,
+  formatBlogDate,
+  BlogCategory,
+} from "../data/blogPosts";
 
-    pageHeaderSubtitleSx,
-
-} from './pageHeaderStyles';
-
-import {usePageMeta} from '../hooks/usePageMeta';
-
-import {getBlogPostBySlug, formatBlogDate, BlogCategory} from '../data/blogPosts';
-
-import {getBlogPostPageMeta} from '../utils/blogPageMeta';
-
-
+import { getBlogPostPageMeta } from "../utils/blogPageMeta";
 
 const CATEGORY_LABEL: Record<BlogCategory, string> = {
+  "combat-logger": "Combat Logger",
 
-    'combat-logger': 'Combat Logger',
-
-    runelogs: 'Runelogs',
-
+  runelogs: "Runelogs",
 };
-
-
 
 const CATEGORY_CHIP_COLOR: Record<BlogCategory, string> = {
+  "combat-logger": colors.text.rune,
 
-    'combat-logger': colors.text.rune,
-
-    runelogs: colors.text.gold,
-
+  runelogs: colors.text.gold,
 };
-
-
 
 const paragraphSx = {
+  color: colors.text.primary,
 
-    color: colors.text.primary,
+  fontSize: fontSizes.base,
 
-    fontSize: fontSizes.base,
+  lineHeight: 1.65,
 
-    lineHeight: 1.65,
+  m: 0,
 
-    m: 0,
-
-    '& + &': {mt: 2},
-
+  "& + &": { mt: 2 },
 };
-
-
 
 const listSx = {
+  color: colors.text.primary,
 
-    color: colors.text.primary,
+  fontSize: fontSizes.base,
 
-    fontSize: fontSizes.base,
+  lineHeight: 1.65,
 
-    lineHeight: 1.65,
+  pl: 3,
 
-    pl: 3,
+  m: 0,
 
-    m: 0,
+  mt: 2,
 
-    mt: 2,
+  "& li": {
+    mb: 0.75,
 
-    '& li': {
-
-        mb: 0.75,
-
-        '&:last-child': {mb: 0},
-
-    },
-
+    "&:last-child": { mb: 0 },
+  },
 };
-
-
 
 const backLinkSx = {
+  display: "inline-flex",
 
-    display: 'inline-flex',
+  alignItems: "center",
 
-    alignItems: 'center',
+  gap: 0.5,
 
-    gap: 0.5,
+  color: colors.text.link,
 
-    color: colors.text.link,
+  fontSize: fontSizes.sm,
 
-    fontSize: fontSizes.sm,
+  textDecoration: "none",
 
-    textDecoration: 'none',
+  mb: 2,
 
-    mb: 2,
-
-    '&:hover': {
-
-        textDecoration: 'underline',
-
-    },
-
+  "&:hover": {
+    textDecoration: "underline",
+  },
 };
-
-
 
 const BlogPostPage: React.FC = () => {
-
-    const {slug} = useParams<{slug: string}>();
-
-    const post = slug ? getBlogPostBySlug(slug) : undefined;
-
-    const pageMeta = useMemo(() => (post ? getBlogPostPageMeta(post) : null), [post]);
-
-
-
-    usePageMeta(pageMeta ?? {title: 'Blog | Runelogs', description: 'Runelogs blog and release notes.', noIndex: true});
-
-
-
-    if (!post) {
-
-        return <Navigate to="/blog" replace/>;
-
-    }
-
-
-
-    return (
-
-        <Box sx={{...contentColumnSx, mt: 2, px: 2, pb: 4, [media.mobileDown]: {px: 1}}}>
-
-            <Link component={RouterLink} to="/blog" sx={backLinkSx}>
-
-                <ArrowBackIcon sx={{fontSize: 18}}/>
-
-                Back to blog
-
-            </Link>
-
-
-
-            <Box sx={pageHeaderContainerSx}>
-
-                <Box sx={pageHeaderIconBoxSx}>
-
-                    <ArticleOutlinedIcon sx={{fontSize: 32, color: colors.text.gold}}/>
-
-                </Box>
-
-                <Box>
-
-                    <Box
-
-                        sx={{
-
-                            display: 'flex',
-
-                            flexWrap: 'wrap',
-
-                            alignItems: 'center',
-
-                            gap: 1,
-
-                            mb: 0.75,
-
-                        }}
-
-                    >
-
-                        <Typography
-
-                            component="time"
-
-                            dateTime={post.date}
-
-                            sx={{
-
-                                color: colors.text.muted,
-
-                                fontSize: fontSizes.sm,
-
-                            }}
-
-                        >
-
-                            {formatBlogDate(post.date)}
-
-                        </Typography>
-
-                        <Chip
-
-                            label={CATEGORY_LABEL[post.category]}
-
-                            size="small"
-
-                            variant="outlined"
-
-                            sx={{
-
-                                height: 22,
-
-                                fontSize: fontSizes.xs,
-
-                                borderColor: colors.border.default,
-
-                                color: CATEGORY_CHIP_COLOR[post.category],
-
-                            }}
-
-                        />
-
-                    </Box>
-
-                    <Typography
-
-                        variant="h4"
-
-                        component="h1"
-
-                        sx={{m: 0, fontWeight: 600, color: colors.text.primary, lineHeight: 1.15}}
-
-                    >
-
-                        {post.title}
-
-                    </Typography>
-
-                    <Typography component="span" sx={pageHeaderSubtitleSx}>
-
-                        {CATEGORY_LABEL[post.category]} release notes
-
-                    </Typography>
-
-                </Box>
-
-            </Box>
-
-
-
-            <Box
-
-                component="article"
-
-                sx={{
-
-                    border: `1px solid ${colors.border.default}`,
-
-                    borderRadius: 2,
-
-                    bgcolor: colors.background.surface,
-
-                    px: {xs: 2, sm: 3},
-
-                    py: 2.5,
-
-                }}
-
-            >
-
-                {post.body.paragraphs.map((paragraph) => (
-
-                    <Typography key={paragraph} component="p" sx={paragraphSx}>
-
-                        {paragraph}
-
-                    </Typography>
-
-                ))}
-
-                {post.body.bullets && post.body.bullets.length > 0 && (
-
-                    <Box component="ul" sx={listSx}>
-
-                        {post.body.bullets.map((item) => (
-
-                            <Box component="li" key={item}>
-
-                                {item}
-
-                            </Box>
-
-                        ))}
-
-                    </Box>
-
-                )}
-
-            </Box>
-
+  const { slug } = useParams<{ slug: string }>();
+
+  const post = slug ? getBlogPostBySlug(slug) : undefined;
+
+  const pageMeta = useMemo(
+    () => (post ? getBlogPostPageMeta(post) : null),
+    [post],
+  );
+
+  usePageMeta(
+    pageMeta ?? {
+      title: "Blog | Runelogs",
+      description: "Runelogs blog and release notes.",
+      noIndex: true,
+    },
+  );
+
+  if (!post) {
+    return <Navigate to="/blog" replace />;
+  }
+
+  return (
+    <Box
+      sx={{
+        ...contentColumnSx,
+        mt: 2,
+        px: 2,
+        pb: 4,
+        [media.mobileDown]: { px: 1 },
+      }}
+    >
+      <Link component={RouterLink} to="/blog" sx={backLinkSx}>
+        <ArrowBackIcon sx={{ fontSize: 18 }} />
+        Back to blog
+      </Link>
+
+      <Box sx={pageHeaderContainerSx}>
+        <Box sx={pageHeaderIconBoxSx}>
+          <ArticleOutlinedIcon sx={{ fontSize: 32, color: colors.text.gold }} />
         </Box>
 
-    );
+        <Box>
+          <Box
+            sx={{
+              display: "flex",
 
+              flexWrap: "wrap",
+
+              alignItems: "center",
+
+              gap: 1,
+
+              mb: 0.75,
+            }}
+          >
+            <Typography
+              component="time"
+
+              dateTime={post.date}
+
+              sx={{
+                color: colors.text.muted,
+
+                fontSize: fontSizes.sm,
+              }}
+            >
+              {formatBlogDate(post.date)}
+            </Typography>
+
+            <Chip
+              label={CATEGORY_LABEL[post.category]}
+
+              size="small"
+
+              variant="outlined"
+
+              sx={{
+                height: 22,
+
+                fontSize: fontSizes.xs,
+
+                borderColor: colors.border.default,
+
+                color: CATEGORY_CHIP_COLOR[post.category],
+              }}
+            />
+          </Box>
+
+          <Typography
+            variant="h4"
+
+            component="h1"
+
+            sx={{
+              m: 0,
+              fontWeight: 600,
+              color: colors.text.primary,
+              lineHeight: 1.15,
+            }}
+          >
+            {post.title}
+          </Typography>
+
+          <Typography component="span" sx={pageHeaderSubtitleSx}>
+            {CATEGORY_LABEL[post.category]} release notes
+          </Typography>
+        </Box>
+      </Box>
+
+      <Box
+        component="article"
+
+        sx={{
+          border: `1px solid ${colors.border.default}`,
+
+          borderRadius: 2,
+
+          bgcolor: colors.background.surface,
+
+          px: { xs: 2, sm: 3 },
+
+          py: 2.5,
+        }}
+      >
+        {post.body.paragraphs.map((paragraph) => (
+          <Typography key={paragraph} component="p" sx={paragraphSx}>
+            {paragraph}
+          </Typography>
+        ))}
+
+        {post.body.bullets && post.body.bullets.length > 0 && (
+          <Box component="ul" sx={listSx}>
+            {post.body.bullets.map((item) => (
+              <Box component="li" key={item}>
+                {item}
+              </Box>
+            ))}
+          </Box>
+        )}
+      </Box>
+    </Box>
+  );
 };
 
-
-
 export default BlogPostPage;
-

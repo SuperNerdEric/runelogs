@@ -250,8 +250,11 @@ function isReparseJobActive(status: ReparseAllStatus["status"]): boolean {
 }
 
 const Admin: React.FC = () => {
-  const { isAuthenticated, isLoading: authLoading, getAccessTokenSilently } =
-    useAuth0();
+  const {
+    isAuthenticated,
+    isLoading: authLoading,
+    getAccessTokenSilently,
+  } = useAuth0();
   const { isAdmin, isLoading: adminLoading } = useIsAdmin();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -446,16 +449,24 @@ const Admin: React.FC = () => {
           failedLogs.length === logIds.length
             ? "All reparses failed"
             : `Reparse finished with ${failedLogs.length} failure${failedLogs.length === 1 ? "" : "s"}`,
-          { variant: failedLogs.length === logIds.length ? "error" : "warning" },
+          {
+            variant: failedLogs.length === logIds.length ? "error" : "warning",
+          },
         );
       } else {
         enqueueSnackbar(
-          logIds.length === 1 ? "Log reparsed" : `${logIds.length} logs reparsed`,
+          logIds.length === 1
+            ? "Log reparsed"
+            : `${logIds.length} logs reparsed`,
           { variant: "success" },
         );
       }
 
-      if (options?.refreshLoaded && loadedLog && logIds.includes(loadedLog.id)) {
+      if (
+        options?.refreshLoaded &&
+        loadedLog &&
+        logIds.includes(loadedLog.id)
+      ) {
         await refreshLoadedLog(loadedLog.id);
       }
     } catch (err) {
@@ -657,7 +668,14 @@ const Admin: React.FC = () => {
 
   if (authLoading || adminLoading) {
     return (
-      <Box sx={{ ...contentColumnSx, display: "flex", justifyContent: "center", py: 6 }}>
+      <Box
+        sx={{
+          ...contentColumnSx,
+          display: "flex",
+          justifyContent: "center",
+          py: 6,
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -670,7 +688,9 @@ const Admin: React.FC = () => {
   if (!isAdmin) {
     return (
       <Box sx={contentColumnSx}>
-        <Alert severity="error">You do not have permission to view this page.</Alert>
+        <Alert severity="error">
+          You do not have permission to view this page.
+        </Alert>
       </Box>
     );
   }
@@ -681,7 +701,15 @@ const Admin: React.FC = () => {
       : 0;
 
   return (
-    <Box sx={{ ...contentColumnSx, mt: 2, px: 2, pb: 4, [media.mobileDown]: { px: 1 } }}>
+    <Box
+      sx={{
+        ...contentColumnSx,
+        mt: 2,
+        px: 2,
+        pb: 4,
+        [media.mobileDown]: { px: 1 },
+      }}
+    >
       <Box
         sx={{
           display: "flex",
@@ -703,9 +731,14 @@ const Admin: React.FC = () => {
             border: `1px solid ${colors.border.default}`,
           }}
         >
-          <AdminPanelSettingsIcon sx={{ fontSize: 32, color: colors.upload.dragActive }} />
+          <AdminPanelSettingsIcon
+            sx={{ fontSize: 32, color: colors.upload.dragActive }}
+          />
         </Box>
-        <Typography variant="h4" sx={{ m: 0, fontWeight: 600, color: colors.text.primary }}>
+        <Typography
+          variant="h4"
+          sx={{ m: 0, fontWeight: 600, color: colors.text.primary }}
+        >
           Admin
         </Typography>
       </Box>
@@ -716,7 +749,8 @@ const Admin: React.FC = () => {
           {totalLogCount != null && ` (${totalLogCount.toLocaleString()})`}
         </Typography>
         <Typography sx={sectionDescriptionSx}>
-          Reprocess every stored log from its original raw upload. Progress updates automatically while a job is running.
+          Reprocess every stored log from its original raw upload. Progress
+          updates automatically while a job is running.
         </Typography>
 
         <Box
@@ -742,7 +776,10 @@ const Admin: React.FC = () => {
         {reparseStatus && (
           <Box sx={{ mt: 2 }}>
             <Typography sx={{ ...detailTextSx, mb: 1 }}>
-              Status: <Box component="span" sx={{ fontWeight: 600 }}>{reparseStatus.status}</Box>
+              Status:{" "}
+              <Box component="span" sx={{ fontWeight: 600 }}>
+                {reparseStatus.status}
+              </Box>
               {" · "}
               {reparseStatus.progress}
               {reparseStatus.currentLogId && (
@@ -767,7 +804,8 @@ const Admin: React.FC = () => {
               />
             )}
             <Typography sx={mutedDetailTextSx}>
-              Succeeded: {reparseStatus.succeeded} · Failed: {reparseStatus.failed}
+              Succeeded: {reparseStatus.succeeded} · Failed:{" "}
+              {reparseStatus.failed}
               {reparseStatus.startedAt &&
                 ` · Started: ${new Date(reparseStatus.startedAt).toLocaleString()}`}
               {reparseStatus.completedAt &&
@@ -780,7 +818,8 @@ const Admin: React.FC = () => {
       <SectionBox sx={adminSectionBoxSx}>
         <Typography sx={sectionTitleSx}>Reparse Logs</Typography>
         <Typography sx={sectionDescriptionSx}>
-          Reprocess specific logs from their original raw uploads. Enter one or more log IDs separated by commas.
+          Reprocess specific logs from their original raw uploads. Enter one or
+          more log IDs separated by commas.
         </Typography>
 
         <Box sx={{ ...actionRowSx, mb: 0 }}>
@@ -824,7 +863,8 @@ const Admin: React.FC = () => {
       <SectionBox sx={adminSectionBoxSx}>
         <Typography sx={sectionTitleSx}>Manage Log</Typography>
         <Typography sx={sectionDescriptionSx}>
-          Look up a log by ID to download the raw upload, rename it, reparse it, delete it, or toggle leaderboard eligibility.
+          Look up a log by ID to download the raw upload, rename it, reparse it,
+          delete it, or toggle leaderboard eligibility.
         </Typography>
 
         <Box sx={{ ...actionRowSx, mb: 2 }}>
@@ -864,9 +904,18 @@ const Admin: React.FC = () => {
         {loadedLog && (
           <Box>
             <Typography sx={detailTextSx}>
-              <Box component="span" sx={{ color: colors.text.muted }}>Name:</Box>{" "}
+              <Box component="span" sx={{ color: colors.text.muted }}>
+                Name:
+              </Box>{" "}
               {isEditingName ? (
-                <Box component="span" sx={{ display: "inline-flex", alignItems: "center", gap: 0.5 }}>
+                <Box
+                  component="span"
+                  sx={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                  }}
+                >
                   <TextField
                     value={editedName}
                     onChange={(event) => setEditedName(event.target.value)}
@@ -907,38 +956,60 @@ const Admin: React.FC = () => {
             </Typography>
 
             <Typography sx={detailTextSx}>
-              <Box component="span" sx={{ color: colors.text.muted }}>ID:</Box>{" "}
-              <Link component={RouterLink} to={`/log/${loadedLog.id}`} sx={linkSx}>
+              <Box component="span" sx={{ color: colors.text.muted }}>
+                ID:
+              </Box>{" "}
+              <Link
+                component={RouterLink}
+                to={`/log/${loadedLog.id}`}
+                sx={linkSx}
+              >
                 {loadedLog.id}
               </Link>
             </Typography>
 
             <Typography sx={detailTextSx}>
-              <Box component="span" sx={{ color: colors.text.muted }}>Uploader:</Box>{" "}
-              <Link component={RouterLink} to={`/logs/${loadedLog.uploaderId}`} sx={linkSx}>
+              <Box component="span" sx={{ color: colors.text.muted }}>
+                Uploader:
+              </Box>{" "}
+              <Link
+                component={RouterLink}
+                to={`/logs/${loadedLog.uploaderId}`}
+                sx={linkSx}
+              >
                 {displayUsername(loadedLog.uploaderId)}
               </Link>
             </Typography>
 
             <Typography sx={detailTextSx}>
-              <Box component="span" sx={{ color: colors.text.muted }}>Uploaded:</Box>{" "}
+              <Box component="span" sx={{ color: colors.text.muted }}>
+                Uploaded:
+              </Box>{" "}
               {format(new Date(loadedLog.uploadedAt), "PPpp")}
             </Typography>
 
             <Typography sx={detailTextSx}>
-              <Box component="span" sx={{ color: colors.text.muted }}>Status:</Box>{" "}
+              <Box component="span" sx={{ color: colors.text.muted }}>
+                Status:
+              </Box>{" "}
               {loadedLog.saveStatus}
               {loadedLog.saveStatus === "saving" &&
                 ` (${loadedLog.processingProgress}%)`}
             </Typography>
 
             <Typography sx={detailTextSx}>
-              <Box component="span" sx={{ color: colors.text.muted }}>Encounters:</Box>{" "}
-              {loadedLog._count.fights} fights, {loadedLog._count.fightGroups} groups
+              <Box component="span" sx={{ color: colors.text.muted }}>
+                Encounters:
+              </Box>{" "}
+              {loadedLog._count.fights} fights, {loadedLog._count.fightGroups}{" "}
+              groups
             </Typography>
 
             <Box sx={{ ...actionRowSx, mb: 2 }}>
-              <Typography component="span" sx={{ color: colors.text.primary, fontWeight: 600 }}>
+              <Typography
+                component="span"
+                sx={{ color: colors.text.primary, fontWeight: 600 }}
+              >
                 Leaderboard eligible
               </Typography>
               <Switch
@@ -957,7 +1028,8 @@ const Admin: React.FC = () => {
                 disabled={reparseActive || actionLoading === "reparse"}
                 sx={secondaryButtonSx}
               >
-                {reparseProgress?.source === "manage" || actionLoading === "reparse" ? (
+                {reparseProgress?.source === "manage" ||
+                actionLoading === "reparse" ? (
                   <CircularProgress size={20} sx={{ color: "inherit" }} />
                 ) : (
                   <RefreshIcon sx={{ fontSize: 20 }} />

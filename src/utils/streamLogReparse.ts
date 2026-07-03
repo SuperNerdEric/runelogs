@@ -16,7 +16,9 @@ export async function streamLogReparse(
     let lastResponseLength = 0;
     let buffer = "";
 
-    const handleEvents = (events: ReturnType<typeof consumeSseBuffer>["events"]) => {
+    const handleEvents = (
+      events: ReturnType<typeof consumeSseBuffer>["events"],
+    ) => {
       for (const event of events) {
         if (event.eventType === "progress") {
           try {

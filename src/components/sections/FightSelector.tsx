@@ -1,3 +1,3 @@
-import LogFightList from './LogFightList';
-export {EncounterTitleBar} from './LogFightList';
+import LogFightList from "./LogFightList";
+export { EncounterTitleBar } from "./LogFightList";
 export default LogFightList;

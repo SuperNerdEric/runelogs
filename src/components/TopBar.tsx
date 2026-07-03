@@ -1,286 +1,343 @@
-import React, {useState} from 'react';
-import {AppBar, Box, Button, ListItemIcon, ListItemText, Menu, MenuItem, Toolbar, Typography, useMediaQuery, useTheme} from '@mui/material';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
-import LogoutIcon from '@mui/icons-material/Logout';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import SensorsIcon from '@mui/icons-material/Sensors';
-import {Icon} from '@iconify/react';
-import {useAuth0} from '@auth0/auth0-react';
-import logoImage from '../assets/Logo.png';
-import {Link} from "react-router-dom";
+import React, { useState } from "react";
+import {
+  AppBar,
+  Box,
+  Button,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Toolbar,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
+import LogoutIcon from "@mui/icons-material/Logout";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import SensorsIcon from "@mui/icons-material/Sensors";
+import { Icon } from "@iconify/react";
+import { useAuth0 } from "@auth0/auth0-react";
+import logoImage from "../assets/Logo.png";
+import { Link } from "react-router-dom";
 import PlayerSearch from "./PlayerSearch";
-import TopBarNavMenu from './TopBarNavMenu';
-import {displayUsername} from "../utils/utils";
-import {colors, fontSizes, accountTextSx, layout} from "../theme";
-import AvatarIcon from './AvatarIcon';
-import {useUserProfile} from '../hooks/useUserProfile';
-import {useIsAdmin} from '../hooks/useIsAdmin';
-import {AvatarId, isAvatarId} from '../utils/avatars';
+import TopBarNavMenu from "./TopBarNavMenu";
+import { displayUsername } from "../utils/utils";
+import { colors, fontSizes, accountTextSx, layout } from "../theme";
+import AvatarIcon from "./AvatarIcon";
+import { useUserProfile } from "../hooks/useUserProfile";
+import { useIsAdmin } from "../hooks/useIsAdmin";
+import { AvatarId, isAvatarId } from "../utils/avatars";
 
 const menuItemIconSx = {
-    minWidth: 36,
-    color: colors.upload.dragActive,
+  minWidth: 36,
+  color: colors.upload.dragActive,
 };
 
 const logoLinkSx = {
-    display: 'flex',
-    alignItems: 'center',
-    textDecoration: 'none',
-    color: 'inherit',
+  display: "flex",
+  alignItems: "center",
+  textDecoration: "none",
+  color: "inherit",
 } as const;
 
 const TopBar: React.FC = () => {
-    const {isAuthenticated, user, loginWithRedirect, logout} = useAuth0();
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const [searchOpen, setSearchOpen] = useState(false);
-    const [navMenuOpen, setNavMenuOpen] = useState(false);
+  const { isAuthenticated, user, loginWithRedirect, logout } = useAuth0();
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [navMenuOpen, setNavMenuOpen] = useState(false);
 
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-    const {profile} = useUserProfile();
-    const {isAdmin} = useIsAdmin();
-    const avatarId: AvatarId | null =
-        profile?.avatarId && isAvatarId(profile.avatarId) ? profile.avatarId : null;
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { profile } = useUserProfile();
+  const { isAdmin } = useIsAdmin();
+  const avatarId: AvatarId | null =
+    profile?.avatarId && isAvatarId(profile.avatarId) ? profile.avatarId : null;
 
-    const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    }
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    }
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
-    const logoLink = (
-        <Box
-            component={Link}
-            to="/"
-            sx={{
-                ...logoLinkSx,
-                marginRight: isMobile ? 0 : 2,
-            }}
-        >
-            <img
-                src={logoImage}
-                alt="Runelogs.com"
-                style={{
-                    marginRight: '5px',
-                    height: '25px',
-                    verticalAlign: 'middle'
-                }}
-            />
-            <Typography
-                variant="h6"
-                sx={{ margin: 0, color: colors.text.primary, fontSize: fontSizes.topBarLogo }}
-            >
-                <Box component="span" sx={{color: colors.text.rune}}>Rune</Box>
-                <Box component="span" sx={{color: colors.text.logs}}>logs</Box>
-            </Typography>
+  const logoLink = (
+    <Box
+      component={Link}
+      to="/"
+      sx={{
+        ...logoLinkSx,
+        marginRight: isMobile ? 0 : 2,
+      }}
+    >
+      <img
+        src={logoImage}
+        alt="Runelogs.com"
+        style={{
+          marginRight: "5px",
+          height: "25px",
+          verticalAlign: "middle",
+        }}
+      />
+      <Typography
+        variant="h6"
+        sx={{
+          margin: 0,
+          color: colors.text.primary,
+          fontSize: fontSizes.topBarLogo,
+        }}
+      >
+        <Box component="span" sx={{ color: colors.text.rune }}>
+          Rune
         </Box>
-    );
+        <Box component="span" sx={{ color: colors.text.logs }}>
+          logs
+        </Box>
+      </Typography>
+    </Box>
+  );
 
-    return (
-        <AppBar position="static" style={{background: colors.background.topBar}}>
-            <Toolbar
-                sx={{
-                    display: isMobile ? 'grid' : 'flex',
-                    gridTemplateColumns: isMobile ? '1fr auto 1fr' : undefined,
-                    alignItems: 'center',
-                    justifyContent: isMobile ? undefined : 'space-between',
-                    minHeight: layout.topBarHeight,
-                    pl: 2,
-                    pr: 2,
+  return (
+    <AppBar position="static" style={{ background: colors.background.topBar }}>
+      <Toolbar
+        sx={{
+          display: isMobile ? "grid" : "flex",
+          gridTemplateColumns: isMobile ? "1fr auto 1fr" : undefined,
+          alignItems: "center",
+          justifyContent: isMobile ? undefined : "space-between",
+          minHeight: layout.topBarHeight,
+          pl: 2,
+          pr: 2,
+        }}
+      >
+        {isMobile ? (
+          <>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+              <TopBarNavMenu
+                iconButtonSx={{ ml: -1.5, mr: 0 }}
+                onOpenChange={setNavMenuOpen}
+              />
+              <Icon
+                icon="ic:baseline-search"
+                onClick={() => setSearchOpen((prev) => !prev)}
+                style={{
+                  fontSize: fontSizes.topBarIcon,
+                  color: colors.text.primary,
+                  cursor: "pointer",
                 }}
+              />
+            </Box>
+            {/* Hide the top-bar logo while the nav drawer is open — the drawer header already shows it. */}
+            <Box
+              sx={{
+                justifySelf: "center",
+                visibility: navMenuOpen ? "hidden" : "visible",
+              }}
             >
+              {logoLink}
+            </Box>
+          </>
+        ) : (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <TopBarNavMenu iconButtonSx={{ ml: -1.5, mr: 0 }} />
+            {logoLink}
+            <Box sx={{ display: "flex", alignItems: "center", height: "40px" }}>
+              <PlayerSearch />
+            </Box>
+          </Box>
+        )}
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifySelf: isMobile ? "end" : undefined,
+          }}
+        >
+          {!isAuthenticated && (
+            <Button
+              color="inherit"
+              onClick={() => loginWithRedirect()}
+              sx={{
+                ml: "20px",
+                textTransform: "none",
+                fontSize: fontSizes.base,
+              }}
+            >
+              Log in / Register
+            </Button>
+          )}
+
+          {isAuthenticated && (
+            <>
+              <Button
+                color="inherit"
+                onClick={handleMenuOpen}
+                style={{
+                  textTransform: "none",
+                  marginLeft: "10px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
                 {isMobile ? (
-                    <>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            <TopBarNavMenu
-                                iconButtonSx={{ml: -1.5, mr: 0}}
-                                onOpenChange={setNavMenuOpen}
-                            />
-                            <Icon
-                                icon="ic:baseline-search"
-                                onClick={() => setSearchOpen((prev) => !prev)}
-                                style={{ fontSize: fontSizes.topBarIcon, color: colors.text.primary, cursor: 'pointer' }}
-                            />
-                        </Box>
-                        {/* Hide the top-bar logo while the nav drawer is open — the drawer header already shows it. */}
-                        <Box sx={{ justifySelf: 'center', visibility: navMenuOpen ? 'hidden' : 'visible' }}>
-                            {logoLink}
-                        </Box>
-                    </>
+                  avatarId ? (
+                    <AvatarIcon avatarId={avatarId} size={35} />
+                  ) : (
+                    <Icon
+                      icon="mdi:account-circle"
+                      style={{
+                        width: 35,
+                        height: 35,
+                        color: colors.text.primary,
+                      }}
+                    />
+                  )
                 ) : (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <TopBarNavMenu iconButtonSx={{ml: -1.5, mr: 0}}/>
-                        {logoLink}
-                        <Box sx={{ display: 'flex', alignItems: 'center', height: '40px' }}>
-                            <PlayerSearch />
-                        </Box>
-                    </Box>
+                  <>
+                    {avatarId && (
+                      <AvatarIcon
+                        avatarId={avatarId}
+                        size={32}
+                        sx={{ mr: 1 }}
+                      />
+                    )}
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        ...accountTextSx,
+                        textTransform: "capitalize",
+                        fontWeight: 600,
+                      }}
+                    >
+                      {displayUsername(user?.username) || "User"}
+                    </Typography>
+                    <ArrowDropDownIcon style={{ color: colors.text.primary }} />
+                  </>
                 )}
+              </Button>
 
-                <div style={{display: 'flex', alignItems: 'center', justifySelf: isMobile ? 'end' : undefined}}>
-                    {!isAuthenticated && (
-                        <Button
-                            color="inherit"
-                            onClick={() => loginWithRedirect()}
-                            sx={{
-                                ml: '20px',
-                                textTransform: 'none',
-                                fontSize: fontSizes.base,
-                            }}
-                        >
-                            Log in / Register
-                        </Button>
-                    )}
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+                slotProps={{
+                  paper: {
+                    sx: {
+                      backgroundColor: colors.background.black,
+                      color: colors.text.primary,
+                      minHeight: 50,
+                      minWidth: 200,
+                      borderRadius: 1,
+                      border: `1px solid ${colors.border.default}`,
+                      boxShadow: "0px 4px 10px rgba(0,0,0,0.3)",
+                      "& .MuiMenu-list": {
+                        paddingY: 0.5,
+                      },
+                      mt: 1,
+                      right: 0,
+                    },
+                  },
+                }}
+                MenuListProps={{
+                  sx: {
+                    "& .MuiMenuItem-root": {
+                      color: colors.text.primary,
+                      fontSize: "1rem",
+                      paddingY: 1,
+                      "&:hover": { backgroundColor: colors.background.hover },
+                    },
+                    "& .MuiListItemText-primary": {
+                      color: colors.text.primary,
+                    },
+                  },
+                }}
+              >
+                <MenuItem
+                  component={Link}
+                  to="/profile"
+                  onClick={handleMenuClose}
+                >
+                  <ListItemIcon sx={menuItemIconSx}>
+                    <PersonOutlineIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>My Profile</ListItemText>
+                </MenuItem>
 
-                    {isAuthenticated && (
-                        <>
-                            <Button
-                                color="inherit"
-                                onClick={handleMenuOpen}
-                                style={{
-                                    textTransform: 'none',
-                                    marginLeft: '10px',
-                                    display: 'flex',
-                                    alignItems: 'center'
-                                }}
-                            >
-                                {isMobile ? (
-                                    avatarId ? (
-                                        <AvatarIcon avatarId={avatarId} size={35} />
-                                    ) : (
-                                        <Icon icon="mdi:account-circle" style={{ width: 35, height: 35, color: colors.text.primary }} />
-                                    )
-                                ) : (
-                                    <>
-                                        {avatarId && <AvatarIcon avatarId={avatarId} size={32} sx={{ mr: 1 }} />}
-                                        <Typography variant="body1" sx={{ ...accountTextSx, textTransform: 'capitalize', fontWeight: 600 }}>
-                                            {displayUsername(user?.username) || 'User'}
-                                        </Typography>
-                                        <ArrowDropDownIcon style={{ color: colors.text.primary }} />
-                                    </>
-                                )}
-                            </Button>
+                <MenuItem
+                  component={Link}
+                  to={`/logs/${user?.username}`}
+                  onClick={handleMenuClose}
+                >
+                  <ListItemIcon sx={menuItemIconSx}>
+                    <FolderOpenOutlinedIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>My Logs</ListItemText>
+                </MenuItem>
 
-                            <Menu
-                                anchorEl={anchorEl}
-                                open={Boolean(anchorEl)}
-                                onClose={handleMenuClose}
-                                anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
-                                transformOrigin={{vertical: 'top', horizontal: 'right'}}
-                                slotProps={{
-                                    paper: {
-                                        sx: {
-                                            backgroundColor: colors.background.black,
-                                            color: colors.text.primary,
-                                            minHeight: 50,
-                                            minWidth: 200,
-                                            borderRadius: 1,
-                                            border: `1px solid ${colors.border.default}`,
-                                            boxShadow: '0px 4px 10px rgba(0,0,0,0.3)',
-                                            '& .MuiMenu-list': {
-                                                paddingY: 0.5
-                                            },
-                                            mt: 1,
-                                            right: 0,
-                                        }
-                                    }
-                                }}
-                                MenuListProps={{
-                                    sx: {
-                                        '& .MuiMenuItem-root': {
-                                            color: colors.text.primary,
-                                            fontSize: '1rem',
-                                            paddingY: 1,
-                                            '&:hover': {backgroundColor: colors.background.hover}
-                                        },
-                                        '& .MuiListItemText-primary': {
-                                            color: colors.text.primary,
-                                        },
-                                    }
-                                }}
-                            >
-                                <MenuItem
-                                    component={Link}
-                                    to="/profile"
-                                    onClick={handleMenuClose}
-                                >
-                                    <ListItemIcon sx={menuItemIconSx}>
-                                        <PersonOutlineIcon fontSize="small"/>
-                                    </ListItemIcon>
-                                    <ListItemText>My Profile</ListItemText>
-                                </MenuItem>
-
-                                <MenuItem
-                                    component={Link}
-                                    to={`/logs/${user?.username}`}
-                                    onClick={handleMenuClose}
-                                >
-                                    <ListItemIcon sx={menuItemIconSx}>
-                                        <FolderOpenOutlinedIcon fontSize="small"/>
-                                    </ListItemIcon>
-                                    <ListItemText>My Logs</ListItemText>
-                                </MenuItem>
-
-                                <MenuItem
-                                    component={Link}
-                                    to="/live-log"
-                                    onClick={handleMenuClose}
-                                >
-                                    <ListItemIcon sx={menuItemIconSx}>
-                                        <SensorsIcon fontSize="small"/>
-                                    </ListItemIcon>
-                                    <ListItemText>Live Log</ListItemText>
-                                </MenuItem>
-                                <MenuItem
-                                    component={Link}
-                                    to="/upload"
-                                    onClick={handleMenuClose}
-                                >
-                                    <ListItemIcon sx={menuItemIconSx}>
-                                        <CloudUploadIcon fontSize="small"/>
-                                    </ListItemIcon>
-                                    <ListItemText>Upload Log</ListItemText>
-                                </MenuItem>
-                                {isAdmin && (
-                                    <MenuItem
-                                        component={Link}
-                                        to="/admin"
-                                        onClick={handleMenuClose}
-                                    >
-                                        <ListItemIcon sx={menuItemIconSx}>
-                                            <AdminPanelSettingsIcon fontSize="small"/>
-                                        </ListItemIcon>
-                                        <ListItemText>Admin</ListItemText>
-                                    </MenuItem>
-                                )}
-                                <MenuItem
-                                    onClick={() => {
-                                        handleMenuClose();
-                                        logout({logoutParams: {returnTo: window.location.origin}});
-                                    }}
-                                >
-                                    <ListItemIcon sx={menuItemIconSx}>
-                                        <LogoutIcon fontSize="small"/>
-                                    </ListItemIcon>
-                                    <ListItemText>Logout</ListItemText>
-                                </MenuItem>
-                            </Menu>
-                        </>
-                    )}
-                </div>
-            </Toolbar>
-            {isMobile && searchOpen && (
-                <Box sx={{ width: '100%', px: 2, pb: 1, boxSizing: 'border-box' }}>
-                    <PlayerSearch fullWidth onSelect={() => setSearchOpen(false)} />
-                </Box>
-            )}
-        </AppBar>
-    );
+                <MenuItem
+                  component={Link}
+                  to="/live-log"
+                  onClick={handleMenuClose}
+                >
+                  <ListItemIcon sx={menuItemIconSx}>
+                    <SensorsIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Live Log</ListItemText>
+                </MenuItem>
+                <MenuItem
+                  component={Link}
+                  to="/upload"
+                  onClick={handleMenuClose}
+                >
+                  <ListItemIcon sx={menuItemIconSx}>
+                    <CloudUploadIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Upload Log</ListItemText>
+                </MenuItem>
+                {isAdmin && (
+                  <MenuItem
+                    component={Link}
+                    to="/admin"
+                    onClick={handleMenuClose}
+                  >
+                    <ListItemIcon sx={menuItemIconSx}>
+                      <AdminPanelSettingsIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Admin</ListItemText>
+                  </MenuItem>
+                )}
+                <MenuItem
+                  onClick={() => {
+                    handleMenuClose();
+                    logout({
+                      logoutParams: { returnTo: window.location.origin },
+                    });
+                  }}
+                >
+                  <ListItemIcon sx={menuItemIconSx}>
+                    <LogoutIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Logout</ListItemText>
+                </MenuItem>
+              </Menu>
+            </>
+          )}
+        </div>
+      </Toolbar>
+      {isMobile && searchOpen && (
+        <Box sx={{ width: "100%", px: 2, pb: 1, boxSizing: "border-box" }}>
+          <PlayerSearch fullWidth onSelect={() => setSearchOpen(false)} />
+        </Box>
+      )}
+    </AppBar>
+  );
 };
 
 export default TopBar;

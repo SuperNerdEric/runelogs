@@ -1,69 +1,81 @@
-import {Actor} from "../models/Actor";
-import {LogLine} from "../models/LogLine";
-import {BOSS_IDS, BOAT_IDS, BOAT_ID_TO_NAME} from "./constants";
+import { Actor } from "../models/Actor";
+import { LogLine } from "../models/LogLine";
+import { BOSS_IDS, BOAT_IDS, BOAT_ID_TO_NAME } from "./constants";
 
-export const UNKNOWN_PLAYER_NAME = 'Unknown';
+export const UNKNOWN_PLAYER_NAME = "Unknown";
 
 export function isUnknownPlayer(playerId: string): boolean {
-    return playerId === UNKNOWN_PLAYER_NAME;
+  return playerId === UNKNOWN_PLAYER_NAME;
 }
 
-export const getActorName = (log: LogLine, key: 'source' | 'target'): string => {
-    if (key in log) {
-        // @ts-ignore https://github.com/microsoft/TypeScript/issues/56389
-        const actor: Actor = log[key];
-        if (actor && actor.id && BOAT_IDS.includes(actor.id)) {
-            if (key === 'source') {
-                return UNKNOWN_PLAYER_NAME;
-            } else {
-                const boatName = BOAT_ID_TO_NAME[actor.id] || "Boat";
-                return actor.index !== undefined ? `${boatName}-${actor.index}` : boatName;
-            }
-        }
-        if (actor && "index" in actor && !BOSS_IDS.includes(actor.id!)) {
-            return `${actor.name} - ${actor.index}`;
-        } else if (actor) {
-            return actor.name;
-        }
+export const getActorName = (
+  log: LogLine,
+  key: "source" | "target",
+): string => {
+  if (key in log) {
+    // @ts-ignore https://github.com/microsoft/TypeScript/issues/56389
+    const actor: Actor = log[key];
+    if (actor && actor.id && BOAT_IDS.includes(actor.id)) {
+      if (key === "source") {
+        return UNKNOWN_PLAYER_NAME;
+      } else {
+        const boatName = BOAT_ID_TO_NAME[actor.id] || "Boat";
+        return actor.index !== undefined
+          ? `${boatName}-${actor.index}`
+          : boatName;
+      }
     }
-    return "";
+    if (actor && "index" in actor && !BOSS_IDS.includes(actor.id!)) {
+      return `${actor.name} - ${actor.index}`;
+    } else if (actor) {
+      return actor.name;
+    }
+  }
+  return "";
 };
 
-export const getActorFromLog = (log: LogLine, key: 'source' | 'target'): Actor | undefined => {
-    if (key in log) {
-        // @ts-ignore https://github.com/microsoft/TypeScript/issues/56389
-        const actor: Actor = log[key];
-        if (!actor) {
-            return undefined;
-        }
-        if (actor.id && BOAT_IDS.includes(actor.id)) {
-            if (key === 'source') {
-                return {...actor, name: UNKNOWN_PLAYER_NAME};
-            }
-            const boatName = BOAT_ID_TO_NAME[actor.id] || "Boat";
-            return {...actor, name: actor.index !== undefined ? `${boatName}-${actor.index}` : boatName};
-        }
-        return actor;
+export const getActorFromLog = (
+  log: LogLine,
+  key: "source" | "target",
+): Actor | undefined => {
+  if (key in log) {
+    // @ts-ignore https://github.com/microsoft/TypeScript/issues/56389
+    const actor: Actor = log[key];
+    if (!actor) {
+      return undefined;
     }
-    return undefined;
+    if (actor.id && BOAT_IDS.includes(actor.id)) {
+      if (key === "source") {
+        return { ...actor, name: UNKNOWN_PLAYER_NAME };
+      }
+      const boatName = BOAT_ID_TO_NAME[actor.id] || "Boat";
+      return {
+        ...actor,
+        name:
+          actor.index !== undefined ? `${boatName}-${actor.index}` : boatName,
+      };
+    }
+    return actor;
+  }
+  return undefined;
 };
 
 export const getActorSpecificIds = (
-    logs: LogLine[],
-    key: 'source' | 'target',
-    name: string
+  logs: LogLine[],
+  key: "source" | "target",
+  name: string,
 ): number[] => {
-    const idSet = new Set<number>();
+  const idSet = new Set<number>();
 
-    for (const log of logs) {
-        const actor = getActorFromLog(log, key);
-        if (!actor || actor.name !== name) {
-            continue;
-        }
-        if (actor.index !== undefined) {
-            idSet.add(actor.index);
-        }
+  for (const log of logs) {
+    const actor = getActorFromLog(log, key);
+    if (!actor || actor.name !== name) {
+      continue;
     }
+    if (actor.index !== undefined) {
+      idSet.add(actor.index);
+    }
+  }
 
-    return Array.from(idSet).sort((a, b) => a - b);
+  return Array.from(idSet).sort((a, b) => a - b);
 };

@@ -1,11 +1,11 @@
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { trackPageview } from '../Analytics';
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { trackPageview } from "../Analytics";
 
 export default function usePageTracking() {
-    const location = useLocation();
+  const location = useLocation();
 
-    useEffect(() => {
-        trackPageview(location.pathname + location.search);
-    }, [location]);
+  useEffect(() => {
+    trackPageview(location.pathname + location.search);
+  }, [location]);
 }

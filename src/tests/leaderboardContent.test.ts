@@ -159,9 +159,6 @@ describe("resolveLeaderboardStateFromSearchParams", () => {
   });
 
   it("rejects an invalid fight param once config is loaded", () => {
-    const searchParams = new URLSearchParams(
-      "mode=dps&leaderboard=Theatre+of+Blood&playerCount=4&fight=Not+A+Room",
-    );
     const dpsConfig = [
       {
         contentName: "Theatre of Blood",

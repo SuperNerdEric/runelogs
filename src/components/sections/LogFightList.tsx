@@ -225,10 +225,7 @@ export const EncounterTitleBar: React.FC<EncounterTitleBarProps> = ({
   onClick,
 }) => {
   const className = `encounter-title-bar${href || onClick ? " encounter-title-bar--clickable" : ""}`;
-  const durationColor = resolveFightOutcomeColor(
-    success ?? false,
-    inProgress,
-  );
+  const durationColor = resolveFightOutcomeColor(success ?? false, inProgress);
   const spriteKey = resolveFightGroupSpriteKey(name, leaderboardName);
   const content = (
     <>

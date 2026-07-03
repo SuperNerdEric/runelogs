@@ -6,8 +6,11 @@ export function useIsAdmin(): {
   isAdmin: boolean;
   isLoading: boolean;
 } {
-  const { isAuthenticated, isLoading: authLoading, getAccessTokenSilently } =
-    useAuth0();
+  const {
+    isAuthenticated,
+    isLoading: authLoading,
+    getAccessTokenSilently,
+  } = useAuth0();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
 

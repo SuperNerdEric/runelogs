@@ -3,7 +3,7 @@ name: Update Equipment and ID Maps
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 * * * *' # Runs every hour at minute 0
+    - cron: "0 * * * *" # Runs every hour at minute 0
 
 jobs:
   generate-and-pr:
@@ -18,7 +18,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
       - name: Install Python dependencies
         run: pip install requests

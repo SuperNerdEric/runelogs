@@ -23,9 +23,6 @@
   "theme_color": "#0d1117",
   "background_color": "#0d1117",
   "description": "Runelogs is an OSRS combat log analyzer for the RuneLite Combat Logger plugin. Upload logs, review DPS, replay fights, and compare raid leaderboards.",
-  "categories": [
-    "games",
-    "tools"
-  ],
+  "categories": ["games", "tools"],
   "lang": "en-US"
 }
