@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      :root {
+        --bg-top-bar: #010409;
+        --gold: #e5cc80;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        background: transparent;
+      }
+
+      body {
+        margin: 0;
+        background: transparent;
+      }
+
+      /* Fills the viewport exactly — screenshot this at 512px, then downscale. */
+      .favicon-capture {
+        --size: 512px;
+        width: var(--size);
+        height: var(--size);
+        display: grid;
+        place-items: center;
+        background: transparent;
+      }
+
+      .favicon {
+        --disc-size: calc(var(--size) * 0.84);
+        width: var(--disc-size);
+        height: var(--disc-size);
+        border-radius: 50%;
+        /* Thick enough to survive a 512 -> 16 downscale (~1px border in tabs) */
+        padding: max(calc(var(--disc-size) * 0.022), calc(var(--size) * 0.026));
+        background: linear-gradient(
+          145deg,
+          var(--gold) 0%,
+          color-mix(in srgb, var(--gold) 35%, transparent) 45%,
+          var(--gold) 100%
+        );
+        filter: drop-shadow(
+            0 0 calc(var(--disc-size) * 0.05) rgba(229, 204, 128, 0.75)
+          )
+          drop-shadow(
+            0 0 calc(var(--disc-size) * 0.09) rgba(229, 204, 128, 0.34)
+          );
+      }
+
+      .favicon__inner {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: var(--bg-top-bar);
+        display: grid;
+        place-items: center;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      }
+
+      .favicon__inner img {
+        width: 90%;
+        height: auto;
+        display: block;
+      }
+
+      .favicon-square {
+        --size: 512px;
+        width: var(--size);
+        height: var(--size);
+        background: var(--bg-top-bar);
+        display: grid;
+        place-items: center;
+      }
+
+      .favicon-square img {
+        width: 72%;
+        height: auto;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="favicon-circular" class="favicon-capture">
+      <div class="favicon">
+        <div class="favicon__inner">
+          <img src="../src/assets/Logo.png" alt="" />
+        </div>
+      </div>
+    </div>
+    <div id="favicon-square" class="favicon-square" hidden>
+      <img src="../src/assets/Logo.png" alt="" />
+    </div>
+  </body>
+</html>

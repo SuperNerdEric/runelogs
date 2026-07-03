@@ -50,7 +50,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "update-sitemap:blog": "node scripts/update-blog-sitemap.mjs",
     "update-sitemap:discover": "node scripts/update-discover-sitemap.mjs",
-    "update-sitemap": "npm run update-sitemap:blog && npm run update-sitemap:discover"
+    "update-sitemap": "npm run update-sitemap:blog && npm run update-sitemap:discover",
+    "generate-favicons": "node scripts/generate-favicons.mjs"
   },
   "browserslist": {
     "production": [
