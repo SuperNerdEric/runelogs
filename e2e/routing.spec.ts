@@ -31,6 +31,22 @@ test.describe("Client routing", () => {
     ).toBeVisible();
   });
 
+  test("unknown routes show the not found page", async ({ page }) => {
+    await page.goto("/this-page-does-not-exist");
+
+    await expect(page.getByTestId("not-found-page")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: /wandered off the map/i }),
+    ).toBeVisible();
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      "content",
+      "noindex",
+    );
+    await expect(
+      page.getByRole("link", { name: /back home/i }),
+    ).toHaveAttribute("href", "/");
+  });
+
   test("top bar home link returns to the homepage", async ({ page }) => {
     await mockHomepageApis(page);
     await page.goto("/help");

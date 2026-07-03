@@ -36,6 +36,7 @@ import Login from "./components/Login";
 import Logout from "./components/Logout";
 import MyProfile from "./components/MyProfile";
 import Admin from "./components/Admin";
+import NotFound from "./components/NotFound";
 import { initGA } from "./Analytics";
 import usePageTracking from "./hooks/usePageTracking";
 import SessionGuard from "./components/SessionGuard";
@@ -93,6 +94,7 @@ function AppRoutes() {
             path="/dev/logs-header-variants"
             element={<LogsPageHeaderVariants />}
           />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
       <SiteFooter />
