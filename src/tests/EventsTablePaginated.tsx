@@ -146,7 +146,7 @@ const EventsTable: React.FC<EventsTableProps> = ({ fight, maxHeight, showSource 
         <Box sx={{ width: '100%', maxWidth: 1440, maxHeight: { xs: '70vh', sm: '70vh', md: maxHeight }}}>
             <TableContainer sx={{ '& .MuiTableCell-root': { fontSize: '13px', '@media (max-width: 768px)': { fontSize: '12px', padding: '2px 3px' } } }}>
                 <Table style={{ tableLayout: 'auto' }}>
-                    <TableHead style={{ backgroundColor: '#494949' }}>
+                    <TableHead>
                         <TableRow>
                             <TableCell style={{ width: '50px', textAlign: 'center' }}>Time</TableCell>
                             <TableCell style={{ width: '120px', textAlign: 'right', paddingBottom: '2px' }}>Type</TableCell>

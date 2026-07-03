@@ -1,5 +1,5 @@
 import { createTheme } from '@mui/material/styles';
-import { colors, fonts, fontSizes, typography, layout } from './tokens';
+import { colors, fonts, fontSizes, typography, layout, surfaces } from './tokens';
 
 const theme = createTheme({
     breakpoints: {
@@ -75,14 +75,15 @@ const theme = createTheme({
             styleOverrides: {
                 root: {
                     backgroundColor: colors.background.surface,
-                    border: `3px solid ${colors.border.default}`,
-                    borderRadius: '5px',
+                    border: `1px solid ${colors.ui.dividerSubtle}`,
+                    borderRadius: `${surfaces.radiusSm}px`,
+                    boxShadow: surfaces.shadow,
+                    overflow: 'hidden',
                     maxWidth: `${layout.contentMaxWidth}px`,
                     width: '100%',
                     margin: '0 auto 15px',
                     boxSizing: 'border-box',
                     '@media (max-width: 768px)': {
-                        border: `1px solid ${colors.border.default}`,
                         maxWidth: '98vw',
                         width: '100%',
                         overflowX: 'auto',
@@ -93,6 +94,7 @@ const theme = createTheme({
         MuiTableRow: {
             styleOverrides: {
                 root: {
+                    transition: 'background-color 0.15s ease',
                     '&:nth-of-type(odd)': { backgroundColor: colors.background.rowOdd },
                     '&:nth-of-type(even)': { backgroundColor: colors.background.rowEven },
                     '&.MuiTableRow-hover:hover': { backgroundColor: colors.background.rowHover },
@@ -102,19 +104,33 @@ const theme = createTheme({
         MuiTableCell: {
             styleOverrides: {
                 root: {
-                    border: `1px solid ${colors.border.default}`,
-                    color: colors.text.primary,
+                    border: 'none',
                     borderBottom: `1px solid ${colors.ui.dividerSubtle}`,
-                    padding: '2px 6px',
+                    color: colors.text.primary,
+                    padding: '4px 8px',
+                    '&:first-of-type': {
+                        paddingLeft: '11px',
+                    },
+                    '&:last-of-type': {
+                        paddingRight: '11px',
+                    },
                     '@media (max-width: 768px)': {
-                        padding: '2px 3px',
+                        padding: '2px 5px',
+                        '&:first-of-type': {
+                            paddingLeft: '8px',
+                        },
+                        '&:last-of-type': {
+                            paddingRight: '8px',
+                        },
                         fontSize: fontSizes.tableMobile,
                     },
                     fontFamily: fonts.body,
                     fontSize: fontSizes.base,
                 },
                 head: {
-                    backgroundColor: colors.background.tableHead,
+                    backgroundColor: colors.background.surfaceAlt,
+                    backgroundImage: `linear-gradient(180deg, ${colors.background.surfaceAlt} 0%, ${colors.background.tableHead} 100%)`,
+                    borderBottom: `1px solid ${colors.border.default}`,
                     fontWeight: 600,
                     letterSpacing: '0.02em',
                 },

@@ -101,6 +101,12 @@ export const colors = {
     },
 } as const;
 
+export const surfaces = {
+    shadow: '0 1px 2px rgba(1, 4, 9, 0.24)',
+    radiusSm: 10,
+    radiusMd: 20,
+} as const;
+
 export const layout = {
     contentMaxWidth: 1440,
     desktopMinWidth: 1280,

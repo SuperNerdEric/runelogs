@@ -17,6 +17,7 @@ import {getEncounterHref} from '../utils/encounterTableRow';
 import {isUnknownPlayer, UNKNOWN_PLAYER_NAME} from '../utils/actorUtils';
 import {getPlayerDpsDisplayColor} from '../utils/percentile';
 import RunSummaryRankBadges from './badges/RunSummaryRankBadges';
+import {resolvePlayerRankPercentile} from './badges/playerRankPercentile';
 import ColosseumModifiers from './ColosseumModifiers';
 import ToaRaidLevel from './ToaRaidLevel';
 import {hasColosseumModifierData} from '../utils/colosseumModifiers';

@@ -509,7 +509,7 @@ const EventsTable: React.FC<EventsTableProps> = ({
                     }}
                 >
                 <Table style={{tableLayout: 'auto'}}>
-                        <TableHead style={{backgroundColor: '#494949'}}>
+                        <TableHead>
                             <TableRow>
                                 <TableCell style={{width: '50px', textAlign: 'center'}}>Time</TableCell>
                                 <TableCell

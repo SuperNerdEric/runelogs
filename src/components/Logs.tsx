@@ -676,7 +676,7 @@ const Logs: React.FC = () => {
             <LogsPageHeader uploaderId={uploaderId} />
             {renderFilters()}
 
-            <TableContainer component={Paper} sx={{ backgroundColor: 'transparent', boxShadow: 'none', width: '100%' }}>
+            <TableContainer component={Paper} sx={{width: '100%'}}>
                 <Table sx={{ tableLayout: 'auto', width: '100%' }}>
                     <TableHead>
                         <TableRow>

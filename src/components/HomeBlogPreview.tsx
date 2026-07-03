@@ -13,7 +13,7 @@ import {
     getBlogPostSummary,
     getRecentHomeBlogPosts,
 } from '../data/blogPosts';
-import {colors, fontSizes} from '../theme';
+import {colors, fontSizes, media} from '../theme';
 
 const CATEGORY_LABEL: Record<BlogCategory, string> = {
     'combat-logger': 'Combat Logger',
@@ -83,7 +83,8 @@ function BlogPreviewCard({post}: {post: BlogPost}) {
     return (
         <Box
             sx={{
-                borderRadius: 2.5,
+                borderRadius: 1.5,
+                [media.mobileDown]: {borderRadius: 1},
                 border: `1px solid ${expanded ? `${accent}44` : colors.ui.dividerSubtle}`,
                 bgcolor: expanded ? colors.background.surfaceAlt : colors.background.surface,
                 boxShadow: CARD_SHADOW,
