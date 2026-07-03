@@ -274,7 +274,7 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({ fight }) => {
                     setHighlightObjects(event.target.checked)
                   }
                 />
-                Highlight objects (graphics, game & ground)
+                Highlight objects
               </label>
             </div>
             <MapComponent
