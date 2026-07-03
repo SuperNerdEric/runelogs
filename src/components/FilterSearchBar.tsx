@@ -407,7 +407,12 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
           const showCategory = Boolean(inputValue.trim());
           const isEquipment = option.option.kind === "equipment";
           const isPrayer = option.option.kind === "prayer";
-          const filterId = option.option.filter.id;
+          const filterId =
+            option.option.kind === "equipment"
+              ? option.option.filter.id
+              : option.option.kind === "prayer"
+                ? option.option.filter.id
+                : undefined;
           const imageUrl = isEquipment
             ? filterId !== undefined
               ? getItemImageUrl(filterId)

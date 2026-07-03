@@ -206,16 +206,7 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({ fight }) => {
 
   // @ts-ignore
   return (
-    <div
-      ref={replayContainerRef}
-      className="replay-root"
-      style={{
-        position: "relative",
-        maxWidth: "1500px",
-        width: "98vw",
-        border: "3px solid grey",
-      }}
-    >
+    <div ref={replayContainerRef} className="replay-root">
       <TickChart
         fight={fight}
         currentTime={currentTime}

@@ -479,12 +479,12 @@ a.encounter-title-bar.encounter-title-bar--clickable:hover {
   position: relative;
   bottom: 0px;
   left: 0;
-  background: var(--color-bg-playback);
+  background: var(--color-bg-surface);
   color: var(--color-text-primary);
   display: flex;
   align-items: center;
-  margin-left: 15px;
-  margin-right: 15px;
+  padding: 8px 12px;
+  box-sizing: border-box;
 }
 
 .playback-controls button {
@@ -509,6 +509,66 @@ a.encounter-title-bar.encounter-title-bar--clickable:hover {
 
 .play-pause-button svg:hover {
   fill: var(--color-text-icon-hover);
+}
+
+.replay-root {
+  position: relative;
+  max-width: var(--layout-content-max-width);
+  width: 100%;
+  margin: 0 auto 15px;
+  box-sizing: border-box;
+  background: var(--color-bg-surface);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(1, 4, 9, 0.24);
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .replay-root {
+    max-width: 98vw;
+    width: 100%;
+  }
+}
+
+.replay-tick-chart {
+  --replay-tick-chart-inset: 8px;
+  overflow-x: auto;
+  max-width: 100%;
+  margin-bottom: 10px;
+  padding-bottom: 14px;
+}
+
+.replay-tick-chart thead th {
+  position: relative;
+  background-color: var(--color-bg-surface);
+  padding: var(--replay-tick-chart-inset) 8px 6px;
+}
+
+.replay-tick-chart thead th::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 1px;
+  background-color: var(--color-border-default);
+  pointer-events: none;
+}
+
+.replay-tick-chart thead th.replay-tick-chart-sticky-col {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  user-select: text;
+}
+
+.replay-tick-chart tbody td.replay-tick-chart-sticky-col {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  user-select: text;
+  background-color: var(--color-bg-surface);
 }
 
 .replay-root:fullscreen {

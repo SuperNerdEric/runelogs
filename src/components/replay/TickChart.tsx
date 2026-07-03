@@ -135,20 +135,6 @@ const TickChart: React.FC<TickChartProps> = ({
    */
   const highlightedTick = Math.floor(currentTime / 0.6) + initialTick;
 
-  const tableContainerStyle: CSSProperties = {
-    overflowX: "auto",
-    maxWidth: "100%",
-    marginBottom: "10px",
-  };
-
-  const stickyHeader: CSSProperties = {
-    position: "sticky",
-    left: 0,
-    backgroundColor: colors.background.page,
-    zIndex: 2,
-    userSelect: "text",
-  };
-
   const tableStyle: CSSProperties = {
     borderCollapse: "separate",
     borderSpacing: "0",
@@ -156,7 +142,14 @@ const TickChart: React.FC<TickChartProps> = ({
     userSelect: "none",
   };
 
-  const thTdStyle: CSSProperties = {
+  const thHeaderStyle: CSSProperties = {
+    borderBottom: `1px solid ${colors.replay.gridBorder}`,
+    fontSize: fontSizes.base,
+    textAlign: "center",
+    whiteSpace: "nowrap",
+  };
+
+  const tdStyle: CSSProperties = {
     borderRight: `1px solid ${colors.replay.gridBorder}`,
     borderBottom: `1px solid ${colors.replay.gridBorder}`,
     padding: "2px 8px",
@@ -192,14 +185,16 @@ const TickChart: React.FC<TickChartProps> = ({
   }, [highlightedTick]);
 
   return (
-    <div style={tableContainerStyle}>
+    <div className="replay-tick-chart">
       <table style={tableStyle}>
         <thead>
           <tr>
-            <th style={{ ...thTdStyle, ...stickyHeader }}>Player</th>
+            <th className="replay-tick-chart-sticky-col" style={thHeaderStyle}>
+              Player
+            </th>
             {columnTicks.map((tick) => {
               const style = {
-                ...thTdStyle,
+                ...thHeaderStyle,
                 ...(tick === highlightedTick ? highlightedColumnStyle : {}),
               };
 
@@ -226,14 +221,14 @@ const TickChart: React.FC<TickChartProps> = ({
               return (
                 <tr key={playerName}>
                   {/* Player name in the first column */}
-                  <td style={{ ...thTdStyle, ...stickyHeader }}>
+                  <td className="replay-tick-chart-sticky-col" style={tdStyle}>
                     {playerName}
                   </td>
 
                   {/* Each tick cell */}
                   {columnTicks.map((tick) => {
                     const style = {
-                      ...thTdStyle,
+                      ...tdStyle,
                       ...(tick === highlightedTick
                         ? highlightedColumnStyle
                         : {}),
