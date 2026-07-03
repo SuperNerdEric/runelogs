@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { Fight } from "../models/Fight";
 import { LogTypes } from "../models/LogLine";
-import { getFightPerformanceByPlayer } from "../utils/TickActivity";
+import {
+  getFightPerformanceByPlayer,
+  getTargetGroupActivityPercent,
+} from "../utils/TickActivity";
 
 function makeFight(overrides: Partial<Fight> = {}): Fight {
   return {
@@ -114,5 +117,62 @@ describe("getFightPerformanceByPlayer", () => {
 
     expect(activityPercent).toBeGreaterThanOrEqual(0);
     expect(activityPercent).toBeLessThanOrEqual(100);
+  });
+});
+
+describe("getTargetGroupActivityPercent", () => {
+  it("attributes attack activity to target groups for drill-down rows", () => {
+    const fight = makeFight({
+      metaData: {
+        name: "Verzik P1",
+        startTime: "2025-01-01T00:00:00.000Z",
+        fightDurationTicks: 10,
+        success: true,
+      },
+      lastLine: {
+        type: LogTypes.DEATH,
+        tick: 110,
+        fightTimeMs: 6000,
+      } as Fight["lastLine"],
+      data: [
+        {
+          type: LogTypes.PLAYER_EQUIPMENT,
+          tick: 100,
+          fightTimeMs: 0,
+          source: { name: "Player", isPlayer: true },
+          playerEquipment: ["24539"],
+        },
+        {
+          type: LogTypes.PLAYER_ATTACK_ANIMATION,
+          tick: 105,
+          fightTimeMs: 0,
+          source: { name: "Player", isPlayer: true },
+          target: { name: "Nechryael", id: 8, index: 1, isPlayer: false },
+          animationId: 390,
+        },
+        {
+          type: LogTypes.PLAYER_ATTACK_ANIMATION,
+          tick: 108,
+          fightTimeMs: 3000,
+          source: { name: "Player", isPlayer: true },
+          target: {
+            name: "Aberrant spectre",
+            id: 2,
+            index: 1,
+            isPlayer: false,
+          },
+          animationId: 390,
+        },
+      ] as unknown as Fight["data"],
+    });
+
+    const activityByGroup = getTargetGroupActivityPercent(
+      fight,
+      "Player",
+      (target) => `name:${target.name}`,
+    );
+
+    expect(activityByGroup.get("name:Nechryael")).toBeGreaterThan(0);
+    expect(activityByGroup.get("name:Aberrant spectre")).toBeGreaterThan(0);
   });
 });

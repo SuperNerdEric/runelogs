@@ -14,6 +14,7 @@ import { DamageLog, LogTypes } from "../../models/LogLine";
 import {
   getFightPerformanceByPlayer,
   getPercentColor,
+  getTargetGroupActivityPercent,
 } from "../../utils/TickActivity";
 import { isUnknownPlayer } from "../../utils/actorUtils";
 import { getPlayerDpsDisplayColor } from "../../utils/percentile";
@@ -25,11 +26,24 @@ import {
 import { ActorFilter } from "../../utils/actorFilter";
 import { Actor } from "../../models/Actor";
 import { colors } from "../../theme";
+import {
+  canDrillDownTargetRow,
+  getNextTargetFilter,
+  getTargetDrillDownDisplayName,
+  getTargetDrillDownGroupKey,
+  getTargetDrillDownRowActor,
+  isTargetDrillDownActive,
+  resolveTargetDrillDownGrouping,
+  TargetDrillDownGrouping,
+} from "../../utils/targetDrillDown";
 
 interface DPSMeterBarChartProps {
   fight: Fight;
   filteredFight: Fight;
+  drillDownLogs: DamageLog[];
   type: "damage-done" | "damage-taken";
+  sourceFilter?: ActorFilter | null;
+  targetFilter?: ActorFilter | null;
   dpsPercentiles?: Record<string, number>;
   onSelectSourceFilter: (filter: ActorFilter) => void;
   onSelectTargetFilter: (filter: ActorFilter) => void;
@@ -37,6 +51,7 @@ interface DPSMeterBarChartProps {
 
 interface DPSData {
   actor: Actor;
+  displayName: string;
   totalDamage: number;
   totalHits: number;
   successfulHits: number;
@@ -48,21 +63,48 @@ interface DPSData {
 const getDPSData = (
   fight: Fight,
   filteredFight: Fight,
+  drillDownLogs: DamageLog[],
   type: "damage-done" | "damage-taken",
-): Record<string, DPSData> => {
+  sourceFilter: ActorFilter | null = null,
+  targetFilter: ActorFilter | null = null,
+): {
+  dpsData: Record<string, DPSData>;
+  targetDrillDownGrouping: TargetDrillDownGrouping | null;
+} => {
   const dpsData: Record<string, DPSData> = {};
+  const targetDrillDownActive = isTargetDrillDownActive(type, sourceFilter);
+  const targetDrillDownGrouping = targetDrillDownActive
+    ? resolveTargetDrillDownGrouping(drillDownLogs, targetFilter ?? null)
+    : null;
 
   for (const logLine of filteredFight.data) {
     if (logLine.type === LogTypes.DAMAGE) {
       const damageLog = logLine as DamageLog;
       let actorName: string;
       let actor: Actor;
+      let displayName: string;
+      let groupKey: string;
 
-      if (type === "damage-done") {
+      if (targetDrillDownGrouping) {
+        actor = getTargetDrillDownRowActor(
+          damageLog.target,
+          targetDrillDownGrouping,
+        );
+        displayName = getTargetDrillDownDisplayName(
+          damageLog.target,
+          targetDrillDownGrouping,
+        );
+        groupKey = getTargetDrillDownGroupKey(
+          damageLog.target,
+          targetDrillDownGrouping,
+        );
+        actorName = displayName;
+      } else if (type === "damage-done") {
         actorName = damageLog.source.name;
         actor = damageLog.source;
+        displayName = actorName;
+        groupKey = actorName;
       } else {
-        // For damage-taken, check if target is a boat and use mapped name
         if (damageLog.target.id && BOAT_IDS.includes(damageLog.target.id)) {
           const boatName = BOAT_ID_TO_NAME[damageLog.target.id] || "Boat";
           actorName =
@@ -77,11 +119,14 @@ const getDPSData = (
           actorName = damageLog.target.name;
           actor = damageLog.target;
         }
+        displayName = actorName;
+        groupKey = actorName;
       }
 
-      if (!dpsData[actorName]) {
-        dpsData[actorName] = {
+      if (!dpsData[groupKey]) {
+        dpsData[groupKey] = {
           actor,
+          displayName,
           accuracy: 0,
           dps: 0,
           totalDamage: 0,
@@ -91,15 +136,15 @@ const getDPSData = (
         };
       }
 
-      dpsData[actorName].totalDamage += damageLog.damageAmount;
-      dpsData[actorName].totalHits += 1;
+      dpsData[groupKey].totalDamage += damageLog.damageAmount;
+      dpsData[groupKey].totalHits += 1;
       if (damageLog.damageAmount > 0) {
-        dpsData[actorName].successfulHits += 1;
+        dpsData[groupKey].successfulHits += 1;
       }
     }
   }
 
-  if (type === "damage-done") {
+  if (type === "damage-done" && !targetDrillDownGrouping) {
     const performanceMap = getFightPerformanceByPlayer(fight);
 
     for (const [player, playerPerformance] of performanceMap.entries()) {
@@ -122,44 +167,75 @@ const getDPSData = (
         dpsData[playerName].dps = Number(dps.toFixed(3));
       }
     }
+  } else if (
+    type === "damage-done" &&
+    targetDrillDownGrouping &&
+    sourceFilter
+  ) {
+    const activityByGroup = getTargetGroupActivityPercent(
+      fight,
+      sourceFilter.name,
+      (target) => getTargetDrillDownGroupKey(target, targetDrillDownGrouping),
+    );
+
+    for (const [groupKey, activity] of activityByGroup) {
+      if (dpsData[groupKey]) {
+        dpsData[groupKey].activity = activity;
+      }
+    }
   }
 
   const fightDurationSeconds = getFightDurationSeconds(fight);
 
   const dpsArray = Object.entries(dpsData).map(
-    ([actor, data]: [string, DPSData]) => {
+    ([groupKey, data]: [string, DPSData]) => {
       const accuracy = (data.successfulHits / data.totalHits) * 100;
-      const dps =
-        type === "damage-done" && fight.players.includes(actor)
+      const dps = targetDrillDownGrouping
+        ? data.totalDamage / fightDurationSeconds
+        : type === "damage-done" && fight.players.includes(data.actor.name)
           ? data.dps
           : data.totalDamage / fightDurationSeconds;
-      return { actor, damage: data.totalDamage, accuracy, dps };
+      return { groupKey, damage: data.totalDamage, accuracy, dps };
     },
   );
 
   for (const dpsDataKey in dpsData) {
     const dpsDataValue = dpsData[dpsDataKey];
-    const dpsDataEntry = dpsArray.find((entry) => entry.actor === dpsDataKey);
+    const dpsDataEntry = dpsArray.find(
+      (entry) => entry.groupKey === dpsDataKey,
+    );
     if (dpsDataEntry) {
       dpsDataValue.accuracy = Number(dpsDataEntry.accuracy.toFixed(2));
       dpsDataValue.dps = Number(dpsDataEntry.dps.toFixed(3));
     }
   }
 
-  return dpsData;
+  return { dpsData, targetDrillDownGrouping };
 };
 
 const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
   fight,
   filteredFight,
+  drillDownLogs,
   type,
+  sourceFilter = null,
+  targetFilter = null,
   dpsPercentiles,
   onSelectSourceFilter,
   onSelectTargetFilter,
 }) => {
   const loggedInPlayer = fight.loggedInPlayer;
 
-  const dpsData = getDPSData(fight, filteredFight, type);
+  const { dpsData, targetDrillDownGrouping } = getDPSData(
+    fight,
+    filteredFight,
+    drillDownLogs,
+    type,
+    sourceFilter ?? null,
+    targetFilter ?? null,
+  );
+  const isTargetDrillDown = targetDrillDownGrouping !== null;
+
   const totalDamage = Object.values(dpsData).reduce(
     (acc, cur) => acc + cur.totalDamage,
     0,
@@ -169,7 +245,6 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
 
   useEffect(() => {
     const handleResize = () => {
-      // Handle this better
       let vwWidth = window.innerWidth * 0.7 - 300;
       if (vwWidth > 540) {
         vwWidth = 540;
@@ -240,19 +315,32 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
         </TableHead>
         <TableBody>
           {sortedDPSData.map(
-            ([source, data]: [string, DPSData], index: number) => {
+            ([groupKey, data]: [string, DPSData], index: number) => {
+              const displayName = data.displayName;
               const damagePercentage = Number(
                 ((data.totalDamage / totalDamage) * 100).toFixed(2),
               );
-              const unknown = isUnknownPlayer(source);
+              const unknown =
+                !isTargetDrillDown && isUnknownPlayer(displayName);
               const dpsDisplay = getPlayerDpsDisplayColor(
-                source,
-                type === "damage-done" ? dpsPercentiles?.[source] : undefined,
+                displayName,
+                type === "damage-done" && !isTargetDrillDown
+                  ? dpsPercentiles?.[displayName]
+                  : undefined,
               );
+              const canDrillDown =
+                isTargetDrillDown &&
+                targetDrillDownGrouping !== null &&
+                canDrillDownTargetRow(
+                  drillDownLogs,
+                  targetFilter ?? null,
+                  data.actor,
+                  targetDrillDownGrouping,
+                );
 
               return (
                 <TableRow
-                  key={index}
+                  key={groupKey}
                   className={index % 2 === 0 ? "even-row" : "odd-row"}
                   style={{ cursor: "default" }}
                   onMouseEnter={(e) =>
@@ -267,25 +355,50 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
                     className={
                       unknown
                         ? "unknown-text"
-                        : source === loggedInPlayer
+                        : displayName === loggedInPlayer
                           ? "logged-in-player-text"
                           : "other-text"
                     }
                   >
-                    <span
-                      className="link"
-                      onClick={() => {
-                        const filterActor = dpsData[source].actor;
-                        const filter = { name: filterActor.name };
-                        if (type === "damage-done") {
-                          onSelectSourceFilter(filter);
-                        } else {
-                          onSelectTargetFilter(filter);
-                        }
-                      }}
-                    >
-                      {source}
-                    </span>
+                    {canDrillDown ? (
+                      <span
+                        className="link"
+                        onClick={() => {
+                          if (
+                            !isTargetDrillDown ||
+                            targetDrillDownGrouping === null
+                          ) {
+                            return;
+                          }
+
+                          onSelectTargetFilter(
+                            getNextTargetFilter(
+                              drillDownLogs,
+                              data.actor,
+                              targetDrillDownGrouping,
+                            ),
+                          );
+                        }}
+                      >
+                        {displayName}
+                      </span>
+                    ) : isTargetDrillDown ? (
+                      displayName
+                    ) : (
+                      <span
+                        className="link"
+                        onClick={() => {
+                          const filter = { name: data.actor.name };
+                          if (type === "damage-done") {
+                            onSelectSourceFilter(filter);
+                          } else {
+                            onSelectTargetFilter(filter);
+                          }
+                        }}
+                      >
+                        {displayName}
+                      </span>
+                    )}
                   </TableCell>
                   <TableCell style={{ textAlign: "center" }}>
                     <div style={{ display: "flex", alignItems: "center" }}>
@@ -302,7 +415,7 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
                         style={{
                           backgroundColor: unknown
                             ? colors.text.unknown
-                            : source === loggedInPlayer
+                            : displayName === loggedInPlayer
                               ? colors.text.player
                               : colors.dpsMeter.playerHighlight,
                           height: "14px",
@@ -336,10 +449,14 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
                       width: "70px",
                       textAlign: "right",
                       color:
-                        type === "damage-done" ? dpsDisplay.color : undefined,
+                        type === "damage-done" && !isTargetDrillDown
+                          ? dpsDisplay.color
+                          : undefined,
                     }}
                     className={
-                      type === "damage-done" && dpsDisplay.useDpsTextClass
+                      type === "damage-done" &&
+                      !isTargetDrillDown &&
+                      dpsDisplay.useDpsTextClass
                         ? "dps-text"
                         : undefined
                     }

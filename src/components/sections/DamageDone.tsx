@@ -9,6 +9,7 @@ import SectionBox from "../SectionBox";
 import { filterByType, LogTypes, DamageLog } from "../../models/LogLine";
 import { BOAT_IDS } from "../../utils/constants";
 import { ActorFilter, matchesActorFilter } from "../../utils/actorFilter";
+import { matchesMonsterTargetFilter } from "../../utils/targetDrillDown";
 import {
   buildEquipmentTimelines,
   EquipmentFilter,
@@ -103,10 +104,15 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
       }
 
       const damageLog = log as DamageLog;
-      if (
-        !matchesActorFilter(damageLog.source, sourceFilter) ||
-        !matchesActorFilter(damageLog.target, targetFilter)
-      ) {
+      if (!matchesActorFilter(damageLog.source, sourceFilter)) {
+        return false;
+      }
+
+      const matchesTarget =
+        type === "damage-done"
+          ? matchesMonsterTargetFilter(damageLog.target, targetFilter)
+          : matchesActorFilter(damageLog.target, targetFilter);
+      if (!matchesTarget) {
         return false;
       }
 
@@ -131,6 +137,15 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
       );
     }),
   };
+
+  const drillDownLogs = fightWithFilteredLogs.data.filter((log) => {
+    if (log.type !== LogTypes.DAMAGE) {
+      return false;
+    }
+
+    const damageLog = log as DamageLog;
+    return matchesActorFilter(damageLog.source, sourceFilter);
+  }) as DamageLog[];
 
   return (
     <div>
@@ -163,7 +178,10 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
           <DPSMeterTable
             fight={fight}
             filteredFight={fightWithActorFilters}
+            drillDownLogs={drillDownLogs}
             type={type}
+            sourceFilter={sourceFilter}
+            targetFilter={targetFilter}
             dpsPercentiles={dpsPercentiles}
             onSelectSourceFilter={onSelectSourceFilter}
             onSelectTargetFilter={onSelectTargetFilter}

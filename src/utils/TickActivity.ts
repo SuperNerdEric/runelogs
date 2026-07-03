@@ -1,6 +1,7 @@
 import { colors } from "../theme";
 import { Fight } from "../models/Fight";
 import { LogTypes } from "../models/LogLine";
+import { Actor } from "../models/Actor";
 import { weaponMap } from "../models/WeaponMap";
 import {
   COX_MONSTERS,
@@ -256,6 +257,79 @@ export function getFightPerformanceByPlayer(
   }
 
   return performanceByPlayer;
+}
+
+/**
+ * Attributes a player's attack animation activity to target groups for drill-down views.
+ * Uses the attack log's target and the provided group key function.
+ */
+export function getTargetGroupActivityPercent(
+  fight: Fight,
+  playerName: string,
+  getGroupKey: (target: Actor) => string,
+): Map<string, number> {
+  const activeTimeByGroup = new Map<string, number>();
+  let currentWeaponSpeed = 0;
+  let hasWeaponState = false;
+  const fightEndMs = fight.lastLine.fightTimeMs!;
+
+  for (const log of fight.data) {
+    if (!("source" in log) || log.source?.name !== playerName) {
+      continue;
+    }
+
+    if (
+      log.type === LogTypes.PLAYER_EQUIPMENT ||
+      log.type === LogTypes.BOOSTED_LEVELS
+    ) {
+      hasWeaponState = true;
+    }
+
+    if (log.type === LogTypes.PLAYER_EQUIPMENT && log.playerEquipment) {
+      for (const itemId of log.playerEquipment) {
+        const weapon = weaponMap[parseInt(itemId)];
+        if (weapon) {
+          currentWeaponSpeed = weapon.speed;
+        }
+      }
+    }
+
+    if (log.type !== LogTypes.PLAYER_ATTACK_ANIMATION || !hasWeaponState) {
+      continue;
+    }
+
+    const target = log.target;
+    if (!target) {
+      continue;
+    }
+
+    let weaponSpeedSeconds = currentWeaponSpeed * SECONDS_PER_TICK;
+    if (log.fightTimeMs! + weaponSpeedSeconds * 1000 > fightEndMs) {
+      weaponSpeedSeconds = Math.max((fightEndMs - log.fightTimeMs!) / 1000, 0);
+    }
+
+    const groupKey = getGroupKey(target);
+    activeTimeByGroup.set(
+      groupKey,
+      (activeTimeByGroup.get(groupKey) ?? 0) + weaponSpeedSeconds,
+    );
+  }
+
+  const fightDurationTicks = fight.metaData.fightDurationTicks;
+  const activityByGroup = new Map<string, number>();
+  if (!fightDurationTicks) {
+    return activityByGroup;
+  }
+
+  for (const [groupKey, activeTime] of activeTimeByGroup) {
+    const activeTicks = activeTime / SECONDS_PER_TICK;
+    activityByGroup.set(
+      groupKey,
+      Number(((activeTicks / fightDurationTicks) * 100).toFixed(2)),
+    );
+  }
+
+  return activityByGroup;
 }
 
 export function getPercentColor(percentage: number) {
