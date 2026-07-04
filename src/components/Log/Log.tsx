@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Alert, Box, CircularProgress, Typography } from "@mui/material";
 import FightSelector from "../sections/FightSelector";
 import { FightMetaData } from "../../models/Fight";
@@ -23,6 +23,11 @@ import {
   useLiveFetchRetryState,
 } from "../../utils/livePageFetchRetry";
 import { useLivePageRefreshPulse } from "../../utils/useLivePageRefreshPulse";
+import { usePageMeta } from "../../hooks/usePageMeta";
+import {
+  getLoadingEncounterPageMeta,
+  getLogPageMeta,
+} from "../../utils/encounterPageMeta";
 
 interface ApiFight {
   id: string;
@@ -90,6 +95,8 @@ interface ApiResponse {
 const Log: React.FC = () => {
   const { logId } = useParams<{ logId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const canonicalPath = `${location.pathname}${location.search}`;
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -286,6 +293,15 @@ const Log: React.FC = () => {
 
     return () => window.clearInterval(interval);
   }, [logId, receivingData, loadLog]);
+
+  const pageMeta = useMemo(() => {
+    if (loading) {
+      return getLoadingEncounterPageMeta(canonicalPath);
+    }
+
+    return getLogPageMeta({ logName, canonicalPath });
+  }, [loading, logName, canonicalPath]);
+  usePageMeta(pageMeta);
 
   if (loading) {
     return (

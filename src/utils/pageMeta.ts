@@ -1,7 +1,7 @@
 export const SITE_URL = "https://www.runelogs.com";
 export const SITE_NAME = "Runelogs";
 export const DEFAULT_TITLE =
-  "Runelogs - Combat analysis for Old School RuneScape";
+  "Runelogs - OSRS Combat Log Analysis & DPS Tracking";
 export const DEFAULT_DESCRIPTION =
   "Runelogs is an OSRS combat log analyzer for the RuneLite Combat Logger plugin. Upload logs, view DPS breakdowns, fight replays, and leaderboards for Theatre of Blood, Tombs of Amascut, Inferno, and more.";
 export const DEFAULT_KEYWORDS =

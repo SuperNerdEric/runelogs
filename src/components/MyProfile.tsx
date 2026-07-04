@@ -1,5 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
+import {
+  Link as RouterLink,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import {
   Alert,
@@ -38,12 +43,15 @@ import {
 import { colors, contentColumnSx, fontSizes } from "../theme";
 import { buildUploaderLogsHref } from "../utils/leaderboardContent";
 import { displayUsername } from "../utils/utils";
+import { usePageMeta } from "../hooks/usePageMeta";
+import { getProfilePageMeta } from "../utils/encounterPageMeta";
 
 const AVATAR_PREVIEW_SIZE = 96;
 const AVATAR_TOOLTIP_WIDTH = 300;
 
 const MyProfile: React.FC = () => {
   const { profileId } = useParams<{ profileId?: string }>();
+  const location = useLocation();
   const { isAuthenticated, isLoading, user } = useAuth0();
   const navigate = useNavigate();
   const { profile, loading, error, setAvatar, updateProfileDetails } =
@@ -140,6 +148,16 @@ const MyProfile: React.FC = () => {
   const displayName = profileId || user?.username || "User";
   const logsUsername = profileId || user?.username;
   const currentAvatarId = activeProfile?.avatarId;
+
+  const pageMeta = useMemo(
+    () =>
+      getProfilePageMeta({
+        displayName: displayUsername(displayName),
+        canonicalPath: `${location.pathname}${location.search}`,
+      }),
+    [displayName, location.pathname, location.search],
+  );
+  usePageMeta(pageMeta);
 
   const handleSelectAvatar = async (avatarId: AvatarId, locked: boolean) => {
     if (

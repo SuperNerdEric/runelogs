@@ -33,6 +33,8 @@ import {
   streamLogReparse,
 } from "../utils/streamLogReparse";
 import { displayUsername } from "../utils/utils";
+import { usePageMeta } from "../hooks/usePageMeta";
+import { ADMIN_PAGE_META } from "../utils/encounterPageMeta";
 
 interface ReparseAllStatus {
   status: "idle" | "started" | "in_progress" | "completed" | "failed";
@@ -250,6 +252,8 @@ function isReparseJobActive(status: ReparseAllStatus["status"]): boolean {
 }
 
 const Admin: React.FC = () => {
+  usePageMeta(ADMIN_PAGE_META);
+
   const {
     isAuthenticated,
     isLoading: authLoading,

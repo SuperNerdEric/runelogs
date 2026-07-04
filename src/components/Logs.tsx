@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Link as RouterLink,
+  useLocation,
   useNavigate,
   useParams,
   useSearchParams,
@@ -47,6 +48,8 @@ import FilterSelect from "./filters/FilterSelect";
 import FilterToolbar from "./filters/FilterToolbar";
 import { filterFieldCompactSx } from "./filters/filterStyles";
 import { mapContentFilterOptions } from "../utils/contentFilterOptions";
+import { usePageMeta } from "../hooks/usePageMeta";
+import { getUploaderLogsPageMeta } from "../utils/encounterPageMeta";
 import {
   BROWSE_ANY_PLAYER_COUNT,
   BrowsePlayerCount,
@@ -417,6 +420,7 @@ const LogsPageHeader: React.FC<LogsPageHeaderProps> = ({ uploaderId }) => (
 const Logs: React.FC = () => {
   const { uploaderId } = useParams<{ uploaderId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { user, getAccessTokenSilently } = useAuth0();
   const { enqueueSnackbar } = useSnackbar();
@@ -730,6 +734,17 @@ const Logs: React.FC = () => {
       </TableCell>
     </TableRow>
   );
+
+  const canonicalPath = `${location.pathname}${location.search}`;
+  const pageMeta = useMemo(
+    () =>
+      getUploaderLogsPageMeta({
+        uploaderName: displayUsername(uploaderId || "Unknown User"),
+        canonicalPath,
+      }),
+    [uploaderId, canonicalPath],
+  );
+  usePageMeta(pageMeta);
 
   return (
     <Box sx={pageContainerSx}>

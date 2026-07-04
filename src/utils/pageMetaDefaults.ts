@@ -8,8 +8,7 @@ export const PAGE_META = {
     canonicalPath: "/",
   },
   about: {
-    title:
-      "About Runelogs - OSRS Combat Log Analysis, DPS Tracking & Leaderboards",
+    title: "About - OSRS Combat Log Analysis & Leaderboards | Runelogs",
     description:
       "Runelogs is an OSRS combat log analyzer for RuneLite Combat Logger. Upload logs or live log fights, view DPS meters, tick replays, and leaderboards for Theatre of Blood, Tombs of Amascut, Inferno, Colosseum, and more.",
     canonicalPath: "/about",

@@ -7,7 +7,12 @@ import React, {
   useState,
 } from "react";
 import { flushSync } from "react-dom";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  useNavigate,
+  useParams,
+  useSearchParams,
+  useLocation,
+} from "react-router-dom";
 import { Alert, Box, CircularProgress, Tab, Tabs } from "@mui/material";
 import { centeredPageStateSx } from "../theme";
 import { TabsEnum } from "./Tabs";
@@ -58,6 +63,11 @@ import {
   useLiveFetchRetryState,
 } from "../utils/livePageFetchRetry";
 import { useLivePageRefreshPulse } from "../utils/useLivePageRefreshPulse";
+import { usePageMeta } from "../hooks/usePageMeta";
+import {
+  getEncounterFightPageMeta,
+  getLoadingEncounterPageMeta,
+} from "../utils/encounterPageMeta";
 
 type EncounterApiFG = {
   type: "fightGroup";
@@ -125,6 +135,8 @@ const Encounter: React.FC = () => {
 
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const canonicalPath = `${location.pathname}${location.search}`;
 
   const isAggregate = window.location.pathname.startsWith(
     "/encounter/aggregate/",
@@ -543,6 +555,21 @@ const Encounter: React.FC = () => {
   const showParentSpinner = isTabLoading && displayTab !== TabsEnum.EVENTS;
   const showFilterOverlaySpinner =
     filtersPending && displayTab !== TabsEnum.EVENTS;
+
+  const pageMeta = useMemo(() => {
+    if (!fight) {
+      return getLoadingEncounterPageMeta(canonicalPath);
+    }
+
+    const runMeta = group ?? fightGroupMeta;
+    return getEncounterFightPageMeta({
+      fightName: fight.name,
+      runName: runMeta?.name,
+      canonicalPath,
+      isAggregate,
+    });
+  }, [fight, group, fightGroupMeta, canonicalPath, isAggregate]);
+  usePageMeta(pageMeta);
 
   if (loading)
     return (

@@ -1,13 +1,19 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Box, Typography } from "@mui/material";
+import { useSearchParams } from "react-router-dom";
 import HistoryIcon from "@mui/icons-material/History";
 import OverallRecentEncounters from "./OverallRecentEncounters";
 import { colors, contentColumnSx, media } from "../theme";
 import { usePageMeta } from "../hooks/usePageMeta";
-import { RECENT_ENCOUNTERS_PAGE_META } from "../utils/seoContent";
+import { getRecentEncountersPageMeta } from "../utils/recentEncountersPageMeta";
 
 const RecentEncountersPage: React.FC = () => {
-  usePageMeta(RECENT_ENCOUNTERS_PAGE_META);
+  const [searchParams] = useSearchParams();
+  const pageMeta = useMemo(
+    () => getRecentEncountersPageMeta(searchParams),
+    [searchParams],
+  );
+  usePageMeta(pageMeta);
 
   return (
     <Box

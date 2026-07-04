@@ -1,5 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
+import {
+  Link as RouterLink,
+  useNavigate,
+  useParams,
+  useLocation,
+} from "react-router-dom";
 import { Alert, Box, CircularProgress, Link, Typography } from "@mui/material";
 import DamageMeterTable from "./charts/DamageMeterTable";
 import { FightGroupFightRows } from "./sections/LogFightList";
@@ -30,6 +35,11 @@ import LiveLogProgressAlert from "./LiveLogProgressAlert";
 import LogNameDisplay from "./LogNameDisplay";
 import { LIVE_PAGE_RETRY_INTERVAL_MS } from "../utils/livePageFetchRetry";
 import { useLivePageRefreshPulse } from "../utils/useLivePageRefreshPulse";
+import { usePageMeta } from "../hooks/usePageMeta";
+import {
+  getLoadingEncounterPageMeta,
+  getRunSummaryPageMeta,
+} from "../utils/encounterPageMeta";
 import "../App.css";
 
 interface PlayerDpsRow {
@@ -99,6 +109,8 @@ const TOP_RANK_CATEGORIES = new Set([
 const FightGroupSummary: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const canonicalPath = `${location.pathname}${location.search}`;
   const [data, setData] = useState<FightGroupSummaryData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -217,6 +229,18 @@ const FightGroupSummary: React.FC = () => {
       highScorePercentile: deepDelveRank?.percentile,
     };
   }, [data]);
+
+  const pageMeta = useMemo(() => {
+    if (!data) {
+      return getLoadingEncounterPageMeta(canonicalPath);
+    }
+
+    return getRunSummaryPageMeta({
+      runName: data.name,
+      canonicalPath,
+    });
+  }, [data, canonicalPath]);
+  usePageMeta(pageMeta);
 
   if (loading) {
     return (
