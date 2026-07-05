@@ -35,6 +35,7 @@ import {
 import { displayUsername } from "../utils/utils";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { ADMIN_PAGE_META } from "../utils/encounterPageMeta";
+import { downloadParsedLogsWithoutRaw } from "../utils/downloadParsedLogsWithoutRaw";
 
 interface ReparseAllStatus {
   status: "idle" | "started" | "in_progress" | "completed" | "failed";
@@ -271,6 +272,11 @@ const Admin: React.FC = () => {
   );
   const [reparseStarting, setReparseStarting] = useState(false);
   const [parsedExportLoading, setParsedExportLoading] = useState(false);
+  const [parsedExportProgress, setParsedExportProgress] = useState<{
+    current: number;
+    total: number;
+    logId: string;
+  } | null>(null);
 
   const [bulkReparseInput, setBulkReparseInput] = useState("");
   const [reparseProgress, setReparseProgress] = useState<{
@@ -535,30 +541,38 @@ const Admin: React.FC = () => {
   const downloadAllParsedExports = async () => {
     if (
       !window.confirm(
-        "Download parsed data for all logs without a raw upload? This may take a while and produce a large file.",
+        "Export parsed data for all logs without a raw upload? Logs are downloaded one at a time and combined into a single file.",
       )
     ) {
       return;
     }
 
     setParsedExportLoading(true);
+    setParsedExportProgress(null);
     try {
-      const headers = await getAuthHeaders();
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/admin/logs/without-raw/export`,
-        { headers },
-      );
-      if (!response.ok) {
-        throw new Error(`Server returned ${response.status}`);
-      }
-      const blob = await response.blob();
+      const { blob, summary } = await downloadParsedLogsWithoutRaw({
+        apiUrl: import.meta.env.VITE_API_URL,
+        getAuthHeaders,
+        onProgress: (current, total, logId) => {
+          setParsedExportProgress({ current, total, logId });
+        },
+      });
+
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
       anchor.download = "parsed-logs-without-raw.txt";
       anchor.click();
       URL.revokeObjectURL(url);
-      enqueueSnackbar("Parsed export downloaded", { variant: "success" });
+
+      if (summary.failedLogIds.length > 0) {
+        enqueueSnackbar(
+          `Export finished with ${summary.failedLogIds.length} failed log${summary.failedLogIds.length === 1 ? "" : "s"}`,
+          { variant: "warning" },
+        );
+      } else {
+        enqueueSnackbar("Parsed export downloaded", { variant: "success" });
+      }
     } catch (err) {
       console.error("Failed to download parsed export:", err);
       enqueueSnackbar("Failed to download parsed export", {
@@ -566,6 +580,7 @@ const Admin: React.FC = () => {
       });
     } finally {
       setParsedExportLoading(false);
+      setParsedExportProgress(null);
     }
   };
 
@@ -921,16 +936,20 @@ const Admin: React.FC = () => {
             ` (${logsWithoutRawCount.toLocaleString()})`}
         </Typography>
         <Typography sx={sectionDescriptionSx}>
-          Download all parsed database and fight JSON data for logs that were
-          saved before raw log uploads were stored. Use this to reverse engineer
-          raw logs from fight groups, fights, metadata, and S3 fight JSON.
+          Download parsed database and fight JSON data for logs that were saved
+          before raw log uploads were stored. Each log is fetched individually
+          and combined locally to avoid request timeouts.
         </Typography>
 
         <Box
           component="button"
           type="button"
           onClick={() => void downloadAllParsedExports()}
-          disabled={parsedExportLoading || logsWithoutRawCount === 0}
+          disabled={
+            parsedExportLoading ||
+            logsWithoutRawCount === 0 ||
+            logsWithoutRawCount == null
+          }
           sx={primaryButtonSx}
         >
           {parsedExportLoading ? (
@@ -942,6 +961,26 @@ const Admin: React.FC = () => {
             </>
           )}
         </Box>
+
+        {parsedExportProgress && (
+          <Box sx={{ mt: 2 }}>
+            <Typography sx={detailTextSx}>
+              Exporting log {parsedExportProgress.current} of{" "}
+              {parsedExportProgress.total}
+            </Typography>
+            <LinearProgress
+              variant="determinate"
+              value={
+                (parsedExportProgress.current / parsedExportProgress.total) *
+                100
+              }
+              sx={progressBarSx}
+            />
+            <Typography sx={mutedDetailTextSx}>
+              Current: {parsedExportProgress.logId}
+            </Typography>
+          </Box>
+        )}
       </SectionBox>
 
       <SectionBox sx={adminSectionBoxSx}>
