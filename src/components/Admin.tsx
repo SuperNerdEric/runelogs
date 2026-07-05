@@ -266,7 +266,11 @@ const Admin: React.FC = () => {
     null,
   );
   const [totalLogCount, setTotalLogCount] = useState<number | null>(null);
+  const [logsWithoutRawCount, setLogsWithoutRawCount] = useState<number | null>(
+    null,
+  );
   const [reparseStarting, setReparseStarting] = useState(false);
+  const [parsedExportLoading, setParsedExportLoading] = useState(false);
 
   const [bulkReparseInput, setBulkReparseInput] = useState("");
   const [reparseProgress, setReparseProgress] = useState<{
@@ -320,6 +324,23 @@ const Admin: React.FC = () => {
       setTotalLogCount(data.total);
     } catch (err) {
       console.error("Failed to fetch log count:", err);
+    }
+  }, [getAuthHeaders]);
+
+  const fetchLogsWithoutRawCount = useCallback(async () => {
+    try {
+      const headers = await getAuthHeaders();
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/admin/logs/without-raw/count`,
+        { headers },
+      );
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}`);
+      }
+      const data = (await response.json()) as { total: number };
+      setLogsWithoutRawCount(data.total);
+    } catch (err) {
+      console.error("Failed to fetch logs-without-raw count:", err);
     }
   }, [getAuthHeaders]);
 
@@ -511,6 +532,74 @@ const Admin: React.FC = () => {
     }
   };
 
+  const downloadAllParsedExports = async () => {
+    if (
+      !window.confirm(
+        "Download parsed data for all logs without a raw upload? This may take a while and produce a large file.",
+      )
+    ) {
+      return;
+    }
+
+    setParsedExportLoading(true);
+    try {
+      const headers = await getAuthHeaders();
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/admin/logs/without-raw/export`,
+        { headers },
+      );
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}`);
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = "parsed-logs-without-raw.txt";
+      anchor.click();
+      URL.revokeObjectURL(url);
+      enqueueSnackbar("Parsed export downloaded", { variant: "success" });
+    } catch (err) {
+      console.error("Failed to download parsed export:", err);
+      enqueueSnackbar("Failed to download parsed export", {
+        variant: "error",
+      });
+    } finally {
+      setParsedExportLoading(false);
+    }
+  };
+
+  const downloadParsedExport = async () => {
+    if (!loadedLog) {
+      return;
+    }
+
+    setActionLoading("parsed-export");
+    try {
+      const headers = await getAuthHeaders();
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/admin/log/${loadedLog.id}/parsed-export`,
+        { headers },
+      );
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}`);
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `${loadedLog.id}-parsed-export.txt`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+      enqueueSnackbar("Parsed export downloaded", { variant: "success" });
+    } catch (err) {
+      console.error("Failed to download parsed export:", err);
+      enqueueSnackbar("Failed to download parsed export", { variant: "error" });
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const downloadRawLog = async () => {
     if (!loadedLog) {
       return;
@@ -652,7 +741,13 @@ const Admin: React.FC = () => {
     }
     void fetchReparseStatus();
     void fetchTotalLogCount();
-  }, [fetchReparseStatus, fetchTotalLogCount, isAdmin]);
+    void fetchLogsWithoutRawCount();
+  }, [
+    fetchReparseStatus,
+    fetchTotalLogCount,
+    fetchLogsWithoutRawCount,
+    isAdmin,
+  ]);
 
   useEffect(() => {
     if (!isAdmin || !reparseStatus) {
@@ -817,6 +912,36 @@ const Admin: React.FC = () => {
             </Typography>
           </Box>
         )}
+      </SectionBox>
+
+      <SectionBox sx={adminSectionBoxSx}>
+        <Typography sx={sectionTitleSx}>
+          Export Parsed Data (No Raw Log)
+          {logsWithoutRawCount != null &&
+            ` (${logsWithoutRawCount.toLocaleString()})`}
+        </Typography>
+        <Typography sx={sectionDescriptionSx}>
+          Download all parsed database and fight JSON data for logs that were
+          saved before raw log uploads were stored. Use this to reverse engineer
+          raw logs from fight groups, fights, metadata, and S3 fight JSON.
+        </Typography>
+
+        <Box
+          component="button"
+          type="button"
+          onClick={() => void downloadAllParsedExports()}
+          disabled={parsedExportLoading || logsWithoutRawCount === 0}
+          sx={primaryButtonSx}
+        >
+          {parsedExportLoading ? (
+            <CircularProgress size={24} sx={{ color: "inherit" }} />
+          ) : (
+            <>
+              <DownloadIcon sx={{ fontSize: 20 }} />
+              Download All Parsed Exports
+            </>
+          )}
+        </Box>
       </SectionBox>
 
       <SectionBox sx={adminSectionBoxSx}>
@@ -1039,6 +1164,16 @@ const Admin: React.FC = () => {
                   <RefreshIcon sx={{ fontSize: 20 }} />
                 )}
                 Reparse Log
+              </Box>
+              <Box
+                component="button"
+                type="button"
+                onClick={() => void downloadParsedExport()}
+                disabled={actionLoading === "parsed-export"}
+                sx={secondaryButtonSx}
+              >
+                <DownloadIcon sx={{ fontSize: 20 }} />
+                Download Parsed Export
               </Box>
               <Box
                 component="button"
