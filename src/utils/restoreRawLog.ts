@@ -101,7 +101,7 @@ export async function restoreRawLog(params: {
   const response = await fetch(`${apiUrl}/admin/log/${logId}/restore-raw`, {
     method: "POST",
     headers,
-    body: JSON.stringify({ dryRun, force }),
+    body: JSON.stringify({ dryRun, force: force ?? true }),
   });
 
   if (!response.ok) {
