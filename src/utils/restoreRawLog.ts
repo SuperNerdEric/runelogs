@@ -153,8 +153,7 @@ export type ParsedLogImportError = {
 };
 
 export type ParsedLogImportResult =
-  | ParsedLogImportSuccess
-  | ParsedLogImportError;
+  ParsedLogImportSuccess | ParsedLogImportError;
 
 const PARSED_IMPORT_TIMEOUT_MS = 10 * 60 * 1000;
 
