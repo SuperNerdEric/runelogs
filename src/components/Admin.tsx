@@ -277,6 +277,12 @@ function isRestoreJobActive(
 }
 
 function formatParitySummary(report: RestoreParityReport): string {
+  const skippedWarning = report.warnings.find((warning) =>
+    warning.includes("Parity check skipped"),
+  );
+  if (skippedWarning) {
+    return "Parity check skipped";
+  }
   if (report.passed) {
     return "Parity check passed";
   }
@@ -833,7 +839,13 @@ const Admin: React.FC = () => {
       );
     } catch (err) {
       console.error("Failed to preview raw restore:", err);
-      enqueueSnackbar("Failed to preview raw restore", { variant: "error" });
+      const message =
+        err instanceof DOMException && err.name === "TimeoutError"
+          ? "Preview timed out — log may be too large; try Restore Raw directly"
+          : err instanceof Error
+            ? err.message
+            : "Failed to preview raw restore";
+      enqueueSnackbar(message, { variant: "error" });
     } finally {
       setActionLoading(null);
     }

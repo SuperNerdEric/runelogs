@@ -86,6 +86,7 @@ export async function restoreRawLog(params: {
     method: "POST",
     headers,
     body: JSON.stringify({ dryRun, force: force ?? true }),
+    signal: AbortSignal.timeout(RESTORE_RAW_TIMEOUT_MS),
   });
 
   if (!response.ok) {
@@ -140,6 +141,7 @@ export type ParsedLogImportResult =
   ParsedLogImportSuccess | ParsedLogImportError;
 
 const PARSED_IMPORT_TIMEOUT_MS = 10 * 60 * 1000;
+const RESTORE_RAW_TIMEOUT_MS = 10 * 60 * 1000;
 
 export async function importParsedLogExportFromFile(params: {
   apiUrl: string;
