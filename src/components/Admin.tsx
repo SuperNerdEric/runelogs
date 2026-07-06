@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link as RouterLink, Navigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import {
@@ -20,8 +20,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import DownloadIcon from "@mui/icons-material/Download";
 import EditIcon from "@mui/icons-material/Edit";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import RestorePageIcon from "@mui/icons-material/RestorePage";
-import UploadFileIcon from "@mui/icons-material/UploadFile";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { useSnackbar } from "notistack";
 import { format } from "date-fns";
@@ -37,23 +35,6 @@ import {
 import { displayUsername } from "../utils/utils";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { ADMIN_PAGE_META } from "../utils/encounterPageMeta";
-import {
-  downloadIndividualParsedLogExports,
-  downloadParsedLogsWithoutRaw,
-  downloadSingleParsedLogExport,
-} from "../utils/downloadParsedLogsWithoutRaw";
-import {
-  fetchLogIdsWithoutRaw,
-  fetchRestoreAllRawLogsStatus,
-  importParsedLogExportFromFile,
-  previewRestoreRawLog,
-  restoreRawLog,
-  startRestoreAllRawLogs,
-  type ParsedLogImportSuccess,
-  type RestoreAllRawLogsStatus,
-  type RestoreParityReport,
-  type RestoreRawLogResult,
-} from "../utils/restoreRawLog";
 
 interface ReparseAllStatus {
   status: "idle" | "started" | "in_progress" | "completed" | "failed";
@@ -270,26 +251,6 @@ function isReparseJobActive(status: ReparseAllStatus["status"]): boolean {
   return status === "started" || status === "in_progress";
 }
 
-function isRestoreJobActive(
-  status: RestoreAllRawLogsStatus["status"],
-): boolean {
-  return status === "started" || status === "in_progress";
-}
-
-function formatParitySummary(report: RestoreParityReport): string {
-  const skippedWarning = report.warnings.find((warning) =>
-    warning.includes("Parity check skipped"),
-  );
-  if (skippedWarning) {
-    return "Parity check skipped";
-  }
-  if (report.passed) {
-    return "Parity check passed";
-  }
-  const unexpected = report.diffs.filter((diff) => !diff.documented).length;
-  return `${unexpected} unexpected parity difference${unexpected === 1 ? "" : "s"}`;
-}
-
 const Admin: React.FC = () => {
   usePageMeta(ADMIN_PAGE_META);
 
@@ -305,25 +266,7 @@ const Admin: React.FC = () => {
     null,
   );
   const [totalLogCount, setTotalLogCount] = useState<number | null>(null);
-  const [logsWithoutRawCount, setLogsWithoutRawCount] = useState<number | null>(
-    null,
-  );
   const [reparseStarting, setReparseStarting] = useState(false);
-  const [parsedExportLoading, setParsedExportLoading] = useState(false);
-  const [parsedExportMode, setParsedExportMode] = useState<
-    "combined" | "individual" | null
-  >(null);
-  const [parsedExportProgress, setParsedExportProgress] = useState<{
-    current: number;
-    total: number;
-    logId: string;
-  } | null>(null);
-  const [restoreStatus, setRestoreStatus] =
-    useState<RestoreAllRawLogsStatus | null>(null);
-  const [restoreStarting, setRestoreStarting] = useState(false);
-  const [restorePreview, setRestorePreview] =
-    useState<RestoreRawLogResult | null>(null);
-  const [copyingLogIds, setCopyingLogIds] = useState(false);
 
   const [bulkReparseInput, setBulkReparseInput] = useState("");
   const [reparseProgress, setReparseProgress] = useState<{
@@ -338,9 +281,6 @@ const Admin: React.FC = () => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState("");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [importResult, setImportResult] =
-    useState<ParsedLogImportSuccess | null>(null);
-  const parsedExportInputRef = useRef<HTMLInputElement>(null);
 
   const getAuthHeaders = useCallback(async () => {
     const token = await getAccessTokenSilently();
@@ -383,35 +323,6 @@ const Admin: React.FC = () => {
     }
   }, [getAuthHeaders]);
 
-  const fetchLogsWithoutRawCount = useCallback(async () => {
-    try {
-      const headers = await getAuthHeaders();
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/admin/logs/without-raw/count`,
-        { headers },
-      );
-      if (!response.ok) {
-        throw new Error(`Server returned ${response.status}`);
-      }
-      const data = (await response.json()) as { total: number };
-      setLogsWithoutRawCount(data.total);
-    } catch (err) {
-      console.error("Failed to fetch logs-without-raw count:", err);
-    }
-  }, [getAuthHeaders]);
-
-  const fetchRestoreStatus = useCallback(async () => {
-    try {
-      const data = await fetchRestoreAllRawLogsStatus({
-        apiUrl: import.meta.env.VITE_API_URL,
-        getAuthHeaders,
-      });
-      setRestoreStatus(data);
-    } catch (err) {
-      console.error("Failed to fetch restore-all status:", err);
-    }
-  }, [getAuthHeaders]);
-
   const startReparseAll = async () => {
     if (
       !window.confirm(
@@ -451,8 +362,6 @@ const Admin: React.FC = () => {
     setLogLoading(true);
     setLogError(null);
     setLoadedLog(null);
-    setRestorePreview(null);
-    setImportResult(null);
     setIsEditingName(false);
 
     try {
@@ -602,185 +511,6 @@ const Admin: React.FC = () => {
     }
   };
 
-  const downloadAllParsedExports = async () => {
-    if (
-      !window.confirm(
-        "Combine all parsed exports into a single file? This can be very large and may fail in the browser. Prefer Download Individual Exports for backups.",
-      )
-    ) {
-      return;
-    }
-
-    setParsedExportLoading(true);
-    setParsedExportMode("combined");
-    setParsedExportProgress(null);
-    try {
-      const { blob, summary } = await downloadParsedLogsWithoutRaw({
-        apiUrl: import.meta.env.VITE_API_URL,
-        getAuthHeaders,
-        onProgress: (current, total, logId) => {
-          setParsedExportProgress({ current, total, logId });
-        },
-      });
-
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-      anchor.href = url;
-      anchor.download = "parsed-logs-without-raw.txt";
-      anchor.click();
-      URL.revokeObjectURL(url);
-
-      if (summary.failedLogIds.length > 0) {
-        enqueueSnackbar(
-          `Export finished with ${summary.failedLogIds.length} failed log${summary.failedLogIds.length === 1 ? "" : "s"}`,
-          { variant: "warning" },
-        );
-      } else {
-        enqueueSnackbar("Combined parsed export downloaded", {
-          variant: "success",
-        });
-      }
-    } catch (err) {
-      console.error("Failed to download parsed export:", err);
-      enqueueSnackbar("Failed to download combined parsed export", {
-        variant: "error",
-      });
-    } finally {
-      setParsedExportLoading(false);
-      setParsedExportMode(null);
-      setParsedExportProgress(null);
-    }
-  };
-
-  const downloadIndividualParsedExportsHandler = async () => {
-    if (
-      !window.confirm(
-        "Download one parsed-export file per log? Your browser may ask to allow multiple downloads. Each log is fetched separately with a 10-minute timeout.",
-      )
-    ) {
-      return;
-    }
-
-    setParsedExportLoading(true);
-    setParsedExportMode("individual");
-    setParsedExportProgress(null);
-    try {
-      const { succeeded, failedLogIds } =
-        await downloadIndividualParsedLogExports({
-          apiUrl: import.meta.env.VITE_API_URL,
-          getAuthHeaders,
-          onProgress: (current, total, logId) => {
-            setParsedExportProgress({ current, total, logId });
-          },
-        });
-
-      if (failedLogIds.length > 0) {
-        enqueueSnackbar(
-          `Downloaded ${succeeded} export${succeeded === 1 ? "" : "s"}; ${failedLogIds.length} failed`,
-          { variant: "warning" },
-        );
-      } else {
-        enqueueSnackbar(
-          `Downloaded ${succeeded} individual export${succeeded === 1 ? "" : "s"}`,
-          { variant: "success" },
-        );
-      }
-    } catch (err) {
-      console.error("Failed to download individual parsed exports:", err);
-      enqueueSnackbar("Failed to download individual parsed exports", {
-        variant: "error",
-      });
-    } finally {
-      setParsedExportLoading(false);
-      setParsedExportMode(null);
-      setParsedExportProgress(null);
-    }
-  };
-
-  const downloadParsedExport = async () => {
-    if (!loadedLog) {
-      return;
-    }
-
-    setActionLoading("parsed-export");
-    try {
-      await downloadSingleParsedLogExport({
-        apiUrl: import.meta.env.VITE_API_URL,
-        logId: loadedLog.id,
-        getAuthHeaders,
-      });
-      enqueueSnackbar("Parsed export downloaded", { variant: "success" });
-    } catch (err) {
-      console.error("Failed to download parsed export:", err);
-      enqueueSnackbar("Failed to download parsed export", { variant: "error" });
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
-  const promptImportParsedExport = () => {
-    if (!loadedLog) {
-      return;
-    }
-
-    if (
-      !window.confirm(
-        `Import parsed export backup for "${loadedLog.name ?? loadedLog.id}"? This restores encounter structure and per-fight S3 JSON from the backup file without re-parsing raw text. Large files may take several minutes.`,
-      )
-    ) {
-      return;
-    }
-
-    parsedExportInputRef.current?.click();
-  };
-
-  const handleParsedExportFileSelected = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-    if (!file || !loadedLog) {
-      return;
-    }
-
-    if (
-      !file.name.includes(loadedLog.id) &&
-      !window.confirm(
-        `Selected file "${file.name}" does not include this log id in the filename. Import anyway?`,
-      )
-    ) {
-      return;
-    }
-
-    setActionLoading("import-parsed-export");
-    setImportResult(null);
-    try {
-      const result = await importParsedLogExportFromFile({
-        apiUrl: import.meta.env.VITE_API_URL,
-        logId: loadedLog.id,
-        file,
-        getAuthHeaders,
-      });
-
-      if (!result.success) {
-        enqueueSnackbar(result.error, { variant: "error" });
-        return;
-      }
-
-      setImportResult(result);
-      enqueueSnackbar(
-        `Imported ${result.encounterCount} encounters (${result.fightGroupCount} groups, ${result.fightCount} fights)`,
-        { variant: "success" },
-      );
-      await refreshLoadedLog(loadedLog.id);
-    } catch (err) {
-      console.error("Failed to import parsed export:", err);
-      enqueueSnackbar("Failed to import parsed export", { variant: "error" });
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
   const downloadRawLog = async () => {
     if (!loadedLog) {
       return;
@@ -809,170 +539,6 @@ const Admin: React.FC = () => {
       enqueueSnackbar("Failed to download raw log", { variant: "error" });
     } finally {
       setActionLoading(null);
-    }
-  };
-
-  const previewLoadedLogRestore = async () => {
-    if (!loadedLog) {
-      return;
-    }
-
-    setActionLoading("restore-preview");
-    setRestorePreview(null);
-    setImportResult(null);
-    try {
-      const result = await previewRestoreRawLog({
-        apiUrl: import.meta.env.VITE_API_URL,
-        logId: loadedLog.id,
-        getAuthHeaders,
-      });
-      if (!result.success) {
-        enqueueSnackbar(result.error, { variant: "error" });
-        return;
-      }
-      setRestorePreview(result);
-      enqueueSnackbar(
-        `${formatParitySummary(result.parityReport)} · ${result.lineCount.toLocaleString()} lines`,
-        {
-          variant: result.parityReport.passed ? "success" : "warning",
-        },
-      );
-    } catch (err) {
-      console.error("Failed to preview raw restore:", err);
-      const message =
-        err instanceof DOMException && err.name === "TimeoutError"
-          ? "Preview timed out — log may be too large; try Restore Raw directly"
-          : err instanceof Error
-            ? err.message
-            : "Failed to preview raw restore";
-      enqueueSnackbar(message, { variant: "error" });
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
-  const restoreLoadedLog = async () => {
-    if (!loadedLog) {
-      return;
-    }
-
-    if (
-      !window.confirm(
-        restorePreview?.parityReport.passed
-          ? "Upload reconstructed raw log to storage?"
-          : "Parity check reported differences. Upload reconstructed raw log anyway?",
-      )
-    ) {
-      return;
-    }
-
-    setActionLoading("restore");
-    try {
-      const result = await restoreRawLog({
-        apiUrl: import.meta.env.VITE_API_URL,
-        logId: loadedLog.id,
-        getAuthHeaders,
-      });
-      if (!result.success) {
-        enqueueSnackbar(result.error, { variant: "error" });
-        return;
-      }
-      setRestorePreview(result);
-      enqueueSnackbar(
-        result.parityReport.passed
-          ? "Raw log restored"
-          : "Raw log restored with parity warnings",
-        {
-          variant: result.parityReport.passed ? "success" : "warning",
-        },
-      );
-      await fetchLogsWithoutRawCount();
-    } catch (err) {
-      console.error("Failed to restore raw log:", err);
-      enqueueSnackbar("Failed to restore raw log", { variant: "error" });
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
-  const startRestoreAll = async () => {
-    if (
-      !window.confirm(
-        "Restore raw logs for all logs missing a raw upload? Reconstructed files are uploaded even when parity differs.",
-      )
-    ) {
-      return;
-    }
-
-    setRestoreStarting(true);
-    try {
-      const data = await startRestoreAllRawLogs({
-        apiUrl: import.meta.env.VITE_API_URL,
-        getAuthHeaders,
-      });
-      setRestoreStatus(data);
-      enqueueSnackbar("Restore-all job started", { variant: "success" });
-    } catch (err) {
-      console.error("Failed to start restore-all:", err);
-      enqueueSnackbar("Failed to start restore-all job", { variant: "error" });
-    } finally {
-      setRestoreStarting(false);
-    }
-  };
-
-  const copyLogsWithoutRawIds = async () => {
-    setCopyingLogIds(true);
-    try {
-      const logIds = await fetchLogIdsWithoutRaw({
-        apiUrl: import.meta.env.VITE_API_URL,
-        getAuthHeaders,
-      });
-      if (logIds.length === 0) {
-        enqueueSnackbar("No logs without raw upload", { variant: "info" });
-        return;
-      }
-      await navigator.clipboard.writeText(logIds.join(", "));
-      enqueueSnackbar(
-        `Copied ${logIds.length} log ID${logIds.length === 1 ? "" : "s"} to clipboard`,
-        { variant: "success" },
-      );
-    } catch (err) {
-      console.error("Failed to copy log IDs:", err);
-      enqueueSnackbar("Failed to copy log IDs", { variant: "error" });
-    } finally {
-      setCopyingLogIds(false);
-    }
-  };
-
-  const downloadLogsWithoutRawIds = async () => {
-    setCopyingLogIds(true);
-    try {
-      const logIds = await fetchLogIdsWithoutRaw({
-        apiUrl: import.meta.env.VITE_API_URL,
-        getAuthHeaders,
-      });
-      if (logIds.length === 0) {
-        enqueueSnackbar("No logs without raw upload", { variant: "info" });
-        return;
-      }
-      const blob = new Blob([logIds.join("\n")], {
-        type: "text/plain;charset=utf-8",
-      });
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-      anchor.href = url;
-      anchor.download = "logs-without-raw-ids.txt";
-      anchor.click();
-      URL.revokeObjectURL(url);
-      enqueueSnackbar(
-        `Downloaded ${logIds.length} log ID${logIds.length === 1 ? "" : "s"}`,
-        { variant: "success" },
-      );
-    } catch (err) {
-      console.error("Failed to download log IDs:", err);
-      enqueueSnackbar("Failed to download log IDs", { variant: "error" });
-    } finally {
-      setCopyingLogIds(false);
     }
   };
 
@@ -1085,16 +651,8 @@ const Admin: React.FC = () => {
       return;
     }
     void fetchReparseStatus();
-    void fetchRestoreStatus();
     void fetchTotalLogCount();
-    void fetchLogsWithoutRawCount();
-  }, [
-    fetchReparseStatus,
-    fetchRestoreStatus,
-    fetchTotalLogCount,
-    fetchLogsWithoutRawCount,
-    isAdmin,
-  ]);
+  }, [fetchReparseStatus, fetchTotalLogCount, isAdmin]);
 
   useEffect(() => {
     if (!isAdmin || !reparseStatus) {
@@ -1111,32 +669,6 @@ const Admin: React.FC = () => {
 
     return () => window.clearInterval(intervalId);
   }, [fetchReparseStatus, isAdmin, reparseStatus?.status]);
-
-  useEffect(() => {
-    if (!isAdmin || !restoreStatus) {
-      return;
-    }
-
-    if (!isRestoreJobActive(restoreStatus.status)) {
-      return;
-    }
-
-    const intervalId = window.setInterval(() => {
-      void fetchRestoreStatus();
-    }, 5000);
-
-    return () => window.clearInterval(intervalId);
-  }, [fetchRestoreStatus, isAdmin, restoreStatus?.status]);
-
-  useEffect(() => {
-    if (restoreStatus?.status === "completed" && restoreStatus.processed > 0) {
-      void fetchLogsWithoutRawCount();
-    }
-  }, [
-    fetchLogsWithoutRawCount,
-    restoreStatus?.processed,
-    restoreStatus?.status,
-  ]);
 
   if (authLoading || adminLoading) {
     return (
@@ -1170,11 +702,6 @@ const Admin: React.FC = () => {
   const reparsePercent =
     reparseStatus && reparseStatus.total > 0
       ? (reparseStatus.processed / reparseStatus.total) * 100
-      : 0;
-
-  const restorePercent =
-    restoreStatus && restoreStatus.total > 0
-      ? (restoreStatus.processed / restoreStatus.total) * 100
       : 0;
 
   return (
@@ -1293,197 +820,6 @@ const Admin: React.FC = () => {
       </SectionBox>
 
       <SectionBox sx={adminSectionBoxSx}>
-        <Typography sx={sectionTitleSx}>
-          Export Parsed Data (No Raw Log)
-          {logsWithoutRawCount != null &&
-            ` (${logsWithoutRawCount.toLocaleString()})`}
-        </Typography>
-        <Typography sx={sectionDescriptionSx}>
-          Back up parsed database and fight JSON before restoring raw logs.
-          Individual downloads fetch one log at a time (10-minute timeout per
-          log) and save separate files — recommended for large logs. The
-          combined export merges everything into one JSON file and may fail in
-          the browser.
-        </Typography>
-
-        <Box sx={actionRowSx}>
-          <Box
-            component="button"
-            type="button"
-            onClick={() => void downloadIndividualParsedExportsHandler()}
-            disabled={
-              parsedExportLoading ||
-              logsWithoutRawCount === 0 ||
-              logsWithoutRawCount == null
-            }
-            sx={primaryButtonSx}
-          >
-            {parsedExportLoading && parsedExportMode === "individual" ? (
-              <CircularProgress size={24} sx={{ color: "inherit" }} />
-            ) : (
-              <>
-                <DownloadIcon sx={{ fontSize: 20 }} />
-                Download Individual Exports
-              </>
-            )}
-          </Box>
-          <Box
-            component="button"
-            type="button"
-            onClick={() => void downloadAllParsedExports()}
-            disabled={
-              parsedExportLoading ||
-              logsWithoutRawCount === 0 ||
-              logsWithoutRawCount == null
-            }
-            sx={secondaryButtonSx}
-          >
-            {parsedExportLoading && parsedExportMode === "combined" ? (
-              <CircularProgress size={20} sx={{ color: "inherit" }} />
-            ) : (
-              <>
-                <DownloadIcon sx={{ fontSize: 20 }} />
-                Download Combined Export
-              </>
-            )}
-          </Box>
-        </Box>
-
-        {parsedExportProgress && (
-          <Box sx={{ mt: 2 }}>
-            <Typography sx={detailTextSx}>
-              Exporting log {parsedExportProgress.current} of{" "}
-              {parsedExportProgress.total}
-            </Typography>
-            <LinearProgress
-              variant="determinate"
-              value={
-                (parsedExportProgress.current / parsedExportProgress.total) *
-                100
-              }
-              sx={progressBarSx}
-            />
-            <Typography sx={mutedDetailTextSx}>
-              Current: {parsedExportProgress.logId}
-            </Typography>
-          </Box>
-        )}
-      </SectionBox>
-
-      <SectionBox sx={adminSectionBoxSx}>
-        <Typography sx={sectionTitleSx}>
-          Restore Raw Logs (No Raw Upload)
-          {logsWithoutRawCount != null &&
-            ` (${logsWithoutRawCount.toLocaleString()})`}
-        </Typography>
-        <Typography sx={sectionDescriptionSx}>
-          Reconstruct raw combat logs from stored fight JSON and upload them to
-          storage. Bulk restore processes logs one at a time (like reparse-all)
-          and skips parity re-parsing for speed — use Preview Restore Raw on
-          individual logs to check parity first.
-        </Typography>
-
-        <Box sx={actionRowSx}>
-          <Box
-            component="button"
-            type="button"
-            onClick={() => void startRestoreAll()}
-            disabled={
-              restoreStarting ||
-              logsWithoutRawCount === 0 ||
-              logsWithoutRawCount == null ||
-              (restoreStatus != null &&
-                isRestoreJobActive(restoreStatus.status))
-            }
-            sx={primaryButtonSx}
-          >
-            {restoreStarting ? (
-              <CircularProgress size={24} sx={{ color: "inherit" }} />
-            ) : (
-              <>
-                <RestorePageIcon sx={{ fontSize: 20 }} />
-                Restore All Missing Raw Logs
-              </>
-            )}
-          </Box>
-          <Box
-            component="button"
-            type="button"
-            onClick={() => void copyLogsWithoutRawIds()}
-            disabled={
-              copyingLogIds ||
-              logsWithoutRawCount === 0 ||
-              logsWithoutRawCount == null
-            }
-            sx={secondaryButtonSx}
-          >
-            {copyingLogIds ? (
-              <CircularProgress size={20} sx={{ color: "inherit" }} />
-            ) : (
-              "Copy Log IDs"
-            )}
-          </Box>
-          <Box
-            component="button"
-            type="button"
-            onClick={() => void downloadLogsWithoutRawIds()}
-            disabled={
-              copyingLogIds ||
-              logsWithoutRawCount === 0 ||
-              logsWithoutRawCount == null
-            }
-            sx={secondaryButtonSx}
-          >
-            <DownloadIcon sx={{ fontSize: 20 }} />
-            Download ID List
-          </Box>
-        </Box>
-
-        {restoreStatus && restoreStatus.status !== "idle" && (
-          <Box sx={{ mt: 2 }}>
-            <Typography sx={{ ...detailTextSx, mb: 1 }}>
-              Status:{" "}
-              <Box component="span" sx={{ fontWeight: 600 }}>
-                {restoreStatus.status}
-              </Box>
-              {" · "}
-              {restoreStatus.progress}
-              {restoreStatus.currentLogId && (
-                <>
-                  {" · "}
-                  Current:{" "}
-                  <Link
-                    component={RouterLink}
-                    to={`/log/${restoreStatus.currentLogId}`}
-                    sx={linkSx}
-                  >
-                    {restoreStatus.currentLogId}
-                  </Link>
-                </>
-              )}
-            </Typography>
-            {restoreStatus.total > 0 && (
-              <LinearProgress
-                variant="determinate"
-                value={restorePercent}
-                sx={progressBarSx}
-              />
-            )}
-            <Typography sx={mutedDetailTextSx}>
-              Restored: {restoreStatus.restored} · Failed:{" "}
-              {restoreStatus.failed}
-              {" · "}
-              Parity warnings: {restoreStatus.parityWarnings}
-              {restoreStatus.startedAt &&
-                ` · Started: ${new Date(restoreStatus.startedAt).toLocaleString()}`}
-              {restoreStatus.completedAt &&
-                ` · Completed: ${new Date(restoreStatus.completedAt).toLocaleString()}`}
-            </Typography>
-          </Box>
-        )}
-      </SectionBox>
-
-      <SectionBox sx={adminSectionBoxSx}>
         <Typography sx={sectionTitleSx}>Reparse Logs</Typography>
         <Typography sx={sectionDescriptionSx}>
           Reprocess specific logs from their original raw uploads. Enter one or
@@ -1531,9 +867,8 @@ const Admin: React.FC = () => {
       <SectionBox sx={adminSectionBoxSx}>
         <Typography sx={sectionTitleSx}>Manage Log</Typography>
         <Typography sx={sectionDescriptionSx}>
-          Look up a log by ID to download the raw upload, import a parsed export
-          backup, rename it, reparse it, delete it, or toggle leaderboard
-          eligibility.
+          Look up a log by ID to download the raw upload, rename it, reparse it,
+          delete it, or toggle leaderboard eligibility.
         </Typography>
 
         <Box sx={{ ...actionRowSx, mb: 2 }}>
@@ -1708,71 +1043,12 @@ const Admin: React.FC = () => {
               <Box
                 component="button"
                 type="button"
-                onClick={() => void downloadParsedExport()}
-                disabled={actionLoading === "parsed-export"}
-                sx={secondaryButtonSx}
-              >
-                <DownloadIcon sx={{ fontSize: 20 }} />
-                Download Parsed Export
-              </Box>
-              <input
-                ref={parsedExportInputRef}
-                type="file"
-                accept=".txt,.json,application/json,text/plain"
-                hidden
-                onChange={(event) => void handleParsedExportFileSelected(event)}
-              />
-              <Box
-                component="button"
-                type="button"
-                onClick={() => void promptImportParsedExport()}
-                disabled={actionLoading === "import-parsed-export"}
-                sx={secondaryButtonSx}
-              >
-                {actionLoading === "import-parsed-export" ? (
-                  <CircularProgress size={20} sx={{ color: "inherit" }} />
-                ) : (
-                  <UploadFileIcon sx={{ fontSize: 20 }} />
-                )}
-                Import Parsed Export
-              </Box>
-              <Box
-                component="button"
-                type="button"
                 onClick={() => void downloadRawLog()}
                 disabled={actionLoading === "download"}
                 sx={secondaryButtonSx}
               >
                 <DownloadIcon sx={{ fontSize: 20 }} />
                 Download Raw Log
-              </Box>
-              <Box
-                component="button"
-                type="button"
-                onClick={() => void previewLoadedLogRestore()}
-                disabled={actionLoading === "restore-preview"}
-                sx={secondaryButtonSx}
-              >
-                {actionLoading === "restore-preview" ? (
-                  <CircularProgress size={20} sx={{ color: "inherit" }} />
-                ) : (
-                  <RestorePageIcon sx={{ fontSize: 20 }} />
-                )}
-                Preview Restore Raw
-              </Box>
-              <Box
-                component="button"
-                type="button"
-                onClick={() => void restoreLoadedLog()}
-                disabled={actionLoading === "restore" || restorePreview == null}
-                sx={secondaryButtonSx}
-              >
-                {actionLoading === "restore" ? (
-                  <CircularProgress size={20} sx={{ color: "inherit" }} />
-                ) : (
-                  <RestorePageIcon sx={{ fontSize: 20 }} />
-                )}
-                Restore Raw Log
               </Box>
               <Box
                 component="button"
@@ -1788,71 +1064,6 @@ const Admin: React.FC = () => {
 
             {reparseProgress?.source === "manage" && (
               <ReparseProgressIndicator progress={reparseProgress.payload} />
-            )}
-
-            {importResult && importResult.logId === loadedLog.id && (
-              <Alert severity="success" sx={{ mt: 2 }}>
-                Imported {importResult.encounterCount} encounters ·{" "}
-                {importResult.fightGroupCount} fight groups ·{" "}
-                {importResult.fightCount} fights · {importResult.s3Uploads} S3
-                JSON files restored
-              </Alert>
-            )}
-
-            {restorePreview && restorePreview.logId === loadedLog.id && (
-              <Box sx={{ mt: 2 }}>
-                <Alert
-                  severity={
-                    restorePreview.parityReport.passed ? "success" : "warning"
-                  }
-                  sx={{ mb: 1 }}
-                >
-                  {formatParitySummary(restorePreview.parityReport)} ·{" "}
-                  {restorePreview.lineCount.toLocaleString()} lines ·{" "}
-                  {(restorePreview.byteSize / 1024).toFixed(1)} KB
-                  {restorePreview.uploaded ? " · uploaded" : " · preview only"}
-                </Alert>
-                {restorePreview.parityReport.diffs.length > 0 && (
-                  <Box
-                    component="pre"
-                    sx={{
-                      ...mutedDetailTextSx,
-                      maxHeight: 240,
-                      overflow: "auto",
-                      whiteSpace: "pre-wrap",
-                      backgroundColor: colors.background.surface,
-                      borderRadius: 1,
-                      p: 1.5,
-                      border: `1px solid ${colors.border.default}`,
-                    }}
-                  >
-                    {restorePreview.parityReport.diffs
-                      .map(
-                        (diff) =>
-                          `[${diff.category}${diff.documented ? ", documented" : ""}] ${diff.message}`,
-                      )
-                      .join("\n")}
-                  </Box>
-                )}
-                {restorePreview.sampleLines.length > 0 && (
-                  <Box
-                    component="pre"
-                    sx={{
-                      ...mutedDetailTextSx,
-                      mt: 1,
-                      maxHeight: 160,
-                      overflow: "auto",
-                      whiteSpace: "pre-wrap",
-                      backgroundColor: colors.background.surface,
-                      borderRadius: 1,
-                      p: 1.5,
-                      border: `1px solid ${colors.border.default}`,
-                    }}
-                  >
-                    {restorePreview.sampleLines.join("\n")}
-                  </Box>
-                )}
-              </Box>
             )}
           </Box>
         )}
