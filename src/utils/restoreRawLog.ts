@@ -67,23 +67,7 @@ export async function previewRestoreRawLog(params: {
   logId: string;
   getAuthHeaders: () => Promise<Record<string, string>>;
 }): Promise<RestoreRawLogResult | RestoreRawLogError> {
-  const { apiUrl, logId, getAuthHeaders } = params;
-  const headers = await getAuthHeaders();
-  const response = await fetch(
-    `${apiUrl}/admin/log/${logId}/restore-raw/preview`,
-    { headers },
-  );
-
-  if (!response.ok) {
-    const message = await response.text();
-    return {
-      success: false,
-      logId,
-      error: message || `Preview failed (${response.status})`,
-    };
-  }
-
-  return (await response.json()) as RestoreRawLogResult;
+  return restoreRawLog({ ...params, dryRun: true });
 }
 
 export async function restoreRawLog(params: {
