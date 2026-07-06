@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Link as RouterLink, Navigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import {
@@ -21,6 +21,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import EditIcon from "@mui/icons-material/Edit";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import RestorePageIcon from "@mui/icons-material/RestorePage";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { useSnackbar } from "notistack";
 import { format } from "date-fns";
@@ -44,9 +45,11 @@ import {
 import {
   fetchLogIdsWithoutRaw,
   fetchRestoreAllRawLogsStatus,
+  importParsedLogExportFromFile,
   previewRestoreRawLog,
   restoreRawLog,
   startRestoreAllRawLogs,
+  type ParsedLogImportSuccess,
   type RestoreAllRawLogsStatus,
   type RestoreParityReport,
   type RestoreRawLogResult,
@@ -329,6 +332,9 @@ const Admin: React.FC = () => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState("");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [importResult, setImportResult] =
+    useState<ParsedLogImportSuccess | null>(null);
+  const parsedExportInputRef = useRef<HTMLInputElement>(null);
 
   const getAuthHeaders = useCallback(async () => {
     const token = await getAccessTokenSilently();
@@ -440,6 +446,7 @@ const Admin: React.FC = () => {
     setLogError(null);
     setLoadedLog(null);
     setRestorePreview(null);
+    setImportResult(null);
     setIsEditingName(false);
 
     try {
@@ -705,6 +712,69 @@ const Admin: React.FC = () => {
     }
   };
 
+  const promptImportParsedExport = () => {
+    if (!loadedLog) {
+      return;
+    }
+
+    if (
+      !window.confirm(
+        `Import parsed export backup for "${loadedLog.name ?? loadedLog.id}"? This restores encounter structure and per-fight S3 JSON from the backup file without re-parsing raw text. Large files may take several minutes.`,
+      )
+    ) {
+      return;
+    }
+
+    parsedExportInputRef.current?.click();
+  };
+
+  const handleParsedExportFileSelected = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file || !loadedLog) {
+      return;
+    }
+
+    if (
+      !file.name.includes(loadedLog.id) &&
+      !window.confirm(
+        `Selected file "${file.name}" does not include this log id in the filename. Import anyway?`,
+      )
+    ) {
+      return;
+    }
+
+    setActionLoading("import-parsed-export");
+    setImportResult(null);
+    try {
+      const result = await importParsedLogExportFromFile({
+        apiUrl: import.meta.env.VITE_API_URL,
+        logId: loadedLog.id,
+        file,
+        getAuthHeaders,
+      });
+
+      if (!result.success) {
+        enqueueSnackbar(result.error, { variant: "error" });
+        return;
+      }
+
+      setImportResult(result);
+      enqueueSnackbar(
+        `Imported ${result.encounterCount} encounters (${result.fightGroupCount} groups, ${result.fightCount} fights)`,
+        { variant: "success" },
+      );
+      await refreshLoadedLog(loadedLog.id);
+    } catch (err) {
+      console.error("Failed to import parsed export:", err);
+      enqueueSnackbar("Failed to import parsed export", { variant: "error" });
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const downloadRawLog = async () => {
     if (!loadedLog) {
       return;
@@ -743,6 +813,7 @@ const Admin: React.FC = () => {
 
     setActionLoading("restore-preview");
     setRestorePreview(null);
+    setImportResult(null);
     try {
       const result = await previewRestoreRawLog({
         apiUrl: import.meta.env.VITE_API_URL,
@@ -1448,8 +1519,9 @@ const Admin: React.FC = () => {
       <SectionBox sx={adminSectionBoxSx}>
         <Typography sx={sectionTitleSx}>Manage Log</Typography>
         <Typography sx={sectionDescriptionSx}>
-          Look up a log by ID to download the raw upload, rename it, reparse it,
-          delete it, or toggle leaderboard eligibility.
+          Look up a log by ID to download the raw upload, import a parsed export
+          backup, rename it, reparse it, delete it, or toggle leaderboard
+          eligibility.
         </Typography>
 
         <Box sx={{ ...actionRowSx, mb: 2 }}>
@@ -1631,6 +1703,27 @@ const Admin: React.FC = () => {
                 <DownloadIcon sx={{ fontSize: 20 }} />
                 Download Parsed Export
               </Box>
+              <input
+                ref={parsedExportInputRef}
+                type="file"
+                accept=".txt,.json,application/json,text/plain"
+                hidden
+                onChange={(event) => void handleParsedExportFileSelected(event)}
+              />
+              <Box
+                component="button"
+                type="button"
+                onClick={() => void promptImportParsedExport()}
+                disabled={actionLoading === "import-parsed-export"}
+                sx={secondaryButtonSx}
+              >
+                {actionLoading === "import-parsed-export" ? (
+                  <CircularProgress size={20} sx={{ color: "inherit" }} />
+                ) : (
+                  <UploadFileIcon sx={{ fontSize: 20 }} />
+                )}
+                Import Parsed Export
+              </Box>
               <Box
                 component="button"
                 type="button"
@@ -1683,6 +1776,15 @@ const Admin: React.FC = () => {
 
             {reparseProgress?.source === "manage" && (
               <ReparseProgressIndicator progress={reparseProgress.payload} />
+            )}
+
+            {importResult && importResult.logId === loadedLog.id && (
+              <Alert severity="success" sx={{ mt: 2 }}>
+                Imported {importResult.encounterCount} encounters ·{" "}
+                {importResult.fightGroupCount} fight groups ·{" "}
+                {importResult.fightCount} fights · {importResult.s3Uploads} S3
+                JSON files restored
+              </Alert>
             )}
 
             {restorePreview && restorePreview.logId === loadedLog.id && (

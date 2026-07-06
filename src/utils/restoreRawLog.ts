@@ -137,6 +137,64 @@ export async function startRestoreAllRawLogs(params: {
   return (await response.json()) as RestoreAllRawLogsStatus;
 }
 
+export type ParsedLogImportSuccess = {
+  success: true;
+  logId: string;
+  encounterCount: number;
+  fightCount: number;
+  fightGroupCount: number;
+  s3Uploads: number;
+};
+
+export type ParsedLogImportError = {
+  success: false;
+  logId: string;
+  error: string;
+};
+
+export type ParsedLogImportResult =
+  | ParsedLogImportSuccess
+  | ParsedLogImportError;
+
+const PARSED_IMPORT_TIMEOUT_MS = 10 * 60 * 1000;
+
+export async function importParsedLogExportFromFile(params: {
+  apiUrl: string;
+  logId: string;
+  file: File;
+  getAuthHeaders: () => Promise<Record<string, string>>;
+  skipS3?: boolean;
+}): Promise<ParsedLogImportResult> {
+  const { apiUrl, logId, file, getAuthHeaders, skipS3 } = params;
+  const formData = new FormData();
+  formData.append("exportFile", file, file.name);
+  if (skipS3) {
+    formData.append("skipS3", "true");
+  }
+
+  const headers = await getAuthHeaders();
+  const response = await fetch(
+    `${apiUrl}/admin/log/${logId}/import-parsed-export`,
+    {
+      method: "POST",
+      headers,
+      body: formData,
+      signal: AbortSignal.timeout(PARSED_IMPORT_TIMEOUT_MS),
+    },
+  );
+
+  if (!response.ok) {
+    const message = await response.text();
+    return {
+      success: false,
+      logId,
+      error: message || `Import failed (${response.status})`,
+    };
+  }
+
+  return (await response.json()) as ParsedLogImportSuccess;
+}
+
 export async function fetchRestoreAllRawLogsStatus(params: {
   apiUrl: string;
   getAuthHeaders: () => Promise<Record<string, string>>;
