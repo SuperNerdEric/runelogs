@@ -44,6 +44,10 @@ import { filterFieldCompactSx } from "./filters/filterStyles";
 import ContentLabel from "./ContentLabel";
 import { mapContentFilterOptions } from "../utils/contentFilterOptions";
 import { resolveEncounterRowSpriteKey } from "../lib/hiscoreSprites";
+import {
+  FIGHT_IN_PROGRESS_COLOR,
+  resolveFightOutcomeColor,
+} from "../utils/fightDisplayStatus";
 
 type Encounter = {
   type: "fight" | "fightGroup";
@@ -98,6 +102,43 @@ const tableStatusCellSx = {
   color: "white",
   borderBottom: "none",
 } as const;
+
+function RecentEncounterDurationCell({
+  inProgress,
+  officialDurationTicks,
+  success,
+}: {
+  inProgress?: boolean;
+  officialDurationTicks: number | null;
+  success: boolean;
+}) {
+  if (inProgress) {
+    return (
+      <Box component="span">
+        {officialDurationTicks != null && (
+          <Box
+            component="span"
+            sx={{ color: FIGHT_IN_PROGRESS_COLOR, mr: 0.5 }}
+          >
+            {ticksToTime(officialDurationTicks)}
+          </Box>
+        )}
+        <Box component="span" sx={{ color: colors.text.muted }}>
+          (In Progress)
+        </Box>
+      </Box>
+    );
+  }
+
+  return (
+    <Box
+      component="span"
+      sx={{ color: resolveFightOutcomeColor(success, false) }}
+    >
+      {officialDurationTicks != null ? ticksToTime(officialDurationTicks) : "-"}
+    </Box>
+  );
+}
 
 const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
   embedded = false,
@@ -324,20 +365,12 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
                           }
                         />
                       </TableCell>
-                      <TableCell
-                        sx={{
-                          color: row.inProgress
-                            ? "white"
-                            : row.success
-                              ? colors.fight.success
-                              : colors.fight.failure,
-                        }}
-                      >
-                        {row.inProgress
-                          ? "In Progress"
-                          : row.officialDurationTicks != null
-                            ? ticksToTime(row.officialDurationTicks)
-                            : "-"}
+                      <TableCell sx={{ color: "white" }}>
+                        <RecentEncounterDurationCell
+                          inProgress={row.inProgress}
+                          officialDurationTicks={row.officialDurationTicks}
+                          success={row.success}
+                        />
                       </TableCell>
                       <TableCell sx={{ color: "white" }}>
                         {row.players.map((p, i) => (

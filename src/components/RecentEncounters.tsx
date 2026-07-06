@@ -16,6 +16,10 @@ import HistoryIcon from "@mui/icons-material/History";
 import { format } from "date-fns";
 import { colors, media } from "../theme";
 import {
+  FIGHT_IN_PROGRESS_COLOR,
+  resolveFightOutcomeColor,
+} from "../utils/fightDisplayStatus";
+import {
   encounterTableRowProps,
   stopRowClick,
 } from "../utils/encounterTableRow";
@@ -156,11 +160,35 @@ const RecentEncounters: React.FC = () => {
                   </Link>
                 </TableCell>
                 <TableCell sx={{ color: "white", whiteSpace: "nowrap" }}>
-                  {enc.inProgress
-                    ? "In Progress"
-                    : enc.officialDurationTicks != null
-                      ? ticksToTime(enc.officialDurationTicks)
-                      : "-"}
+                  {enc.inProgress ? (
+                    <Box component="span">
+                      {enc.officialDurationTicks != null && (
+                        <Box
+                          component="span"
+                          sx={{ color: FIGHT_IN_PROGRESS_COLOR, mr: 0.5 }}
+                        >
+                          {ticksToTime(enc.officialDurationTicks)}
+                        </Box>
+                      )}
+                      <Box component="span" sx={{ color: colors.text.muted }}>
+                        (In Progress)
+                      </Box>
+                    </Box>
+                  ) : (
+                    <Box
+                      component="span"
+                      sx={{
+                        color: resolveFightOutcomeColor(
+                          enc.success ?? false,
+                          false,
+                        ),
+                      }}
+                    >
+                      {enc.officialDurationTicks != null
+                        ? ticksToTime(enc.officialDurationTicks)
+                        : "-"}
+                    </Box>
+                  )}
                 </TableCell>
                 <TableCell sx={{ color: "white" }}>
                   {enc.players?.length
