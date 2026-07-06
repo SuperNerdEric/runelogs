@@ -48,13 +48,6 @@ interface ReparseAllStatus {
   currentLogId?: string;
 }
 
-interface DurationLeaderboardBackfillResult {
-  clearedCount: number;
-  fightEntryCount: number;
-  fightGroupEntryCount: number;
-  insertedCount: number;
-}
-
 interface LogStatusResponse {
   id: string;
   name: string | null;
@@ -274,9 +267,6 @@ const Admin: React.FC = () => {
   );
   const [totalLogCount, setTotalLogCount] = useState<number | null>(null);
   const [reparseStarting, setReparseStarting] = useState(false);
-  const [durationBackfillLoading, setDurationBackfillLoading] = useState(false);
-  const [durationBackfillResult, setDurationBackfillResult] =
-    useState<DurationLeaderboardBackfillResult | null>(null);
 
   const [bulkReparseInput, setBulkReparseInput] = useState("");
   const [reparseProgress, setReparseProgress] = useState<{
@@ -360,43 +350,6 @@ const Admin: React.FC = () => {
       enqueueSnackbar("Failed to start reparse-all job", { variant: "error" });
     } finally {
       setReparseStarting(false);
-    }
-  };
-
-  const backfillDurationLeaderboards = async () => {
-    if (
-      !window.confirm(
-        "Backfill duration leaderboards? This clears existing precomputed duration rows and rebuilds them from stored fights and fight groups.",
-      )
-    ) {
-      return;
-    }
-
-    setDurationBackfillLoading(true);
-    setDurationBackfillResult(null);
-
-    try {
-      const headers = await getAuthHeaders();
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/admin/duration-leaderboards/backfill`,
-        { method: "POST", headers },
-      );
-      if (!response.ok) {
-        throw new Error(`Server returned ${response.status}`);
-      }
-      const data = (await response.json()) as DurationLeaderboardBackfillResult;
-      setDurationBackfillResult(data);
-      enqueueSnackbar(
-        `Duration leaderboard backfill complete (${data.insertedCount.toLocaleString()} rows)`,
-        { variant: "success" },
-      );
-    } catch (err) {
-      console.error("Failed to backfill duration leaderboards:", err);
-      enqueueSnackbar("Failed to backfill duration leaderboards", {
-        variant: "error",
-      });
-    } finally {
-      setDurationBackfillLoading(false);
     }
   };
 
@@ -863,44 +816,6 @@ const Admin: React.FC = () => {
                 ` · Completed: ${new Date(reparseStatus.completedAt).toLocaleString()}`}
             </Typography>
           </Box>
-        )}
-      </SectionBox>
-
-      <SectionBox sx={adminSectionBoxSx}>
-        <Typography sx={sectionTitleSx}>
-          Duration Leaderboard Backfill
-        </Typography>
-        <Typography sx={sectionDescriptionSx}>
-          Rebuild precomputed duration leaderboard rows from existing fights and
-          fight groups. Run this once after deploying the duration leaderboard
-          migration.
-        </Typography>
-
-        <Box
-          component="button"
-          type="button"
-          onClick={() => void backfillDurationLeaderboards()}
-          disabled={durationBackfillLoading}
-          sx={warningButtonSx}
-        >
-          {durationBackfillLoading ? (
-            <CircularProgress size={24} sx={{ color: "inherit" }} />
-          ) : (
-            <>
-              <WarningAmberIcon sx={{ fontSize: 20 }} />
-              Backfill Duration Leaderboards
-            </>
-          )}
-        </Box>
-
-        {durationBackfillResult && (
-          <Typography sx={{ ...mutedDetailTextSx, mt: 2 }}>
-            Cleared {durationBackfillResult.clearedCount.toLocaleString()} ·
-            Inserted {durationBackfillResult.insertedCount.toLocaleString()} (
-            {durationBackfillResult.fightEntryCount.toLocaleString()} fights,{" "}
-            {durationBackfillResult.fightGroupEntryCount.toLocaleString()} fight
-            groups)
-          </Typography>
         )}
       </SectionBox>
 
