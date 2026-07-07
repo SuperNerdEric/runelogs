@@ -224,7 +224,7 @@ const Log: React.FC = () => {
               out.push(fgMeta);
             } else {
               const fMeta: FightMetaData = {
-                name: enc.mainEnemyName,
+                name: enc.mainEnemyName ?? enc.name,
                 startTime: enc.startTime,
                 fightDurationTicks: enc.fightDurationTicks,
                 success: enc.success,
