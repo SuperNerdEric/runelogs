@@ -99,7 +99,7 @@ export default function Home() {
             Leaderboards
           </Typography>
         </Box>
-        <Leaderboard entriesPerPage={25} />
+        <Leaderboard entriesPerPage={20} />
       </Box>
       <Box mt={4}>
         <Box pt={0} pb={1} display="flex" alignItems="center" gap={1}>
