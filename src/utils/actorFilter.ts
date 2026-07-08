@@ -19,6 +19,25 @@ export const serializeActorFilter = (filter: ActorFilter): string => {
   return [filter.name, filter.id ?? "", filter.index ?? ""].join("|");
 };
 
+/** Returns the parent filter one drill level up, or null at the name-only root. */
+export const getParentActorFilter = (
+  filter: ActorFilter,
+): ActorFilter | null => {
+  if (filter.index !== undefined) {
+    const parent: ActorFilter = { name: filter.name };
+    if (filter.id !== undefined) {
+      parent.id = filter.id;
+    }
+    return parent;
+  }
+
+  if (filter.id !== undefined) {
+    return { name: filter.name };
+  }
+
+  return null;
+};
+
 export const deserializeActorFilter = (
   value: string | null,
 ): ActorFilter | null => {

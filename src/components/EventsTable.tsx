@@ -42,6 +42,7 @@ import {
   getActorFromLog,
   getActorName,
   getActorSpecificIds,
+  getPlayerNameTextClass,
   isUnknownPlayer,
 } from "../utils/actorUtils";
 import { itemIdMap } from "../lib/itemIdMap";
@@ -64,6 +65,8 @@ import {
   matchesHitsplatTypeFilter,
 } from "../utils/hitsplatTypeFilter";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { matchesEventTimeFilter } from "../utils/eventTimeFilter";
+import { matchesAnimationIdFilter } from "../utils/animationIdFilter";
 
 interface EventsTableProps {
   fight: Fight;
@@ -99,6 +102,12 @@ interface EventsTableProps {
   dataEventTypeFilter?: string | null;
   onSelectEventTypeFilter?: (eventType: string) => void;
   onClearEventTypeFilter?: () => void;
+  eventTimeFilter?: number | null;
+  dataEventTimeFilter?: number | null;
+  onClearEventTimeFilter?: () => void;
+  animationIdFilter?: number | null;
+  dataAnimationIdFilter?: number | null;
+  onClearAnimationIdFilter?: () => void;
 }
 
 export const statImages: Record<keyof Levels, string> = {
@@ -140,15 +149,7 @@ const getFilterMenuPaperProps = (anchorEl: HTMLElement | null) => ({
   },
 });
 
-const getSourceTextClass = (source: string, loggedInPlayer: string): string => {
-  if (source === loggedInPlayer) {
-    return "logged-in-player-text";
-  }
-  if (isUnknownPlayer(source)) {
-    return "unknown-text";
-  }
-  return "other-text";
-};
+const getSourceTextClass = getPlayerNameTextClass;
 
 export const renderStatImages = (levels: Levels) => {
   return (
@@ -208,6 +209,12 @@ const EventsTable: React.FC<EventsTableProps> = ({
   dataEventTypeFilter = eventTypeFilter,
   onSelectEventTypeFilter,
   onClearEventTypeFilter,
+  eventTimeFilter = null,
+  dataEventTimeFilter = eventTimeFilter,
+  onClearEventTimeFilter,
+  animationIdFilter = null,
+  dataAnimationIdFilter = animationIdFilter,
+  onClearAnimationIdFilter,
 }) => {
   const loggedInPlayer = fight.loggedInPlayer;
   const isDamageVariant = variant === "damage";
@@ -277,6 +284,12 @@ const EventsTable: React.FC<EventsTableProps> = ({
         if (dataEventTypeFilter && log.type !== dataEventTypeFilter) {
           return false;
         }
+        if (!matchesEventTimeFilter(log, dataEventTimeFilter)) {
+          return false;
+        }
+        if (!matchesAnimationIdFilter(log, dataAnimationIdFilter)) {
+          return false;
+        }
         return true;
       });
 
@@ -294,6 +307,8 @@ const EventsTable: React.FC<EventsTableProps> = ({
     dataHitsplatFilter,
     dataHitsplatTypeFilter,
     dataEventTypeFilter,
+    dataEventTimeFilter,
+    dataAnimationIdFilter,
     equipmentTimelines,
     prayerTimelines,
   ]);
@@ -306,7 +321,9 @@ const EventsTable: React.FC<EventsTableProps> = ({
     dataPrayerFilter !== prayerFilter ||
     dataHitsplatFilter !== hitsplatFilter ||
     dataHitsplatTypeFilter !== hitsplatTypeFilter ||
-    dataEventTypeFilter !== eventTypeFilter;
+    dataEventTypeFilter !== eventTypeFilter ||
+    dataEventTimeFilter !== eventTimeFilter ||
+    dataAnimationIdFilter !== animationIdFilter;
   const isLoading = !isDamageVariant && (asyncLogs === null || filtersPending);
 
   const sourceSpecificIds = useMemo(
@@ -413,7 +430,9 @@ const EventsTable: React.FC<EventsTableProps> = ({
         prayerFilter ||
         hitsplatTypeFilter ||
         hitsplatFilter ||
-        eventTypeFilter) && (
+        eventTypeFilter ||
+        eventTimeFilter != null ||
+        animationIdFilter != null) && (
         <Box
           sx={{
             width: "100%",
@@ -758,6 +777,58 @@ const EventsTable: React.FC<EventsTableProps> = ({
             <Chip
               label={`Type: ${eventTypeFilter}`}
               onDelete={onClearEventTypeFilter}
+              size="small"
+              sx={{
+                bgcolor: colors.background.surface,
+                color: "white",
+                border: "1px solid grey",
+                borderRadius: "5px",
+                "& .MuiChip-label": {
+                  fontSize: "0.9rem",
+                  paddingLeft: "10px",
+                  paddingRight: "10px",
+                },
+                "& .MuiChip-deleteIcon": {
+                  color: "white",
+                  fontSize: "1.05rem",
+                  marginRight: "6px",
+                },
+                "& .MuiChip-deleteIcon:hover": {
+                  color: "white",
+                },
+              }}
+            />
+          )}
+          {eventTimeFilter != null && (
+            <Chip
+              label={`Time: ${formatHHmmss(eventTimeFilter, true)}`}
+              onDelete={onClearEventTimeFilter}
+              size="small"
+              sx={{
+                bgcolor: colors.background.surface,
+                color: "white",
+                border: "1px solid grey",
+                borderRadius: "5px",
+                "& .MuiChip-label": {
+                  fontSize: "0.9rem",
+                  paddingLeft: "10px",
+                  paddingRight: "10px",
+                },
+                "& .MuiChip-deleteIcon": {
+                  color: "white",
+                  fontSize: "1.05rem",
+                  marginRight: "6px",
+                },
+                "& .MuiChip-deleteIcon:hover": {
+                  color: "white",
+                },
+              }}
+            />
+          )}
+          {animationIdFilter != null && (
+            <Chip
+              label={`Animation: ${animationIdFilter}`}
+              onDelete={onClearAnimationIdFilter}
               size="small"
               sx={{
                 bgcolor: colors.background.surface,
