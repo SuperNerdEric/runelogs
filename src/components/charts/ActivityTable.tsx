@@ -16,6 +16,7 @@ import {
   getFightPerformanceByPlayer,
   getPercentColor,
 } from "../../utils/TickActivity";
+import { getPlayerNameTextClass } from "../../utils/actorUtils";
 import { calculateWeightedAveragesByPlayer } from "./Boosts";
 import { Levels } from "../../models/Levels";
 import { statImages } from "../EventsTable";
@@ -71,13 +72,16 @@ const ActivityTable: React.FC<ActivityTableProps> = ({ fight }) => {
               />
             </TableCell>
             <TableCell style={{ width: "100px", textAlign: "center" }}>
-              Boosted Hits
+              <TableColumnHeaderTooltip
+                label="Boosted Hits"
+                tooltip={COLUMN_TOOLTIPS.boostedHits}
+              />
             </TableCell>
             <TableCell
               colSpan={Object.keys(statImages).length}
               style={{ textAlign: "center" }}
             >
-              Averages
+              Stat Averages
             </TableCell>
           </TableRow>
         </TableHead>
@@ -103,7 +107,13 @@ const ActivityTable: React.FC<ActivityTableProps> = ({ fight }) => {
                     e.currentTarget.classList.remove("highlighted-row")
                   }
                 >
-                  <TableCell style={{ textAlign: "center" }}>
+                  <TableCell
+                    className={getPlayerNameTextClass(
+                      player,
+                      fight.loggedInPlayer,
+                    )}
+                    style={{ textAlign: "center" }}
+                  >
                     {player}
                   </TableCell>
                   <TableCell
@@ -153,11 +163,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({ fight }) => {
                             <img
                               src={statImages[stat as keyof Levels]}
                               alt={stat}
-                              style={{
-                                height: "18px",
-                                verticalAlign: "middle",
-                                marginLeft: "0px",
-                              }}
+                              className="stat-boosts-activity-icon"
                             />
                             <span style={{ verticalAlign: "middle" }}>
                               {Number.isInteger(value)

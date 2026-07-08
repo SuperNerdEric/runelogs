@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
-  Legend,
   Line,
   LineChart,
   ReferenceLine,
@@ -19,6 +18,7 @@ import {
   LogTypes,
 } from "../../models/LogLine";
 import { formatHHmmss } from "../../utils/utils";
+import { getPlayerNameTextClass } from "../../utils/actorUtils";
 import {
   MAGE_ANIMATION,
   MELEE_ANIMATIONS,
@@ -33,43 +33,210 @@ import {
   Select,
   SelectChangeEvent,
   Switch,
+  Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ActivityTable from "./ActivityTable";
-import SectionBox from "../SectionBox";
-import { colors, layout } from "../../theme";
+import SummarySection from "../summary/SummarySection";
+import BoostPotionsDisplay from "../summary/BoostPotionsDisplay";
+import { COLUMN_TOOLTIPS } from "../../utils/columnTooltips";
+import AppTooltip from "../AppTooltip";
+import { getItemImageUrl } from "../replay/PlayerEquipment";
+import { getWeaponFromEquipment } from "../../utils/attackAnimationBreakdown";
+import { colors } from "../../theme";
+import ScrollableBoostCharts from "./ScrollableBoostCharts";
+import {
+  BOOST_ATTACK_ICON_SIZE,
+  getBoostChartScrollWidth,
+} from "../../utils/boostChartScroll";
+import {
+  capitalizeChartLabel,
+  ChartTooltip,
+  ChartTooltipAttackRow,
+  ChartTooltipDivider,
+  ChartTooltipStatGrid,
+  ChartTooltipStatRow,
+  ChartTooltipTime,
+} from "./ChartTooltip";
 
 interface DPSChartProps {
   fight: Fight;
 }
 
-const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
-  if (active && payload && payload.length) {
-    return (
-      <div>
-        {payload.map((entry: any, index: any) => (
-          <div
-            key={`tooltip-entry-${index}`}
-            style={{
-              marginTop: "0",
-              marginBottom: "0",
-              color: entry.color,
-              lineHeight: "1",
-            }}
-          >
-            {entry.name}: {entry.value}
-          </div>
-        ))}
-        {formatHHmmss(label, true)}
+interface AttackAnimationMarker {
+  timestamp: number;
+  formattedTimestamp: string;
+  animationId: number;
+  color?: string;
+  weaponItemId?: number;
+  weaponName?: string;
+}
 
-        {payload[0].payload.animationId && (
-          <div>Animation: {payload[0].payload.animationId}</div>
-        )}
-      </div>
-    );
+interface BoostChartPoint {
+  timestamp: number;
+  formattedTimestamp: string;
+  attack: number;
+  strength: number;
+  defence: number;
+  ranged: number;
+  magic: number;
+  hitpoints: number;
+  prayer: number;
+  animationId?: number;
+  weaponItemId?: number;
+  weaponName?: string;
+}
+
+interface AttackReferenceLabelProps {
+  viewBox?: { x: number; y: number; height: number };
+  attack: AttackAnimationMarker;
+}
+
+const ATTACK_ICON_SIZE = BOOST_ATTACK_ICON_SIZE;
+
+const AttackReferenceLabel: React.FC<AttackReferenceLabelProps> = ({
+  viewBox,
+  attack,
+}) => {
+  if (!viewBox || viewBox.x == null) {
+    return null;
   }
 
-  return null;
+  const tooltipContent = attack.weaponItemId ? (
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <img
+        src={getItemImageUrl(attack.weaponItemId)}
+        alt=""
+        className="osrs-item-icon osrs-item-icon--20"
+      />
+      <span>{attack.weaponName}</span>
+    </Box>
+  ) : (
+    <span>{attack.weaponName ?? `Animation ${attack.animationId}`}</span>
+  );
+
+  const icon = attack.weaponItemId ? (
+    <img
+      src={getItemImageUrl(attack.weaponItemId)}
+      alt=""
+      className="osrs-item-icon boosts-chart-attack-icon"
+    />
+  ) : (
+    <span
+      className="boosts-chart-attack-icon boosts-chart-attack-icon--fallback"
+      style={{ backgroundColor: attack.color }}
+    />
+  );
+
+  const hitSize = ATTACK_ICON_SIZE + 10;
+
+  return (
+    <foreignObject
+      x={viewBox.x - hitSize / 2}
+      y={(viewBox.y ?? 0) - hitSize - 2}
+      width={hitSize}
+      height={hitSize}
+      style={{ overflow: "visible", pointerEvents: "all" }}
+    >
+      <div
+        {...({
+          xmlns: "http://www.w3.org/1999/xhtml",
+        } as React.HTMLAttributes<HTMLDivElement>)}
+      >
+        <AppTooltip
+          title={tooltipContent}
+          placement="top"
+          arrow
+          slotProps={{ popper: { sx: { zIndex: 1500 } } }}
+        >
+          <span className="boosts-chart-attack-icon-wrap">{icon}</span>
+        </AppTooltip>
+      </div>
+    </foreignObject>
+  );
+};
+
+const findAttackAtHover = (
+  attacks: AttackAnimationMarker[] | undefined,
+  hoverTime: number,
+): AttackAnimationMarker | undefined => {
+  if (!attacks?.length || !Number.isFinite(hoverTime)) {
+    return undefined;
+  }
+
+  const exact = attacks.find((attack) => attack.timestamp === hoverTime);
+  if (exact) {
+    return exact;
+  }
+
+  return attacks.find(
+    (attack) => Math.abs(attack.timestamp - hoverTime) <= 300,
+  );
+};
+
+const CustomTooltip: React.FC<{
+  active?: boolean;
+  payload?: Array<{
+    name: string;
+    value: number;
+    color?: string;
+    payload: BoostChartPoint;
+  }>;
+  label?: number;
+  attackAnimations?: AttackAnimationMarker[];
+}> = ({ active, payload, label, attackAnimations }) => {
+  if (!active || !payload?.length || label == null) {
+    return null;
+  }
+
+  const point = payload[0].payload as BoostChartPoint;
+  const hoverTime = Number(label);
+  const attackAtHover =
+    point.animationId != null
+      ? {
+          animationId: point.animationId,
+          weaponItemId: point.weaponItemId,
+          weaponName: point.weaponName,
+        }
+      : findAttackAtHover(attackAnimations, hoverTime);
+
+  const animationId = point.animationId ?? attackAtHover?.animationId;
+  const weaponItemId = point.weaponItemId ?? attackAtHover?.weaponItemId;
+  const weaponName = point.weaponName ?? attackAtHover?.weaponName;
+
+  return (
+    <ChartTooltip className="chart-tooltip--boosts">
+      <ChartTooltipTime>{formatHHmmss(label, true)}</ChartTooltipTime>
+      {animationId && (
+        <>
+          <ChartTooltipDivider />
+          <ChartTooltipAttackRow
+            weaponItemId={weaponItemId}
+            weaponName={weaponName}
+            animationId={animationId}
+          />
+        </>
+      )}
+      <ChartTooltipDivider />
+      <ChartTooltipStatGrid>
+        {payload.map(
+          (
+            entry: { name: string; value: number; color?: string },
+            index: number,
+          ) => (
+            <ChartTooltipStatRow
+              key={`tooltip-entry-${index}`}
+              label={capitalizeChartLabel(entry.name)}
+              value={entry.value}
+              color={entry.color}
+            />
+          ),
+        )}
+      </ChartTooltipStatGrid>
+    </ChartTooltip>
+  );
 };
 
 export function calculateWeightedAveragesByPlayer(
@@ -181,29 +348,91 @@ const Boosts: React.FC<DPSChartProps> = ({ fight }) => {
     fight.loggedInPlayer,
   );
   const [boostedLevelsData, setBoostedLevelsData] = useState<
-    any[] | undefined
+    BoostChartPoint[] | undefined
   >();
   const [attackAnimationData, setAttackAnimationData] = useState<
-    any[] | undefined
+    AttackAnimationMarker[] | undefined
   >();
   const [showAttackAnimations, setShowAttackAnimations] =
     useState<boolean>(true); // State variable to control visibility
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const fightDurationMs = useMemo(() => {
+    if (!boostedLevelsData?.length) {
+      return 0;
+    }
+
+    return (
+      boostedLevelsData[boostedLevelsData.length - 1]?.timestamp ??
+      fight.lastLine?.fightTimeMs ??
+      0
+    );
+  }, [boostedLevelsData, fight.lastLine?.fightTimeMs]);
+
+  const chartScrollWidth = useMemo(
+    () =>
+      getBoostChartScrollWidth({
+        fightDurationMs,
+        attackTimestamps:
+          attackAnimationData?.map((attack) => attack.timestamp) ?? [],
+        showAttackAnimations,
+        isMobile,
+      }),
+    [fightDurationMs, attackAnimationData, showAttackAnimations, isMobile],
+  );
 
   useEffect(() => {
     if (!selectedPlayer) return;
 
-    let currentBoost: Levels;
-    const tempBoost: any[] = [];
-    const tempAttack: any[] = [];
+    let currentBoost: Levels | undefined;
+    let currentWeapon: { itemId: number; name: string } | null = null;
+    const tempBoost: BoostChartPoint[] = [];
+    const tempAttack: AttackAnimationMarker[] = [];
+
+    const upsertBoostPoint = (
+      timestamp: number,
+      patch: Partial<BoostChartPoint>,
+    ): BoostChartPoint => {
+      const existingPoint = tempBoost.find(
+        (data) => data.timestamp === timestamp,
+      );
+      if (existingPoint) {
+        Object.assign(existingPoint, patch);
+        return existingPoint;
+      }
+
+      const point: BoostChartPoint = {
+        timestamp,
+        formattedTimestamp: formatHHmmss(timestamp, true),
+        attack: currentBoost?.attack || 0,
+        strength: currentBoost?.strength || 0,
+        defence: currentBoost?.defence || 0,
+        ranged: currentBoost?.ranged || 0,
+        magic: currentBoost?.magic || 0,
+        hitpoints: currentBoost?.hitpoints || 0,
+        prayer: currentBoost?.prayer || 0,
+        ...patch,
+      };
+      tempBoost.push(point);
+      return point;
+    };
 
     fight.data.forEach((log) => {
-      if (
-        log.type === LogTypes.BOOSTED_LEVELS &&
-        log.source?.name === selectedPlayer
-      ) {
-        tempBoost.push({
-          timestamp: log.fightTimeMs,
-          formattedTimestamp: formatHHmmss(log.fightTimeMs!, true),
+      if (!("source" in log) || log.source?.name !== selectedPlayer) {
+        return;
+      }
+
+      if (log.type === LogTypes.PLAYER_EQUIPMENT && log.playerEquipment) {
+        const weapon = getWeaponFromEquipment(log.playerEquipment);
+        if (weapon) {
+          currentWeapon = weapon;
+        }
+        return;
+      }
+
+      if (log.type === LogTypes.BOOSTED_LEVELS) {
+        upsertBoostPoint(log.fightTimeMs!, {
           attack: log.boostedLevels?.attack || 0,
           strength: log.boostedLevels?.strength || 0,
           defence: log.boostedLevels?.defence || 0,
@@ -213,41 +442,37 @@ const Boosts: React.FC<DPSChartProps> = ({ fight }) => {
           prayer: log.boostedLevels?.prayer || 0,
         });
         currentBoost = log.boostedLevels;
+        return;
       }
 
-      if (
-        log.type === LogTypes.PLAYER_ATTACK_ANIMATION &&
-        log.source?.name === selectedPlayer
-      ) {
+      if (log.type === LogTypes.PLAYER_ATTACK_ANIMATION) {
         tempAttack.push({
-          timestamp: log.fightTimeMs,
+          timestamp: log.fightTimeMs!,
           formattedTimestamp: formatHHmmss(log.fightTimeMs!, true),
           animationId: log.animationId,
+          weaponItemId: currentWeapon?.itemId,
+          weaponName: currentWeapon?.name,
         });
 
-        if (!tempBoost.find((data) => data.timestamp === log.fightTimeMs)) {
-          tempBoost.push({
-            timestamp: log.fightTimeMs,
-            formattedTimestamp: formatHHmmss(log.fightTimeMs!, true),
-            attack: currentBoost?.attack || 0,
-            strength: currentBoost?.strength || 0,
-            defence: currentBoost?.defence || 0,
-            ranged: currentBoost?.ranged || 0,
-            magic: currentBoost?.magic || 0,
-            hitpoints: currentBoost?.hitpoints || 0,
-            prayer: currentBoost?.prayer || 0,
-            animationId: log.animationId,
-          });
-        }
+        upsertBoostPoint(log.fightTimeMs!, {
+          animationId: log.animationId,
+          weaponItemId: currentWeapon?.itemId,
+          weaponName: currentWeapon?.name,
+        });
       }
     });
 
+    tempBoost.sort((a, b) => a.timestamp - b.timestamp);
+
     if (tempBoost.length > 0) {
-      tempBoost.push({
-        ...tempBoost[tempBoost.length - 1],
-        timestamp: fight.lastLine!.fightTimeMs,
-        formattedTimestamp: formatHHmmss(fight.lastLine!.fightTimeMs!, true),
-      });
+      const lastFightTimeMs = fight.lastLine.fightTimeMs;
+      if (lastFightTimeMs != null) {
+        tempBoost.push({
+          ...tempBoost[tempBoost.length - 1],
+          timestamp: lastFightTimeMs,
+          formattedTimestamp: formatHHmmss(lastFightTimeMs, true),
+        });
+      }
     }
 
     const verticalMelee = colors.chart.meleeVertical;
@@ -273,187 +498,252 @@ const Boosts: React.FC<DPSChartProps> = ({ fight }) => {
   }
 
   return (
-    <div style={{ maxWidth: layout.contentMaxWidth, width: "100%" }}>
-      <ActivityTable fight={fight} />
-      <SectionBox>
-        <Box sx={{ margin: "16px 0", width: 180 }}>
-          <FormControl fullWidth size="small">
-            <Select
-              labelId="player-select-label"
-              id="player-select"
-              value={selectedPlayer}
-              onChange={(e: SelectChangeEvent) =>
-                setSelectedPlayer(e.target.value)
-              }
-            >
-              {[
-                ...new Set(
-                  fight.data
-                    .filter(
-                      (log): log is LogLine & { source: { name: string } } =>
-                        log.type === LogTypes.PLAYER_ATTACK_ANIMATION &&
-                        "source" in log &&
-                        Boolean(log.source?.name),
-                    )
-                    .map((log) => log.source.name),
-                ),
-              ].map((name) => (
-                <MenuItem key={name} value={name}>
-                  {name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+    <SummarySection
+      title="Stat Boosts"
+      titleTooltip={COLUMN_TOOLTIPS.statBoosts}
+      titleAdornment={<BoostPotionsDisplay fight={fight} />}
+      className="stat-boosts-section"
+    >
+      <Box className="stat-boosts-section__body">
+        <Box className="stat-boosts-section__table">
+          <ActivityTable fight={fight} />
         </Box>
-        <ResponsiveContainer width="100%" height={350}>
-          <LineChart
-            data={boostedLevelsData}
-            margin={{ top: 11, left: 60, bottom: 50 }}
-          >
-            <XAxis
-              dataKey="timestamp" // Use the actual timestamp as the dataKey
-              type="number" // Specify the type as "number" for numerical values
-              tickFormatter={(timestamp) => formatHHmmss(timestamp, true)}
-              domain={[
-                0,
-                boostedLevelsData[boostedLevelsData.length - 1]?.timestamp ?? 0,
-              ]}
-            />
-            <YAxis
-              dataKey="attack"
-              label={{
-                value: "Level",
-                position: "insideLeft",
-                angle: -90,
-                offset: -50,
-                style: { textAnchor: "middle" },
-              }}
-              width={1}
-              tickFormatter={(tick) => (tick !== 0 ? tick : "")}
-              domain={[0, 125]}
-            />
-            <Legend
-              content={() => (
-                <div style={{ position: "absolute", top: 0, right: 0 }}>
-                  <FormControlLabel
-                    control={
-                      <TanToggle
-                        checked={showAttackAnimations}
-                        onChange={() =>
-                          setShowAttackAnimations(!showAttackAnimations)
-                        }
-                        color="default"
-                      />
+
+        <Box className="stat-boosts-charts">
+          <Box className="stat-boosts-charts__player-select">
+            <FormControl fullWidth size="small">
+              <Select
+                labelId="player-select-label"
+                id="player-select"
+                value={selectedPlayer}
+                onChange={(e: SelectChangeEvent) =>
+                  setSelectedPlayer(e.target.value)
+                }
+                renderValue={(value) => (
+                  <span
+                    className={getPlayerNameTextClass(
+                      value,
+                      fight.loggedInPlayer,
+                    )}
+                  >
+                    {value}
+                  </span>
+                )}
+              >
+                {[
+                  ...new Set(
+                    fight.data
+                      .filter(
+                        (log): log is LogLine & { source: { name: string } } =>
+                          log.type === LogTypes.PLAYER_ATTACK_ANIMATION &&
+                          "source" in log &&
+                          Boolean(log.source?.name),
+                      )
+                      .map((log) => log.source.name),
+                  ),
+                ].map((name) => (
+                  <MenuItem
+                    key={name}
+                    value={name}
+                    className={getPlayerNameTextClass(
+                      name,
+                      fight.loggedInPlayer,
+                    )}
+                  >
+                    {name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          <Box className="stat-boosts-charts__chart-section">
+            <Box className="stat-boosts-charts__chart-header">
+              <Typography
+                component="h3"
+                className="stat-boosts-charts__chart-title"
+              >
+                Combat Stats
+              </Typography>
+              <FormControlLabel
+                control={
+                  <TanToggle
+                    checked={showAttackAnimations}
+                    onChange={() =>
+                      setShowAttackAnimations(!showAttackAnimations)
                     }
-                    label="Attacks"
+                    color="default"
                   />
-                </div>
-              )}
-            />
-            {attackAnimationData.map(
-              (line, index) =>
-                showAttackAnimations && (
-                  <ReferenceLine
-                    key={index}
-                    x={line.timestamp}
-                    stroke={line.color}
-                    strokeDasharray="10 2"
-                    ifOverflow="extendDomain"
+                }
+                label="Attacks"
+              />
+            </Box>
+            <ScrollableBoostCharts scrollWidth={chartScrollWidth}>
+              <ResponsiveContainer width="100%" height={350}>
+                <LineChart
+                  data={boostedLevelsData}
+                  margin={{
+                    top: 28,
+                    left: 60,
+                    bottom: chartScrollWidth ? 34 : 50,
+                  }}
+                >
+                  <XAxis
+                    dataKey="timestamp"
+                    type="number"
+                    tickFormatter={(timestamp) => formatHHmmss(timestamp, true)}
+                    domain={[
+                      0,
+                      boostedLevelsData[boostedLevelsData.length - 1]
+                        ?.timestamp ?? 0,
+                    ]}
                   />
-                ),
-            )}
-            <Line
-              type="stepAfter"
-              dataKey="attack"
-              stroke={colors.chart.attack}
-              dot={false}
-              animationDuration={0}
-            />
-            <Line
-              type="stepAfter"
-              dataKey="strength"
-              stroke={colors.chart.strength}
-              dot={false}
-              animationDuration={0}
-            />
-            <Line
-              type="stepAfter"
-              dataKey="defence"
-              stroke={colors.chart.defence}
-              dot={false}
-              animationDuration={0}
-            />
-            <Line
-              type="stepAfter"
-              dataKey="ranged"
-              stroke={colors.chart.ranged}
-              dot={false}
-              animationDuration={0}
-            />
-            <Line
-              type="stepAfter"
-              dataKey="magic"
-              stroke={colors.chart.magic}
-              dot={false}
-              animationDuration={0}
-            />
-            <Tooltip
-              content={(props) => (
-                <CustomTooltip {...props} data={boostedLevelsData} />
-              )}
-              cursor={{ fill: colors.chart.cursor }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-        <ResponsiveContainer width="100%" height={350}>
-          <LineChart
-            data={boostedLevelsData}
-            margin={{ top: 11, left: 60, bottom: 10 }}
-          >
-            <XAxis
-              dataKey="timestamp" // Use the actual timestamp as the dataKey
-              type="number" // Specify the type as "number" for numerical values
-              tickFormatter={(timestamp) => formatHHmmss(timestamp, true)}
-              domain={[
-                0,
-                boostedLevelsData[boostedLevelsData.length - 1]?.timestamp ?? 0,
-              ]}
-            />
-            <YAxis
-              dataKey="attack"
-              label={{
-                value: "Level",
-                position: "insideLeft",
-                angle: -90,
-                offset: -50,
-                style: { textAnchor: "middle" },
-              }}
-              width={1}
-              tickFormatter={(tick) => (tick !== 0 ? tick : "")}
-              domain={[0, 125]}
-            />
-            <Line
-              type="stepAfter"
-              dataKey="hitpoints"
-              stroke={colors.chart.hitpoints}
-              dot={false}
-              animationDuration={0}
-            />
-            <Line
-              type="stepAfter"
-              dataKey="prayer"
-              stroke={colors.chart.prayer}
-              dot={false}
-              animationDuration={0}
-            />
-            <Tooltip
-              content={(props) => <CustomTooltip {...props} />}
-              cursor={{ fill: colors.chart.cursor }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </SectionBox>
-    </div>
+                  <YAxis
+                    dataKey="attack"
+                    label={{
+                      value: "Level",
+                      position: "insideLeft",
+                      angle: -90,
+                      offset: -50,
+                      style: { textAnchor: "middle" },
+                    }}
+                    width={1}
+                    tickFormatter={(tick) => (tick !== 0 ? tick : "")}
+                    domain={[0, 125]}
+                  />
+                  {attackAnimationData.map(
+                    (attack, index) =>
+                      showAttackAnimations && (
+                        <ReferenceLine
+                          key={index}
+                          x={attack.timestamp}
+                          stroke={attack.color}
+                          strokeDasharray="10 2"
+                          ifOverflow="extendDomain"
+                          label={<AttackReferenceLabel attack={attack} />}
+                        />
+                      ),
+                  )}
+                  <Line
+                    type="stepAfter"
+                    dataKey="attack"
+                    stroke={colors.chart.attack}
+                    dot={false}
+                    animationDuration={0}
+                  />
+                  <Line
+                    type="stepAfter"
+                    dataKey="strength"
+                    stroke={colors.chart.strength}
+                    dot={false}
+                    animationDuration={0}
+                  />
+                  <Line
+                    type="stepAfter"
+                    dataKey="defence"
+                    stroke={colors.chart.defence}
+                    dot={false}
+                    animationDuration={0}
+                  />
+                  <Line
+                    type="stepAfter"
+                    dataKey="ranged"
+                    stroke={colors.chart.ranged}
+                    dot={false}
+                    animationDuration={0}
+                  />
+                  <Line
+                    type="stepAfter"
+                    dataKey="magic"
+                    stroke={colors.chart.magic}
+                    dot={false}
+                    animationDuration={0}
+                  />
+                  <Tooltip
+                    content={(props) => (
+                      <CustomTooltip
+                        {...(props as React.ComponentProps<
+                          typeof CustomTooltip
+                        >)}
+                        attackAnimations={attackAnimationData}
+                      />
+                    )}
+                    cursor={{ fill: colors.chart.cursor }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </ScrollableBoostCharts>
+          </Box>
+
+          <Box className="stat-boosts-charts__chart-section">
+            <Box className="stat-boosts-charts__chart-header">
+              <Typography
+                component="h3"
+                className="stat-boosts-charts__chart-title"
+              >
+                Hitpoints & Prayer
+              </Typography>
+            </Box>
+            <ScrollableBoostCharts scrollWidth={null}>
+              <ResponsiveContainer width="100%" height={350}>
+                <LineChart
+                  data={boostedLevelsData}
+                  margin={{ top: 11, left: 60, bottom: 10 }}
+                >
+                  <XAxis
+                    dataKey="timestamp"
+                    type="number"
+                    tickFormatter={(timestamp) => formatHHmmss(timestamp, true)}
+                    domain={[
+                      0,
+                      boostedLevelsData[boostedLevelsData.length - 1]
+                        ?.timestamp ?? 0,
+                    ]}
+                  />
+                  <YAxis
+                    dataKey="attack"
+                    label={{
+                      value: "Level",
+                      position: "insideLeft",
+                      angle: -90,
+                      offset: -50,
+                      style: { textAnchor: "middle" },
+                    }}
+                    width={1}
+                    tickFormatter={(tick) => (tick !== 0 ? tick : "")}
+                    domain={[0, 125]}
+                  />
+                  <Line
+                    type="stepAfter"
+                    dataKey="hitpoints"
+                    stroke={colors.chart.hitpoints}
+                    dot={false}
+                    animationDuration={0}
+                  />
+                  <Line
+                    type="stepAfter"
+                    dataKey="prayer"
+                    stroke={colors.chart.prayer}
+                    dot={false}
+                    animationDuration={0}
+                  />
+                  <Tooltip
+                    content={(props) => (
+                      <CustomTooltip
+                        {...(props as React.ComponentProps<
+                          typeof CustomTooltip
+                        >)}
+                      />
+                    )}
+                    cursor={{ fill: colors.chart.cursor }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </ScrollableBoostCharts>
+          </Box>
+        </Box>
+      </Box>
+    </SummarySection>
   );
 };
 
