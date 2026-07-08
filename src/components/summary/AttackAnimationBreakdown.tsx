@@ -96,7 +96,7 @@ const AttackAnimationBreakdown: React.FC<AttackAnimationBreakdownProps> = ({
 
   return (
     <SummarySection
-      title="Attack Animations"
+      title="Attacks"
       titleTooltip={COLUMN_TOOLTIPS.attackAnimations}
       className="summary-attack-breakdown-section"
     >
