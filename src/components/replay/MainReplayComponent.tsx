@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import MapComponent from "./MapComponent";
 import PlaybackControls from "./PlaybackControls";
 import PlayerSelector from "./PlayerSelector";
@@ -191,6 +197,16 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({ fight }) => {
     );
   }, [currentGameState]);
 
+  const handleTickChartTimeChange = useCallback((newTime: number) => {
+    setCurrentTime(newTime);
+    setIsPlaying(false);
+  }, []);
+
+  const highlightedTick = useMemo(
+    () => Math.floor(currentTime / TICK_DURATION_SECONDS) + initialTick,
+    [currentTime, initialTick],
+  );
+
   const getTabButtonStyle = (
     tab: "levels" | "equipment" | "prayers",
   ): React.CSSProperties => ({
@@ -204,19 +220,16 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({ fight }) => {
     transition: "background-color 0.2s ease",
   });
 
-  // @ts-ignore
   return (
     <div ref={replayContainerRef} className="replay-root">
       <TickChart
         fight={fight}
-        currentTime={currentTime}
-        setCurrentTime={(newTime) => {
-          setCurrentTime(newTime);
-          setIsPlaying(false);
-        }}
+        highlightedTick={highlightedTick}
+        setCurrentTime={handleTickChartTimeChange}
         initialTick={initialTick}
         maxTick={maxTick}
         activePlayers={activePlayers}
+        isPlaying={isPlaying}
       />
       {currentGameState && initialPlayerPosition && (
         <>

@@ -8,12 +8,25 @@ export function isUnknownPlayer(playerId: string): boolean {
   return playerId === UNKNOWN_PLAYER_NAME;
 }
 
+export function getPlayerNameTextClass(
+  playerName: string,
+  loggedInPlayer: string,
+): string {
+  if (playerName === loggedInPlayer) {
+    return "logged-in-player-text";
+  }
+  if (isUnknownPlayer(playerName)) {
+    return "unknown-text";
+  }
+  return "other-text";
+}
+
 export const getActorName = (
   log: LogLine,
   key: "source" | "target",
 ): string => {
   if (key in log) {
-    // @ts-ignore https://github.com/microsoft/TypeScript/issues/56389
+    // @ts-expect-error https://github.com/microsoft/TypeScript/issues/56389
     const actor: Actor = log[key];
     if (actor && actor.id && BOAT_IDS.includes(actor.id)) {
       if (key === "source") {
@@ -39,7 +52,7 @@ export const getActorFromLog = (
   key: "source" | "target",
 ): Actor | undefined => {
   if (key in log) {
-    // @ts-ignore https://github.com/microsoft/TypeScript/issues/56389
+    // @ts-expect-error https://github.com/microsoft/TypeScript/issues/56389
     const actor: Actor = log[key];
     if (!actor) {
       return undefined;
