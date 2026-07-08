@@ -385,10 +385,7 @@ const FightGroupSummary: React.FC = () => {
       )}
 
       {data.overallDps.length > 0 && (
-        <Box
-          className="damage-done-container fight-group-dps-table"
-          sx={{ mb: 2 }}
-        >
+        <Box className="surface-card fight-group-dps-table" sx={{ mb: 2 }}>
           <Box className="encounter-title-bar">
             <span className="encounter-title-bar-name">Overall Damage</span>
           </Box>
@@ -422,13 +419,14 @@ const FightGroupSummary: React.FC = () => {
                 dps: row.dps,
                 dpsColor: dpsDisplay.color,
                 useDpsTextClass: dpsDisplay.useDpsTextClass,
+                percentile: row.percentile,
               };
             })}
           />
         </Box>
       )}
 
-      <div className="damage-done-container">
+      <div className="surface-card">
         <FightGroupFightRows
           fights={data.fights.map((fight, fightGroupIndex) => {
             const fightKey = fight.dpsLeaderboardKey ?? fight.name;

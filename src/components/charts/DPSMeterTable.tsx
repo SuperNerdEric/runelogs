@@ -1,5 +1,6 @@
 import { Fight } from "../../models/Fight";
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -17,7 +18,11 @@ import {
   getTargetGroupActivityPercent,
 } from "../../utils/TickActivity";
 import { isUnknownPlayer } from "../../utils/actorUtils";
-import { getPlayerDpsDisplayColor } from "../../utils/percentile";
+import {
+  formatParsePercentileDisplay,
+  getPlayerDpsDisplayColor,
+} from "../../utils/percentile";
+import { getDpsPercentileColor } from "../../utils/TickActivity";
 import { BOAT_IDS, BOAT_ID_TO_NAME } from "../../utils/constants";
 import {
   calculatePlayerDps,
@@ -47,6 +52,7 @@ interface DPSMeterBarChartProps {
   dpsPercentiles?: Record<string, number>;
   onSelectSourceFilter: (filter: ActorFilter) => void;
   onSelectTargetFilter: (filter: ActorFilter) => void;
+  getSourceFilterLinkSearch?: (filter: ActorFilter) => string;
 }
 
 interface DPSData {
@@ -223,6 +229,7 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
   dpsPercentiles,
   onSelectSourceFilter,
   onSelectTargetFilter,
+  getSourceFilterLinkSearch,
 }) => {
   const loggedInPlayer = fight.loggedInPlayer;
 
@@ -324,6 +331,14 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
                 tooltip={COLUMN_TOOLTIPS.dps}
               />
             </TableCell>
+            {type === "damage-done" && !isTargetDrillDown && (
+              <TableCell style={{ width: "70px", textAlign: "center" }}>
+                <TableColumnHeaderTooltip
+                  label="Percentile"
+                  tooltip={COLUMN_TOOLTIPS.percentile}
+                />
+              </TableCell>
+            )}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -335,11 +350,13 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
               );
               const unknown =
                 !isTargetDrillDown && isUnknownPlayer(displayName);
-              const dpsDisplay = getPlayerDpsDisplayColor(
-                displayName,
+              const parsePercentile =
                 type === "damage-done" && !isTargetDrillDown
                   ? dpsPercentiles?.[displayName]
-                  : undefined,
+                  : undefined;
+              const dpsDisplay = getPlayerDpsDisplayColor(
+                displayName,
+                parsePercentile,
               );
               const canDrillDown =
                 isTargetDrillDown &&
@@ -396,6 +413,15 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
                       </span>
                     ) : isTargetDrillDown ? (
                       displayName
+                    ) : getSourceFilterLinkSearch && type === "damage-done" ? (
+                      <Link
+                        className="link"
+                        to={{
+                          search: `?${getSourceFilterLinkSearch({ name: data.actor.name })}`,
+                        }}
+                      >
+                        {displayName}
+                      </Link>
                     ) : (
                       <span
                         className="link"
@@ -475,6 +501,24 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
                   >
                     {data.dps}
                   </TableCell>
+                  {type === "damage-done" && !isTargetDrillDown && (
+                    <TableCell
+                      style={{
+                        width: "70px",
+                        textAlign: "right",
+                        color: unknown
+                          ? colors.text.unknown
+                          : parsePercentile !== undefined
+                            ? getDpsPercentileColor(parsePercentile)
+                            : undefined,
+                      }}
+                    >
+                      {formatParsePercentileDisplay(
+                        displayName,
+                        parsePercentile,
+                      )}
+                    </TableCell>
+                  )}
                 </TableRow>
               );
             },

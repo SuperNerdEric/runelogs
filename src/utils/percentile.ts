@@ -39,3 +39,14 @@ export function getPlayerDpsDisplayColor(
   }
   return { color: colors.text.dps, useDpsTextClass: true };
 }
+
+/** Display text for parse percentile column; unknown or unranked players show "-". */
+export function formatParsePercentileDisplay(
+  playerId: string,
+  percentile?: number,
+): string {
+  if (isUnknownPlayer(playerId) || percentile === undefined) {
+    return "-";
+  }
+  return `${percentile}`;
+}

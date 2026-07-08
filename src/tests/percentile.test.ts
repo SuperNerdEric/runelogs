@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  formatParsePercentileDisplay,
   getPercentileAccentColor,
   getPlayerDpsDisplayColor,
   rankToPercentile,
@@ -49,5 +50,19 @@ describe("getPlayerDpsDisplayColor", () => {
       color: colors.text.dps,
       useDpsTextClass: true,
     });
+  });
+});
+
+describe("formatParsePercentileDisplay", () => {
+  it("shows a dash for unknown players", () => {
+    expect(formatParsePercentileDisplay("Unknown", 95)).toBe("-");
+  });
+
+  it("shows a dash when percentile is missing", () => {
+    expect(formatParsePercentileDisplay("player1")).toBe("-");
+  });
+
+  it("shows the percentile value for ranked players", () => {
+    expect(formatParsePercentileDisplay("player1", 95)).toBe("95");
   });
 });

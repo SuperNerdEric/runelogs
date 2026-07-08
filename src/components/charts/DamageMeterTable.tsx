@@ -11,6 +11,8 @@ import TableColumnHeaderTooltip from "../TableColumnHeaderTooltip";
 import { COLUMN_TOOLTIPS } from "../../utils/columnTooltips";
 import { colors } from "../../theme";
 import { isUnknownPlayer } from "../../utils/actorUtils";
+import { formatParsePercentileDisplay } from "../../utils/percentile";
+import { getDpsPercentileColor } from "../../utils/TickActivity";
 
 export interface DamageMeterRow {
   key: string;
@@ -20,6 +22,7 @@ export interface DamageMeterRow {
   dpsColor?: string;
   useDpsTextClass?: boolean;
   nameClassName?: string;
+  percentile?: number;
 }
 
 interface DamageMeterTableProps {
@@ -81,6 +84,12 @@ const DamageMeterTable: React.FC<DamageMeterTableProps> = ({ rows }) => {
               <TableColumnHeaderTooltip
                 label="DPS"
                 tooltip={COLUMN_TOOLTIPS.dps}
+              />
+            </TableCell>
+            <TableCell style={{ width: "70px", textAlign: "center" }}>
+              <TableColumnHeaderTooltip
+                label="Percentile"
+                tooltip={COLUMN_TOOLTIPS.percentile}
               />
             </TableCell>
           </TableRow>
@@ -152,6 +161,19 @@ const DamageMeterTable: React.FC<DamageMeterTableProps> = ({ rows }) => {
                   }
                 >
                   {row.dps.toFixed(3)}
+                </TableCell>
+                <TableCell
+                  style={{
+                    width: "70px",
+                    textAlign: "right",
+                    color: unknown
+                      ? colors.text.unknown
+                      : row.percentile !== undefined
+                        ? getDpsPercentileColor(row.percentile)
+                        : undefined,
+                  }}
+                >
+                  {formatParsePercentileDisplay(row.key, row.percentile)}
                 </TableCell>
               </TableRow>
             );

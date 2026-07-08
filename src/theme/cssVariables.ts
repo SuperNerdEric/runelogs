@@ -1,4 +1,4 @@
-import { colors, fonts, fontSizes, layout } from "./tokens";
+import { colors, fonts, fontSizes, layout, surfaces } from "./tokens";
 
 export const fightTileCssValues = {
   minBase: "10rem",
@@ -45,6 +45,8 @@ export const cssVariables: Record<string, string> = {
   "--color-text-icon-hover": colors.text.iconHover,
   "--color-text-medal-gold": colors.medal.gold,
 
+  "--color-percentile-default": colors.percentile.default,
+
   "--color-border-default": colors.border.default,
   "--color-border-black": colors.border.black,
   "--color-border-white": colors.border.white,
@@ -69,6 +71,11 @@ export const cssVariables: Record<string, string> = {
   "--font-size-dropdown-fight": fontSizes.dropdownFight,
 
   "--layout-content-max-width": `${layout.contentMaxWidth}px`,
+
+  "--surface-radius-sm": `${surfaces.radiusSm}px`,
+  "--surface-shadow": surfaces.shadow,
+  "--surface-border-color": colors.ui.dividerSubtle,
+  "--surface-header-gradient": `linear-gradient(180deg, ${colors.background.surfaceAlt} 0%, ${colors.background.tableHead} 100%)`,
 
   "--fight-tile-min-base": fightTileCssValues.minBase,
   "--fight-tile-max": fightTileCssValues.max,
