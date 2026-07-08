@@ -85,7 +85,7 @@ function RecencyLabel({ date }: { date: string }) {
 function BlogPreviewCard({ post }: { post: BlogPost }) {
   const [expanded, setExpanded] = useState(false);
   const accent = CATEGORY_ACCENT[post.category];
-  const summary = getBlogPostSummary(post, 150);
+  const summary = getBlogPostSummary(post);
 
   return (
     <Box

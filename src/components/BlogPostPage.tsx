@@ -228,11 +228,13 @@ const BlogPostPage: React.FC = () => {
         component="article"
 
         sx={{
-          border: `1px solid ${colors.border.default}`,
+          border: `1px solid ${CATEGORY_CHIP_COLOR[post.category]}44`,
 
           borderRadius: 2,
 
-          bgcolor: colors.background.surface,
+          bgcolor: colors.background.surfaceAlt,
+
+          boxShadow: "0 1px 2px rgba(1, 4, 9, 0.24)",
 
           px: { xs: 2, sm: 3 },
 

@@ -62,7 +62,7 @@ describe("getBlogPostShortTitle", () => {
         title: "Runelogs — Maggot King",
         slug: "runelogs-maggot-king",
         category: "runelogs",
-        body: { paragraphs: [""] },
+        body: { summary: "", paragraphs: [""] },
       }),
     ).toBe("Maggot King");
 
@@ -72,7 +72,7 @@ describe("getBlogPostShortTitle", () => {
         title: "Combat Logger 1.6.6 Release",
         slug: "combat-logger-1-6-6-release",
         category: "combat-logger",
-        body: { paragraphs: [""] },
+        body: { summary: "", paragraphs: [""] },
       }),
     ).toBe("1.6.6 Release");
   });
