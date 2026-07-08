@@ -158,7 +158,10 @@ const Log: React.FC = () => {
 
           setRetryingAfterNotFound(false);
           const body: ApiResponse = await res.json();
-          setEncounters(body.encounters);
+          const sortedEncounters = body.encounters
+            .slice()
+            .sort((a, b) => a.order - b.order);
+          setEncounters(sortedEncounters);
           setReceivingData(Boolean(body.receivingData));
 
           const { uploaderId: up, name, uploadedAt: ua } = body;
@@ -168,9 +171,7 @@ const Log: React.FC = () => {
 
           const out: EncounterMetaData[] = [];
 
-          body.encounters.sort((a, b) => a.order - b.order);
-
-          for (const enc of body.encounters) {
+          for (const enc of sortedEncounters) {
             if (enc.type === "fightGroup") {
               const sortedFights = enc.fights
                 .slice()
@@ -178,6 +179,9 @@ const Log: React.FC = () => {
               const groupInProgress = isFightGroupRunInProgress(
                 Boolean(body.receivingData),
                 enc.success,
+                enc.id,
+                sortedFights.map((f) => f.id),
+                body.liveActiveEncounterId,
               );
 
               const fightStates = sortedFights.map((f) => ({

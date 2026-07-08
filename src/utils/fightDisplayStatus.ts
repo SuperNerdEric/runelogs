@@ -39,8 +39,22 @@ export function isFightGroupLiveInProgress(
 export function isFightGroupRunInProgress(
   receivingData: boolean,
   groupSuccess: boolean,
+  groupId?: string,
+  fightIds?: string[],
+  liveActiveEncounterId?: string | null,
 ): boolean {
-  return receivingData && !groupSuccess;
+  if (!receivingData || groupSuccess) {
+    return false;
+  }
+  if (!groupId || !fightIds || liveActiveEncounterId == null) {
+    return false;
+  }
+  return isFightGroupLiveInProgress(
+    receivingData,
+    groupId,
+    fightIds,
+    liveActiveEncounterId,
+  );
 }
 
 /** Encounter page: live log still syncing and this fight has not finished. */

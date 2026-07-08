@@ -42,13 +42,22 @@ describe("fightDisplayStatus", () => {
     ).toBe(false);
   });
 
-  it("marks an unfinished fight group as in progress while the log is live", () => {
-    expect(isFightGroupRunInProgress(true, false)).toBe(true);
-    expect(isFightGroupRunInProgress(true, true)).toBe(false);
-    expect(isFightGroupRunInProgress(false, false)).toBe(false);
+  it("marks only the active unfinished fight group as in progress while live", () => {
+    expect(
+      isFightGroupRunInProgress(true, false, "group-1", ["f1"], "group-1"),
+    ).toBe(true);
+    expect(
+      isFightGroupRunInProgress(true, false, "trip-1", ["d1"], "trip-2"),
+    ).toBe(false);
+    expect(
+      isFightGroupRunInProgress(true, true, "group-1", ["f1"], "group-1"),
+    ).toBe(false);
+    expect(
+      isFightGroupRunInProgress(false, false, "group-1", ["f1"], "group-1"),
+    ).toBe(false);
   });
 
-  it("treats a live unfinished raid as in progress even when active id mismatches db group id", () => {
+  it("treats a live unfinished raid as in progress when the active id matches a nested fight", () => {
     const receivingData = true;
     const groupSuccess = false;
     const dbGroupId = "ee930771-c75c-4f8a-a400-086a89a12fc5";
@@ -63,11 +72,25 @@ describe("fightDisplayStatus", () => {
         checkpointGroupId,
       ),
     ).toBe(false);
-    expect(isFightGroupRunInProgress(receivingData, groupSuccess)).toBe(true);
+    expect(
+      isFightGroupRunInProgress(
+        receivingData,
+        groupSuccess,
+        dbGroupId,
+        fightIds,
+        fightIds[0],
+      ),
+    ).toBe(true);
     expect(
       resolveFightOutcomeColor(
         groupSuccess,
-        isFightGroupRunInProgress(receivingData, groupSuccess),
+        isFightGroupRunInProgress(
+          receivingData,
+          groupSuccess,
+          dbGroupId,
+          fightIds,
+          fightIds[0],
+        ),
       ),
     ).toBe(FIGHT_IN_PROGRESS_COLOR);
   });
