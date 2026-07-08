@@ -98,6 +98,22 @@ const theme = createTheme({
         },
       },
     },
+    MuiAccordion: {
+      styleOverrides: {
+        root: {
+          "&.surface-card": {
+            borderRadius: `${surfaces.radiusSm}px`,
+            overflow: "hidden",
+            border: `1px solid ${colors.ui.dividerSubtle}`,
+            boxShadow: surfaces.shadow,
+            backgroundColor: colors.background.surface,
+            "&::before": {
+              display: "none",
+            },
+          },
+        },
+      },
+    },
     MuiTableRow: {
       styleOverrides: {
         root: {
@@ -182,6 +198,24 @@ const theme = createTheme({
     MuiCircularProgress: {
       styleOverrides: {
         root: { color: colors.text.primary },
+      },
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          backgroundColor: colors.background.surfaceAlt,
+          border: `1px solid ${colors.border.default}`,
+          borderRadius: "8px",
+          boxShadow: "0 8px 24px rgba(1, 4, 9, 0.45)",
+          color: colors.text.primary,
+          fontSize: fontSizes.base,
+          lineHeight: 1.45,
+          maxWidth: 320,
+          padding: "10px 12px",
+        },
+        arrow: {
+          color: colors.background.surfaceAlt,
+        },
       },
     },
   },
