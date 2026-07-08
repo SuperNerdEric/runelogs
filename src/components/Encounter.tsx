@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { flushSync } from "react-dom";
 import {
+  Link,
   useNavigate,
   useParams,
   useSearchParams,
@@ -22,7 +23,6 @@ import * as semver from "semver";
 import "../App.css";
 import EncounterFightTitle from "./EncounterFightTitle";
 import PageBreadcrumbs, { BreadcrumbSegment } from "./PageBreadcrumbs";
-import EncounterDpsRankBadges from "./badges/EncounterDpsRankBadges";
 import {
   inferLeaderboardFightGroupName,
   inferStandaloneLeaderboardContent,
@@ -68,6 +68,8 @@ import {
   getEncounterFightPageMeta,
   getLoadingEncounterPageMeta,
 } from "../utils/encounterPageMeta";
+import { deserializeEventTimeFilter } from "../utils/eventTimeFilter";
+import { deserializeAnimationIdFilter } from "../utils/animationIdFilter";
 
 type EncounterApiFG = {
   type: "fightGroup";
@@ -168,6 +170,14 @@ const Encounter: React.FC = () => {
     [searchParams],
   );
   const eventTypeFilter = searchParams.get("eventType");
+  const eventTimeFilter = useMemo(
+    () => deserializeEventTimeFilter(searchParams.get("eventTime")),
+    [searchParams],
+  );
+  const animationIdFilter = useMemo(
+    () => deserializeAnimationIdFilter(searchParams.get("animationId")),
+    [searchParams],
+  );
 
   const deferredSourceFilter = useDeferredValue(sourceFilter);
   const deferredTargetFilter = useDeferredValue(targetFilter);
@@ -176,6 +186,8 @@ const Encounter: React.FC = () => {
   const deferredHitsplatFilter = useDeferredValue(hitsplatFilter);
   const deferredHitsplatTypeFilter = useDeferredValue(hitsplatTypeFilter);
   const deferredEventTypeFilter = useDeferredValue(eventTypeFilter);
+  const deferredEventTimeFilter = useDeferredValue(eventTimeFilter);
+  const deferredAnimationIdFilter = useDeferredValue(animationIdFilter);
 
   const filtersPending =
     deferredSourceFilter !== sourceFilter ||
@@ -184,12 +196,14 @@ const Encounter: React.FC = () => {
     deferredPrayerFilter !== prayerFilter ||
     deferredHitsplatFilter !== hitsplatFilter ||
     deferredHitsplatTypeFilter !== hitsplatTypeFilter ||
-    deferredEventTypeFilter !== eventTypeFilter;
+    deferredEventTypeFilter !== eventTypeFilter ||
+    deferredEventTimeFilter !== eventTimeFilter ||
+    deferredAnimationIdFilter !== animationIdFilter;
 
   const isValidTab = Object.values(TabsEnum).includes(tabParam as TabsEnum);
   const tabFromUrl: TabsEnum = isValidTab
     ? (tabParam as TabsEnum)
-    : TabsEnum.DAMAGE_DONE;
+    : TabsEnum.SUMMARY;
   const [optimisticTab, setOptimisticTab] = useState<TabsEnum | null>(null);
   const displayTab = optimisticTab ?? tabFromUrl;
   const [renderedTab, setRenderedTab] = useState<TabsEnum>(tabFromUrl);
@@ -221,11 +235,22 @@ const Encounter: React.FC = () => {
     return () => window.clearTimeout(timeoutId);
   }, [displayTab, renderedTab, showTabContent]);
 
-  // Ensure ?tab= is always present
+  // Ensure ?tab= is always present; redirect legacy Boosts tab to Summary
   useEffect(() => {
+    const rawTab = searchParams.get("tab");
+
+    if (rawTab === "Boosts") {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set("tab", TabsEnum.SUMMARY);
+      navigate(`${window.location.pathname}?${newParams.toString()}`, {
+        replace: true,
+      });
+      return;
+    }
+
     if (!tabParam) {
       const newParams = new URLSearchParams(searchParams);
-      newParams.set("tab", TabsEnum.DAMAGE_DONE);
+      newParams.set("tab", TabsEnum.SUMMARY);
       navigate(`${window.location.pathname}?${newParams.toString()}`, {
         replace: true,
       });
@@ -376,7 +401,7 @@ const Encounter: React.FC = () => {
       if (!f) return;
 
       const newParams = new URLSearchParams(searchParams);
-      const tabValue = newParams.get("tab") ?? TabsEnum.DAMAGE_DONE;
+      const tabValue = newParams.get("tab") ?? TabsEnum.SUMMARY;
 
       // Push new fight ID and preserve tab query
       const basePath = isAggregate ? "/encounter/aggregate" : "/encounter";
@@ -479,6 +504,16 @@ const Encounter: React.FC = () => {
     newParams.delete("eventType");
     navigate(`${window.location.pathname}?${newParams.toString()}`);
   }, [navigate, searchParams]);
+  const onClearEventTimeFilter = useCallback(() => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete("eventTime");
+    navigate(`${window.location.pathname}?${newParams.toString()}`);
+  }, [navigate, searchParams]);
+  const onClearAnimationIdFilter = useCallback(() => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete("animationId");
+    navigate(`${window.location.pathname}?${newParams.toString()}`);
+  }, [navigate, searchParams]);
   const onClearEquipmentFilter = useCallback(
     () => updateEquipmentFilter(null),
     [updateEquipmentFilter],
@@ -540,6 +575,15 @@ const Encounter: React.FC = () => {
         : true,
     );
   }, [fight]);
+
+  const buildTabUrl = useCallback(
+    (tab: TabsEnum) => {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set("tab", tab);
+      return `${location.pathname}?${newParams.toString()}`;
+    },
+    [location.pathname, searchParams],
+  );
 
   const runMeta = group ?? fightGroupMeta;
 
@@ -658,15 +702,6 @@ const Encounter: React.FC = () => {
             sx={{ alignSelf: "stretch", mb: 1 }}
           />
         )}
-        <EncounterDpsRankBadges
-          dpsRanks={dpsRanks}
-          dpsPercentiles={dpsPercentiles}
-          leaderboardName={leaderboardName}
-          playerCount={playerCount}
-          dpsLeaderboardKey={dpsLeaderboardKey}
-          fightName={dpsLeaderboardKey ?? fight.name}
-        />
-
         <Tabs
           value={displayTab}
           onChange={(_, newTab: TabsEnum) => {
@@ -687,6 +722,8 @@ const Encounter: React.FC = () => {
           {availableTabs.map((tab) => (
             <Tab
               key={tab}
+              component={Link}
+              to={buildTabUrl(tab)}
               label={tab}
               value={tab}
               sx={{
@@ -737,7 +774,12 @@ const Encounter: React.FC = () => {
             <EncounterTabContent
               renderedTab={displayTab}
               fight={fight}
+              receivingData={receivingData}
               dpsPercentiles={dpsPercentiles}
+              dpsRanks={dpsRanks}
+              leaderboardName={leaderboardName}
+              playerCount={playerCount}
+              dpsLeaderboardKey={dpsLeaderboardKey}
               sourceFilter={sourceFilter}
               targetFilter={targetFilter}
               equipmentFilter={equipmentFilter}
@@ -745,6 +787,8 @@ const Encounter: React.FC = () => {
               hitsplatFilter={hitsplatFilter}
               hitsplatTypeFilter={hitsplatTypeFilter}
               eventTypeFilter={eventTypeFilter}
+              eventTimeFilter={eventTimeFilter}
+              animationIdFilter={animationIdFilter}
               dataSourceFilter={deferredSourceFilter}
               dataTargetFilter={deferredTargetFilter}
               dataEquipmentFilter={deferredEquipmentFilter}
@@ -752,6 +796,8 @@ const Encounter: React.FC = () => {
               dataHitsplatFilter={deferredHitsplatFilter}
               dataHitsplatTypeFilter={deferredHitsplatTypeFilter}
               dataEventTypeFilter={deferredEventTypeFilter}
+              dataEventTimeFilter={deferredEventTimeFilter}
+              dataAnimationIdFilter={deferredAnimationIdFilter}
               onSelectSourceFilter={onSelectSourceFilter}
               onSelectTargetFilter={onSelectTargetFilter}
               onSelectEquipmentFilter={updateEquipmentFilter}
@@ -766,6 +812,8 @@ const Encounter: React.FC = () => {
               onClearHitsplatTypeFilter={onClearHitsplatTypeFilter}
               onSelectEventTypeFilter={onSelectEventTypeFilter}
               onClearEventTypeFilter={onClearEventTypeFilter}
+              onClearEventTimeFilter={onClearEventTimeFilter}
+              onClearAnimationIdFilter={onClearAnimationIdFilter}
             />
           )}
         </Box>

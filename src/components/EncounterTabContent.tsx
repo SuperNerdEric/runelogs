@@ -1,10 +1,10 @@
 import React from "react";
 import {
-  BoostsTab,
   DamageDoneTab,
   DamageTakenTab,
   EventsTab,
   ReplayTab,
+  SummaryTab,
   TabsEnum,
 } from "./Tabs";
 import { Fight } from "../models/Fight";
@@ -17,7 +17,12 @@ import { PrayerFilter } from "../utils/prayerFilter";
 export interface EncounterTabContentProps {
   renderedTab: TabsEnum;
   fight: Fight;
+  receivingData?: boolean;
   dpsPercentiles: Record<string, number>;
+  dpsRanks: Record<string, number>;
+  leaderboardName: string | null;
+  playerCount: number;
+  dpsLeaderboardKey: string | null;
   sourceFilter: ActorFilter | null;
   targetFilter: ActorFilter | null;
   equipmentFilter: EquipmentFilter | null;
@@ -25,6 +30,8 @@ export interface EncounterTabContentProps {
   hitsplatFilter: HitsplatFilter | null;
   hitsplatTypeFilter: HitsplatTypeFilter | null;
   eventTypeFilter: string | null;
+  eventTimeFilter: number | null;
+  animationIdFilter: number | null;
   dataSourceFilter: ActorFilter | null;
   dataTargetFilter: ActorFilter | null;
   dataEquipmentFilter: EquipmentFilter | null;
@@ -32,6 +39,8 @@ export interface EncounterTabContentProps {
   dataHitsplatFilter: HitsplatFilter | null;
   dataHitsplatTypeFilter: HitsplatTypeFilter | null;
   dataEventTypeFilter: string | null;
+  dataEventTimeFilter: number | null;
+  dataAnimationIdFilter: number | null;
   onSelectSourceFilter: (filter: ActorFilter) => void;
   onSelectTargetFilter: (filter: ActorFilter) => void;
   onSelectEquipmentFilter: (filter: EquipmentFilter) => void;
@@ -46,12 +55,19 @@ export interface EncounterTabContentProps {
   onClearHitsplatTypeFilter: () => void;
   onSelectEventTypeFilter: (eventType: string) => void;
   onClearEventTypeFilter: () => void;
+  onClearEventTimeFilter: () => void;
+  onClearAnimationIdFilter: () => void;
 }
 
 const EncounterTabContent: React.FC<EncounterTabContentProps> = ({
   renderedTab,
   fight,
+  receivingData = false,
   dpsPercentiles,
+  dpsRanks,
+  leaderboardName,
+  playerCount,
+  dpsLeaderboardKey,
   sourceFilter,
   targetFilter,
   equipmentFilter,
@@ -59,6 +75,8 @@ const EncounterTabContent: React.FC<EncounterTabContentProps> = ({
   hitsplatFilter,
   hitsplatTypeFilter: _hitsplatTypeFilter,
   eventTypeFilter,
+  eventTimeFilter,
+  animationIdFilter,
   dataSourceFilter,
   dataTargetFilter,
   dataEquipmentFilter,
@@ -66,6 +84,8 @@ const EncounterTabContent: React.FC<EncounterTabContentProps> = ({
   dataHitsplatFilter,
   dataHitsplatTypeFilter,
   dataEventTypeFilter,
+  dataEventTimeFilter,
+  dataAnimationIdFilter,
   onSelectSourceFilter,
   onSelectTargetFilter,
   onSelectEquipmentFilter,
@@ -80,8 +100,22 @@ const EncounterTabContent: React.FC<EncounterTabContentProps> = ({
   onClearHitsplatTypeFilter,
   onSelectEventTypeFilter,
   onClearEventTypeFilter,
+  onClearEventTimeFilter,
+  onClearAnimationIdFilter,
 }) => {
   switch (renderedTab) {
+    case TabsEnum.SUMMARY:
+      return (
+        <SummaryTab
+          selectedLogs={fight}
+          receivingData={receivingData}
+          dpsPercentiles={dpsPercentiles}
+          dpsRanks={dpsRanks}
+          leaderboardName={leaderboardName}
+          playerCount={playerCount}
+          dpsLeaderboardKey={dpsLeaderboardKey}
+        />
+      );
     case TabsEnum.DAMAGE_DONE:
       return (
         <DamageDoneTab
@@ -131,8 +165,6 @@ const EncounterTabContent: React.FC<EncounterTabContentProps> = ({
           onClearHitsplatTypeFilter={onClearHitsplatTypeFilter}
         />
       );
-    case TabsEnum.BOOSTS:
-      return <BoostsTab selectedLogs={fight} />;
     case TabsEnum.EVENTS:
       return (
         <EventsTab
@@ -148,6 +180,8 @@ const EncounterTabContent: React.FC<EncounterTabContentProps> = ({
           dataPrayerFilter={dataPrayerFilter}
           dataHitsplatFilter={dataHitsplatFilter}
           dataEventTypeFilter={dataEventTypeFilter}
+          dataEventTimeFilter={dataEventTimeFilter}
+          dataAnimationIdFilter={dataAnimationIdFilter}
           onSelectSourceFilter={onSelectSourceFilter}
           onSelectTargetFilter={onSelectTargetFilter}
           onSelectEquipmentFilter={onSelectEquipmentFilter}
@@ -159,8 +193,12 @@ const EncounterTabContent: React.FC<EncounterTabContentProps> = ({
           onClearPrayerFilter={onClearPrayerFilter}
           onClearHitsplatFilter={onClearHitsplatFilter}
           eventTypeFilter={eventTypeFilter}
+          eventTimeFilter={eventTimeFilter}
+          animationIdFilter={animationIdFilter}
           onSelectEventTypeFilter={onSelectEventTypeFilter}
           onClearEventTypeFilter={onClearEventTypeFilter}
+          onClearEventTimeFilter={onClearEventTimeFilter}
+          onClearAnimationIdFilter={onClearAnimationIdFilter}
         />
       );
     case TabsEnum.REPLAY:
