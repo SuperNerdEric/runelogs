@@ -11,6 +11,15 @@ import {
 import { Fight } from "../../models/Fight";
 import { filterByType, LogTypes } from "../../models/LogLine";
 import { HitsplatFilter } from "../../utils/hitsplatFilter";
+import {
+  capitalizeChartLabel,
+  CHART_SERIES_ACCENT_COLOR,
+  ChartTooltip,
+  ChartTooltipDivider,
+  ChartTooltipStatGrid,
+  ChartTooltipStatRow,
+  ChartTooltipTime,
+} from "./ChartTooltip";
 
 const HITSPLAT_BAR_COLOR = "tan";
 
@@ -21,22 +30,28 @@ interface HitDistributionChartProps {
 }
 
 const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
-  if (active && payload && payload.length) {
-    return (
-      <div>
-        <p style={{ margin: "0" }}>
-          <strong>{label}</strong>
-        </p>
-        {payload.map((entry: any, index: any) => (
-          <p key={`tooltip-entry-${index}`} style={{ margin: "0" }}>
-            {entry.name}: {entry.value}
-          </p>
-        ))}
-      </div>
-    );
+  if (!active || !payload?.length) {
+    return null;
   }
 
-  return null;
+  return (
+    <ChartTooltip>
+      <ChartTooltipTime>Hitsplat {label}</ChartTooltipTime>
+      <ChartTooltipDivider />
+      <ChartTooltipStatGrid>
+        {payload.map(
+          (entry: { name: string; value: number }, index: number) => (
+            <ChartTooltipStatRow
+              key={`tooltip-entry-${index}`}
+              label={capitalizeChartLabel(entry.name)}
+              value={entry.value}
+              color={CHART_SERIES_ACCENT_COLOR}
+            />
+          ),
+        )}
+      </ChartTooltipStatGrid>
+    </ChartTooltip>
+  );
 };
 
 const HitDistributionChart: React.FC<HitDistributionChartProps> = ({

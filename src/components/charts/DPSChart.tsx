@@ -9,35 +9,53 @@ import {
 } from "recharts";
 import { Fight } from "../../models/Fight";
 import { DamageLog, filterByType, LogTypes } from "../../models/LogLine";
+import {
+  CHART_SERIES_ACCENT_COLOR,
+  ChartTooltip,
+  ChartTooltipDivider,
+  ChartTooltipTime,
+  resolveChartTooltipStatColor,
+} from "./ChartTooltip";
 
 interface DPSChartProps {
   fight: Fight;
+  height?: number;
 }
 
 const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
-  if (active && payload && payload.length) {
-    const labelDate = new Date(label);
-    if (isNaN(labelDate.getTime())) {
-      return null;
-    }
-
-    const isoTimeString = labelDate.toISOString().substr(11, 12);
-
-    return (
-      <div>
-        <p style={{ margin: "0" }}>
-          <strong>{isoTimeString}</strong>
-        </p>
-        {payload.map((entry: any, index: any) => (
-          <p key={`tooltip-entry-${index}`} style={{ margin: "0" }}>
-            {entry.name}: {entry.value.toFixed(2)} DPS
-          </p>
-        ))}
-      </div>
-    );
+  if (!active || !payload?.length) {
+    return null;
   }
 
-  return null;
+  const labelDate = new Date(label);
+  if (isNaN(labelDate.getTime())) {
+    return null;
+  }
+
+  const isoTimeString = labelDate.toISOString().substr(11, 12);
+
+  return (
+    <ChartTooltip>
+      <ChartTooltipTime>{isoTimeString}</ChartTooltipTime>
+      <ChartTooltipDivider />
+      {payload.map(
+        (entry: { value: number; color?: string }, index: number) => (
+          <div
+            key={`tooltip-entry-${index}`}
+            className="chart-tooltip__stat-value"
+            style={{
+              color:
+                resolveChartTooltipStatColor(entry.color) ??
+                CHART_SERIES_ACCENT_COLOR,
+              textAlign: "center",
+            }}
+          >
+            {entry.value.toFixed(2)} DPS
+          </div>
+        ),
+      )}
+    </ChartTooltip>
+  );
 };
 
 export const calculateDPSByInterval = (
@@ -91,7 +109,7 @@ export const calculateDPSByInterval = (
   return dpsData;
 };
 
-const DPSChart: React.FC<DPSChartProps> = ({ fight }) => {
+const DPSChart: React.FC<DPSChartProps> = ({ fight, height = 200 }) => {
   const filteredLogs = filterByType(fight.data, LogTypes.DAMAGE);
 
   const fightLengthMs = (fight.metaData.fightDurationTicks ?? 0) * 600;
@@ -109,8 +127,11 @@ const DPSChart: React.FC<DPSChartProps> = ({ fight }) => {
   const tickInterval = Math.ceil(dpsData.length / 5);
 
   return (
-    <ResponsiveContainer width="100%" height={200}>
-      <AreaChart data={dpsData} margin={{ top: 11, left: 40, bottom: 0 }}>
+    <ResponsiveContainer width="100%" height={height}>
+      <AreaChart
+        data={dpsData}
+        margin={{ top: 8, left: 40, bottom: height <= 150 ? -4 : 0 }}
+      >
         <XAxis
           dataKey="timestamp"
           tickFormatter={(tick, index) =>
