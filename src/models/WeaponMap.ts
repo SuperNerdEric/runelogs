@@ -24,10 +24,8 @@ equipmentJson.forEach((equipmentItem: Equipment) => {
       equipmentItem.category as WeaponCategory;
 
     if (weaponCategory) {
-      const weaponOptions = WeaponCategoryOptions[weaponCategory]!;
-      if (weaponOptions === undefined) {
-        console.debug("No weapon options " + JSON.stringify(equipmentItem));
-      } else {
+      const weaponOptions = WeaponCategoryOptions[weaponCategory];
+      if (weaponOptions !== undefined) {
         const combatClass = StyleToCombatClass[weaponOptions[0].styleType];
         weaponMap[equipmentItem.id] = {
           ...equipmentItem,
