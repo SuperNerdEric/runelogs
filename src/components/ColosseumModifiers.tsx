@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Box, Typography, useMediaQuery } from "@mui/material";
 import AppTooltip from "./AppTooltip";
-import { Icon } from "@iconify/react";
+import ExpandableMoreInfo from "./ExpandableMoreInfo";
 import {
   ColosseumModifierData,
   getModifierImageUrl,
@@ -134,10 +134,7 @@ const ColosseumModifiers: React.FC<ColosseumModifiersProps> = ({
   const activeModifiers = modifiers!.activeModifiers;
 
   return (
-    <Box
-      className="damage-done-container colosseum-modifiers-section"
-      sx={{ mb: 2 }}
-    >
+    <Box className="surface-card colosseum-modifiers-section" sx={{ mb: 2 }}>
       <Box className="encounter-title-bar">
         <span className="encounter-title-bar-name">Modifiers</span>
       </Box>
@@ -154,68 +151,40 @@ const ColosseumModifiers: React.FC<ColosseumModifiersProps> = ({
         )}
 
         {waveChoices.length > 0 && (
-          <Box className="colosseum-modifiers-waves">
-            <Box
-              component="button"
-              type="button"
-              className={`colosseum-modifiers-waves__control${wavesExpanded ? " colosseum-modifiers-waves__control--expanded" : ""}`}
-              aria-expanded={wavesExpanded}
-              onClick={() => setWavesExpanded((expanded) => !expanded)}
-            >
-              <Box component="span" className="colosseum-modifiers-waves__chip">
-                <Icon
-                  icon="mdi:view-list"
-                  className="colosseum-modifiers-waves__chip-icon"
-                />
-                <Typography
-                  component="span"
-                  className="colosseum-modifiers-waves__chip-label"
-                >
-                  {wavesExpanded ? "Less Info" : "More Info"}
+          <ExpandableMoreInfo
+            expanded={wavesExpanded}
+            onToggle={() => setWavesExpanded((expanded) => !expanded)}
+            className="colosseum-modifiers-waves"
+            contentClassName="colosseum-modifiers-waves__list"
+            style={
+              waveDescriptionLines
+                ? ({
+                    "--colosseum-modifier-description-lines":
+                      waveDescriptionLines,
+                  } as React.CSSProperties)
+                : undefined
+            }
+          >
+            {waveChoices.map((wave, index) => (
+              <Box className="colosseum-modifiers-wave" key={`wave-${index}`}>
+                <Typography className="colosseum-modifiers-wave__title">
+                  Wave {index + 1}
                 </Typography>
-                <Icon
-                  icon="mdi:chevron-down"
-                  className={`colosseum-modifiers-waves__chip-chevron${wavesExpanded ? " colosseum-modifiers-waves__chip-chevron--expanded" : ""}`}
-                />
+                <Box className="colosseum-modifiers-wave__options">
+                  {wave.options.map((optionId) => (
+                    <ModifierItem
+                      key={`${index}-${optionId}`}
+                      modifierId={optionId}
+                      dimmed={optionId !== wave.chosen}
+                      compact
+                      showDescription={!isMobile}
+                      showTooltip={isMobile}
+                    />
+                  ))}
+                </Box>
               </Box>
-            </Box>
-            {wavesExpanded && (
-              <Box
-                className="colosseum-modifiers-waves__list"
-                style={
-                  waveDescriptionLines
-                    ? ({
-                        "--colosseum-modifier-description-lines":
-                          waveDescriptionLines,
-                      } as React.CSSProperties)
-                    : undefined
-                }
-              >
-                {waveChoices.map((wave, index) => (
-                  <Box
-                    className="colosseum-modifiers-wave"
-                    key={`wave-${index}`}
-                  >
-                    <Typography className="colosseum-modifiers-wave__title">
-                      Wave {index + 1}
-                    </Typography>
-                    <Box className="colosseum-modifiers-wave__options">
-                      {wave.options.map((optionId) => (
-                        <ModifierItem
-                          key={`${index}-${optionId}`}
-                          modifierId={optionId}
-                          dimmed={optionId !== wave.chosen}
-                          compact
-                          showDescription={!isMobile}
-                          showTooltip={isMobile}
-                        />
-                      ))}
-                    </Box>
-                  </Box>
-                ))}
-              </Box>
-            )}
-          </Box>
+            ))}
+          </ExpandableMoreInfo>
         )}
       </Box>
     </Box>
