@@ -66,7 +66,7 @@ test.describe("Log page", () => {
       );
       const tileOverflow = [...document.querySelectorAll(".fight-tile")].some(
         (tile) => {
-          const container = tile.closest(".damage-done-container");
+          const container = tile.closest(".surface-card");
           if (!container) {
             return false;
           }

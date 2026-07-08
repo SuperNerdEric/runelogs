@@ -416,7 +416,7 @@ const LogFightList: React.FC<LogFightListProps> = ({
               : undefined;
 
           return (
-            <div className="damage-done-container" key={groupKey}>
+            <div className="surface-card" key={groupKey}>
               <EncounterTitleBar
                 name={name}
                 leaderboardName={fightGroup.leaderboardName}
@@ -462,7 +462,7 @@ const LogFightList: React.FC<LogFightListProps> = ({
         };
 
         return (
-          <div className="damage-done-container" key={groupKey}>
+          <div className="surface-card" key={groupKey}>
             <EncounterTitleBar name={name} onClick={handleBannerClick} />
             <FightTileGrid
               labelCh={labelCh}
