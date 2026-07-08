@@ -43,6 +43,14 @@ export function isFightGroupRunInProgress(
   return receivingData && !groupSuccess;
 }
 
+/** Encounter page: live log still syncing and this fight has not finished. */
+export function isEncounterFightInProgress(
+  receivingData: boolean,
+  fightSuccess: boolean,
+): boolean {
+  return receivingData && !fightSuccess;
+}
+
 export type LiveFightTileState = {
   id: string;
   success: boolean;
