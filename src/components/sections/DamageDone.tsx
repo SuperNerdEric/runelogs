@@ -5,6 +5,7 @@ import DPSChart from "../charts/DPSChart";
 import { Fight } from "../../models/Fight";
 import EventsTable from "../EventsTable";
 import DPSMeterTable from "../charts/DPSMeterTable";
+import DamageDoneDrillBanner from "../charts/DamageDoneDrillBanner";
 import SectionBox from "../SectionBox";
 import { filterByType, LogTypes, DamageLog } from "../../models/LogLine";
 import { BOAT_IDS } from "../../utils/constants";
@@ -28,6 +29,7 @@ import {
   HitsplatTypeFilter,
   matchesHitsplatTypeFilter,
 } from "../../utils/hitsplatTypeFilter";
+import { isDamageDoneDrilledIn } from "../../utils/damageDoneDrillDown";
 
 interface LogsSelectionProps {
   fight: Fight;
@@ -223,17 +225,47 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
                 )}
             </div>
           </SectionBox>
-          <DPSMeterTable
-            fight={fight}
-            filteredFight={fightWithActorFilters}
-            drillDownLogs={drillDownLogs}
-            type={type}
-            sourceFilter={sourceFilter}
-            targetFilter={targetFilter}
-            dpsPercentiles={dpsPercentiles}
-            onSelectSourceFilter={onSelectSourceFilter}
-            onSelectTargetFilter={onSelectTargetFilter}
-          />
+          {type === "damage-done" ? (
+            <div
+              className={
+                isDamageDoneDrilledIn(sourceFilter)
+                  ? "damage-done-dps-stack damage-done-dps-stack--drilled"
+                  : "damage-done-dps-stack"
+              }
+            >
+              <DamageDoneDrillBanner
+                sourceFilter={sourceFilter}
+                targetFilter={targetFilter}
+                onSelectSourceFilter={onSelectSourceFilter}
+                onSelectTargetFilter={onSelectTargetFilter}
+                onClearSourceFilter={onClearSourceFilter}
+                onClearTargetFilter={onClearTargetFilter}
+              />
+              <DPSMeterTable
+                fight={fight}
+                filteredFight={fightWithActorFilters}
+                drillDownLogs={drillDownLogs}
+                type={type}
+                sourceFilter={sourceFilter}
+                targetFilter={targetFilter}
+                dpsPercentiles={dpsPercentiles}
+                onSelectSourceFilter={onSelectSourceFilter}
+                onSelectTargetFilter={onSelectTargetFilter}
+              />
+            </div>
+          ) : (
+            <DPSMeterTable
+              fight={fight}
+              filteredFight={fightWithActorFilters}
+              drillDownLogs={drillDownLogs}
+              type={type}
+              sourceFilter={sourceFilter}
+              targetFilter={targetFilter}
+              dpsPercentiles={dpsPercentiles}
+              onSelectSourceFilter={onSelectSourceFilter}
+              onSelectTargetFilter={onSelectTargetFilter}
+            />
+          )}
           <EventsTable
             fight={fightWithActorFilters}
             allLogs={fight.data}
