@@ -10,6 +10,14 @@
         <loc>https://www.runelogs.com/blog</loc>
     </url>
     <url>
+        <loc>https://www.runelogs.com/blog/runelogs-encounter-summaries-and-replay-tick-chart-improvements</loc>
+        <lastmod>2026-07-08</lastmod>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/blog/combat-logger-1-6-7-release</loc>
+        <lastmod>2026-07-08</lastmod>
+    </url>
+    <url>
         <loc>https://www.runelogs.com/blog/runelogs-maggot-king</loc>
         <lastmod>2026-07-02</lastmod>
     </url>
@@ -229,6 +237,7 @@
         <loc>https://www.runelogs.com/blog/runelogs-early-prototype</loc>
         <lastmod>2024-02-04</lastmod>
     </url>
+
     <url>
         <loc>https://www.runelogs.com/help</loc>
     </url>

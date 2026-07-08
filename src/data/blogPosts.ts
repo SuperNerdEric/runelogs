@@ -1,8 +1,22 @@
 export type BlogCategory = "combat-logger" | "runelogs";
 
+export type BlogPostImage = {
+  src: string;
+  alt: string;
+  caption?: string;
+  afterParagraph?: number;
+};
+
+export type BlogPostHeading = {
+  text: string;
+  beforeParagraph: number;
+};
+
 export type BlogPostBody = {
   paragraphs: string[];
   bullets?: string[];
+  images?: BlogPostImage[];
+  headings?: BlogPostHeading[];
 };
 
 export type BlogPost = {
@@ -28,6 +42,16 @@ export function generateBlogSlug(title: string): string {
 
 export function getBlogPostPlainText(body: BlogPostBody): string {
   const parts = [...body.paragraphs];
+  if (body.headings?.length) {
+    parts.push(body.headings.map((heading) => heading.text).join(" "));
+  }
+  if (body.images?.length) {
+    parts.push(
+      body.images
+        .map((image) => [image.alt, image.caption].filter(Boolean).join(" "))
+        .join(" "),
+    );
+  }
   if (body.bullets?.length) {
     parts.push(body.bullets.join(" "));
   }
@@ -50,6 +74,48 @@ export function getBlogPostSummary(post: BlogPost, maxLength = 220): string {
 
 const BLOG_POSTS_RAW: BlogPostInput[] = [
   // — Runelogs —
+  {
+    date: "2026-07-08",
+    title: "Runelogs — Encounter Summaries and Replay Tick Chart Improvements",
+    category: "runelogs",
+    body: {
+      paragraphs: [
+        "Runelogs introduces an Encounter Summary tab — a single-page overview at the top of every fight. Open any uploaded or live encounter and Summary is the default view: fight duration, deaths, DPS rank badges, a DPS timeline, a damage done breakdown, an Attacks breakdown, and stat boost tracking in one place. The Attacks breakdown groups each player's hits by weapon and marks special attacks with a special attack orb.",
+        "Summary rows and charts link into the rest of the encounter page. Click a player in the damage table to jump to Damage Done with that source filter applied, open a death to land on Events at the right tick, or follow an attack bar into the matching animation events. Live logs use the same layout while data is still streaming, with in-progress styling scoped to the active fight in a group.",
+        "The replay tick chart lays out each player's actions tick by tick. Special attacks are detected and marked with a special attack orb on the exact tick they land, so specs are easy to place in the sequence. Hover any tick to see the weapon used, the target, boosted combat stats, and timing.",
+        "The chart also flags missed ticks — ticks where your weapon was off cooldown but no attack went out — so dropped DPS is easy to spot at a glance. Tick tooltips are faster and easier to read, and object highlighting makes splats and warnings simpler to follow during playback.",
+      ],
+      headings: [
+        { text: "Encounter Summary", beforeParagraph: 0 },
+        { text: "Replay Tick Chart", beforeParagraph: 2 },
+        { text: "Other Changes", beforeParagraph: 4 },
+      ],
+      images: [
+        {
+          src: "/blog/encounter-summary-maggot-king.png",
+          alt: "Encounter Summary tab for a Maggot King fight showing DPS chart, damage done, attacks, and stat boosts",
+          caption:
+            "Encounter Summary for Maggot King — duration, rank, DPS chart, attacks, and boost tracking on one tab.",
+          afterParagraph: 1,
+        },
+        {
+          src: "/blog/replay-tick-chart-special-attack.png",
+          alt: "Replay tick chart with an Elder maul special attack tooltip showing target and boosted combat stats",
+          caption:
+            "Replay tick chart — special attack orbs mark specs, and hovering a tick shows the weapon, target, and boosted stats.",
+          afterParagraph: 3,
+        },
+      ],
+      bullets: [
+        "Redesigned stat boost charts with horizontal scroll for long fights",
+        "Hitsplat and hitsplat-type filtering across Events, Damage Done, and charts",
+        "Source and target drill-down in DPS tables to isolate who hit what",
+        "Damage Done drill-down banner and Events filters for time and animation ID",
+        "Clearer DPS and hitsplat chart tooltips",
+        "Live log pages show correct standalone fight names and scoped in-progress styling",
+      ],
+    },
+  },
   {
     date: "2026-07-02",
     title: "Runelogs — Maggot King",
@@ -303,6 +369,22 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
 
   // — Combat Logger —
+  {
+    date: "2026-07-08",
+    title: "Combat Logger 1.6.7 Release",
+    category: "combat-logger",
+    body: {
+      paragraphs: [
+        "Combat Logger 1.6.7 logs the player's current region in the opening messages when a session starts. That line is written alongside the logged-in player name and base stats, so the first live chunk Runelogs receives already knows which area the fight is in.",
+        "This pairs with recent live-log fixes on Runelogs: Mokhaiotl delve detection when region data was missing at log start, correct standalone boss names on live encounter pages, and more reliable fight grouping as chunks arrive. If you live-stream raids or solo bosses, 1.6.7 helps the site label and group encounters correctly from the first tick.",
+      ],
+      bullets: [
+        "Player region line in initial log messages at login",
+        "Improves live log region context before the first combat event",
+        "Recommended alongside Runelogs live logging for Mokhaiotl, Yama, and other region-sensitive content",
+      ],
+    },
+  },
   {
     date: "2026-07-02",
     title: "Combat Logger 1.6.6 Release",

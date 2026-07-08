@@ -21,7 +21,8 @@ export function generateBlogSlug(title) {
 function parseBlogPosts() {
   const content = readFileSync(blogPostsPath, "utf8");
   const posts = [];
-  const entryPattern = /date: '([^']+)',\s*\n\s*title: '([^']+)'/g;
+  const entryPattern =
+    /date: ["']([^"']+)["'],\s*\n\s*title: ["']([^"']+)["']/g;
 
   for (const match of content.matchAll(entryPattern)) {
     posts.push({

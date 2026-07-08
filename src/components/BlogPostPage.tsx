@@ -26,6 +26,8 @@ import {
 
 import { getBlogPostPageMeta } from "../utils/blogPageMeta";
 
+import BlogExpandableImage from "./BlogExpandableImage";
+
 const CATEGORY_LABEL: Record<BlogCategory, string> = {
   "combat-logger": "Combat Logger",
 
@@ -48,6 +50,28 @@ const paragraphSx = {
   m: 0,
 
   "& + &": { mt: 2 },
+};
+
+const sectionHeadingSx = {
+  color: colors.text.primary,
+
+  fontSize: fontSizes.xl,
+
+  fontWeight: 600,
+
+  lineHeight: 1.25,
+
+  m: 0,
+
+  mt: 3.5,
+
+  mb: 1.5,
+
+  pb: 1,
+
+  borderBottom: `1px solid ${colors.border.default}`,
+
+  "&:first-of-type": { mt: 0 },
 };
 
 const listSx = {
@@ -215,11 +239,57 @@ const BlogPostPage: React.FC = () => {
           py: 2.5,
         }}
       >
-        {post.body.paragraphs.map((paragraph) => (
-          <Typography key={paragraph} component="p" sx={paragraphSx}>
-            {paragraph}
-          </Typography>
+        {post.body.paragraphs.map((paragraph, index) => (
+          <React.Fragment key={paragraph}>
+            {post.body.headings
+              ?.filter((heading) => heading.beforeParagraph === index)
+              .map((heading) => (
+                <Typography
+                  key={heading.text}
+                  component="h2"
+                  sx={sectionHeadingSx}
+                >
+                  {heading.text}
+                </Typography>
+              ))}
+
+            <Typography component="p" sx={paragraphSx}>
+              {paragraph}
+            </Typography>
+
+            {post.body.images
+              ?.filter((image) => image.afterParagraph === index)
+              .map((image) => (
+                <BlogExpandableImage
+                  key={image.src}
+                  src={image.src}
+                  alt={image.alt}
+                  caption={image.caption}
+                />
+              ))}
+          </React.Fragment>
         ))}
+
+        {post.body.images
+          ?.filter((image) => image.afterParagraph === undefined)
+          .map((image) => (
+            <BlogExpandableImage
+              key={image.src}
+              src={image.src}
+              alt={image.alt}
+              caption={image.caption}
+            />
+          ))}
+
+        {post.body.headings
+          ?.filter(
+            (heading) => heading.beforeParagraph >= post.body.paragraphs.length,
+          )
+          .map((heading) => (
+            <Typography key={heading.text} component="h2" sx={sectionHeadingSx}>
+              {heading.text}
+            </Typography>
+          ))}
 
         {post.body.bullets && post.body.bullets.length > 0 && (
           <Box component="ul" sx={listSx}>

@@ -9,24 +9,30 @@ import {
 
 describe("getRecentHomeBlogPosts", () => {
   it("returns at most one post per category, newest first within each", () => {
-    const posts = getRecentHomeBlogPosts(14, new Date(2026, 6, 2));
+    const posts = getRecentHomeBlogPosts(14, new Date(2026, 6, 8));
     expect(posts).toHaveLength(2);
     expect(posts[0].category).toBe("runelogs");
-    expect(posts[0].title).toBe("Runelogs — Maggot King");
+    expect(posts[0].title).toBe(
+      "Runelogs — Encounter Summaries and Replay Tick Chart Improvements",
+    );
     expect(posts[1].category).toBe("combat-logger");
-    expect(posts[1].title).toBe("Combat Logger 1.6.6 Release");
+    expect(posts[1].title).toBe("Combat Logger 1.6.7 Release");
   });
 
   it("excludes posts older than the max age", () => {
-    const posts = getRecentHomeBlogPosts(14, new Date(2026, 6, 17));
+    const posts = getRecentHomeBlogPosts(14, new Date(2026, 6, 23));
     expect(posts).toHaveLength(0);
   });
 
   it("includes posts published exactly on the cutoff day", () => {
-    const posts = getRecentHomeBlogPosts(14, new Date(2026, 6, 16));
-    expect(posts.some((post) => post.title === "Runelogs — Maggot King")).toBe(
-      true,
-    );
+    const posts = getRecentHomeBlogPosts(14, new Date(2026, 6, 22));
+    expect(
+      posts.some(
+        (post) =>
+          post.title ===
+          "Runelogs — Encounter Summaries and Replay Tick Chart Improvements",
+      ),
+    ).toBe(true);
   });
 
   it("returns only categories with a recent post", () => {
@@ -38,11 +44,13 @@ describe("getRecentHomeBlogPosts", () => {
 describe("isBlogPostWithinDays", () => {
   it("uses local calendar days for the cutoff", () => {
     const post = BLOG_POSTS_SORTED.find(
-      (entry) => entry.slug === "runelogs-maggot-king",
+      (entry) =>
+        entry.slug ===
+        "runelogs-encounter-summaries-and-replay-tick-chart-improvements",
     );
     expect(post).toBeDefined();
-    expect(isBlogPostWithinDays(post!, 14, new Date(2026, 6, 16))).toBe(true);
-    expect(isBlogPostWithinDays(post!, 14, new Date(2026, 6, 17))).toBe(false);
+    expect(isBlogPostWithinDays(post!, 14, new Date(2026, 6, 22))).toBe(true);
+    expect(isBlogPostWithinDays(post!, 14, new Date(2026, 6, 23))).toBe(false);
   });
 });
 
