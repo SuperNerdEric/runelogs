@@ -18,6 +18,7 @@ interface Props {
   logName: string | null;
   logId: string;
   uploadedAt: string;
+  isLive?: boolean;
   receivingData?: boolean;
   onLogNameChange: (name: string | null) => void;
 }
@@ -27,7 +28,8 @@ const LogInfoBox: React.FC<Props> = ({
   logName,
   logId,
   uploadedAt,
-  receivingData = false,
+  isLive = false,
+  receivingData: _receivingData = false,
   onLogNameChange,
 }) => {
   const { user, getAccessTokenSilently } = useAuth0();
@@ -223,7 +225,7 @@ const LogInfoBox: React.FC<Props> = ({
         >
           <LogNameDisplay
             name={logName}
-            isLive={receivingData}
+            isLive={isLive}
             sx={{
               ...logNameTextSx(!!logName),
               minWidth: 0,

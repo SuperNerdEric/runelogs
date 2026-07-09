@@ -524,10 +524,7 @@ const Logs: React.FC = () => {
   );
 
   const liveLogIds = useMemo(
-    () =>
-      logs
-        ?.filter((log) => (log.isLive ?? false) && (log.receivingData ?? false))
-        .map((log) => log.id) ?? [],
+    () => logs?.filter((log) => log.isLive ?? false).map((log) => log.id) ?? [],
     [logs],
   );
 

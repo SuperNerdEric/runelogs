@@ -19,6 +19,7 @@ import LiveLogProgressAlert from "../LiveLogProgressAlert";
 import {
   LIVE_PAGE_RETRY_INTERVAL_MS,
   LIVE_PAGE_RETRY_TIMEOUT_MS,
+  shouldPollLiveLogPage,
   shouldRetryTransientPageFetch,
   useLiveFetchRetryState,
 } from "../../utils/livePageFetchRetry";
@@ -105,9 +106,11 @@ const Log: React.FC = () => {
   const [logName, setLogName] = useState<string | null>(null);
   const [uploadedAt, setUploadedAt] = useState<string>("");
   const [encounters, setEncounters] = useState<ApiEncounter[]>([]);
+  const [isLive, setIsLive] = useState<boolean>(false);
   const [receivingData, setReceivingData] = useState<boolean>(false);
   const [retryingAfterNotFound, setRetryingAfterNotFound] = useState(false);
-  const { receivingDataRef, retryingRef } = useLiveFetchRetryState(
+  const { isLiveRef, receivingDataRef, retryingRef } = useLiveFetchRetryState(
+    isLive,
     receivingData,
     retryingAfterNotFound,
   );
@@ -143,6 +146,7 @@ const Log: React.FC = () => {
           if (
             shouldRetryTransientPageFetch(res.status, {
               showLoading,
+              isLive: isLiveRef.current,
               receivingData: receivingDataRef.current,
               retryingAfterNotFound: retryingRef.current,
             })
@@ -162,6 +166,7 @@ const Log: React.FC = () => {
             .slice()
             .sort((a, b) => a.order - b.order);
           setEncounters(sortedEncounters);
+          setIsLive(Boolean(body.isLive));
           setReceivingData(Boolean(body.receivingData));
 
           const { uploaderId: up, name, uploadedAt: ua } = body;
@@ -260,6 +265,7 @@ const Log: React.FC = () => {
   useEffect(() => {
     setMetadata(null);
     setEncounters([]);
+    setIsLive(false);
     setReceivingData(false);
     setRetryingAfterNotFound(false);
     void loadLog(true);
@@ -287,7 +293,7 @@ const Log: React.FC = () => {
   }, [logId, retryingAfterNotFound, loadLog]);
 
   useEffect(() => {
-    if (!logId || !receivingData) {
+    if (!logId || !shouldPollLiveLogPage(isLive, receivingData)) {
       return;
     }
 
@@ -296,7 +302,7 @@ const Log: React.FC = () => {
     }, LIVE_PAGE_RETRY_INTERVAL_MS);
 
     return () => window.clearInterval(interval);
-  }, [logId, receivingData, loadLog]);
+  }, [logId, isLive, receivingData, loadLog]);
 
   const pageMeta = useMemo(() => {
     if (loading) {
@@ -330,7 +336,7 @@ const Log: React.FC = () => {
 
   return (
     <Box p={2} sx={contentColumnSx}>
-      {receivingData && (
+      {isLive && (
         <LiveLogProgressAlert refreshing={refreshing} sx={{ mb: 2 }} />
       )}
       <LogInfoBox
@@ -338,6 +344,7 @@ const Log: React.FC = () => {
         logName={logName}
         logId={logId!}
         uploadedAt={uploadedAt}
+        isLive={isLive}
         receivingData={receivingData}
         onLogNameChange={setLogName}
       />

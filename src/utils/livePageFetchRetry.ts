@@ -3,15 +3,26 @@ import { useRef } from "react";
 export const LIVE_PAGE_RETRY_INTERVAL_MS = 5000;
 export const LIVE_PAGE_RETRY_TIMEOUT_MS = 60_000;
 
+/** Poll while a session is open or combat lines are still flowing. */
+export function shouldPollLiveLogPage(
+  isLive: boolean,
+  receivingData: boolean,
+): boolean {
+  return isLive || receivingData;
+}
+
 export function useLiveFetchRetryState(
+  isLive: boolean,
   receivingData: boolean,
   retryingAfterNotFound: boolean,
 ) {
+  const isLiveRef = useRef(isLive);
   const receivingDataRef = useRef(receivingData);
   const retryingRef = useRef(retryingAfterNotFound);
+  isLiveRef.current = isLive;
   receivingDataRef.current = receivingData;
   retryingRef.current = retryingAfterNotFound;
-  return { receivingDataRef, retryingRef };
+  return { isLiveRef, receivingDataRef, retryingRef };
 }
 
 /**
@@ -27,6 +38,7 @@ export function shouldRetryTransientPageFetch(
   status: number,
   options: {
     showLoading: boolean;
+    isLive: boolean;
     receivingData: boolean;
     retryingAfterNotFound: boolean;
   },
@@ -37,6 +49,7 @@ export function shouldRetryTransientPageFetch(
 
   return (
     options.showLoading ||
+    options.isLive ||
     options.receivingData ||
     options.retryingAfterNotFound
   );

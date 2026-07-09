@@ -120,7 +120,8 @@ const Encounter: React.FC = () => {
   const [receivingData, setReceivingData] = useState(false);
   const [retryingAfter404, setRetryingAfter404] = useState(false);
   const fightRef = useRef<Fight | null>(null);
-  const { receivingDataRef, retryingRef } = useLiveFetchRetryState(
+  const { isLiveRef, receivingDataRef, retryingRef } = useLiveFetchRetryState(
+    receivingData,
     receivingData,
     retryingAfter404,
   );
@@ -295,6 +296,7 @@ const Encounter: React.FC = () => {
           if (
             shouldRetryTransientPageFetch(res.status, {
               showLoading,
+              isLive: isLiveRef.current,
               receivingData: receivingDataRef.current,
               retryingAfterNotFound: retryingRef.current,
             })

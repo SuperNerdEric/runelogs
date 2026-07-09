@@ -2,14 +2,23 @@ import { describe, expect, it } from "vitest";
 import {
   LIVE_PAGE_RETRY_INTERVAL_MS,
   LIVE_PAGE_RETRY_TIMEOUT_MS,
+  shouldPollLiveLogPage,
   shouldRetryTransientPageFetch,
 } from "../utils/livePageFetchRetry";
 
 describe("livePageFetchRetry", () => {
-  it("retries 409 while loading or receiving live data", () => {
+  it("polls live log pages while the session is open or data is flowing", () => {
+    expect(shouldPollLiveLogPage(true, false)).toBe(true);
+    expect(shouldPollLiveLogPage(false, true)).toBe(true);
+    expect(shouldPollLiveLogPage(true, true)).toBe(true);
+    expect(shouldPollLiveLogPage(false, false)).toBe(false);
+  });
+
+  it("retries 409 while loading, live, or receiving data", () => {
     expect(
       shouldRetryTransientPageFetch(409, {
         showLoading: true,
+        isLive: false,
         receivingData: false,
         retryingAfterNotFound: false,
       }),
@@ -17,6 +26,15 @@ describe("livePageFetchRetry", () => {
     expect(
       shouldRetryTransientPageFetch(409, {
         showLoading: false,
+        isLive: true,
+        receivingData: false,
+        retryingAfterNotFound: false,
+      }),
+    ).toBe(true);
+    expect(
+      shouldRetryTransientPageFetch(409, {
+        showLoading: false,
+        isLive: false,
         receivingData: true,
         retryingAfterNotFound: false,
       }),
@@ -24,6 +42,7 @@ describe("livePageFetchRetry", () => {
     expect(
       shouldRetryTransientPageFetch(409, {
         showLoading: false,
+        isLive: false,
         receivingData: false,
         retryingAfterNotFound: true,
       }),
@@ -34,6 +53,7 @@ describe("livePageFetchRetry", () => {
     expect(
       shouldRetryTransientPageFetch(404, {
         showLoading: true,
+        isLive: true,
         receivingData: true,
         retryingAfterNotFound: true,
       }),
@@ -41,6 +61,7 @@ describe("livePageFetchRetry", () => {
     expect(
       shouldRetryTransientPageFetch(409, {
         showLoading: false,
+        isLive: false,
         receivingData: false,
         retryingAfterNotFound: false,
       }),
@@ -48,6 +69,7 @@ describe("livePageFetchRetry", () => {
     expect(
       shouldRetryTransientPageFetch(500, {
         showLoading: true,
+        isLive: true,
         receivingData: true,
         retryingAfterNotFound: true,
       }),
