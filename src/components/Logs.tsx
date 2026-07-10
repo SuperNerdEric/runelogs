@@ -51,6 +51,12 @@ import { mapContentFilterOptions } from "../utils/contentFilterOptions";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { getUploaderLogsPageMeta } from "../utils/encounterPageMeta";
 import {
+  isLiveLogPending,
+  isLiveLogSessionOpen,
+  wasEverLiveLogged,
+  type LiveLogState,
+} from "../utils/liveLogState";
+import {
   BROWSE_ANY_PLAYER_COUNT,
   BrowsePlayerCount,
   buildBrowsePlayerCountOptions,
@@ -68,8 +74,7 @@ interface LogItem {
   name: string | null;
   uploadedAt: string;
   eligible: boolean;
-  wasLiveLogged?: boolean;
-  isLive?: boolean;
+  liveLogState?: LiveLogState;
   receivingData?: boolean;
   saveStatus?: "saving" | "complete" | "failed";
   processingProgress?: number;
@@ -87,8 +92,7 @@ interface LogStatusResponse {
   id: string;
   name: string | null;
   eligible: boolean;
-  wasLiveLogged: boolean;
-  isLive: boolean;
+  liveLogState: LiveLogState;
   receivingData: boolean;
   saveStatus: "saving" | "complete" | "failed";
   processingProgress: number;
@@ -213,16 +217,22 @@ const liveLogIconSx = {
 } as const;
 
 interface LiveLogIndicatorProps {
-  log: Pick<LogItem, "wasLiveLogged" | "isLive">;
+  log: Pick<LogItem, "liveLogState">;
 }
 
 const LiveLogIndicator: React.FC<LiveLogIndicatorProps> = ({ log }) => {
-  if (!log.wasLiveLogged) {
+  const state = log.liveLogState ?? "none";
+  if (!wasEverLiveLogged(state)) {
     return null;
   }
 
-  const active = log.isLive ?? false;
-  const tooltip = active ? "Live log in progress" : "Uploaded via live logging";
+  const active = isLiveLogPending(state);
+  const tooltip =
+    state === "live"
+      ? "Live log in progress"
+      : state === "finalizing"
+        ? "Finalizing live log"
+        : "Uploaded via live logging";
 
   return (
     <AppTooltip title={tooltip} arrow placement="top" disableTouch>
@@ -357,7 +367,7 @@ const LogNameCell: React.FC<LogNameCellProps> = ({
         >
           <LogNameDisplay
             name={log.name}
-            isLive={Boolean(log.isLive)}
+            isLive={isLiveLogSessionOpen(log.liveLogState)}
             sx={{
               ...logNameTextSx(!!log.name),
               minWidth: 0,
@@ -524,7 +534,10 @@ const Logs: React.FC = () => {
   );
 
   const liveLogIds = useMemo(
-    () => logs?.filter((log) => log.isLive ?? false).map((log) => log.id) ?? [],
+    () =>
+      logs
+        ?.filter((log) => isLiveLogPending(log.liveLogState))
+        .map((log) => log.id) ?? [],
     [logs],
   );
 
@@ -574,8 +587,7 @@ const Logs: React.FC = () => {
                 ...log,
                 name: update.name,
                 eligible: update.eligible,
-                wasLiveLogged: update.wasLiveLogged,
-                isLive: update.isLive,
+                liveLogState: update.liveLogState,
                 receivingData: update.receivingData,
                 saveStatus: update.saveStatus,
                 processingProgress: update.processingProgress,

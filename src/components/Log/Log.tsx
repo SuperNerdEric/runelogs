@@ -23,6 +23,11 @@ import {
   shouldRetryTransientPageFetch,
   useLiveFetchRetryState,
 } from "../../utils/livePageFetchRetry";
+import {
+  isLiveLogPending,
+  parseLiveLogState,
+  type LiveLogState,
+} from "../../utils/liveLogState";
 import { useLivePageRefreshPulse } from "../../utils/useLivePageRefreshPulse";
 import { usePageMeta } from "../../hooks/usePageMeta";
 import {
@@ -87,7 +92,7 @@ interface ApiResponse {
   name: string | null;
   uploaderId: string;
   uploadedAt: string;
-  isLive?: boolean;
+  liveLogState?: LiveLogState;
   receivingData?: boolean;
   liveActiveFightGroupId?: string | null;
   liveActiveFightId?: string | null;
@@ -107,14 +112,11 @@ const Log: React.FC = () => {
   const [logName, setLogName] = useState<string | null>(null);
   const [uploadedAt, setUploadedAt] = useState<string>("");
   const [encounters, setEncounters] = useState<ApiEncounter[]>([]);
-  const [isLive, setIsLive] = useState<boolean>(false);
+  const [liveLogState, setLiveLogState] = useState<LiveLogState>("none");
   const [receivingData, setReceivingData] = useState<boolean>(false);
   const [retryingAfterNotFound, setRetryingAfterNotFound] = useState(false);
-  const { isLiveRef, receivingDataRef, retryingRef } = useLiveFetchRetryState(
-    isLive,
-    receivingData,
-    retryingAfterNotFound,
-  );
+  const { liveLogStateRef, receivingDataRef, retryingRef } =
+    useLiveFetchRetryState(liveLogState, receivingData, retryingAfterNotFound);
   const { refreshing, runBackgroundRefresh } = useLivePageRefreshPulse();
 
   const loadLog = useCallback(
@@ -147,7 +149,7 @@ const Log: React.FC = () => {
           if (
             shouldRetryTransientPageFetch(res.status, {
               showLoading,
-              isLive: isLiveRef.current,
+              liveLogState: liveLogStateRef.current,
               receivingData: receivingDataRef.current,
               retryingAfterNotFound: retryingRef.current,
             })
@@ -167,7 +169,7 @@ const Log: React.FC = () => {
             .slice()
             .sort((a, b) => a.order - b.order);
           setEncounters(sortedEncounters);
-          setIsLive(Boolean(body.isLive));
+          setLiveLogState(parseLiveLogState(body.liveLogState));
           setReceivingData(Boolean(body.receivingData));
 
           const { uploaderId: up, name, uploadedAt: ua } = body;
@@ -271,7 +273,7 @@ const Log: React.FC = () => {
   useEffect(() => {
     setMetadata(null);
     setEncounters([]);
-    setIsLive(false);
+    setLiveLogState("none");
     setReceivingData(false);
     setRetryingAfterNotFound(false);
     void loadLog(true);
@@ -299,7 +301,7 @@ const Log: React.FC = () => {
   }, [logId, retryingAfterNotFound, loadLog]);
 
   useEffect(() => {
-    if (!logId || !shouldPollLiveLogPage(isLive, receivingData)) {
+    if (!logId || !shouldPollLiveLogPage(liveLogState, receivingData)) {
       return;
     }
 
@@ -308,7 +310,7 @@ const Log: React.FC = () => {
     }, LIVE_PAGE_RETRY_INTERVAL_MS);
 
     return () => window.clearInterval(interval);
-  }, [logId, isLive, receivingData, loadLog]);
+  }, [logId, liveLogState, receivingData, loadLog]);
 
   const pageMeta = useMemo(() => {
     if (loading) {
@@ -339,10 +341,11 @@ const Log: React.FC = () => {
   }
 
   const hasEncounters = metadata !== null && metadata.length > 0;
+  const showLiveProgress = isLiveLogPending(liveLogState);
 
   return (
     <Box p={2} sx={contentColumnSx}>
-      {isLive && (
+      {showLiveProgress && (
         <LiveLogProgressAlert refreshing={refreshing} sx={{ mb: 2 }} />
       )}
       <LogInfoBox
@@ -350,7 +353,7 @@ const Log: React.FC = () => {
         logName={logName}
         logId={logId!}
         uploadedAt={uploadedAt}
-        isLive={isLive}
+        liveLogState={liveLogState}
         receivingData={receivingData}
         onLogNameChange={setLogName}
       />

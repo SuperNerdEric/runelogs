@@ -12,13 +12,17 @@ import React, { useState } from "react";
 import { displayUsername } from "../../utils/utils";
 import { logNameTextSx, accountTextSx } from "../../theme";
 import LogNameDisplay from "../LogNameDisplay";
+import {
+  isLiveLogSessionOpen,
+  type LiveLogState,
+} from "../../utils/liveLogState";
 
 interface Props {
   uploaderId: string;
   logName: string | null;
   logId: string;
   uploadedAt: string;
-  isLive?: boolean;
+  liveLogState?: LiveLogState;
   receivingData?: boolean;
   onLogNameChange: (name: string | null) => void;
 }
@@ -28,7 +32,7 @@ const LogInfoBox: React.FC<Props> = ({
   logName,
   logId,
   uploadedAt,
-  isLive = false,
+  liveLogState = "none",
   receivingData: _receivingData = false,
   onLogNameChange,
 }) => {
@@ -225,7 +229,7 @@ const LogInfoBox: React.FC<Props> = ({
         >
           <LogNameDisplay
             name={logName}
-            isLive={isLive}
+            isLive={isLiveLogSessionOpen(liveLogState)}
             sx={{
               ...logNameTextSx(!!logName),
               minWidth: 0,

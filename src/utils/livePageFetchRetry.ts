@@ -1,28 +1,29 @@
 import { useRef } from "react";
+import { isLiveLogPending, type LiveLogState } from "./liveLogState";
 
 export const LIVE_PAGE_RETRY_INTERVAL_MS = 5000;
 export const LIVE_PAGE_RETRY_TIMEOUT_MS = 60_000;
 
-/** Poll while a session is open or combat lines are still flowing. */
+/** Poll while a live session is open/finalizing or combat lines are still flowing. */
 export function shouldPollLiveLogPage(
-  isLive: boolean,
+  liveLogState: LiveLogState | null | undefined,
   receivingData: boolean,
 ): boolean {
-  return isLive || receivingData;
+  return isLiveLogPending(liveLogState) || receivingData;
 }
 
 export function useLiveFetchRetryState(
-  isLive: boolean,
+  liveLogState: LiveLogState | null | undefined,
   receivingData: boolean,
   retryingAfterNotFound: boolean,
 ) {
-  const isLiveRef = useRef(isLive);
+  const liveLogStateRef = useRef(liveLogState);
   const receivingDataRef = useRef(receivingData);
   const retryingRef = useRef(retryingAfterNotFound);
-  isLiveRef.current = isLive;
+  liveLogStateRef.current = liveLogState;
   receivingDataRef.current = receivingData;
   retryingRef.current = retryingAfterNotFound;
-  return { isLiveRef, receivingDataRef, retryingRef };
+  return { liveLogStateRef, receivingDataRef, retryingRef };
 }
 
 /**
@@ -38,7 +39,7 @@ export function shouldRetryTransientPageFetch(
   status: number,
   options: {
     showLoading: boolean;
-    isLive: boolean;
+    liveLogState: LiveLogState | null | undefined;
     receivingData: boolean;
     retryingAfterNotFound: boolean;
   },
@@ -49,7 +50,7 @@ export function shouldRetryTransientPageFetch(
 
   return (
     options.showLoading ||
-    options.isLive ||
+    isLiveLogPending(options.liveLogState) ||
     options.receivingData ||
     options.retryingAfterNotFound
   );

@@ -7,18 +7,21 @@ import {
 } from "../utils/livePageFetchRetry";
 
 describe("livePageFetchRetry", () => {
-  it("polls live log pages while the session is open or data is flowing", () => {
-    expect(shouldPollLiveLogPage(true, false)).toBe(true);
-    expect(shouldPollLiveLogPage(false, true)).toBe(true);
-    expect(shouldPollLiveLogPage(true, true)).toBe(true);
-    expect(shouldPollLiveLogPage(false, false)).toBe(false);
+  it("polls live log pages while the session is open, finalizing, or data is flowing", () => {
+    expect(shouldPollLiveLogPage("live", false)).toBe(true);
+    expect(shouldPollLiveLogPage("finalizing", false)).toBe(true);
+    expect(shouldPollLiveLogPage("none", true)).toBe(true);
+    expect(shouldPollLiveLogPage("complete", true)).toBe(true);
+    expect(shouldPollLiveLogPage("live", true)).toBe(true);
+    expect(shouldPollLiveLogPage("none", false)).toBe(false);
+    expect(shouldPollLiveLogPage("complete", false)).toBe(false);
   });
 
-  it("retries 409 while loading, live, or receiving data", () => {
+  it("retries 409 while loading, live/finalizing, or receiving data", () => {
     expect(
       shouldRetryTransientPageFetch(409, {
         showLoading: true,
-        isLive: false,
+        liveLogState: "none",
         receivingData: false,
         retryingAfterNotFound: false,
       }),
@@ -26,7 +29,7 @@ describe("livePageFetchRetry", () => {
     expect(
       shouldRetryTransientPageFetch(409, {
         showLoading: false,
-        isLive: true,
+        liveLogState: "live",
         receivingData: false,
         retryingAfterNotFound: false,
       }),
@@ -34,7 +37,15 @@ describe("livePageFetchRetry", () => {
     expect(
       shouldRetryTransientPageFetch(409, {
         showLoading: false,
-        isLive: false,
+        liveLogState: "finalizing",
+        receivingData: false,
+        retryingAfterNotFound: false,
+      }),
+    ).toBe(true);
+    expect(
+      shouldRetryTransientPageFetch(409, {
+        showLoading: false,
+        liveLogState: "none",
         receivingData: true,
         retryingAfterNotFound: false,
       }),
@@ -42,18 +53,18 @@ describe("livePageFetchRetry", () => {
     expect(
       shouldRetryTransientPageFetch(409, {
         showLoading: false,
-        isLive: false,
+        liveLogState: "none",
         receivingData: false,
         retryingAfterNotFound: true,
       }),
     ).toBe(true);
   });
 
-  it("never retries 404 and does not retry 409 after live ingest has stopped", () => {
+  it("never retries 404 and does not retry 409 after live ingest has settled", () => {
     expect(
       shouldRetryTransientPageFetch(404, {
         showLoading: true,
-        isLive: true,
+        liveLogState: "live",
         receivingData: true,
         retryingAfterNotFound: true,
       }),
@@ -61,7 +72,7 @@ describe("livePageFetchRetry", () => {
     expect(
       shouldRetryTransientPageFetch(409, {
         showLoading: false,
-        isLive: false,
+        liveLogState: "complete",
         receivingData: false,
         retryingAfterNotFound: false,
       }),
@@ -69,7 +80,7 @@ describe("livePageFetchRetry", () => {
     expect(
       shouldRetryTransientPageFetch(500, {
         showLoading: true,
-        isLive: true,
+        liveLogState: "live",
         receivingData: true,
         retryingAfterNotFound: true,
       }),

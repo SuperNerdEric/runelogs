@@ -62,6 +62,11 @@ import {
   shouldRetryTransientPageFetch,
   useLiveFetchRetryState,
 } from "../utils/livePageFetchRetry";
+import {
+  isLiveLogSessionOpen,
+  parseLiveLogState,
+  type LiveLogState,
+} from "../utils/liveLogState";
 import { useLivePageRefreshPulse } from "../utils/useLivePageRefreshPulse";
 import { usePageMeta } from "../hooks/usePageMeta";
 import {
@@ -76,6 +81,7 @@ type EncounterApiFG = {
   id: string;
   name: string;
   leaderboardName?: string | null;
+  liveLogState?: LiveLogState;
   receivingData?: boolean;
   rank?: number;
   fights: { id: string; name: string; order: number }[];
@@ -88,7 +94,11 @@ type EncounterApiFight = {
   receivingData?: boolean;
   meta: {
     fightGroup?: { id: string; name: string; leaderboardName?: string | null };
-    log: { id: string; name?: string | null };
+    log: {
+      id: string;
+      name?: string | null;
+      liveLogState?: LiveLogState;
+    };
     receivingData?: boolean;
     rank?: number;
     dpsPercentiles?: Record<string, number>;
@@ -118,13 +128,11 @@ const Encounter: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [receivingData, setReceivingData] = useState(false);
+  const [liveLogState, setLiveLogState] = useState<LiveLogState>("none");
   const [retryingAfter404, setRetryingAfter404] = useState(false);
   const fightRef = useRef<Fight | null>(null);
-  const { isLiveRef, receivingDataRef, retryingRef } = useLiveFetchRetryState(
-    receivingData,
-    receivingData,
-    retryingAfter404,
-  );
+  const { liveLogStateRef, receivingDataRef, retryingRef } =
+    useLiveFetchRetryState(liveLogState, receivingData, retryingAfter404);
   const { refreshing, runBackgroundRefresh } = useLivePageRefreshPulse();
   const [dpsPercentiles, setDpsPercentiles] = useState<Record<string, number>>(
     {},
@@ -296,7 +304,7 @@ const Encounter: React.FC = () => {
           if (
             shouldRetryTransientPageFetch(res.status, {
               showLoading,
-              isLive: isLiveRef.current,
+              liveLogState: liveLogStateRef.current,
               receivingData: receivingDataRef.current,
               retryingAfterNotFound: retryingRef.current,
             })
@@ -317,6 +325,7 @@ const Encounter: React.FC = () => {
             setLogId(data.meta.log.id);
             setLogName(data.meta.log.name ?? null);
             setFightGroupMeta(data.meta.fightGroup ?? null);
+            setLiveLogState(parseLiveLogState(data.meta.log.liveLogState));
             setReceivingData(
               Boolean(data.meta.receivingData ?? data.receivingData),
             );
@@ -343,6 +352,9 @@ const Encounter: React.FC = () => {
           } else {
             setGroup(data);
             setReceivingData(Boolean(data.receivingData));
+            if (data.liveLogState != null) {
+              setLiveLogState(parseLiveLogState(data.liveLogState));
+            }
             setLeaderboardName(
               data.leaderboardName ?? inferLeaderboardFightGroupName(data.name),
             );
@@ -640,7 +652,12 @@ const Encounter: React.FC = () => {
 
   const breadcrumbSegments: BreadcrumbSegment[] = [
     {
-      label: <LogNameDisplay name={logName} isLive={receivingData} />,
+      label: (
+        <LogNameDisplay
+          name={logName}
+          isLive={isLiveLogSessionOpen(liveLogState)}
+        />
+      ),
       title: logName ?? "Unnamed",
       href: `/log/${logId}`,
     },

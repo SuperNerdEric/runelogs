@@ -34,6 +34,12 @@ import {
 import LiveLogProgressAlert from "./LiveLogProgressAlert";
 import LogNameDisplay from "./LogNameDisplay";
 import { LIVE_PAGE_RETRY_INTERVAL_MS } from "../utils/livePageFetchRetry";
+import {
+  isLiveLogPending,
+  isLiveLogSessionOpen,
+  parseLiveLogState,
+  type LiveLogState,
+} from "../utils/liveLogState";
 import { useLivePageRefreshPulse } from "../utils/useLivePageRefreshPulse";
 import { usePageMeta } from "../hooks/usePageMeta";
 import {
@@ -86,9 +92,11 @@ interface FightGroupSummaryData {
     uploaderId: string;
     uploadedAt: string;
     name: string | null;
+    liveLogState?: LiveLogState;
     liveActiveFightGroupId?: string | null;
     liveActiveFightId?: string | null;
   };
+  liveLogState?: LiveLogState;
   receivingData?: boolean;
   players: string[];
   playerCount: number;
@@ -260,6 +268,9 @@ const FightGroupSummary: React.FC = () => {
 
   const { displayDurationTicks, delve1to8DisplayDurationTicks } = data;
   const runInProgress = Boolean(data.receivingData);
+  const liveLogState = parseLiveLogState(
+    data.liveLogState ?? data.log.liveLogState,
+  );
   const durationColor = resolveFightOutcomeColor(data.success, runInProgress);
 
   const topRankLabel = (entry: PlayerRank) => {
@@ -274,7 +285,7 @@ const FightGroupSummary: React.FC = () => {
 
   return (
     <Box p={2} sx={contentColumnSx} className="fight-group-summary">
-      {data.receivingData && (
+      {(data.receivingData || isLiveLogPending(liveLogState)) && (
         <LiveLogProgressAlert refreshing={refreshing} sx={{ mb: 2 }} />
       )}
 
@@ -284,7 +295,7 @@ const FightGroupSummary: React.FC = () => {
             label: (
               <LogNameDisplay
                 name={data.log.name}
-                isLive={Boolean(data.receivingData)}
+                isLive={isLiveLogSessionOpen(liveLogState)}
               />
             ),
             title: data.log.name ?? "Unnamed",
