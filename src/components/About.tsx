@@ -116,17 +116,17 @@ const About: React.FC = () => {
           >
             Combat Logger
           </Link>{" "}
-          RuneLite plugin. Logs become fight pages on the web — DPS breakdowns,
-          event timelines, replays, and leaderboards. Stream fights live or send
-          a log file after a session; parsing runs automatically either way. Any
-          encounter the plugin records works — solo bosses, slayer tasks, raids,
-          and everything else Combat Logger supports. Leaderboards cover a
-          specific set of content (see below), but you are not limited to those
-          activities.
+          RuneLite plugin. Logs become fight pages on the web with DPS
+          breakdowns, encounter summaries, replays, and leaderboards. Stream
+          fights live or send a log file after a session; parsing runs
+          automatically either way. Any encounter the plugin records works, from
+          solo bosses and slayer tasks to raids and everything else Combat
+          Logger supports. Leaderboards cover a specific set of content (see
+          below), but you are not limited to those activities.
         </Typography>
         <Typography variant="body1" sx={bodyTextSx}>
           Runelogs is free to use. You need RuneLite with Combat Logger and a
-          free Runelogs account — then live-log as you play or send log files
+          free Runelogs account. Then live-log as you play or send log files
           when you are done. The site is at{" "}
           <Link href="https://www.runelogs.com" sx={linkSx}>
             runelogs.com
@@ -141,8 +141,7 @@ const About: React.FC = () => {
           <li>Checking DPS on individual bosses after a trip or raid</li>
           <li>Comparing run times on leaderboards (TOB, TOA, Inferno, etc.)</li>
           <li>
-            Reviewing deaths — what hit you, when you prayed wrong, gear at the
-            time
+            Reviewing deaths and damage taken after a wipe or close call
           </li>
           <li>Sharing a fight or full raid link with your team</li>
           <li>
@@ -157,12 +156,12 @@ const About: React.FC = () => {
         <Typography variant="body1" sx={bodyTextSx}>
           Combat Logger records combat events while you play. Stream them to
           Runelogs in real time with live logging, or send the log file
-          afterward — the server parses events automatically and splits them
-          into fights. Each fight gets its own page with a URL you can share or
-          come back to later.
+          afterward. The server parses events automatically and splits them into
+          fights. Each fight gets its own page with a URL you can share or come
+          back to later.
         </Typography>
         <Typography variant="body1" sx={bodyTextSx}>
-          Full runs — a TOB clear, a TOA raid, a Colosseum run, and so on — are
+          Full runs such as a TOB clear, a TOA raid, or a Colosseum run are
           grouped together on a run summary page with total time, per-player
           DPS, and links to each individual fight.
         </Typography>
@@ -205,7 +204,7 @@ const About: React.FC = () => {
             Upload
           </Link>
           , drop in your log file and parsing starts right away. Large logs
-          process in batches — you can open the log page while the rest finishes
+          process in batches. You can open the log page while the rest finishes
           in the background.
         </Typography>
         <Typography variant="body1" sx={bodyTextSx}>
@@ -221,8 +220,8 @@ const About: React.FC = () => {
           Live logging
         </Typography>
         <Typography variant="body1" sx={bodyTextSx}>
-          Live logging streams combat events to Runelogs as you play — a
-          streamlined way to skip file uploads. Generate an access key on the{" "}
+          Live logging streams combat events to Runelogs as you play, so you can
+          skip file uploads. Generate an access key on the{" "}
           <Link component={RouterLink} to="/live-log" sx={linkSx}>
             Live Log
           </Link>{" "}
@@ -234,31 +233,30 @@ const About: React.FC = () => {
           Fight pages
         </Typography>
         <Typography variant="body1" sx={bodyTextSx}>
-          Each parsed fight has several tabs:
+          Each parsed fight opens on Summary by default, with these tabs:
         </Typography>
         <Box component="ul" sx={listSx}>
           <li>
-            <strong>Damage Done</strong> — DPS tables, charts, and damage by
+            <strong>Summary</strong>: fight duration, deaths, DPS ranks, a
+            damage done breakdown, an Attacks breakdown by weapon (including
+            special attacks), and combat stat boosts.
+          </li>
+          <li>
+            <strong>Damage Done</strong>: DPS tables, charts, and damage by
             target. Some content shows percentile ranks vs other logged players.
           </li>
           <li>
-            <strong>Damage Taken</strong> — what hit you and for how much.
+            <strong>Damage Taken</strong>: what hit you and for how much.
           </li>
           <li>
-            <strong>Boosts</strong> — your combat stat boosts during the fight.
-          </li>
-          <li>
-            <strong>Events</strong> — full timeline of hitsplats, prayers, gear
-            swaps, deaths, and other log lines. Searchable and filterable.
-          </li>
-          <li>
-            <strong>Replay</strong> — tick-by-tick replay with map, prayers, and
+            <strong>Replay</strong>: tick-by-tick replay with map, prayers, and
             gear (requires Combat Logger v1.2.0+).
           </li>
         </Box>
         <Typography variant="body1" sx={bodyTextSx}>
-          You can filter by player, NPC, gear, or prayer across tabs, and
-          combine multiple fights from the same log into one view.
+          You can filter Damage Done and Damage Taken by player, NPC, gear,
+          prayer, or hitsplat, and combine multiple fights from the same log
+          into one view.
         </Typography>
 
         <Typography variant="h6" component="h2" sx={sectionTitleSx}>
@@ -267,8 +265,8 @@ const About: React.FC = () => {
         <Typography variant="body1" sx={bodyTextSx}>
           Raids and other multi-fight content get a summary page listing every
           fight in order, with total duration, overall DPS, and rank badges
-          where applicable. Extra info shows up when the log has it — ToA raid
-          level, Colosseum modifiers, Mokhaiotl delve stats, etc.
+          where applicable. Extra info shows up when the log has it, such as ToA
+          raid level, Colosseum modifiers, or Mokhaiotl delve stats.
         </Typography>
 
         <Typography variant="h6" component="h2" sx={sectionTitleSx}>
@@ -279,7 +277,7 @@ const About: React.FC = () => {
             Leaderboards
           </Link>{" "}
           track run times and DPS from your logs, staying up to date as new runs
-          are logged. Only the content below has leaderboards — everything else
+          are logged. Only the content below has leaderboards. Everything else
           Combat Logger records still gets full fight pages, just without ranks.
           Chambers of Xeric (CoX) is a common example: logs parse normally, but
           CoX is not on the leaderboard list yet.
@@ -346,8 +344,8 @@ const About: React.FC = () => {
           <li>Player position (used by replay)</li>
           <li>Wave start/end, deaths, wipes</li>
           <li>
-            Raid markers — ToA paths, CoX completion, Colosseum modifiers,
-            Gauntlet timers, etc.
+            Raid markers such as ToA paths, CoX completion, Colosseum modifiers,
+            and Gauntlet timers
           </li>
         </Box>
         <Typography variant="body1" sx={bodyTextSx}>
@@ -377,8 +375,8 @@ const About: React.FC = () => {
         <Typography variant="body1" sx={bodyTextSx}>
           The plugin&apos;s damage meter is live in your client for your last
           few fights. Runelogs keeps the full history, builds shareable web
-          pages, and adds leaderboards, replay, and filters designed for digging
-          in after the fight.
+          pages, and adds encounter summaries, leaderboards, replay, and filters
+          designed for digging in after the fight.
         </Typography>
         <Typography component="h3" sx={subsectionTitleSx}>
           Why does some damage show as &quot;Unknown&quot;?
@@ -403,8 +401,8 @@ const About: React.FC = () => {
           What is live logging?
         </Typography>
         <Typography variant="body1" sx={bodyTextSx}>
-          Live logging streams events to Runelogs as you play — no file upload
-          needed. Set it up on the{" "}
+          Live logging streams events to Runelogs as you play, with no file
+          upload needed. Set it up on the{" "}
           <Link component={RouterLink} to="/live-log" sx={linkSx}>
             Live Log
           </Link>{" "}
@@ -416,8 +414,8 @@ const About: React.FC = () => {
         </Typography>
         <Typography variant="body1" sx={bodyTextSx}>
           Accounts are free. Login is handled by Auth0 (email or social login).
-          Uploaded logs and profile info can be visible to other site visitors —
-          log URLs, leaderboards, and profiles are public by default. See the{" "}
+          Uploaded logs and profile info can be visible to other site visitors.
+          Log URLs, leaderboards, and profiles are public by default. See the{" "}
           <Link component={RouterLink} to="/privacy" sx={linkSx}>
             Privacy Policy
           </Link>{" "}

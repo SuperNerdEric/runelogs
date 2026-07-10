@@ -22,7 +22,7 @@ export const ABOUT_FAQ = [
   {
     question: "How is this different from the in-game damage meter?",
     answer:
-      "The plugin's damage meter is live in your client for your last few fights. Runelogs keeps the full log, breaks it into shareable web pages, adds leaderboards, replay, and filters you can use after the fact.",
+      "The plugin's damage meter is live in your client for your last few fights. Runelogs keeps the full log, breaks it into shareable web pages, and adds encounter summaries, leaderboards, replay, and filters you can use after the fact.",
   },
   {
     question: 'Why does some damage show as "Unknown"?',
