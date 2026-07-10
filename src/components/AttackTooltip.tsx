@@ -21,6 +21,7 @@ export interface AttackTooltipDetails {
   fightTimeMs?: number;
   boostedLevels?: Levels;
   isSpecialAttack: boolean;
+  isDeath?: boolean;
   timeFallback?: string;
 }
 
@@ -114,6 +115,41 @@ export const MissedTickTooltip: React.FC<MissedTickTooltipProps> = ({
   );
 };
 
+interface DeathTooltipProps {
+  fightTimeMs: number;
+  boostedLevels?: Levels;
+}
+
+export const DeathTooltip: React.FC<DeathTooltipProps> = ({
+  fightTimeMs,
+  boostedLevels,
+}) => {
+  const statRows = buildBoostedLevelStatRows(boostedLevels);
+
+  return (
+    <ChartTooltip className="chart-tooltip--replay chart-tooltip--death">
+      <ChartTooltipTime>{formatHHmmss(fightTimeMs, true)}</ChartTooltipTime>
+      <ChartTooltipDivider />
+      <div className="chart-tooltip__death">
+        <img
+          src="/images/skull-icon.png"
+          alt=""
+          width={20}
+          height={20}
+          className="chart-tooltip__death-icon"
+        />
+        <span>Death</span>
+      </div>
+      {statRows.length > 0 && (
+        <>
+          <ChartTooltipDivider />
+          <ChartTooltipStatGrid>{statRows}</ChartTooltipStatGrid>
+        </>
+      )}
+    </ChartTooltip>
+  );
+};
+
 const AttackTooltip: React.FC<AttackTooltipProps> = ({ attack }) => {
   const statRows = buildBoostedLevelStatRows(attack.boostedLevels);
 
@@ -137,6 +173,21 @@ const AttackTooltip: React.FC<AttackTooltipProps> = ({ attack }) => {
       />
       <ChartTooltipDivider />
       <ChartTooltipTargetRow targetName={attack.targetName} />
+      {attack.isDeath && (
+        <>
+          <ChartTooltipDivider />
+          <div className="chart-tooltip__death">
+            <img
+              src="/images/skull-icon.png"
+              alt=""
+              width={20}
+              height={20}
+              className="chart-tooltip__death-icon"
+            />
+            <span>Death</span>
+          </div>
+        </>
+      )}
       {statRows.length > 0 && (
         <>
           <ChartTooltipDivider />

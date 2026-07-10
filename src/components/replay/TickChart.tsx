@@ -25,6 +25,7 @@ import { resolveWeaponFromEquipment } from "../../utils/attackAnimationBreakdown
 import { itemIdMap } from "../../lib/itemIdMap";
 import AttackTooltip, {
   attackEventToTooltipDetails,
+  DeathTooltip,
   MissedTickTooltip,
   TickPlayerStatsTooltip,
 } from "../AttackTooltip";
@@ -34,8 +35,10 @@ import {
   createBoostLevelResolver,
   getFightTimeMsForTick,
 } from "../../utils/replayTickTooltip";
+import { isPlayerDeathTarget } from "../../utils/deathEvents";
 
 const SPECIAL_ATTACK_ORB_URL = "/images/special-attack-orb-64.png";
+const SKULL_ICON_URL = "/images/skull-icon.png";
 
 const attackCellStyle: CSSProperties = {
   width: "30px",
@@ -60,6 +63,7 @@ interface TickChartProps {
   maxTick: number;
   activePlayers: string[];
   isPlaying: boolean;
+  tooltipContainer?: HTMLElement | (() => HTMLElement | null) | null;
 }
 
 interface ReplayAttackCell {
@@ -78,6 +82,8 @@ type AttackAnimationsByTick = {
     [playerName: string]: ReplayAttackCell;
   };
 };
+
+type DeathsByTick = Record<number, Record<string, true>>;
 
 interface HoveredCell {
   anchorEl: HTMLElement;
@@ -110,6 +116,7 @@ interface TickChartCellProps {
   playerName: string;
   isHighlighted: boolean;
   isMissed: boolean;
+  isDeath: boolean;
   attack?: ReplayAttackCell;
   onCellClick: (tick: number) => void;
   onCellHover: (hover: HoveredCell | null) => void;
@@ -120,6 +127,7 @@ const TickChartCell = memo(function TickChartCell({
   playerName,
   isHighlighted,
   isMissed,
+  isDeath,
   attack,
   onCellClick,
   onCellHover,
@@ -177,6 +185,20 @@ const TickChartCell = memo(function TickChartCell({
             )}
           </>
         )}
+        {isDeath && (
+          <img
+            src={SKULL_ICON_URL}
+            alt=""
+            aria-hidden="true"
+            className={
+              attack
+                ? "replay-tick-chart__death-icon replay-tick-chart__death-icon--overlay"
+                : "replay-tick-chart__death-icon"
+            }
+            width={30}
+            height={30}
+          />
+        )}
       </div>
     </td>
   );
@@ -190,6 +212,7 @@ const TickChart: React.FC<TickChartProps> = ({
   maxTick,
   activePlayers,
   isPlaying,
+  tooltipContainer,
 }) => {
   const [hoveredCell, setHoveredCell] = useState<HoveredCell | null>(null);
 
@@ -199,10 +222,23 @@ const TickChart: React.FC<TickChartProps> = ({
     const lastKnownBoostedLevels: Record<string, Levels | undefined> = {};
     const boostedLevelsAtTick: BoostLevelsByTick = {};
     const attackAnimationsByTick: AttackAnimationsByTick = {};
+    const deathsByTick: DeathsByTick = {};
 
     fight.data.forEach((logLine: LogLine) => {
       const tick = logLine.tick;
       if (typeof tick !== "number") {
+        return;
+      }
+
+      if (logLine.type === LogTypes.DEATH) {
+        const target = logLine.target;
+        if (target?.name && isPlayerDeathTarget(fight, target)) {
+          if (!deathsByTick[tick]) {
+            deathsByTick[tick] = {};
+          }
+          deathsByTick[tick][target.name] = true;
+          playerSet.add(target.name);
+        }
         return;
       }
 
@@ -288,12 +324,13 @@ const TickChart: React.FC<TickChartProps> = ({
     return {
       players: Array.from(playerSet),
       attackAnimations: attackAnimationsByTick,
+      deathsByTick,
       missedTicks: getReplayMissedTicks(fight, initialTick, maxTick),
       resolveBoostedLevels: createBoostLevelResolver(boostedLevelsAtTick),
     };
   }, [fight, initialTick, maxTick]);
 
-  const { players, attackAnimations, missedTicks, resolveBoostedLevels } =
+  const { players, attackAnimations, deathsByTick, missedTicks, resolveBoostedLevels } =
     chartData;
 
   const columnTicks = useMemo(() => {
@@ -368,6 +405,7 @@ const TickChart: React.FC<TickChartProps> = ({
     const { tick, playerName } = hoveredCell;
     const attack = attackAnimations[tick]?.[playerName];
     const isMissed = missedTicks[tick]?.[playerName] === true;
+    const isDeath = deathsByTick[tick]?.[playerName] === true;
     const fightTimeMs = getFightTimeMsForTick(tick, initialTick, fightStartMs);
     const boostedLevels = resolveBoostedLevels(tick, playerName);
 
@@ -376,11 +414,21 @@ const TickChart: React.FC<TickChartProps> = ({
         <AttackTooltip
           attack={{
             ...attackEventToTooltipDetails(attack),
+            isDeath,
             timeFallback:
               attack.fightTimeMs == null
                 ? `Tick ${tick - initialTick + 1}`
                 : undefined,
           }}
+        />
+      );
+    }
+
+    if (isDeath) {
+      return (
+        <DeathTooltip
+          fightTimeMs={fightTimeMs}
+          boostedLevels={boostedLevels}
         />
       );
     }
@@ -403,6 +451,7 @@ const TickChart: React.FC<TickChartProps> = ({
   }, [
     hoveredCell,
     attackAnimations,
+    deathsByTick,
     missedTicks,
     initialTick,
     fightStartMs,
@@ -458,6 +507,7 @@ const TickChart: React.FC<TickChartProps> = ({
                   playerName={playerName}
                   isHighlighted={tick === highlightedTick}
                   isMissed={missedTicks[tick]?.[playerName] === true}
+                  isDeath={deathsByTick[tick]?.[playerName] === true}
                   attack={attackAnimations[tick]?.[playerName]}
                   onCellClick={handleTickClick}
                   onCellHover={handleCellHover}
@@ -473,7 +523,8 @@ const TickChart: React.FC<TickChartProps> = ({
         anchorEl={hoveredCell?.anchorEl ?? null}
         placement="top"
         modifiers={[{ name: "offset", options: { offset: [0, 8] } }]}
-        sx={{ zIndex: 10, pointerEvents: "none" }}
+        container={tooltipContainer ?? undefined}
+        sx={{ zIndex: 1500, pointerEvents: "none" }}
       >
         {tooltipContent}
       </Popper>

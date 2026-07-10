@@ -230,6 +230,7 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({ fight }) => {
         maxTick={maxTick}
         activePlayers={activePlayers}
         isPlaying={isPlaying}
+        tooltipContainer={() => replayContainerRef.current}
       />
       {currentGameState && initialPlayerPosition && (
         <>

@@ -356,11 +356,34 @@
   min-width: auto;
 }
 
+.chart-tooltip--death {
+  min-width: auto;
+}
+
 .chart-tooltip__missed-label {
   color: var(--color-text-primary);
   font-size: 0.82rem;
   font-weight: 600;
   text-align: center;
+}
+
+.chart-tooltip__death {
+  align-items: center;
+  color: var(--color-text-primary);
+  display: flex;
+  font-size: 0.82rem;
+  font-weight: 600;
+  gap: 8px;
+  justify-content: center;
+}
+
+.chart-tooltip__death-icon {
+  flex-shrink: 0;
+  height: 20px;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  object-fit: contain;
+  width: 20px;
 }
 
 .chart-tooltip-popper.MuiTooltip-tooltip {
@@ -790,6 +813,27 @@ a.encounter-title-bar.encounter-title-bar--clickable:hover {
   position: absolute;
   right: -1px;
   top: -1px;
+  width: 16px;
+  z-index: 1;
+}
+
+.replay-tick-chart__death-icon {
+  display: block;
+  height: 30px;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  object-fit: contain;
+  pointer-events: none;
+  width: 30px;
+}
+
+.replay-tick-chart__death-icon--overlay {
+  bottom: -1px;
+  height: 16px;
+  left: -1px;
+  position: absolute;
+  right: auto;
+  top: auto;
   width: 16px;
   z-index: 1;
 }
