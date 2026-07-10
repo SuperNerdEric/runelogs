@@ -140,9 +140,7 @@ const About: React.FC = () => {
         <Box component="ul" sx={listSx}>
           <li>Checking DPS on individual bosses after a trip or raid</li>
           <li>Comparing run times on leaderboards (TOB, TOA, Inferno, etc.)</li>
-          <li>
-            Reviewing deaths and damage taken after a wipe or close call
-          </li>
+          <li>Reviewing deaths and damage taken after a wipe or close call</li>
           <li>Sharing a fight or full raid link with your team</li>
           <li>
             Following a live raid in real time while someone else is playing
