@@ -386,6 +386,25 @@
   width: 20px;
 }
 
+.chart-tooltip__spell {
+  align-items: center;
+  color: var(--color-text-primary);
+  display: flex;
+  font-size: 0.82rem;
+  font-weight: 600;
+  gap: 8px;
+  justify-content: center;
+}
+
+.chart-tooltip__spell-icon {
+  flex-shrink: 0;
+  height: 20px;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  object-fit: contain;
+  width: 20px;
+}
+
 .chart-tooltip-popper.MuiTooltip-tooltip {
   background: transparent;
   border: none;
@@ -812,6 +831,25 @@ a.encounter-title-bar.encounter-title-bar--clickable:hover {
   pointer-events: none;
   position: absolute;
   right: -1px;
+  top: -1px;
+  width: 16px;
+  z-index: 1;
+}
+
+.replay-tick-chart__spell-icon {
+  display: block;
+  height: 26px;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  object-fit: contain;
+  pointer-events: none;
+  width: 26px;
+}
+
+.replay-tick-chart__spell-icon--overlay {
+  height: 16px;
+  left: -1px;
+  position: absolute;
   top: -1px;
   width: 16px;
   z-index: 1;

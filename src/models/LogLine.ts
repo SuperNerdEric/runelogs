@@ -18,6 +18,7 @@ export enum LogTypes {
   DAMAGE = "Damage",
   HEAL = "Heal",
   PLAYER_ATTACK_ANIMATION = "Attack Animation",
+  PLAYER_SPELL = "Player Spell",
   POSITION = "Position",
   NPC_DESPAWNED = "NPC Despawned",
   GRAPHICS_OBJECT_SPAWNED = "Graphics Object Spawned",
@@ -121,6 +122,26 @@ export interface AttackAnimationLog extends BaseLog {
   animationId: number;
   source?: Actor;
   target: Actor;
+}
+
+export type PlayerSpellName =
+  | "VENGEANCE"
+  | "VENGEANCE_OTHER"
+  | "SPELLBOOK_SWAP"
+  | "DEATH_CHARGE"
+  | "MARK_OF_DARKNESS"
+  | "WARD_OF_ARCEUUS"
+  | "LESSER_CORRUPTION"
+  | "GREATER_CORRUPTION"
+  | "DARK_LURE"
+  | "THRALL_GHOST"
+  | "THRALL_SKELETON"
+  | "THRALL_ZOMBIE";
+
+export interface PlayerSpellLog extends BaseLog {
+  type: LogTypes.PLAYER_SPELL;
+  source: Actor;
+  spell: PlayerSpellName;
 }
 
 export interface PositionLog extends BaseLog {
@@ -232,6 +253,7 @@ export type LogLine =
   | DamageLog
   | HealLog
   | AttackAnimationLog
+  | PlayerSpellLog
   | PositionLog
   | NPCDespawned
   | GraphicsObjectSpawned

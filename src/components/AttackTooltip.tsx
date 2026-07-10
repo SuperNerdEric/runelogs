@@ -1,7 +1,12 @@
 import React from "react";
 import { Levels } from "../models/Levels";
+import { PlayerSpellName } from "../models/LogLine";
 import { colors } from "../theme";
 import { formatHHmmss } from "../utils/utils";
+import {
+  PLAYER_SPELL_ICON_URLS,
+  PLAYER_SPELL_LABELS,
+} from "../utils/playerSpells";
 import {
   capitalizeChartLabel,
   ChartTooltip,
@@ -22,6 +27,7 @@ export interface AttackTooltipDetails {
   boostedLevels?: Levels;
   isSpecialAttack: boolean;
   isDeath?: boolean;
+  spells?: PlayerSpellName[];
   timeFallback?: string;
 }
 
@@ -61,6 +67,29 @@ function buildBoostedLevelStatRows(boostedLevels?: Levels) {
   });
 }
 
+function SpellTooltipRows({ spells }: { spells?: PlayerSpellName[] }) {
+  if (!spells?.length) {
+    return null;
+  }
+
+  return (
+    <>
+      {spells.map((spell) => (
+        <div key={spell} className="chart-tooltip__spell">
+          <img
+            src={PLAYER_SPELL_ICON_URLS[spell]}
+            alt=""
+            width={20}
+            height={20}
+            className="chart-tooltip__spell-icon"
+          />
+          <span>{PLAYER_SPELL_LABELS[spell]}</span>
+        </div>
+      ))}
+    </>
+  );
+}
+
 interface AttackTooltipProps {
   attack: AttackTooltipDetails;
 }
@@ -68,17 +97,26 @@ interface AttackTooltipProps {
 interface TickPlayerStatsTooltipProps {
   fightTimeMs: number;
   boostedLevels?: Levels;
+  spells?: PlayerSpellName[];
 }
 
 export const TickPlayerStatsTooltip: React.FC<TickPlayerStatsTooltipProps> = ({
   fightTimeMs,
   boostedLevels,
+  spells,
 }) => {
   const statRows = buildBoostedLevelStatRows(boostedLevels);
+  const hasSpells = !!spells?.length;
 
   return (
     <ChartTooltip className="chart-tooltip--replay">
       <ChartTooltipTime>{formatHHmmss(fightTimeMs, true)}</ChartTooltipTime>
+      {hasSpells && (
+        <>
+          <ChartTooltipDivider />
+          <SpellTooltipRows spells={spells} />
+        </>
+      )}
       {statRows.length > 0 && (
         <>
           <ChartTooltipDivider />
@@ -92,11 +130,13 @@ export const TickPlayerStatsTooltip: React.FC<TickPlayerStatsTooltipProps> = ({
 interface MissedTickTooltipProps {
   fightTimeMs: number;
   boostedLevels?: Levels;
+  spells?: PlayerSpellName[];
 }
 
 export const MissedTickTooltip: React.FC<MissedTickTooltipProps> = ({
   fightTimeMs,
   boostedLevels,
+  spells,
 }) => {
   const statRows = buildBoostedLevelStatRows(boostedLevels);
 
@@ -105,6 +145,12 @@ export const MissedTickTooltip: React.FC<MissedTickTooltipProps> = ({
       <ChartTooltipTime>{formatHHmmss(fightTimeMs, true)}</ChartTooltipTime>
       <ChartTooltipDivider />
       <div className="chart-tooltip__missed-label">Missed Tick</div>
+      {!!spells?.length && (
+        <>
+          <ChartTooltipDivider />
+          <SpellTooltipRows spells={spells} />
+        </>
+      )}
       {statRows.length > 0 && (
         <>
           <ChartTooltipDivider />
@@ -118,11 +164,13 @@ export const MissedTickTooltip: React.FC<MissedTickTooltipProps> = ({
 interface DeathTooltipProps {
   fightTimeMs: number;
   boostedLevels?: Levels;
+  spells?: PlayerSpellName[];
 }
 
 export const DeathTooltip: React.FC<DeathTooltipProps> = ({
   fightTimeMs,
   boostedLevels,
+  spells,
 }) => {
   const statRows = buildBoostedLevelStatRows(boostedLevels);
 
@@ -140,6 +188,12 @@ export const DeathTooltip: React.FC<DeathTooltipProps> = ({
         />
         <span>Death</span>
       </div>
+      {!!spells?.length && (
+        <>
+          <ChartTooltipDivider />
+          <SpellTooltipRows spells={spells} />
+        </>
+      )}
       {statRows.length > 0 && (
         <>
           <ChartTooltipDivider />
@@ -173,6 +227,12 @@ const AttackTooltip: React.FC<AttackTooltipProps> = ({ attack }) => {
       />
       <ChartTooltipDivider />
       <ChartTooltipTargetRow targetName={attack.targetName} />
+      {!!attack.spells?.length && (
+        <>
+          <ChartTooltipDivider />
+          <SpellTooltipRows spells={attack.spells} />
+        </>
+      )}
       {attack.isDeath && (
         <>
           <ChartTooltipDivider />
@@ -208,6 +268,7 @@ export function attackEventToTooltipDetails(
     | "fightTimeMs"
     | "boostedLevels"
     | "isSpecialAttack"
+    | "spells"
   >,
 ): AttackTooltipDetails {
   return {
@@ -218,6 +279,7 @@ export function attackEventToTooltipDetails(
     fightTimeMs: event.fightTimeMs,
     boostedLevels: event.boostedLevels,
     isSpecialAttack: event.isSpecialAttack,
+    spells: event.spells,
   };
 }
 

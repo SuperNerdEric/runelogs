@@ -14,6 +14,7 @@ import {
   BoostedLevelsLog,
   LogLine,
   LogTypes,
+  PlayerSpellName,
 } from "../../models/LogLine";
 import { Levels } from "../../models/Levels";
 import { getItemImageUrl } from "./PlayerEquipment";
@@ -36,6 +37,7 @@ import {
   getFightTimeMsForTick,
 } from "../../utils/replayTickTooltip";
 import { isPlayerDeathTarget } from "../../utils/deathEvents";
+import { PLAYER_SPELL_ICON_URLS } from "../../utils/playerSpells";
 
 const SPECIAL_ATTACK_ORB_URL = "/images/special-attack-orb-64.png";
 const SKULL_ICON_URL = "/images/skull-icon.png";
@@ -84,6 +86,7 @@ type AttackAnimationsByTick = {
 };
 
 type DeathsByTick = Record<number, Record<string, true>>;
+type SpellsByTick = Record<number, Record<string, PlayerSpellName[]>>;
 
 interface HoveredCell {
   anchorEl: HTMLElement;
@@ -118,6 +121,7 @@ interface TickChartCellProps {
   isMissed: boolean;
   isDeath: boolean;
   attack?: ReplayAttackCell;
+  spells?: PlayerSpellName[];
   onCellClick: (tick: number) => void;
   onCellHover: (hover: HoveredCell | null) => void;
 }
@@ -129,6 +133,7 @@ const TickChartCell = memo(function TickChartCell({
   isMissed,
   isDeath,
   attack,
+  spells,
   onCellClick,
   onCellHover,
 }: TickChartCellProps) {
@@ -139,6 +144,11 @@ const TickChartCell = memo(function TickChartCell({
   ]
     .filter(Boolean)
     .join(" ");
+
+  const hasSpells = !!spells?.length;
+  // Keep one primary icon in the fixed 30x30 cell; extras are corner overlays.
+  const spellAsOverlay = hasSpells && !!attack;
+  const deathAsOverlay = isDeath && (!!attack || hasSpells);
 
   return (
     <td
@@ -185,13 +195,29 @@ const TickChartCell = memo(function TickChartCell({
             )}
           </>
         )}
+        {hasSpells &&
+          spells!.map((spell, index) => (
+            <img
+              key={spell}
+              src={PLAYER_SPELL_ICON_URLS[spell]}
+              alt=""
+              aria-hidden="true"
+              className={
+                spellAsOverlay || index > 0
+                  ? "replay-tick-chart__spell-icon replay-tick-chart__spell-icon--overlay"
+                  : "replay-tick-chart__spell-icon"
+              }
+              width={26}
+              height={26}
+            />
+          ))}
         {isDeath && (
           <img
             src={SKULL_ICON_URL}
             alt=""
             aria-hidden="true"
             className={
-              attack
+              deathAsOverlay
                 ? "replay-tick-chart__death-icon replay-tick-chart__death-icon--overlay"
                 : "replay-tick-chart__death-icon"
             }
@@ -223,6 +249,7 @@ const TickChart: React.FC<TickChartProps> = ({
     const boostedLevelsAtTick: BoostLevelsByTick = {};
     const attackAnimationsByTick: AttackAnimationsByTick = {};
     const deathsByTick: DeathsByTick = {};
+    const spellsByTick: SpellsByTick = {};
 
     fight.data.forEach((logLine: LogLine) => {
       const tick = logLine.tick;
@@ -265,6 +292,17 @@ const TickChart: React.FC<TickChartProps> = ({
           boostedLevelsAtTick[tick] = {};
         }
         boostedLevelsAtTick[tick][playerName] = boostedLevels;
+        return;
+      }
+
+      if (logLine.type === LogTypes.PLAYER_SPELL) {
+        if (!spellsByTick[tick]) {
+          spellsByTick[tick] = {};
+        }
+        const existing = spellsByTick[tick][playerName] ?? [];
+        if (!existing.includes(logLine.spell)) {
+          spellsByTick[tick][playerName] = [...existing, logLine.spell];
+        }
         return;
       }
 
@@ -325,6 +363,7 @@ const TickChart: React.FC<TickChartProps> = ({
       players: Array.from(playerSet),
       attackAnimations: attackAnimationsByTick,
       deathsByTick,
+      spellsByTick,
       missedTicks: getReplayMissedTicks(fight, initialTick, maxTick),
       resolveBoostedLevels: createBoostLevelResolver(boostedLevelsAtTick),
     };
@@ -334,6 +373,7 @@ const TickChart: React.FC<TickChartProps> = ({
     players,
     attackAnimations,
     deathsByTick,
+    spellsByTick,
     missedTicks,
     resolveBoostedLevels,
   } = chartData;
@@ -411,6 +451,7 @@ const TickChart: React.FC<TickChartProps> = ({
     const attack = attackAnimations[tick]?.[playerName];
     const isMissed = missedTicks[tick]?.[playerName] === true;
     const isDeath = deathsByTick[tick]?.[playerName] === true;
+    const spells = spellsByTick[tick]?.[playerName];
     const fightTimeMs = getFightTimeMsForTick(tick, initialTick, fightStartMs);
     const boostedLevels = resolveBoostedLevels(tick, playerName);
 
@@ -418,7 +459,10 @@ const TickChart: React.FC<TickChartProps> = ({
       return (
         <AttackTooltip
           attack={{
-            ...attackEventToTooltipDetails(attack),
+            ...attackEventToTooltipDetails({
+              ...attack,
+              spells,
+            }),
             isDeath,
             timeFallback:
               attack.fightTimeMs == null
@@ -431,7 +475,11 @@ const TickChart: React.FC<TickChartProps> = ({
 
     if (isDeath) {
       return (
-        <DeathTooltip fightTimeMs={fightTimeMs} boostedLevels={boostedLevels} />
+        <DeathTooltip
+          fightTimeMs={fightTimeMs}
+          boostedLevels={boostedLevels}
+          spells={spells}
+        />
       );
     }
 
@@ -440,6 +488,7 @@ const TickChart: React.FC<TickChartProps> = ({
         <MissedTickTooltip
           fightTimeMs={fightTimeMs}
           boostedLevels={boostedLevels}
+          spells={spells}
         />
       );
     }
@@ -448,12 +497,14 @@ const TickChart: React.FC<TickChartProps> = ({
       <TickPlayerStatsTooltip
         fightTimeMs={fightTimeMs}
         boostedLevels={boostedLevels}
+        spells={spells}
       />
     );
   }, [
     hoveredCell,
     attackAnimations,
     deathsByTick,
+    spellsByTick,
     missedTicks,
     initialTick,
     fightStartMs,
@@ -511,6 +562,7 @@ const TickChart: React.FC<TickChartProps> = ({
                   isMissed={missedTicks[tick]?.[playerName] === true}
                   isDeath={deathsByTick[tick]?.[playerName] === true}
                   attack={attackAnimations[tick]?.[playerName]}
+                  spells={spellsByTick[tick]?.[playerName]}
                   onCellClick={handleTickClick}
                   onCellHover={handleCellHover}
                 />
