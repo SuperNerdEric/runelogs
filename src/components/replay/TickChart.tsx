@@ -330,8 +330,13 @@ const TickChart: React.FC<TickChartProps> = ({
     };
   }, [fight, initialTick, maxTick]);
 
-  const { players, attackAnimations, deathsByTick, missedTicks, resolveBoostedLevels } =
-    chartData;
+  const {
+    players,
+    attackAnimations,
+    deathsByTick,
+    missedTicks,
+    resolveBoostedLevels,
+  } = chartData;
 
   const columnTicks = useMemo(() => {
     const cols = [];
@@ -426,10 +431,7 @@ const TickChart: React.FC<TickChartProps> = ({
 
     if (isDeath) {
       return (
-        <DeathTooltip
-          fightTimeMs={fightTimeMs}
-          boostedLevels={boostedLevels}
-        />
+        <DeathTooltip fightTimeMs={fightTimeMs} boostedLevels={boostedLevels} />
       );
     }
 
