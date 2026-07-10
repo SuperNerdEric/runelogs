@@ -12,49 +12,37 @@ export function resolveFightOutcomeColor(
   return success ? colors.fight.success : colors.fight.failure;
 }
 
+/**
+ * Standalone fight: `liveActiveFightId` is the fight id (group pointer null).
+ * Nested bosses also use `liveActiveFightId` (see resolveLiveFightTileState).
+ */
 export function isFightLiveInProgress(
   receivingData: boolean,
   fightId: string,
-  liveActiveEncounterId?: string | null,
+  liveActiveFightId?: string | null,
 ): boolean {
-  return receivingData && liveActiveEncounterId === fightId;
+  return receivingData && liveActiveFightId === fightId;
 }
 
-export function isFightGroupLiveInProgress(
-  receivingData: boolean,
-  groupId: string,
-  fightIds: string[],
-  liveActiveEncounterId?: string | null,
-): boolean {
-  if (!receivingData || !liveActiveEncounterId) {
-    return false;
-  }
-  if (liveActiveEncounterId === groupId) {
-    return true;
-  }
-  return fightIds.includes(liveActiveEncounterId);
-}
-
-/** Run-level in-progress styling for a fight group on live log pages. */
+/** Run-level in-progress: group pointer is this group, or nested fight is ours. */
 export function isFightGroupRunInProgress(
   receivingData: boolean,
   groupSuccess: boolean,
   groupId?: string,
   fightIds?: string[],
-  liveActiveEncounterId?: string | null,
+  liveActiveFightGroupId?: string | null,
+  liveActiveFightId?: string | null,
 ): boolean {
-  if (!receivingData || groupSuccess) {
+  if (!receivingData || groupSuccess || !groupId) {
     return false;
   }
-  if (!groupId || !fightIds || liveActiveEncounterId == null) {
-    return false;
+  if (liveActiveFightGroupId === groupId) {
+    return true;
   }
-  return isFightGroupLiveInProgress(
-    receivingData,
-    groupId,
-    fightIds,
-    liveActiveEncounterId,
-  );
+  if (liveActiveFightId && fightIds?.includes(liveActiveFightId)) {
+    return true;
+  }
+  return false;
 }
 
 /** Encounter page: live log still syncing and this fight has not finished. */
@@ -85,7 +73,7 @@ function findCurrentLiveFight(
     .sort((a, b) => b.order - a.order)[0];
 }
 
-/** Prefer checkpoint-backed id, then highest-order unfinished row. */
+/** Prefer checkpoint-backed nested fight id, then highest-order unfinished row. */
 export function findLiveRunActiveFight(
   fights: LiveFightTileState[],
   liveActiveFightId?: string | null,
@@ -152,7 +140,6 @@ export function resolveLiveFightTileInProgress(
   groupSuccess: boolean,
   fights: LiveFightTileState[],
   fight: LiveFightTileState,
-  liveActiveEncounterId?: string | null,
   liveActiveFightId?: string | null,
 ): boolean {
   return resolveLiveFightTileState(
@@ -160,7 +147,6 @@ export function resolveLiveFightTileInProgress(
     groupSuccess,
     fights,
     fight,
-    liveActiveEncounterId,
     liveActiveFightId,
   ).inProgress;
 }
@@ -170,7 +156,6 @@ export function resolveLiveFightTileState(
   groupSuccess: boolean,
   fights: LiveFightTileState[],
   fight: LiveFightTileState,
-  liveActiveEncounterId?: string | null,
   liveActiveFightId?: string | null,
 ): LiveFightTileDisplayState {
   if (!receivingData || groupSuccess) {
@@ -178,10 +163,6 @@ export function resolveLiveFightTileState(
   }
 
   if (liveActiveFightId && fight.id === liveActiveFightId && !fight.success) {
-    return { inProgress: true, displaySuccess: false };
-  }
-
-  if (isFightLiveInProgress(receivingData, fight.id, liveActiveEncounterId)) {
     return { inProgress: true, displaySuccess: false };
   }
 

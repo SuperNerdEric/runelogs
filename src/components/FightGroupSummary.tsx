@@ -86,7 +86,7 @@ interface FightGroupSummaryData {
     uploaderId: string;
     uploadedAt: string;
     name: string | null;
-    liveActiveEncounterId?: string | null;
+    liveActiveFightGroupId?: string | null;
     liveActiveFightId?: string | null;
   };
   receivingData?: boolean;
@@ -454,7 +454,6 @@ const FightGroupSummary: React.FC = () => {
                 success: fight.success,
                 order: fight.order,
               },
-              data.log.liveActiveEncounterId,
               data.log.liveActiveFightId,
             );
             return {

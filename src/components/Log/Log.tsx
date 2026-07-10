@@ -56,6 +56,7 @@ interface ApiFightGroup {
   officialDurationTicks: number | null;
   displayDurationTicks?: number | null;
   success: boolean;
+  receivingData?: boolean;
   order: number;
   fights: ApiFight[];
 }
@@ -88,7 +89,7 @@ interface ApiResponse {
   uploadedAt: string;
   isLive?: boolean;
   receivingData?: boolean;
-  liveActiveEncounterId?: string | null;
+  liveActiveFightGroupId?: string | null;
   liveActiveFightId?: string | null;
   encounters: ApiEncounter[];
 }
@@ -181,13 +182,19 @@ const Log: React.FC = () => {
               const sortedFights = enc.fights
                 .slice()
                 .sort((a, b) => a.order - b.order);
-              const groupInProgress = isFightGroupRunInProgress(
-                Boolean(body.receivingData),
-                enc.success,
-                enc.id,
-                sortedFights.map((f) => f.id),
-                body.liveActiveEncounterId,
-              );
+              // Prefer the log-page annotation: while the log is receiving,
+              // incomplete runs stay in-progress even when live pointers lag.
+              const groupInProgress =
+                typeof enc.receivingData === "boolean"
+                  ? enc.receivingData && !enc.success
+                  : isFightGroupRunInProgress(
+                      Boolean(body.receivingData),
+                      enc.success,
+                      enc.id,
+                      sortedFights.map((f) => f.id),
+                      body.liveActiveFightGroupId,
+                      body.liveActiveFightId,
+                    );
 
               const fightStates = sortedFights.map((f) => ({
                 id: f.id,
@@ -205,7 +212,6 @@ const Log: React.FC = () => {
                     success: f.success,
                     order: f.order,
                   },
-                  body.liveActiveEncounterId,
                   body.liveActiveFightId,
                 );
 
