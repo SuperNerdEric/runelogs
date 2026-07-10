@@ -19,6 +19,7 @@ export enum LogTypes {
   HEAL = "Heal",
   PLAYER_ATTACK_ANIMATION = "Attack Animation",
   PLAYER_SPELL = "Player Spell",
+  VENGEANCE_OTHER_CAST = "Vengeance Other Cast",
   POSITION = "Position",
   NPC_DESPAWNED = "NPC Despawned",
   GRAPHICS_OBJECT_SPAWNED = "Graphics Object Spawned",
@@ -144,6 +145,12 @@ export interface PlayerSpellLog extends BaseLog {
   spell: PlayerSpellName;
 }
 
+export interface VengeanceOtherCastLog extends BaseLog {
+  type: LogTypes.VENGEANCE_OTHER_CAST;
+  source: Actor;
+  target: Actor;
+}
+
 export interface PositionLog extends BaseLog {
   type: LogTypes.POSITION;
   source: Actor;
@@ -254,6 +261,7 @@ export type LogLine =
   | HealLog
   | AttackAnimationLog
   | PlayerSpellLog
+  | VengeanceOtherCastLog
   | PositionLog
   | NPCDespawned
   | GraphicsObjectSpawned

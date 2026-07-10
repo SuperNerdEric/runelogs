@@ -37,7 +37,11 @@ import {
   getFightTimeMsForTick,
 } from "../../utils/replayTickTooltip";
 import { isPlayerDeathTarget } from "../../utils/deathEvents";
-import { PLAYER_SPELL_ICON_URLS } from "../../utils/playerSpells";
+import {
+  PLAYER_SPELL_ICON_URLS,
+  VENGEANCE_OTHER_CAST_ARROW_URL,
+  VENGEANCE_OTHER_ICON_URL,
+} from "../../utils/playerSpells";
 
 const SPECIAL_ATTACK_ORB_URL = "/images/special-attack-orb-64.png";
 const SKULL_ICON_URL = "/images/skull-icon.png";
@@ -87,6 +91,7 @@ type AttackAnimationsByTick = {
 
 type DeathsByTick = Record<number, Record<string, true>>;
 type SpellsByTick = Record<number, Record<string, PlayerSpellName[]>>;
+type VengOtherCastByTick = Record<number, Record<string, string>>;
 
 interface HoveredCell {
   anchorEl: HTMLElement;
@@ -122,6 +127,7 @@ interface TickChartCellProps {
   isDeath: boolean;
   attack?: ReplayAttackCell;
   spells?: PlayerSpellName[];
+  vengOtherCastTarget?: string;
   onCellClick: (tick: number) => void;
   onCellHover: (hover: HoveredCell | null) => void;
 }
@@ -134,6 +140,7 @@ const TickChartCell = memo(function TickChartCell({
   isDeath,
   attack,
   spells,
+  vengOtherCastTarget,
   onCellClick,
   onCellHover,
 }: TickChartCellProps) {
@@ -146,9 +153,12 @@ const TickChartCell = memo(function TickChartCell({
     .join(" ");
 
   const hasSpells = !!spells?.length;
+  const hasVengOtherCast = !!vengOtherCastTarget;
   // Keep one primary icon in the fixed 30x30 cell; extras are corner overlays.
-  const spellAsOverlay = hasSpells && !!attack;
-  const deathAsOverlay = isDeath && (!!attack || hasSpells);
+  const spellIconCount =
+    (hasSpells ? spells!.length : 0) + (hasVengOtherCast ? 1 : 0);
+  const spellAsOverlay = spellIconCount > 0 && !!attack;
+  const deathAsOverlay = isDeath && (!!attack || spellIconCount > 0);
 
   return (
     <td
@@ -195,22 +205,55 @@ const TickChartCell = memo(function TickChartCell({
             )}
           </>
         )}
-        {hasSpells &&
-          spells!.map((spell, index) => (
+        {hasVengOtherCast && (
+          <span
+            className={
+              spellAsOverlay
+                ? "replay-tick-chart__spell-wrap replay-tick-chart__spell-wrap--overlay"
+                : "replay-tick-chart__spell-wrap"
+            }
+          >
             <img
-              key={spell}
-              src={PLAYER_SPELL_ICON_URLS[spell]}
+              src={VENGEANCE_OTHER_ICON_URL}
               alt=""
               aria-hidden="true"
-              className={
-                spellAsOverlay || index > 0
-                  ? "replay-tick-chart__spell-icon replay-tick-chart__spell-icon--overlay"
-                  : "replay-tick-chart__spell-icon"
-              }
+              className="replay-tick-chart__spell-icon"
               width={26}
               height={26}
             />
-          ))}
+            <img
+              src={VENGEANCE_OTHER_CAST_ARROW_URL}
+              alt=""
+              aria-hidden="true"
+              className="replay-tick-chart__spell-cast-arrow"
+              width={10}
+              height={10}
+            />
+          </span>
+        )}
+        {hasSpells &&
+          spells!.map((spell, index) => {
+            const isOverlay = spellAsOverlay || hasVengOtherCast || index > 0;
+            return (
+              <span
+                key={spell}
+                className={
+                  isOverlay
+                    ? "replay-tick-chart__spell-wrap replay-tick-chart__spell-wrap--overlay"
+                    : "replay-tick-chart__spell-wrap"
+                }
+              >
+                <img
+                  src={PLAYER_SPELL_ICON_URLS[spell]}
+                  alt=""
+                  aria-hidden="true"
+                  className="replay-tick-chart__spell-icon"
+                  width={26}
+                  height={26}
+                />
+              </span>
+            );
+          })}
         {isDeath && (
           <img
             src={SKULL_ICON_URL}
@@ -250,6 +293,7 @@ const TickChart: React.FC<TickChartProps> = ({
     const attackAnimationsByTick: AttackAnimationsByTick = {};
     const deathsByTick: DeathsByTick = {};
     const spellsByTick: SpellsByTick = {};
+    const vengOtherCastByTick: VengOtherCastByTick = {};
 
     fight.data.forEach((logLine: LogLine) => {
       const tick = logLine.tick;
@@ -292,6 +336,15 @@ const TickChart: React.FC<TickChartProps> = ({
           boostedLevelsAtTick[tick] = {};
         }
         boostedLevelsAtTick[tick][playerName] = boostedLevels;
+        return;
+      }
+
+      if (logLine.type === LogTypes.VENGEANCE_OTHER_CAST) {
+        if (!vengOtherCastByTick[tick]) {
+          vengOtherCastByTick[tick] = {};
+        }
+        vengOtherCastByTick[tick][playerName] =
+          logLine.target?.name || "Unknown";
         return;
       }
 
@@ -364,6 +417,7 @@ const TickChart: React.FC<TickChartProps> = ({
       attackAnimations: attackAnimationsByTick,
       deathsByTick,
       spellsByTick,
+      vengOtherCastByTick,
       missedTicks: getReplayMissedTicks(fight, initialTick, maxTick),
       resolveBoostedLevels: createBoostLevelResolver(boostedLevelsAtTick),
     };
@@ -374,6 +428,7 @@ const TickChart: React.FC<TickChartProps> = ({
     attackAnimations,
     deathsByTick,
     spellsByTick,
+    vengOtherCastByTick,
     missedTicks,
     resolveBoostedLevels,
   } = chartData;
@@ -452,6 +507,7 @@ const TickChart: React.FC<TickChartProps> = ({
     const isMissed = missedTicks[tick]?.[playerName] === true;
     const isDeath = deathsByTick[tick]?.[playerName] === true;
     const spells = spellsByTick[tick]?.[playerName];
+    const vengOtherCastTarget = vengOtherCastByTick[tick]?.[playerName];
     const fightTimeMs = getFightTimeMsForTick(tick, initialTick, fightStartMs);
     const boostedLevels = resolveBoostedLevels(tick, playerName);
 
@@ -462,6 +518,7 @@ const TickChart: React.FC<TickChartProps> = ({
             ...attackEventToTooltipDetails({
               ...attack,
               spells,
+              vengOtherCastTarget,
             }),
             isDeath,
             timeFallback:
@@ -479,6 +536,7 @@ const TickChart: React.FC<TickChartProps> = ({
           fightTimeMs={fightTimeMs}
           boostedLevels={boostedLevels}
           spells={spells}
+          vengOtherCastTarget={vengOtherCastTarget}
         />
       );
     }
@@ -489,6 +547,7 @@ const TickChart: React.FC<TickChartProps> = ({
           fightTimeMs={fightTimeMs}
           boostedLevels={boostedLevels}
           spells={spells}
+          vengOtherCastTarget={vengOtherCastTarget}
         />
       );
     }
@@ -498,6 +557,7 @@ const TickChart: React.FC<TickChartProps> = ({
         fightTimeMs={fightTimeMs}
         boostedLevels={boostedLevels}
         spells={spells}
+        vengOtherCastTarget={vengOtherCastTarget}
       />
     );
   }, [
@@ -505,6 +565,7 @@ const TickChart: React.FC<TickChartProps> = ({
     attackAnimations,
     deathsByTick,
     spellsByTick,
+    vengOtherCastByTick,
     missedTicks,
     initialTick,
     fightStartMs,
@@ -563,6 +624,7 @@ const TickChart: React.FC<TickChartProps> = ({
                   isDeath={deathsByTick[tick]?.[playerName] === true}
                   attack={attackAnimations[tick]?.[playerName]}
                   spells={spellsByTick[tick]?.[playerName]}
+                  vengOtherCastTarget={vengOtherCastByTick[tick]?.[playerName]}
                   onCellClick={handleTickClick}
                   onCellHover={handleCellHover}
                 />

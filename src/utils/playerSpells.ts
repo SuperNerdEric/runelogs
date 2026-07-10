@@ -2,7 +2,7 @@ import { PlayerSpellName } from "../models/LogLine";
 
 export const PLAYER_SPELL_LABELS: Record<PlayerSpellName, string> = {
   VENGEANCE: "Vengeance",
-  VENGEANCE_OTHER: "Vengeance Other",
+  VENGEANCE_OTHER: "Received Vengeance Other",
   SPELLBOOK_SWAP: "Spellbook Swap",
   DEATH_CHARGE: "Death Charge",
   MARK_OF_DARKNESS: "Mark of Darkness",
@@ -29,3 +29,7 @@ export const PLAYER_SPELL_ICON_URLS: Record<PlayerSpellName, string> = {
   THRALL_SKELETON: "/images/thrall-skeleton-icon.png",
   THRALL_ZOMBIE: "/images/thrall-zombie-icon.png",
 };
+
+export const VENGEANCE_OTHER_ICON_URL = PLAYER_SPELL_ICON_URLS.VENGEANCE_OTHER;
+export const VENGEANCE_OTHER_CAST_ARROW_URL =
+  "/images/vengeance-other-cast-arrow.svg";

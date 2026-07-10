@@ -836,6 +836,23 @@ a.encounter-title-bar.encounter-title-bar--clickable:hover {
   z-index: 1;
 }
 
+.replay-tick-chart__spell-wrap {
+  display: block;
+  position: relative;
+}
+
+.replay-tick-chart__spell-wrap--overlay {
+  left: -1px;
+  position: absolute;
+  top: -1px;
+  z-index: 1;
+}
+
+.replay-tick-chart__spell-wrap--overlay .replay-tick-chart__spell-icon {
+  height: 16px;
+  width: 16px;
+}
+
 .replay-tick-chart__spell-icon {
   display: block;
   height: 26px;
@@ -846,13 +863,24 @@ a.encounter-title-bar.encounter-title-bar--clickable:hover {
   width: 26px;
 }
 
-.replay-tick-chart__spell-icon--overlay {
-  height: 16px;
-  left: -1px;
+.replay-tick-chart__spell-cast-arrow {
+  height: 10px;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  object-fit: contain;
+  pointer-events: none;
   position: absolute;
-  top: -1px;
-  width: 16px;
-  z-index: 1;
+  right: -2px;
+  top: -2px;
+  width: 10px;
+  z-index: 2;
+}
+
+.replay-tick-chart__spell-wrap--overlay .replay-tick-chart__spell-cast-arrow {
+  height: 8px;
+  right: -3px;
+  top: -3px;
+  width: 8px;
 }
 
 .replay-tick-chart__death-icon {

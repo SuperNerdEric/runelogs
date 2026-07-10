@@ -6,6 +6,7 @@ import { formatHHmmss } from "../utils/utils";
 import {
   PLAYER_SPELL_ICON_URLS,
   PLAYER_SPELL_LABELS,
+  VENGEANCE_OTHER_ICON_URL,
 } from "../utils/playerSpells";
 import {
   capitalizeChartLabel,
@@ -28,6 +29,7 @@ export interface AttackTooltipDetails {
   isSpecialAttack: boolean;
   isDeath?: boolean;
   spells?: PlayerSpellName[];
+  vengOtherCastTarget?: string;
   timeFallback?: string;
 }
 
@@ -67,14 +69,34 @@ function buildBoostedLevelStatRows(boostedLevels?: Levels) {
   });
 }
 
-function SpellTooltipRows({ spells }: { spells?: PlayerSpellName[] }) {
-  if (!spells?.length) {
+function SpellTooltipRows({
+  spells,
+  vengOtherCastTarget,
+}: {
+  spells?: PlayerSpellName[];
+  vengOtherCastTarget?: string;
+}) {
+  const hasSpells = !!spells?.length;
+  const hasVengOtherCast = !!vengOtherCastTarget;
+  if (!hasSpells && !hasVengOtherCast) {
     return null;
   }
 
   return (
     <>
-      {spells.map((spell) => (
+      {hasVengOtherCast && (
+        <div className="chart-tooltip__spell">
+          <img
+            src={VENGEANCE_OTHER_ICON_URL}
+            alt=""
+            width={20}
+            height={20}
+            className="chart-tooltip__spell-icon"
+          />
+          <span>Vengeance Other cast on {vengOtherCastTarget}</span>
+        </div>
+      )}
+      {spells?.map((spell) => (
         <div key={spell} className="chart-tooltip__spell">
           <img
             src={PLAYER_SPELL_ICON_URLS[spell]}
@@ -98,23 +120,28 @@ interface TickPlayerStatsTooltipProps {
   fightTimeMs: number;
   boostedLevels?: Levels;
   spells?: PlayerSpellName[];
+  vengOtherCastTarget?: string;
 }
 
 export const TickPlayerStatsTooltip: React.FC<TickPlayerStatsTooltipProps> = ({
   fightTimeMs,
   boostedLevels,
   spells,
+  vengOtherCastTarget,
 }) => {
   const statRows = buildBoostedLevelStatRows(boostedLevels);
-  const hasSpells = !!spells?.length;
+  const hasSpellRows = !!spells?.length || !!vengOtherCastTarget;
 
   return (
     <ChartTooltip className="chart-tooltip--replay">
       <ChartTooltipTime>{formatHHmmss(fightTimeMs, true)}</ChartTooltipTime>
-      {hasSpells && (
+      {hasSpellRows && (
         <>
           <ChartTooltipDivider />
-          <SpellTooltipRows spells={spells} />
+          <SpellTooltipRows
+            spells={spells}
+            vengOtherCastTarget={vengOtherCastTarget}
+          />
         </>
       )}
       {statRows.length > 0 && (
@@ -131,12 +158,14 @@ interface MissedTickTooltipProps {
   fightTimeMs: number;
   boostedLevels?: Levels;
   spells?: PlayerSpellName[];
+  vengOtherCastTarget?: string;
 }
 
 export const MissedTickTooltip: React.FC<MissedTickTooltipProps> = ({
   fightTimeMs,
   boostedLevels,
   spells,
+  vengOtherCastTarget,
 }) => {
   const statRows = buildBoostedLevelStatRows(boostedLevels);
 
@@ -145,10 +174,13 @@ export const MissedTickTooltip: React.FC<MissedTickTooltipProps> = ({
       <ChartTooltipTime>{formatHHmmss(fightTimeMs, true)}</ChartTooltipTime>
       <ChartTooltipDivider />
       <div className="chart-tooltip__missed-label">Missed Tick</div>
-      {!!spells?.length && (
+      {(!!spells?.length || !!vengOtherCastTarget) && (
         <>
           <ChartTooltipDivider />
-          <SpellTooltipRows spells={spells} />
+          <SpellTooltipRows
+            spells={spells}
+            vengOtherCastTarget={vengOtherCastTarget}
+          />
         </>
       )}
       {statRows.length > 0 && (
@@ -165,12 +197,14 @@ interface DeathTooltipProps {
   fightTimeMs: number;
   boostedLevels?: Levels;
   spells?: PlayerSpellName[];
+  vengOtherCastTarget?: string;
 }
 
 export const DeathTooltip: React.FC<DeathTooltipProps> = ({
   fightTimeMs,
   boostedLevels,
   spells,
+  vengOtherCastTarget,
 }) => {
   const statRows = buildBoostedLevelStatRows(boostedLevels);
 
@@ -188,10 +222,13 @@ export const DeathTooltip: React.FC<DeathTooltipProps> = ({
         />
         <span>Death</span>
       </div>
-      {!!spells?.length && (
+      {(!!spells?.length || !!vengOtherCastTarget) && (
         <>
           <ChartTooltipDivider />
-          <SpellTooltipRows spells={spells} />
+          <SpellTooltipRows
+            spells={spells}
+            vengOtherCastTarget={vengOtherCastTarget}
+          />
         </>
       )}
       {statRows.length > 0 && (
@@ -227,10 +264,13 @@ const AttackTooltip: React.FC<AttackTooltipProps> = ({ attack }) => {
       />
       <ChartTooltipDivider />
       <ChartTooltipTargetRow targetName={attack.targetName} />
-      {!!attack.spells?.length && (
+      {(!!attack.spells?.length || !!attack.vengOtherCastTarget) && (
         <>
           <ChartTooltipDivider />
-          <SpellTooltipRows spells={attack.spells} />
+          <SpellTooltipRows
+            spells={attack.spells}
+            vengOtherCastTarget={attack.vengOtherCastTarget}
+          />
         </>
       )}
       {attack.isDeath && (
@@ -269,6 +309,7 @@ export function attackEventToTooltipDetails(
     | "boostedLevels"
     | "isSpecialAttack"
     | "spells"
+    | "vengOtherCastTarget"
   >,
 ): AttackTooltipDetails {
   return {
@@ -280,6 +321,7 @@ export function attackEventToTooltipDetails(
     boostedLevels: event.boostedLevels,
     isSpecialAttack: event.isSpecialAttack,
     spells: event.spells,
+    vengOtherCastTarget: event.vengOtherCastTarget,
   };
 }
 
