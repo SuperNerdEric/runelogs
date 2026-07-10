@@ -26,7 +26,7 @@ describe("pageMetaFormatting", () => {
 });
 
 describe("blogPageMeta", () => {
-  it("uses stripped titles for runelogs posts", () => {
+  it("uses the post title for runelogs posts", () => {
     const post = BLOG_POSTS.find(
       (entry) => entry.slug === "runelogs-maggot-king",
     );
@@ -35,7 +35,7 @@ describe("blogPageMeta", () => {
     expect(getBlogPostPageMeta(post!).title).toBe(
       "Maggot King | Runelogs Blog",
     );
-    expect(post!.title).toBe("Runelogs — Maggot King");
+    expect(post!.title).toBe("Maggot King");
   });
 
   it("uses the Combat Logger blog suffix for plugin posts", () => {
@@ -45,7 +45,7 @@ describe("blogPageMeta", () => {
     expect(post).toBeDefined();
 
     expect(getBlogPostPageMeta(post!).title).toBe(
-      "Combat Logger 1.6.6 Release | Combat Logger Blog",
+      "1.6.6 Release | Combat Logger Blog",
     );
   });
 });

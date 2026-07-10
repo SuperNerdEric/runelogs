@@ -33,7 +33,10 @@ type BlogPostInput = Omit<BlogPost, "slug">;
 /** Manual blog summaries are authored to stay within this length. */
 export const BLOG_SUMMARY_MAX_LENGTH = 200;
 
-export function generateBlogSlug(title: string): string {
+export function generateBlogSlug(
+  title: string,
+  category?: BlogCategory,
+): string {
   let slug = title
     .toLowerCase()
     .replace(/[\u2014\u2013]/g, "-")
@@ -41,7 +44,17 @@ export function generateBlogSlug(title: string): string {
     .trim();
 
   slug = slug.replace(/(\d)\.(\d)/g, "$1-$2").replace(/\./g, "-");
-  return slug.replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+  slug = slug.replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+
+  // Category is shown separately in the UI; prefix slugs so URLs stay stable
+  // after titles drop redundant "Runelogs" / "Combat Logger" labels.
+  if (category === "runelogs" && !slug.startsWith("runelogs-")) {
+    return `runelogs-${slug}`;
+  }
+  if (category === "combat-logger" && !slug.startsWith("combat-logger-")) {
+    return `combat-logger-${slug}`;
+  }
+  return slug;
 }
 
 export function getBlogPostPlainText(body: BlogPostBody): string {
@@ -67,23 +80,23 @@ export function getBlogPostSummary(post: BlogPost): string {
 }
 
 const BLOG_POSTS_RAW: BlogPostInput[] = [
-  // — Runelogs —
+  // Runelogs
   {
     date: "2026-07-08",
-    title: "Runelogs — Encounter Summaries and Replay Tick Chart Improvements",
+    title: "Encounter Summaries and Replay Tick Chart Improvements",
     category: "runelogs",
     body: {
       summary:
         "A new Encounter Summary tab puts duration, deaths, DPS, damage, attacks, and boosts on one page, and the replay tick chart adds special attack markers and missed-tick highlighting.",
       paragraphs: [
-        "Runelogs introduces an Encounter Summary tab — a single-page overview at the top of every fight. Open any uploaded or live encounter and Summary is the default view: fight duration, deaths, DPS rank badges, a DPS timeline, a damage done breakdown, an Attacks breakdown, and stat boost tracking in one place. The Attacks breakdown groups each player's hits by weapon and marks special attacks with a special attack orb.",
+        "Runelogs introduces an Encounter Summary tab, a single-page overview at the top of every fight. Open any uploaded or live encounter and Summary is the default view: fight duration, deaths, DPS rank badges, a DPS timeline, a damage done breakdown, an Attacks breakdown, and stat boost tracking in one place. The Attacks breakdown groups each player's hits by weapon and marks special attacks with a special attack orb.",
         "Summary rows and charts link into the rest of the encounter page. Click a player in the damage table to jump to Damage Done with that source filter applied, open a death to land on Events at the right tick, or follow an attack bar into the matching animation events. Live logs use the same layout while data is still streaming, with in-progress styling scoped to the active fight in a group.",
-        "The replay tick chart lays out each player's actions tick by tick. Special attacks are detected and marked with a special attack orb on the exact tick they land, so specs are easy to place in the sequence. Hover any tick to see the weapon used, the target, boosted combat stats, and timing.",
-        "The chart also flags missed ticks — ticks where your weapon was off cooldown but no attack went out — so dropped DPS is easy to spot at a glance. Tick tooltips are faster and easier to read, and object highlighting makes splats and warnings simpler to follow during playback.",
+        "We've improved the existing replay tick chart. Special attacks now show a special attack orb on the exact tick they land, so specs are easy to place in the sequence. Hover tooltips are faster and easier to read, with the weapon used, the target, boosted combat stats, and timing.",
+        "The chart also flags missed ticks, moments where your weapon was off cooldown but no attack went out, so dropped DPS is easy to spot at a glance. Object highlighting makes splats and warnings simpler to follow during playback.",
       ],
       headings: [
         { text: "Encounter Summary", beforeParagraph: 0 },
-        { text: "Replay Tick Chart", beforeParagraph: 2 },
+        { text: "Replay Tick Chart Improvements", beforeParagraph: 2 },
         { text: "Other Changes", beforeParagraph: 4 },
       ],
       images: [
@@ -91,14 +104,14 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
           src: "/blog/encounter-summary-maggot-king.png",
           alt: "Encounter Summary tab for a Maggot King fight showing DPS chart, damage done, attacks, and stat boosts",
           caption:
-            "Encounter Summary for Maggot King — duration, rank, DPS chart, attacks, and boost tracking on one tab.",
+            "Encounter Summary for Maggot King, with duration, rank, DPS chart, attacks, and boost tracking on one tab.",
           afterParagraph: 1,
         },
         {
           src: "/blog/replay-tick-chart-special-attack.png",
           alt: "Replay tick chart with an Elder maul special attack tooltip showing target and boosted combat stats",
           caption:
-            "Replay tick chart — special attack orbs mark specs, and hovering a tick shows the weapon, target, and boosted stats.",
+            "Improved replay tick chart: special attack orbs mark specs, and hovering a tick shows the weapon, target, and boosted stats.",
           afterParagraph: 3,
         },
       ],
@@ -114,13 +127,13 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2026-07-02",
-    title: "Runelogs — Maggot King",
+    title: "Maggot King",
     category: "runelogs",
     body: {
       summary:
         "Runelogs now supports Maggot King with solo kill-time and DPS leaderboards, log parsing, and full replay including poison splats and shadow warnings.",
       paragraphs: [
-        "Runelogs now supports Maggot King — solo kill times, DPS leaderboards, log parsing, and replay for the new boss fight.",
+        "Runelogs now supports Maggot King, with solo kill times, DPS leaderboards, log parsing, and replay for the new boss fight.",
         "Uploaded Combat Logger logs recognize Maggot King fights and mark them DPS-eligible with official duration timing. The Maggot King leaderboard compares solo kill times and boss DPS, with a hiscore sprite on leaderboard rows and encounter lists.",
         "Replay tooling includes Maggot King mechanics: poison splat game objects (small, medium, and large), dust wave graphics, and shadow warnings. Replay controls add object highlighting so splats and warnings are easier to follow tick by tick.",
       ],
@@ -133,13 +146,13 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2026-07-01",
-    title: "Runelogs — Live Log Reliability",
+    title: "Live Log Reliability",
     category: "runelogs",
     body: {
       summary:
         "Live logging is hardened for heavy parse backlogs, with clear live-refresh states, no false failure styling on in-progress fights, and a backend ready for production scale.",
       paragraphs: [
-        "Live logging on Runelogs lets friends and clanmates follow a raid or boss fight while it is still happening. This update hardens that experience — especially during heavy parse backlogs when the server is catching up with incoming Combat Logger data.",
+        "Live logging on Runelogs lets friends and clanmates follow a raid or boss fight while it is still happening. This update hardens that experience, especially during heavy parse backlogs when the server is catching up with incoming Combat Logger data.",
         "Log and encounter pages now show a clear live-refresh state while fights are syncing, so a temporarily incomplete page no longer looks like a failed run. Fight tiles that are in progress no longer flash false failure styling during parse backlog, and encounter pages stay stable when a background live refresh fails transiently.",
         "Behind the scenes, the live pipeline is ready for production scale: API and worker processes can run separately, snapshot sync is debounced, encounter IDs are preserved across chunk jobs, and stress tests catch race conditions (including Theatre of Blood fight parity). Spectating a live log should feel closer to watching a normal uploaded log.",
       ],
@@ -152,13 +165,13 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2026-06-30",
-    title: "Runelogs — About Page, Privacy Policy, and Discoverability",
+    title: "About Page, Privacy Policy, and Discoverability",
     category: "runelogs",
     body: {
       summary:
         "A new About page, privacy policy, and site footer document what Runelogs does, alongside per-page titles, link previews, and prerendered HTML for shared pages.",
       paragraphs: [
-        "Runelogs covers combat-log viewing, leaderboards, and live logging — and this release adds the public documentation to match. A new About page explains what Runelogs does, how Combat Logger fits in, and common questions about uploads, leaderboards, and live logs.",
+        "Runelogs covers combat-log viewing, leaderboards, and live logging, and this release adds the public documentation to match. A new About page explains what Runelogs does, how Combat Logger fits in, and common questions about uploads, leaderboards, and live logs.",
         "The About page includes structured FAQ data (JSON-LD) so search engines can show accurate summaries when someone looks up Runelogs. A privacy policy is available at /privacy with contact emails for support and privacy questions, plus a site footer linking legal pages and community resources.",
         "Public pages are easier to find and share: each route has its own title and description, Open Graph previews for pasted links, prerendered HTML so crawlers can read key pages, and an expanded sitemap listing release notes and major sections. Prerendering no longer serves stale HTML on first load or hangs after builds.",
       ],
@@ -166,7 +179,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2026-06-27",
-    title: "Runelogs — Admin Tools, Yama, and Hiscore Sprites",
+    title: "Admin Tools, Yama, and Hiscore Sprites",
     category: "runelogs",
     body: {
       summary:
@@ -186,7 +199,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2026-06-23",
-    title: "Runelogs — ToA Raid Level Tracking",
+    title: "ToA Raid Level Tracking",
     category: "runelogs",
     body: {
       summary:
@@ -199,7 +212,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2026-06-22",
-    title: "Runelogs — Profiles, Avatars, and Colosseum Modifiers",
+    title: "Profiles, Avatars, and Colosseum Modifiers",
     category: "runelogs",
     body: {
       summary:
@@ -213,7 +226,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2026-06-16",
-    title: "Runelogs — Navigation Refresh and DPS Rank Badges",
+    title: "Navigation Refresh and DPS Rank Badges",
     category: "runelogs",
     body: {
       summary:
@@ -227,21 +240,20 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2026-06-15",
-    title: "Runelogs — DPS Leaderboards",
+    title: "DPS Leaderboards",
     category: "runelogs",
     body: {
       summary:
         "DPS leaderboards join the existing time rankings, with overall DPS calculated across multi-fight raids and eligibility rules that exclude invalid or incomplete fights.",
       paragraphs: [
-        "Runelogs already ranks runs by time — this release adds DPS leaderboards alongside those time rankings. Damage throughput matters for many groups, especially in Theatre of Blood and Tombs of Amascut.",
+        "Runelogs already ranks runs by time, and this release adds DPS leaderboards alongside those rankings. Damage throughput matters for many groups, especially in Theatre of Blood and Tombs of Amascut.",
         "Overall DPS is calculated for multi-fight raid runs so full clear performance is represented, not just a single room. Eligibility rules exclude invalid or incomplete fights and aggregate unknown damage sources fairly.",
-        "Uploaded logs can have custom names, and autogenerated titles help identify sessions at a glance when you have not renamed them yet.",
       ],
     },
   },
   {
     date: "2026-06-14",
-    title: "Runelogs — Live Logging",
+    title: "Live Logging",
     category: "runelogs",
     body: {
       summary:
@@ -255,7 +267,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2026-06-13",
-    title: "Runelogs — Gauntlet Leaderboards and Player Pages",
+    title: "Gauntlet Leaderboards and Player Pages",
     category: "runelogs",
     body: {
       summary:
@@ -268,21 +280,20 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2026-06-12",
-    title: "Runelogs — Site Redesign",
+    title: "Site Redesign",
     category: "runelogs",
     body: {
       summary:
-        "Runelogs gets a dark-theme overhaul across the homepage, upload flow, logs, and leaderboards, and the frontend moves from Create React App to Vite for faster builds.",
+        "Runelogs gets a visual overhaul across the homepage, upload flow, logs, and leaderboards, with a redesigned upload page, content icons, and wider desktop layouts.",
       paragraphs: [
-        "Runelogs gets a visual overhaul in this release. A new dark theme spans the homepage, upload flow, log pages, and leaderboards, with wider layouts on desktop and tighter mobile spacing.",
+        "Runelogs gets a visual overhaul in this release. A refreshed dark theme spans the homepage, upload flow, log pages, and leaderboards, with wider layouts on desktop and tighter mobile spacing.",
         "The upload page is redesigned with drag-and-drop support and clearer guidance for finding Combat Logger files on disk. Leaderboards, recent encounters, and personal bests gain content icons, and row links jump directly to encounter pages.",
-        "Under the hood, the frontend migrates from Create React App to Vite for faster dev builds and simpler environment configuration via VITE_API_URL.",
       ],
     },
   },
   {
     date: "2025-12-04",
-    title: "Runelogs — Sailing Levels and Leaderboard Pagination",
+    title: "Sailing Levels and Leaderboard Pagination",
     category: "runelogs",
     body: {
       summary:
@@ -295,7 +306,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2025-10-10",
-    title: "Runelogs — General Availability",
+    title: "General Availability",
     category: "runelogs",
     body: {
       summary:
@@ -308,20 +319,20 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2025-06-24",
-    title: "Runelogs — Fight Caves, Colosseum, and Rank Badges",
+    title: "Fight Caves, Colosseum, and Rank Badges",
     category: "runelogs",
     body: {
       summary:
-        "Fight Caves and Fortis Colosseum get leaderboard and personal-best pages, and rank colors, hiscore icons, and deep-linkable leaderboard filters make top placements easy to share.",
+        "Fight Caves and Fortis Colosseum get leaderboard and personal-best pages, and rank colors, medal icons, and deep-linkable leaderboard filters make top placements easy to share.",
       paragraphs: [
         "Wave-based PvM content expands on Runelogs: Fight Caves and Fortis Colosseum get leaderboard and personal-best pages with official duration tracking.",
-        "Rank colors and hiscore-style icons appear on leaderboards, individual encounters, and personal bests so you can spot top placements at a glance. Leaderboard filters support deep linking — share a URL with content, player count, and sort mode baked in, and browser back/forward navigation keeps state in sync.",
+        "Rank colors and medal icons appear on leaderboards, individual encounters, and personal bests so you can spot top placements at a glance. Leaderboard filters support deep linking: share a URL with content, player count, and sort mode baked in, and browser back/forward navigation keeps state in sync.",
       ],
     },
   },
   {
     date: "2025-06-22",
-    title: "Runelogs — Inferno Leaderboards",
+    title: "Inferno Leaderboards",
     category: "runelogs",
     body: {
       summary:
@@ -353,7 +364,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2025-05-27",
-    title: "Runelogs — Fortis Colosseum Support",
+    title: "Fortis Colosseum Support",
     category: "runelogs",
     body: {
       summary:
@@ -366,7 +377,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2024-11-17",
-    title: "Runelogs — Replay Improvements",
+    title: "Replay Improvements",
     category: "runelogs",
     body: {
       summary:
@@ -379,35 +390,35 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2024-11-01",
-    title: "Runelogs — Map Replay",
+    title: "Map Replay",
     category: "runelogs",
     body: {
       summary:
         "Runelogs introduces tick-by-tick map replay for supported encounters, using semver-aware version detection so older logs still analyze correctly.",
       paragraphs: [
-        "Runelogs introduces tick-by-tick map replay for supported encounters — a major step beyond DPS charts and event tables for understanding movement and mechanics.",
+        "Runelogs introduces tick-by-tick map replay for supported encounters, a major step beyond DPS charts and event tables for understanding movement and mechanics.",
         "Replay requires Combat Logger log format v1.2.0 or newer, which logs party member position changes. The parser uses semver-aware version detection so older logs analyze correctly even when replay is unavailable.",
       ],
     },
   },
   {
     date: "2024-02-04",
-    title: "Runelogs — Early Prototype",
+    title: "Early Prototype",
     category: "runelogs",
     body: {
       summary:
         "The first Runelogs prototype launches as a browser-based combat log analyzer with DPS charts, event tables, fight splitting, and damage and boost tracking.",
       paragraphs: [
-        "The first Runelogs prototype is live as a browser-based combat log analyzer. Upload a Combat Logger file and explore fights entirely in your browser — no server required.",
+        "The first Runelogs prototype is live as a browser-based combat log analyzer. Upload a Combat Logger file and explore fights entirely in your browser, with no server required.",
         "This release includes DPS charts, paginated event tables, fight splitting, damage done/taken views, and boost tracking. The runelogs.com domain is registered and the app is deployed to GitHub Pages.",
       ],
     },
   },
 
-  // — Combat Logger —
+  // Combat Logger
   {
     date: "2026-07-08",
-    title: "Combat Logger 1.6.7 Release",
+    title: "1.6.7 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -425,7 +436,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2026-07-02",
-    title: "Combat Logger 1.6.6 Release",
+    title: "1.6.6 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -433,7 +444,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
       paragraphs: [
         "Combat Logger 1.6.6 adds full Maggot King tracking so uploaded and live logs capture the boss fight on Runelogs.",
         "Maggot King and Ur-maggot larvae NPCs are tracked, along with poison splat game objects and dust wave and shadow warning graphics. Maggot King is registered as a boss ID so fight splitting and DPS meters treat the encounter correctly.",
-        "Install 1.6.6 before logging Maggot King kills you plan to upload or live-stream — older plugin versions will miss the new NPCs, objects, and graphics that Runelogs replay and leaderboards expect.",
+        "Install 1.6.6 before logging Maggot King kills you plan to upload or live-stream. Older plugin versions will miss the new NPCs, objects, and graphics that Runelogs replay and leaderboards expect.",
       ],
       bullets: [
         "Maggot King (15742) and Ur-maggot larvae (15743) NPC tracking",
@@ -444,20 +455,20 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2026-06-29",
-    title: "Combat Logger 1.6.5 Release",
+    title: "1.6.5 Release",
     category: "combat-logger",
     body: {
       summary:
         "Combat Logger 1.6.5 updates attack animation IDs for recently released weapons so specials and unique attack styles log correctly in Runelogs.",
       paragraphs: [
         "Combat Logger 1.6.5 updates attack animation IDs for recently released weapons so specials and unique attack styles log correctly in Runelogs DPS meters and replay tooling.",
-        "Keeping animation maps current is routine maintenance, but it matters for accuracy — missing animations can make abilities look like idle ticks or splashes in uploaded and live logs.",
+        "Keeping animation maps current is routine maintenance, but it matters for accuracy. Missing animations can make abilities look like idle ticks or splashes in uploaded and live logs.",
       ],
     },
   },
   {
     date: "2026-06-28",
-    title: "Combat Logger 1.6.4 Release",
+    title: "1.6.4 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -470,7 +481,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2026-06-28",
-    title: "Combat Logger 1.6.3 Release",
+    title: "1.6.3 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -483,7 +494,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2026-06-28",
-    title: "Combat Logger 1.6.2 Release",
+    title: "1.6.2 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -496,27 +507,27 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2026-06-25",
-    title: "Combat Logger 1.6.1 Release",
+    title: "1.6.1 Release",
     category: "combat-logger",
     body: {
       summary:
         "Combat Logger 1.6.1 extends world object tracking so temporary mechanic objects like acid pools, rocks, and minions are captured for replay and analysis.",
       paragraphs: [
-        "Combat Logger 1.6.1 extends world object tracking so mechanics that spawn temporary objects — acid pools, rocks, minions, and similar — are captured in logs for replay and analysis.",
+        "Combat Logger 1.6.1 extends world object tracking so mechanics that spawn temporary objects such as acid pools, rocks, and minions are captured in logs for replay and analysis.",
         "More tracked objects mean Runelogs can render mechanics overlays and attribute damage to the right phase when those objects participate in a fight.",
       ],
     },
   },
   {
     date: "2026-06-22",
-    title: "Combat Logger 1.6.0 Release",
+    title: "1.6.0 Release",
     category: "combat-logger",
     body: {
       summary:
         "Combat Logger 1.6.0 adds a ColosseumHelper for wave modifier tracking, streamlined Tombs of Amascut wipe detection, and an option to auto-open your Runelogs live page.",
       paragraphs: [
         "Fortis Colosseum players can log wave modifier choices via a new ColosseumHelper, which records which upgrades you selected between waves. Runelogs displays these modifiers on Colosseum run summaries and leaderboard entries.",
-        "Tombs of Amascut wipe detection is streamlined through ToaHelper and shared RaidWipeUtil logic, making wipe events more reliable in raid logs. A config option can automatically open your Runelogs live log page when live logging starts — handy for streamers sharing a browser source.",
+        "Tombs of Amascut wipe detection is streamlined through ToaHelper and shared RaidWipeUtil logic, making wipe events more reliable in raid logs. A config option can automatically open your Runelogs live log page when live logging starts, which is handy for streamers sharing a browser source.",
       ],
       bullets: [
         "ColosseumHelper for wave modifier tracking",
@@ -527,7 +538,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2026-06-15",
-    title: "Combat Logger 1.5.0 Release",
+    title: "1.5.0 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -540,7 +551,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2025-12-08",
-    title: "Combat Logger 1.4.5 Release",
+    title: "1.4.5 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -552,7 +563,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2025-12-08",
-    title: "Combat Logger 1.4.4 Release",
+    title: "1.4.4 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -565,7 +576,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2025-12-04",
-    title: "Combat Logger 1.4.3 Release",
+    title: "1.4.3 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -578,20 +589,20 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2025-10-10",
-    title: "Combat Logger 1.4.2 Release",
+    title: "1.4.2 Release",
     category: "combat-logger",
     body: {
       summary:
         "Combat Logger 1.4.2 adds Theatre of Blood Verzik creeper tracking and Doom of Mokhaiotl support, including acid blood and rock objects for delves.",
       paragraphs: [
-        "Theatre of Blood players get Verzik creeper tracking in 1.4.2 — creeper NPCs are included in tracked boss minions so room damage breakdowns are complete.",
+        "Theatre of Blood players get Verzik creeper tracking in 1.4.2. Creeper NPCs are included in tracked boss minions so room damage breakdowns are complete.",
         "This release also adds Doom of Mokhaiotl support (boss NPC, acid blood, and rock objects), improving delves logging on Runelogs.",
       ],
     },
   },
   {
     date: "2025-07-24",
-    title: "Combat Logger 1.4.1 Release",
+    title: "1.4.1 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -604,7 +615,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2025-07-12",
-    title: "Combat Logger 1.4.0 Release",
+    title: "1.4.0 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -617,7 +628,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2025-06-11",
-    title: "Combat Logger 1.3.7 Release",
+    title: "1.3.7 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -630,7 +641,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2025-05-23",
-    title: "Combat Logger 1.3.6 Release",
+    title: "1.3.6 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -643,7 +654,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2025-04-14",
-    title: "Combat Logger 1.3.5 Release",
+    title: "1.3.5 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -656,19 +667,19 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2025-04-10",
-    title: "Combat Logger 1.3.4 Release",
+    title: "1.3.4 Release",
     category: "combat-logger",
     body: {
       summary:
         "Combat Logger 1.3.4 handles NPC ID transitions during an active fight, like Wyrm forms, so a single encounter no longer splits into two.",
       paragraphs: [
-        "Some bosses change NPC ID mid-fight — notably forms like Wyrms — which previously could split one encounter into two. Combat Logger 1.3.4 handles ID transitions during an active fight so Runelogs keeps a single encounter timeline.",
+        "Some bosses change NPC ID mid-fight, notably forms like Wyrms, which previously could split one encounter into two. Combat Logger 1.3.4 handles ID transitions during an active fight so Runelogs keeps a single encounter timeline.",
       ],
     },
   },
   {
     date: "2025-02-20",
-    title: "Combat Logger 1.3.3 Release",
+    title: "1.3.3 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -681,7 +692,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2025-02-13",
-    title: "Combat Logger 1.3.2 Release",
+    title: "1.3.2 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -694,7 +705,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2025-01-17",
-    title: "Combat Logger 1.3.1 Release",
+    title: "1.3.1 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -712,7 +723,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2024-11-15",
-    title: "Combat Logger 1.3.0 Release",
+    title: "1.3.0 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -725,20 +736,20 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2024-11-04",
-    title: "Combat Logger 1.2.1 Release",
+    title: "1.2.1 Release",
     category: "combat-logger",
     body: {
       summary:
         "Combat Logger 1.2.1 brings overlay stability improvements and concurrency fixes for rare races when multiple events update the meter in the same tick.",
       paragraphs: [
         "Overlay stability improvements land in 1.2.1: empty lines are removed from the damage meter, the context menu hides when the overlay is not visible, and a player stat cache reduces flicker during busy fights.",
-        "Concurrency fixes address rare races when multiple game events update the overlay in the same tick — important for long raids where the meter stays open for hours.",
+        "Concurrency fixes address rare races when multiple game events update the overlay in the same tick, which matters for long raids where the meter stays open for hours.",
       ],
     },
   },
   {
     date: "2024-10-29",
-    title: "Combat Logger 1.2.0 Release",
+    title: "1.2.0 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -756,7 +767,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2024-08-06",
-    title: "Combat Logger 1.1.2 Release",
+    title: "1.1.2 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -769,20 +780,20 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2024-07-29",
-    title: "Combat Logger 1.1.1 Release",
+    title: "1.1.1 Release",
     category: "combat-logger",
     body: {
       summary:
         "Combat Logger 1.1.1 lets you manually stop the current fight and improves Tombs of Amascut path and Wardens encounter grouping.",
       paragraphs: [
-        "You can manually stop the current fight from the plugin — useful when a boss is reset or you want to split practice attempts without restarting the plugin.",
+        "You can manually stop the current fight from the plugin, which is useful when a boss is reset or you want to split practice attempts without restarting the plugin.",
         "Tombs of Amascut path and Wardens encounter handling improves so raid logs group rooms correctly when uploaded to Runelogs.",
       ],
     },
   },
   {
     date: "2024-07-12",
-    title: "Combat Logger 1.1.0 Release",
+    title: "1.1.0 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -795,7 +806,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2024-07-04",
-    title: "Combat Logger 1.0.2 Release",
+    title: "1.0.2 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -813,7 +824,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2024-06-23",
-    title: "Combat Logger 1.0.1 Release",
+    title: "1.0.1 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -826,21 +837,21 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2024-03-09",
-    title: "Combat Logger 1.0.0 Release",
+    title: "1.0.0 Release",
     category: "combat-logger",
     body: {
       summary:
         "Combat Logger 1.0.0 introduces the structured log format for upload to Runelogs, pairing each game tick and timestamp with a tab-separated event body.",
       paragraphs: [
         "Combat Logger 1.0.0 introduces a structured log format for upload to Runelogs and other analyzers. Each line pairs a game tick and compact timestamp with a tab-separated event body.",
-        "New sessions write a `Log Version 1.0.0` header, your player name, and boosted combat levels. Damage entries record source, hitsplat type, target, and amount — NPC targets use stable `id-index` identifiers instead of display names. Player region changes log for instance detection, timestamps use a compact format, and expanded hitsplat and animation IDs improve weapon coverage.",
+        "New sessions write a `Log Version 1.0.0` header, your player name, and boosted combat levels. Damage entries record source, hitsplat type, target, and amount. NPC targets use stable `id-index` identifiers instead of display names. Player region changes log for instance detection, timestamps use a compact format, and expanded hitsplat and animation IDs improve weapon coverage.",
         "Blowpipe stop detection writes an explicit line when you cease rapid fire, helping distinguish burst windows in DPS charts. Update to 1.0.0 before your next raid if you upload logs to Runelogs.",
       ],
     },
   },
   {
     date: "2024-02-28",
-    title: "Combat Logger 0.0.6 Release",
+    title: "0.0.6 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -853,7 +864,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2024-02-28",
-    title: "Combat Logger 0.0.5 Release",
+    title: "0.0.5 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -866,33 +877,33 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
   {
     date: "2024-02-23",
-    title: "Combat Logger 0.0.4 Release",
+    title: "0.0.4 Release",
     category: "combat-logger",
     body: {
       summary:
         "Combat Logger 0.0.4 creates a fresh log file on each start and adds the ::newlog command to begin a new log on demand before a raid.",
       paragraphs: [
         "Each time you start the plugin, Combat Logger creates a fresh log file so sessions do not append endlessly to one giant file.",
-        "The ::newlog chat command starts a new log on demand — use it before a raid night when you plan to upload to Runelogs.",
+        "The ::newlog chat command starts a new log on demand. Use it before a raid night when you plan to upload to Runelogs.",
       ],
     },
   },
   {
     date: "2024-02-07",
-    title: "Combat Logger 0.0.3 Release",
+    title: "0.0.3 Release",
     category: "combat-logger",
     body: {
       summary:
         "Combat Logger 0.0.3 writes combat stat boosts and equipped gear to logs, powering boost charts and gear snapshots, with a reminder that logging is active.",
       paragraphs: [
         "Combat stat boosts and equipped gear are written to logs, giving Runelogs the data behind boost charts and gear snapshots on encounter pages.",
-        "A reminder message appears so you know logging is active — handy when hopping between accounts or after updating RuneLite.",
+        "A reminder message appears so you know logging is active, which is handy when hopping between accounts or after updating RuneLite.",
       ],
     },
   },
   {
     date: "2024-02-05",
-    title: "Combat Logger 0.0.2 Release",
+    title: "0.0.2 Release",
     category: "combat-logger",
     body: {
       summary:
@@ -908,7 +919,7 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
 /** Sorted newest-first when rendered. */
 export const BLOG_POSTS: BlogPost[] = BLOG_POSTS_RAW.map((post) => ({
   ...post,
-  slug: generateBlogSlug(post.title),
+  slug: generateBlogSlug(post.title, post.category),
 }));
 
 export function getBlogPostHref(slug: string): string {
@@ -991,15 +1002,7 @@ export function getRecentHomeBlogPosts(
   });
 }
 
+/** Homepage cards use the stored title; category is shown via the category mark. */
 export function getBlogPostShortTitle(post: BlogPost): string {
-  if (post.category === "runelogs" && post.title.startsWith("Runelogs — ")) {
-    return post.title.slice("Runelogs — ".length);
-  }
-  if (
-    post.category === "combat-logger" &&
-    post.title.startsWith("Combat Logger ")
-  ) {
-    return post.title.slice("Combat Logger ".length);
-  }
   return post.title;
 }

@@ -13,10 +13,10 @@ describe("getRecentHomeBlogPosts", () => {
     expect(posts).toHaveLength(2);
     expect(posts[0].category).toBe("runelogs");
     expect(posts[0].title).toBe(
-      "Runelogs — Encounter Summaries and Replay Tick Chart Improvements",
+      "Encounter Summaries and Replay Tick Chart Improvements",
     );
     expect(posts[1].category).toBe("combat-logger");
-    expect(posts[1].title).toBe("Combat Logger 1.6.7 Release");
+    expect(posts[1].title).toBe("1.6.7 Release");
   });
 
   it("excludes posts older than the max age", () => {
@@ -30,7 +30,7 @@ describe("getRecentHomeBlogPosts", () => {
       posts.some(
         (post) =>
           post.title ===
-          "Runelogs — Encounter Summaries and Replay Tick Chart Improvements",
+          "Encounter Summaries and Replay Tick Chart Improvements",
       ),
     ).toBe(true);
   });
@@ -55,11 +55,11 @@ describe("isBlogPostWithinDays", () => {
 });
 
 describe("getBlogPostShortTitle", () => {
-  it("strips category prefixes for compact homepage cards", () => {
+  it("returns the stored title for compact homepage cards", () => {
     expect(
       getBlogPostShortTitle({
         date: "2026-07-02",
-        title: "Runelogs — Maggot King",
+        title: "Maggot King",
         slug: "runelogs-maggot-king",
         category: "runelogs",
         body: { summary: "", paragraphs: [""] },
@@ -69,7 +69,7 @@ describe("getBlogPostShortTitle", () => {
     expect(
       getBlogPostShortTitle({
         date: "2026-07-02",
-        title: "Combat Logger 1.6.6 Release",
+        title: "1.6.6 Release",
         slug: "combat-logger-1-6-6-release",
         category: "combat-logger",
         body: { summary: "", paragraphs: [""] },

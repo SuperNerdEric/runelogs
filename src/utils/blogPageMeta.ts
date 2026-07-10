@@ -1,7 +1,6 @@
 import { BLOG_POSTS, BlogPost, getBlogPostPlainText } from "../data/blogPosts";
 
 import { PageMetaOptions } from "./pageMeta";
-import { stripRunelogsTitlePrefix } from "./pageMetaFormatting";
 
 function buildBlogPostDescription(post: BlogPost): string {
   const firstParagraph = post.body.paragraphs[0] ?? "";
@@ -32,7 +31,7 @@ function buildBlogPostDescription(post: BlogPost): string {
 
 function getBlogPostMetaTitle(post: BlogPost): string {
   if (post.category === "runelogs") {
-    return `${stripRunelogsTitlePrefix(post.title)} | Runelogs Blog`;
+    return `${post.title} | Runelogs Blog`;
   }
 
   return `${post.title} | Combat Logger Blog`;

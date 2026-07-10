@@ -7,7 +7,7 @@ const blogPostsPath = join(__dirname, "..", "src", "data", "blogPosts.ts");
 const sitemapPath = join(__dirname, "..", "public", "sitemap.xml");
 const SITE_URL = "https://www.runelogs.com";
 
-export function generateBlogSlug(title) {
+export function generateBlogSlug(title, category) {
   let slug = title
     .toLowerCase()
     .replace(/[\u2014\u2013]/g, "-")
@@ -15,20 +15,29 @@ export function generateBlogSlug(title) {
     .trim();
 
   slug = slug.replace(/(\d)\.(\d)/g, "$1-$2").replace(/\./g, "-");
-  return slug.replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+  slug = slug.replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+
+  if (category === "runelogs" && !slug.startsWith("runelogs-")) {
+    return `runelogs-${slug}`;
+  }
+  if (category === "combat-logger" && !slug.startsWith("combat-logger-")) {
+    return `combat-logger-${slug}`;
+  }
+  return slug;
 }
 
 function parseBlogPosts() {
   const content = readFileSync(blogPostsPath, "utf8");
   const posts = [];
   const entryPattern =
-    /date: ["']([^"']+)["'],\s*\n\s*title: ["']([^"']+)["']/g;
+    /date: ["']([^"']+)["'],\s*\n\s*title: ["']([^"']+)["'],\s*\n\s*category: ["']([^"']+)["']/g;
 
   for (const match of content.matchAll(entryPattern)) {
     posts.push({
       date: match[1],
       title: match[2],
-      slug: generateBlogSlug(match[2]),
+      category: match[3],
+      slug: generateBlogSlug(match[2], match[3]),
     });
   }
 
