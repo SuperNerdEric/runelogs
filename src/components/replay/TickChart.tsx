@@ -226,8 +226,8 @@ const TickChartCell = memo(function TickChartCell({
               alt=""
               aria-hidden="true"
               className="replay-tick-chart__spell-cast-arrow"
-              width={10}
-              height={10}
+              width={32}
+              height={32}
             />
           </span>
         )}
