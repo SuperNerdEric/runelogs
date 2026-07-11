@@ -33,6 +33,7 @@ import { getPrayerImageUrl } from "../lib/prayerImages";
 import { getItemImageUrl } from "./replay/PlayerEquipment";
 
 export type FilterOption =
+  | { kind: "eventType"; label: string; filter: string }
   | { kind: "source"; label: string; filter: ActorFilter }
   | { kind: "target"; label: string; filter: ActorFilter }
   | { kind: "equipment"; label: string; filter: EquipmentFilter }
@@ -52,6 +53,7 @@ type DisplayOption =
 interface FilterSearchBarProps {
   fight: Fight;
   variant?: FilterSearchBarVariant;
+  onSelectEventTypeFilter?: (eventType: string) => void;
   onSelectSourceFilter?: (filter: ActorFilter) => void;
   onSelectTargetFilter?: (filter: ActorFilter) => void;
   onSelectEquipmentFilter?: (filter: EquipmentFilter) => void;
@@ -61,6 +63,7 @@ interface FilterSearchBarProps {
 }
 
 const CATEGORY_LABELS: Record<FilterCategory, string> = {
+  eventType: "Event Type",
   source: "Source",
   target: "Target",
   equipment: "Equipment",
@@ -78,6 +81,7 @@ const getCategoryLabel = (option: FilterOption): string =>
 const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
   fight,
   variant = "default",
+  onSelectEventTypeFilter,
   onSelectSourceFilter,
   onSelectTargetFilter,
   onSelectEquipmentFilter,
@@ -95,12 +99,17 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const itemOptions = useMemo(() => {
+    const eventTypes = new Set<string>();
     const sourceNames = new Set<string>();
     const targetNames = new Set<string>();
     const equipmentItems = new Map<number, string>();
     const prayerItems = new Map<number, string>();
 
     for (const log of fight.data) {
+      if (log.type) {
+        eventTypes.add(log.type);
+      }
+
       const source = getActorFromLog(log, "source");
       const target = getActorFromLog(log, "target");
 
@@ -145,6 +154,18 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
     }
 
     const filterOptions: FilterOption[] = [];
+
+    if (onSelectEventTypeFilter) {
+      Array.from(eventTypes)
+        .sort((a, b) => a.localeCompare(b))
+        .forEach((type) => {
+          filterOptions.push({
+            kind: "eventType",
+            label: type,
+            filter: type,
+          });
+        });
+    }
 
     Array.from(sourceNames)
       .sort((a, b) => a.localeCompare(b))
@@ -205,7 +226,7 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
     });
 
     return filterOptions;
-  }, [fight.data, variant]);
+  }, [fight.data, onSelectEventTypeFilter, variant]);
 
   const goBackToCategories = () => {
     keepOpenRef.current = true;
@@ -249,7 +270,7 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
             "hitsplatType",
             "hitsplat",
           ]
-        : ["source", "target", "equipment", "prayer", "hitsplat"];
+        : ["eventType", "source", "target", "equipment", "prayer", "hitsplat"];
     return categories
       .filter((category) =>
         itemOptions.some((option) => option.kind === category),
@@ -262,7 +283,9 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
   }, [activeCategory, inputValue, itemOptions, variant]);
 
   const applyFilter = (option: FilterOption) => {
-    if (option.kind === "source") {
+    if (option.kind === "eventType") {
+      onSelectEventTypeFilter?.(option.filter);
+    } else if (option.kind === "source") {
       onSelectSourceFilter?.(option.filter);
     } else if (option.kind === "target") {
       onSelectTargetFilter?.(option.filter);
@@ -283,6 +306,7 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
   };
 
   if (
+    !onSelectEventTypeFilter &&
     !onSelectSourceFilter &&
     !onSelectTargetFilter &&
     !onSelectEquipmentFilter &&

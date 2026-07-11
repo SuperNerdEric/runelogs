@@ -403,6 +403,7 @@ const EventsTable: React.FC<EventsTableProps> = ({
   };
 
   const hasFilterControls =
+    onSelectEventTypeFilter ||
     onSelectSourceFilter ||
     onSelectTargetFilter ||
     onSelectEquipmentFilter ||
@@ -416,6 +417,7 @@ const EventsTable: React.FC<EventsTableProps> = ({
         <FilterSearchBar
           fight={{ ...fight, data: allLogs ?? fight.data }}
           variant={variant}
+          onSelectEventTypeFilter={onSelectEventTypeFilter}
           onSelectSourceFilter={onSelectSourceFilter}
           onSelectTargetFilter={onSelectTargetFilter}
           onSelectEquipmentFilter={onSelectEquipmentFilter}
