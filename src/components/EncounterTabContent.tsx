@@ -121,6 +121,7 @@ const EncounterTabContent: React.FC<EncounterTabContentProps> = ({
         <DamageDoneTab
           selectedLogs={fight}
           dpsPercentiles={dpsPercentiles}
+          showPercentile={dpsLeaderboardKey != null}
           sourceFilter={dataSourceFilter}
           targetFilter={dataTargetFilter}
           equipmentFilter={dataEquipmentFilter}

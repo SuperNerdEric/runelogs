@@ -111,6 +111,8 @@ const EncounterSummary: React.FC<EncounterSummaryProps> = ({
 
         dpsPercentiles={dpsPercentiles}
 
+        showPercentile={dpsLeaderboardKey != null}
+
         getSourceFilterLinkSearch={getDamageDoneSourceLinkSearch}
       />
 

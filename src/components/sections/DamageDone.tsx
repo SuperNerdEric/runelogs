@@ -53,6 +53,7 @@ interface LogsSelectionProps {
   onClearHitsplatFilter?: () => void;
   onClearHitsplatTypeFilter?: () => void;
   dpsPercentiles?: Record<string, number>;
+  showPercentile?: boolean;
 }
 
 const DamageDone: React.FC<LogsSelectionProps> = ({
@@ -77,6 +78,7 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
   onClearHitsplatFilter,
   onClearHitsplatTypeFilter,
   dpsPercentiles,
+  showPercentile = false,
 }) => {
   const filteredLogs = useMemo(
     () => filterByType(fight.data, LogTypes.DAMAGE),
@@ -249,6 +251,7 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
                 sourceFilter={sourceFilter}
                 targetFilter={targetFilter}
                 dpsPercentiles={dpsPercentiles}
+                showPercentile={showPercentile}
                 onSelectSourceFilter={onSelectSourceFilter}
                 onSelectTargetFilter={onSelectTargetFilter}
               />
@@ -262,6 +265,7 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
               sourceFilter={sourceFilter}
               targetFilter={targetFilter}
               dpsPercentiles={dpsPercentiles}
+              showPercentile={showPercentile}
               onSelectSourceFilter={onSelectSourceFilter}
               onSelectTargetFilter={onSelectTargetFilter}
             />

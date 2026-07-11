@@ -54,6 +54,7 @@ interface FilterableTabProps {
   dataAnimationIdFilter?: number | null;
   onClearAnimationIdFilter?: () => void;
   dpsPercentiles?: Record<string, number>;
+  showPercentile?: boolean;
 }
 
 export const DamageDoneTab: React.FC<FilterableTabProps> = ({
@@ -77,6 +78,7 @@ export const DamageDoneTab: React.FC<FilterableTabProps> = ({
   onClearHitsplatFilter,
   onClearHitsplatTypeFilter,
   dpsPercentiles,
+  showPercentile,
 }) => {
   return (
     <DamageDone
@@ -89,6 +91,7 @@ export const DamageDoneTab: React.FC<FilterableTabProps> = ({
       hitsplatFilter={hitsplatFilter}
       hitsplatTypeFilter={hitsplatTypeFilter}
       dpsPercentiles={dpsPercentiles}
+      showPercentile={showPercentile}
       onSelectSourceFilter={onSelectSourceFilter}
       onSelectTargetFilter={onSelectTargetFilter}
       onSelectEquipmentFilter={onSelectEquipmentFilter}

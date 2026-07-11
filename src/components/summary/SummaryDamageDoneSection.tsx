@@ -11,6 +11,7 @@ import SummarySection from "./SummarySection";
 interface SummaryDamageDoneSectionProps {
   fight: Fight;
   dpsPercentiles?: Record<string, number>;
+  showPercentile?: boolean;
   onSelectSourceFilter?: (filter: ActorFilter) => void;
   onSelectTargetFilter?: (filter: ActorFilter) => void;
   getSourceFilterLinkSearch?: (filter: ActorFilter) => string;
@@ -21,6 +22,7 @@ const noop = () => undefined;
 const SummaryDamageDoneSection: React.FC<SummaryDamageDoneSectionProps> = ({
   fight,
   dpsPercentiles,
+  showPercentile = false,
   onSelectSourceFilter = noop,
   onSelectTargetFilter = noop,
   getSourceFilterLinkSearch,
@@ -69,6 +71,7 @@ const SummaryDamageDoneSection: React.FC<SummaryDamageDoneSectionProps> = ({
               sourceFilter={null}
               targetFilter={null}
               dpsPercentiles={dpsPercentiles}
+              showPercentile={showPercentile}
               onSelectSourceFilter={onSelectSourceFilter}
               onSelectTargetFilter={onSelectTargetFilter}
               getSourceFilterLinkSearch={getSourceFilterLinkSearch}

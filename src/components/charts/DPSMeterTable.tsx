@@ -50,6 +50,8 @@ interface DPSMeterBarChartProps {
   sourceFilter?: ActorFilter | null;
   targetFilter?: ActorFilter | null;
   dpsPercentiles?: Record<string, number>;
+  /** When false, hide the Percentile column (non–DPS-leaderboard encounters). */
+  showPercentile?: boolean;
   onSelectSourceFilter: (filter: ActorFilter) => void;
   onSelectTargetFilter: (filter: ActorFilter) => void;
   getSourceFilterLinkSearch?: (filter: ActorFilter) => string;
@@ -227,6 +229,7 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
   sourceFilter = null,
   targetFilter = null,
   dpsPercentiles,
+  showPercentile = false,
   onSelectSourceFilter,
   onSelectTargetFilter,
   getSourceFilterLinkSearch,
@@ -242,6 +245,8 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
     targetFilter ?? null,
   );
   const isTargetDrillDown = targetDrillDownGrouping !== null;
+  const showPercentileColumn =
+    showPercentile && type === "damage-done" && !isTargetDrillDown;
 
   const totalDamage = Object.values(dpsData).reduce(
     (acc, cur) => acc + cur.totalDamage,
@@ -331,7 +336,7 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
                 tooltip={COLUMN_TOOLTIPS.dps}
               />
             </TableCell>
-            {type === "damage-done" && !isTargetDrillDown && (
+            {showPercentileColumn && (
               <TableCell style={{ width: "70px", textAlign: "center" }}>
                 <TableColumnHeaderTooltip
                   label="Percentile"
@@ -350,10 +355,9 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
               );
               const unknown =
                 !isTargetDrillDown && isUnknownPlayer(displayName);
-              const parsePercentile =
-                type === "damage-done" && !isTargetDrillDown
-                  ? dpsPercentiles?.[displayName]
-                  : undefined;
+              const parsePercentile = showPercentileColumn
+                ? dpsPercentiles?.[displayName]
+                : undefined;
               const dpsDisplay = getPlayerDpsDisplayColor(
                 displayName,
                 parsePercentile,
@@ -501,7 +505,7 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
                   >
                     {data.dps}
                   </TableCell>
-                  {type === "damage-done" && !isTargetDrillDown && (
+                  {showPercentileColumn && (
                     <TableCell
                       style={{
                         width: "70px",
