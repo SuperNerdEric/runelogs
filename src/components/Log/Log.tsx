@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Alert, Box, CircularProgress, Typography } from "@mui/material";
 import FightSelector from "../sections/FightSelector";
-import { FightMetaData } from "../../models/Fight";
 import { EncounterMetaData } from "../../models/LogLine";
 import LogInfoBox from "./LogInfoBox";
 import { centeredPageStateSx, contentColumnSx } from "../../theme";
@@ -10,11 +9,6 @@ import {
   getEncounterHref,
   getRunSummaryHref,
 } from "../../utils/encounterTableRow";
-import { inferLeaderboardFightGroupName } from "../../utils/leaderboardContent";
-import {
-  isFightGroupRunInProgress,
-  resolveLiveFightTileState,
-} from "../../utils/fightDisplayStatus";
 import LiveLogProgressAlert from "../LiveLogProgressAlert";
 import {
   LIVE_PAGE_RETRY_INTERVAL_MS,
@@ -34,6 +28,7 @@ import {
   getLoadingEncounterPageMeta,
   getLogPageMeta,
 } from "../../utils/encounterPageMeta";
+import { mapLogPageEncountersToMetadata } from "./mapLogPageEncounters";
 
 interface ApiFight {
   id: string;
@@ -177,81 +172,13 @@ const Log: React.FC = () => {
           setLogName(name);
           setUploadedAt(ua);
 
-          const out: EncounterMetaData[] = [];
-
-          for (const enc of sortedEncounters) {
-            if (enc.type === "fightGroup") {
-              const sortedFights = enc.fights
-                .slice()
-                .sort((a, b) => a.order - b.order);
-              // Prefer the log-page annotation: while the log is receiving,
-              // incomplete runs stay in-progress even when live pointers lag.
-              const groupInProgress =
-                typeof enc.receivingData === "boolean"
-                  ? enc.receivingData && !enc.success
-                  : isFightGroupRunInProgress(
-                      Boolean(body.receivingData),
-                      enc.success,
-                      enc.id,
-                      sortedFights.map((f) => f.id),
-                      body.liveActiveFightGroupId,
-                      body.liveActiveFightId,
-                    );
-
-              const fightStates = sortedFights.map((f) => ({
-                id: f.id,
-                success: f.success,
-                order: f.order,
-              }));
-
-              const childFights: FightMetaData[] = sortedFights.map((f) => {
-                const tileState = resolveLiveFightTileState(
-                  Boolean(body.receivingData),
-                  enc.success,
-                  fightStates,
-                  {
-                    id: f.id,
-                    success: f.success,
-                    order: f.order,
-                  },
-                  body.liveActiveFightId,
-                );
-
-                return {
-                  name: f.name,
-                  startTime: f.startTime,
-                  fightDurationTicks: f.fightDurationTicks,
-                  success: tileState.displaySuccess,
-                  inProgress: tileState.inProgress,
-                };
-              });
-
-              const fgMeta = {
-                name: enc.name,
-                officialDurationTicks: enc.displayDurationTicks ?? undefined,
-                success: enc.success,
-                inProgress: groupInProgress,
-                fights: childFights,
-                id: enc.id,
-                leaderboardName:
-                  enc.leaderboardName ??
-                  inferLeaderboardFightGroupName(enc.name),
-              };
-
-              out.push(fgMeta);
-            } else {
-              const fMeta: FightMetaData = {
-                name: enc.mainEnemyName ?? enc.name,
-                startTime: enc.startTime,
-                fightDurationTicks: enc.fightDurationTicks,
-                success: enc.success,
-              };
-
-              out.push(fMeta);
-            }
-          }
-
-          setMetadata(out);
+          setMetadata(
+            mapLogPageEncountersToMetadata(sortedEncounters, {
+              receivingData: body.receivingData,
+              liveActiveFightGroupId: body.liveActiveFightGroupId,
+              liveActiveFightId: body.liveActiveFightId,
+            }),
+          );
         } catch (err: any) {
           console.error(err);
           setError(err.message || "Unknown error fetching log");
