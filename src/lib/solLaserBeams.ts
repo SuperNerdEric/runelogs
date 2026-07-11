@@ -1,11 +1,5 @@
 import { GraphicsObjectState } from "../components/replay/GameState";
 
-/** Colosseum Sol arena bounds (same as in-game laser prism beams). */
-export const SOL_ARENA_MIN_X = 1818;
-export const SOL_ARENA_MIN_Y = 3100;
-export const SOL_ARENA_MAX_X = 1831;
-export const SOL_ARENA_MAX_Y = 3113;
-
 export const SOL_LASER_SCAN_IDS = new Set([2689, 2690, 2691]);
 export const SOL_LASER_SHOT_IDS = new Set([2693, 2694, 2695]);
 export const SOL_LASER_ALL_IDS = new Set([
@@ -13,9 +7,13 @@ export const SOL_LASER_ALL_IDS = new Set([
   ...SOL_LASER_SHOT_IDS,
 ]);
 
-const HORIZONTAL_SEGMENT_IDS = new Set([2689, 2693]);
-const VERTICAL_SEGMENT_IDS = new Set([2690, 2694]);
-const PRISM_IDS = new Set([2691, 2695]);
+/**
+ * Spotanim orientation from live Colosseum logs (IDs are opposite the asset names):
+ * 2689/2691/2693/2695 form north-south columns; 2690/2694 form west-east rows.
+ * All dumped frames are horizontal sprites — vertical beams need a 90° rotate at render.
+ */
+const HORIZONTAL_SEGMENT_IDS = new Set([2690, 2694]);
+const VERTICAL_SEGMENT_IDS = new Set([2689, 2691, 2693, 2695]);
 
 export type SolLaserPhase = "scan" | "shot";
 export type SolLaserOrientation = "horizontal" | "vertical";
@@ -41,67 +39,32 @@ function textureIdForBeam(
   orientation: SolLaserOrientation,
 ): number {
   if (phase === "shot") {
-    return orientation === "horizontal" ? 2693 : 2694;
+    return orientation === "horizontal" ? 2694 : 2693;
   }
-  return orientation === "horizontal" ? 2689 : 2690;
+  return orientation === "horizontal" ? 2690 : 2689;
 }
 
-function beamFromPrism(
-  prismX: number,
-  prismY: number,
-  spawnTick: number,
-  phase: SolLaserPhase,
-  plane: number,
-): SolLaserBeam | null {
-  if (prismX <= SOL_ARENA_MIN_X) {
-    return {
-      spawnTick,
-      phase,
-      orientation: "horizontal",
-      fixedCoord: prismY,
-      startVar: prismX + 1,
-      endVar: SOL_ARENA_MAX_X,
-      plane,
-      textureId: textureIdForBeam(phase, "horizontal"),
-    };
+/** Split sorted unique coords into contiguous inclusive [start, end] runs. */
+function contiguousRuns(coords: number[]): Array<[number, number]> {
+  if (coords.length === 0) {
+    return [];
   }
-  if (prismX >= SOL_ARENA_MAX_X) {
-    return {
-      spawnTick,
-      phase,
-      orientation: "horizontal",
-      fixedCoord: prismY,
-      startVar: SOL_ARENA_MIN_X,
-      endVar: prismX - 1,
-      plane,
-      textureId: textureIdForBeam(phase, "horizontal"),
-    };
+
+  const sorted = [...new Set(coords)].sort((a, b) => a - b);
+  const runs: Array<[number, number]> = [];
+  let start = sorted[0];
+  let prev = sorted[0];
+
+  for (let i = 1; i < sorted.length; i++) {
+    const value = sorted[i];
+    if (value !== prev + 1) {
+      runs.push([start, prev]);
+      start = value;
+    }
+    prev = value;
   }
-  if (prismY <= SOL_ARENA_MIN_Y) {
-    return {
-      spawnTick,
-      phase,
-      orientation: "vertical",
-      fixedCoord: prismX,
-      startVar: prismY + 1,
-      endVar: SOL_ARENA_MAX_Y,
-      plane,
-      textureId: textureIdForBeam(phase, "vertical"),
-    };
-  }
-  if (prismY >= SOL_ARENA_MAX_Y) {
-    return {
-      spawnTick,
-      phase,
-      orientation: "vertical",
-      fixedCoord: prismX,
-      startVar: SOL_ARENA_MIN_Y,
-      endVar: prismY - 1,
-      plane,
-      textureId: textureIdForBeam(phase, "vertical"),
-    };
-  }
-  return null;
+  runs.push([start, prev]);
+  return runs;
 }
 
 function groupLine(
@@ -127,21 +90,6 @@ function groupLine(
       : "scan";
     const plane = spawnTiles[0].position.plane;
 
-    const prismTile = spawnTiles.find((tile) => PRISM_IDS.has(tile.id));
-    if (prismTile) {
-      const prismBeam = beamFromPrism(
-        prismTile.position.x,
-        prismTile.position.y,
-        spawnTick,
-        phase,
-        plane,
-      );
-      if (prismBeam) {
-        beams.push(prismBeam);
-        continue;
-      }
-    }
-
     const byFixedCoord = new Map<number, GraphicsObjectState[]>();
     for (const tile of spawnTiles) {
       const fixedCoord =
@@ -155,16 +103,18 @@ function groupLine(
       const vars = lineTiles.map((tile) =>
         orientation === "horizontal" ? tile.position.x : tile.position.y,
       );
-      beams.push({
-        spawnTick,
-        phase,
-        orientation,
-        fixedCoord,
-        startVar: Math.min(...vars),
-        endVar: Math.max(...vars),
-        plane,
-        textureId: textureIdForBeam(phase, orientation),
-      });
+      for (const [startVar, endVar] of contiguousRuns(vars)) {
+        beams.push({
+          spawnTick,
+          phase,
+          orientation,
+          fixedCoord,
+          startVar,
+          endVar,
+          plane,
+          textureId: textureIdForBeam(phase, orientation),
+        });
+      }
     }
   }
 
@@ -173,7 +123,7 @@ function groupLine(
 
 /**
  * Groups per-tile Sol laser graphics into continuous beam segments.
- * Spotanim variants 2689/2693 are horizontal, 2690/2694 vertical, 2691/2695 prism origins.
+ * 2690/2694 are west-east; 2689/2691/2693/2695 are north-south.
  */
 export function computeSolLaserBeams(
   graphicsObjects: Record<string, GraphicsObjectState>,
@@ -185,20 +135,19 @@ export function computeSolLaserBeams(
     return [];
   }
 
-  const horizontalTiles = laserTiles.filter(
-    (tile) => HORIZONTAL_SEGMENT_IDS.has(tile.id) || PRISM_IDS.has(tile.id),
+  const horizontalTiles = laserTiles.filter((tile) =>
+    HORIZONTAL_SEGMENT_IDS.has(tile.id),
   );
-  const verticalTiles = laserTiles.filter(
-    (tile) => VERTICAL_SEGMENT_IDS.has(tile.id) || PRISM_IDS.has(tile.id),
+  const verticalTiles = laserTiles.filter((tile) =>
+    VERTICAL_SEGMENT_IDS.has(tile.id),
   );
 
   const horizontalBeams = groupLine(horizontalTiles, "horizontal");
   const verticalBeams = groupLine(verticalTiles, "vertical");
 
-  // Prism-only tiles can match both orientations; keep the beam with the longer span.
   const deduped = new Map<string, SolLaserBeam>();
   for (const beam of [...horizontalBeams, ...verticalBeams]) {
-    const key = `${beam.spawnTick}-${beam.orientation}-${beam.fixedCoord}`;
+    const key = `${beam.spawnTick}-${beam.orientation}-${beam.fixedCoord}-${beam.startVar}-${beam.endVar}`;
     const existing = deduped.get(key);
     if (
       !existing ||

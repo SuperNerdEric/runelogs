@@ -869,7 +869,7 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
     ],
   },
   2689: {
-    name: "Colosseum Sol laser scan 1",
+    name: "Colosseum Sol laser scan (north-south)",
     frameLengths: [
       1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
       3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
@@ -921,7 +921,7 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
     ],
   },
   2690: {
-    name: "Colosseum Sol laser scan 2",
+    name: "Colosseum Sol laser scan (west-east)",
     frameLengths: [
       1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
       3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
@@ -973,7 +973,7 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
     ],
   },
   2691: {
-    name: "Colosseum Sol laser scan 3",
+    name: "Colosseum Sol laser scan (north-south variant)",
     frameLengths: [
       1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
       3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
@@ -1025,7 +1025,7 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
     ],
   },
   2693: {
-    name: "Colosseum Sol laser shot 1",
+    name: "Colosseum Sol laser shot (north-south)",
     frameLengths: [
       1, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
       5, 5,
@@ -1061,7 +1061,7 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
     ],
   },
   2694: {
-    name: "Colosseum Sol laser shot 2",
+    name: "Colosseum Sol laser shot (west-east)",
     frameLengths: [
       1, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
       5, 5,
@@ -1097,7 +1097,7 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
     ],
   },
   2695: {
-    name: "Colosseum Sol laser shot 3",
+    name: "Colosseum Sol laser shot (north-south variant)",
     frameLengths: [
       1, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
       5, 5,

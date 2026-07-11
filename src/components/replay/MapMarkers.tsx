@@ -41,6 +41,7 @@ import {
 import L, { LatLngBounds } from "leaflet";
 import { colors } from "../../theme";
 import NpcImageOverlay from "./NpcImageOverlay";
+import SolLaserImageOverlay from "./SolLaserImageOverlay";
 
 interface MapMarkersProps {
   playerPositions: { [playerName: string]: GamePosition };
@@ -76,6 +77,7 @@ interface SolLaserRenderData {
   displayImage: string;
   bounds: LatLngBounds;
   opacity: number;
+  orientation: SolLaserBeam["orientation"];
 }
 
 type HighlightObjectType = "graphics" | "game" | "ground";
@@ -177,10 +179,11 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
 
       return [
         {
-          key: `sol-laser-${beam.spawnTick}-${beam.orientation}-${beam.fixedCoord}-${index}`,
+          key: `sol-laser-${beam.spawnTick}-${beam.orientation}-${beam.fixedCoord}-${beam.startVar}-${beam.endVar}-${index}`,
           displayImage: displayImage!,
           bounds: solLaserBeamToBounds(map, beam),
           opacity: beam.phase === "shot" ? 1 : 0.85,
+          orientation: beam.orientation,
         },
       ];
     });
@@ -519,13 +522,12 @@ const MapMarkers: React.FC<MapMarkersProps> = ({
       })}
       {/* Render Sol laser beams as stretched overlays (per-tile segments do not align). */}
       {renderedSolLaserBeams.map((beam) => (
-        <ImageOverlay
+        <SolLaserImageOverlay
           key={beam.key}
           url={beam.displayImage}
           bounds={beam.bounds}
           opacity={beam.opacity}
-          interactive={false}
-          pane="objects"
+          orientation={beam.orientation}
         />
       ))}
 
