@@ -90,9 +90,9 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
         "A new Encounter Summary tab puts duration, deaths, DPS, damage, attacks, and boosts on one page, and the replay tick chart adds special attack markers and missed-tick highlighting.",
       paragraphs: [
         "Runelogs introduces an Encounter Summary tab, a single-page overview at the top of every fight. Open any uploaded or live encounter and Summary is the default view: fight duration, deaths, DPS rank badges, a DPS timeline, a damage done breakdown, an Attacks breakdown, and stat boost tracking in one place. The Attacks breakdown groups each player's hits by weapon and marks special attacks with a special attack orb.",
-        "Summary rows and charts link into the rest of the encounter page. Click a player in the damage table to jump to Damage Done with that source filter applied, open a death to land on Events at the right tick, or follow an attack bar into the matching animation events. Live logs use the same layout while data is still streaming, with in-progress styling scoped to the active fight in a group.",
-        "We've improved the existing replay tick chart. Special attacks now show a special attack orb on the exact tick they land, so specs are easy to place in the sequence. Hover tooltips are faster and easier to read, with the weapon used, the target, boosted combat stats, and timing.",
-        "The chart also flags missed ticks, moments where your weapon was off cooldown but no attack went out, so dropped DPS is easy to spot at a glance. Object highlighting makes splats and warnings simpler to follow during playback.",
+        "Stat boosts move into Summary from their own tab. The charts are redesigned with attack icons along the boost timeline, clearer hover details for the weapon and combat stats at that moment, and horizontal scroll so long fights stay readable. Summary rows and charts also link into the rest of the encounter page: click a player in the damage table to jump to Damage Done with that source filter applied, open a death to land on Events at the right tick, or follow an attack bar into the matching animation events. Live logs use the same layout while data is still streaming, with in-progress styling scoped to the active fight in a group.",
+        "We've improved the existing replay tick chart. Special attacks now show a special attack orb on the tick they were done, so specs are easy to place in the sequence. Hover tooltips got a rework and are easier to read, with the weapon used, the target, boosted combat stats, and timing.",
+        "The chart also flags missed ticks, moments where your weapon was off cooldown but no attack went out, so DPS loss is easy to spot at a glance. Object highlighting makes objects like splats and fire simpler to follow during playback.",
       ],
       headings: [
         { text: "Encounter Summary", beforeParagraph: 0 },
@@ -116,12 +116,11 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
         },
       ],
       bullets: [
-        "Redesigned stat boost charts with horizontal scroll for long fights",
         "Hitsplat and hitsplat-type filtering across Events, Damage Done, and charts",
         "Source and target drill-down in DPS tables to isolate who hit what",
         "Damage Done drill-down banner and Events filters for time and animation ID",
         "Clearer DPS and hitsplat chart tooltips",
-        "Live log pages show correct standalone fight names and scoped in-progress styling",
+        "Live log pages show correct standalone fight names",
       ],
     },
   },
