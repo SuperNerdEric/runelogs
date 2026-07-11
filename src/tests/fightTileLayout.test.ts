@@ -26,13 +26,13 @@ describe("fightTileMinTrackWidthCss", () => {
 describe("fightCompactRowWidthCss", () => {
   it("builds a calc expression from theme values", () => {
     expect(fightCompactRowWidthCss(6, 9)).toBe(
-      "calc(6 * (max(10rem, calc(9 * 1ch + 2 * 0.625rem))) + 5 * 0.625rem)",
+      "calc(6 * (max(10rem, calc(9 * 1ch + 2 * 0.625rem))) + 5 * 0.625rem + 2 * 0.9375rem)",
     );
   });
 
   it("uses a single track width for one tile", () => {
     expect(fightCompactRowWidthCss(1, 12)).toBe(
-      "max(10rem, calc(12 * 1ch + 2 * 0.625rem))",
+      "calc(max(10rem, calc(12 * 1ch + 2 * 0.625rem)) + 2 * 0.9375rem)",
     );
   });
 });

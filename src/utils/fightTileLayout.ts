@@ -71,12 +71,15 @@ export function fightCompactRowWidthCss(
   }
 
   const trackMin = fightTileMinTrackWidthForContainerQuery(labelCh);
+  const { gap, listPadding } = fightTileCssValues;
+  // Container queries measure .fight-list-container; .fight-list padding
+  // reduces the space available for tracks, so include both sides here.
+  const listPaddingBothSides = `2 * ${listPadding}`;
   if (tileCount === 1) {
-    return trackMin;
+    return `calc(${trackMin} + ${listPaddingBothSides})`;
   }
 
-  const { gap } = fightTileCssValues;
-  return `calc(${tileCount} * (${trackMin}) + ${tileCount - 1} * ${gap})`;
+  return `calc(${tileCount} * (${trackMin}) + ${tileCount - 1} * ${gap} + ${listPaddingBothSides})`;
 }
 
 export function buildFightGridCompactContainerQueryCss(
