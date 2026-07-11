@@ -1,4 +1,5 @@
 import React from "react";
+import { TICK_DURATION_SECONDS } from "../../lib/replayTiming";
 
 interface PlaybackControlsProps {
   isPlaying: boolean;
@@ -58,7 +59,7 @@ const PlaybackControls: React.FC<PlaybackControlsProps> = ({
         min="0"
         max={maxTime}
         value={currentTime}
-        step="0.6"
+        step={TICK_DURATION_SECONDS}
         onChange={(e) => onSliderChange(parseFloat(e.target.value))}
       />
       <span>

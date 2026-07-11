@@ -25,7 +25,8 @@ import theme from "../../theme";
 import { colors } from "../../theme";
 import {
   computeFightEpochCycle,
-  TICK_DURATION_SECONDS,
+  getTargetTickFromTime,
+  getTimeFromTickOffset,
 } from "../../lib/replayTiming";
 import EquipmentIcon from "../../assets/replay-icons/equipment.png";
 import PrayerIcon from "../../assets/replay-icons/prayer.png";
@@ -55,7 +56,7 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({ fight }) => {
   // Calculate max time based on fight length
   const maxTick = Math.max(...fight.data.map((log) => log.tick || 0));
   const initialTick = fight.data[0].tick || 0;
-  const maxTime = (maxTick - initialTick) * TICK_DURATION_SECONDS;
+  const maxTime = getTimeFromTickOffset(maxTick - initialTick);
   const fightEpochCycle = useMemo(
     () => computeFightEpochCycle(fight.data, initialTick),
     [fight.data, initialTick],
@@ -203,7 +204,7 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({ fight }) => {
   }, []);
 
   const highlightedTick = useMemo(
-    () => Math.floor(currentTime / TICK_DURATION_SECONDS) + initialTick,
+    () => getTargetTickFromTime(currentTime, initialTick),
     [currentTime, initialTick],
   );
 

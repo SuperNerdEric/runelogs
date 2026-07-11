@@ -3,6 +3,13 @@ import { GraphicsObjectSpawned, LogLine, LogTypes } from "../models/LogLine";
 /** Seconds per OSRS game tick. */
 export const TICK_DURATION_SECONDS = 0.6;
 
+/**
+ * Absorbs IEEE-754 undershoot from `n * 0.6` round-trips so
+ * `Math.floor(time / 0.6)` does not snap back a tick (e.g. display tick 63).
+ * Far smaller than a tick, so playback boundaries stay correct.
+ */
+const TICK_INDEX_EPSILON = 1e-9;
+
 /** Client cycles per game tick (~600ms / 20ms). */
 export const CLIENT_CYCLES_PER_TICK = 30;
 
@@ -10,11 +17,31 @@ export const CLIENT_CYCLES_PER_TICK = 30;
 export const CLIENT_CYCLE_DURATION_SECONDS =
   TICK_DURATION_SECONDS / CLIENT_CYCLES_PER_TICK;
 
+/** Replay time (seconds) for a tick offset from the fight's initial tick. */
+export function getTimeFromTickOffset(tickOffset: number): number {
+  return tickOffset * TICK_DURATION_SECONDS;
+}
+
+/** Whole tick offset from fight start for a replay timestamp. */
+export function getTickOffsetFromTime(currentTimeSeconds: number): number {
+  return Math.floor(
+    currentTimeSeconds / TICK_DURATION_SECONDS + TICK_INDEX_EPSILON,
+  );
+}
+
 export function getAbsoluteTick(
   currentTimeSeconds: number,
   initialTick: number,
 ): number {
   return currentTimeSeconds / TICK_DURATION_SECONDS + initialTick;
+}
+
+/** Absolute log tick for a replay timestamp (discrete, float-safe). */
+export function getTargetTickFromTime(
+  currentTimeSeconds: number,
+  initialTick: number,
+): number {
+  return getTickOffsetFromTime(currentTimeSeconds) + initialTick;
 }
 
 /** Estimate the client game cycle at replay time zero (initial tick). */

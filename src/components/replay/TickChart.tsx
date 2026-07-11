@@ -42,6 +42,7 @@ import {
   VENGEANCE_OTHER_CAST_ARROW_URL,
   VENGEANCE_OTHER_ICON_URL,
 } from "../../utils/playerSpells";
+import { getTimeFromTickOffset } from "../../lib/replayTiming";
 
 const SPECIAL_ATTACK_ORB_URL = "/images/special-attack-orb-64.png";
 const SKULL_ICON_URL = "/images/skull-icon.png";
@@ -472,8 +473,7 @@ const TickChart: React.FC<TickChartProps> = ({
 
   const handleTickClick = useCallback(
     (tick: number) => {
-      const newTime = (tick - initialTick) * 0.6;
-      setCurrentTime(newTime);
+      setCurrentTime(getTimeFromTickOffset(tick - initialTick));
     },
     [initialTick, setCurrentTime],
   );

@@ -17,7 +17,7 @@ import {
   PrayerLog,
 } from "../../models/LogLine";
 import { Levels } from "../../models/Levels";
-import { getAbsoluteTick } from "../../lib/replayTiming";
+import { getTargetTickFromTime } from "../../lib/replayTiming";
 
 export interface GamePosition {
   x: number;
@@ -346,7 +346,7 @@ export function getTargetTick(
   currentTime: number,
   initialTick: number,
 ): number {
-  return Math.floor(getAbsoluteTick(currentTime, initialTick));
+  return getTargetTickFromTime(currentTime, initialTick);
 }
 
 export function getCurrentGameState(
