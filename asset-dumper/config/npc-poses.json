@@ -1,0 +1,218 @@
+{
+  "output": {
+    "npcs": "../public/images/npc-attacks"
+  },
+  "npcs": [
+    {
+      "id": 7697,
+      "sequenceId": 7600,
+      "animated": false,
+      "frame": 11,
+      "outputName": "inferno/meleer-dig",
+      "comment": "Jal-ImKot dig — keep full dig circle (no fitToCanvas)",
+      "overrides": { "zoom": 800, "fitToCanvas": false, "cropPadding": 8 }
+    },
+    {
+      "id": 7699,
+      "sequenceId": 7611,
+      "animated": false,
+      "frame": 33,
+      "outputName": "inferno/mager-resurrect",
+      "comment": "Jal-Zek resurrect — front-facing",
+      "overrides": { "xan": 80, "yan": 1, "zoom": 1400 }
+    },
+    {
+      "id": 8370,
+      "sequenceId": 8109,
+      "animated": false,
+      "frame": 15,
+      "outputName": "verzik_p1_auto",
+      "comment": "Verzik P1 auto — frame 15 (hands near chest); front-ish xan 150; zoom 330 + shiftX 20 + shiftY 50",
+      "overrides": {
+        "width": 512,
+        "height": 512,
+        "xan": 150,
+        "yan": 1,
+        "zoom": 330,
+        "shiftX": 20,
+        "shiftY": 50,
+        "fitToCanvas": false,
+        "cropToContent": false
+      }
+    },
+    {
+      "id": 8372,
+      "sequenceId": 8116,
+      "animated": false,
+      "frame": 6,
+      "outputName": "verzik_p2_bounce",
+      "comment": "Verzik P2 bounce — frame 6, slight-right 3/4 (yan 1824); xan 200 (slightly more overhead); zoom 500 + shiftX -38 + shiftY 350 (no post-crop)",
+      "overrides": {
+        "width": 512,
+        "height": 512,
+        "xan": 200,
+        "yan": 1824,
+        "zoom": 500,
+        "shiftX": -38,
+        "shiftY": 350,
+        "fitToCanvas": false,
+        "cropToContent": false
+      }
+    },
+    {
+      "id": 8374,
+      "sequenceId": 8123,
+      "animated": false,
+      "frame": 17,
+      "outputName": "verzik_p3_melee",
+      "comment": "Verzik P3 melee — blue lightning peak (frame 17); dump 640sq zoom 960 + shiftY -100",
+      "overrides": {
+        "width": 640,
+        "height": 640,
+        "xan": 80,
+        "yan": 1,
+        "zoom": 960,
+        "shiftY": -100,
+        "fitToCanvas": false,
+        "cropToContent": false
+      }
+    },
+    {
+      "id": 8374,
+      "sequenceId": 8125,
+      "animated": false,
+      "frame": 19,
+      "outputName": "verzik_p3_range",
+      "comment": "Verzik P3 range — frame 19 (green swirls fully formed; frames 0–14 have none). Front-facing xan 150.",
+      "overrides": {
+        "width": 448,
+        "height": 512,
+        "xan": 150,
+        "yan": 1,
+        "zoom": 1400,
+        "fitToCanvas": false,
+        "cropToContent": true,
+        "cropPadding": 4
+      }
+    },
+    {
+      "id": 8374,
+      "sequenceId": 8124,
+      "animated": false,
+      "frame": 5,
+      "outputName": "verzik_p3_mage",
+      "comment": "Verzik P3 mage — elevated front (xan 150); zoom 1200 + no fitToCanvas so teal base/legs aren’t clipped",
+      "overrides": {
+        "width": 448,
+        "height": 512,
+        "xan": 150,
+        "yan": 1,
+        "zoom": 1200,
+        "fitToCanvas": false,
+        "cropToContent": true,
+        "cropPadding": 2
+      }
+    },
+    {
+      "id": 8359,
+      "sequenceId": 8082,
+      "animated": false,
+      "frame": 40,
+      "outputName": "bloat_down",
+      "comment": "Bloat sleep/down — head bowed hold (frame 40), front-facing",
+      "overrides": { "xan": 150, "yan": 1, "zoom": 1400 }
+    },
+    {
+      "id": 8359,
+      "sequenceId": 8082,
+      "animated": false,
+      "frame": 102,
+      "outputName": "bloat_stomp",
+      "comment": "Bloat stomp — TOB_BLOAT_SLEEP peak high-leg BEFORE fly/arms-up roar (frame 102; not 108–111). Low 3/4: xan 60 yan 96 zoom 780, 512 canvas, cropPad 8. Ships as public PNG (not webp).",
+      "overrides": {
+        "width": 512,
+        "height": 512,
+        "xan": 60,
+        "yan": 96,
+        "zoom": 780,
+        "cropToContent": true,
+        "cropPadding": 8
+      }
+    },
+    {
+      "id": 8340,
+      "sequenceId": 8058,
+      "animated": false,
+      "frame": 0,
+      "outputName": "xarpus_turn",
+      "comment": "Xarpus idle — front-facing",
+      "overrides": { "xan": 80, "yan": 1, "zoom": 1700 }
+    },
+    {
+      "id": 12818,
+      "sequenceId": 999999,
+      "animated": false,
+      "frame": 0,
+      "outputName": "colosseum/manticore",
+      "comment": "Manticore throw — Maya seq 10869 unsupported; unposed model",
+      "overrides": { "xan": 80, "yan": 1, "zoom": 1400, "cropToContent": true, "cropPadding": 4 }
+    },
+    {
+      "id": 12817,
+      "sequenceId": 10893,
+      "animated": false,
+      "frame": 55,
+      "outputName": "colosseum/javelin-toss",
+      "comment": "Javelin Colossus artillery toss — Maya seq 10893 frame 55 peak arm-up wind-up (osrscachereader verts → VertexOverrideRender). Exhaustive scan of 13 javelin seqs / 690 Maya frames; classic 10897/10898/10900/10901 skipped (animaya body). Camera: 512x580 zoom 360 xan 45 yan 1 shiftY 200 cropToContent (waist-up, spear tip above crest)",
+      "overrides": { "width": 512, "height": 580, "xan": 45, "yan": 1, "zoom": 360, "cropToContent": true, "cropPadding": 4, "fitToCanvas": false }
+    },
+    {
+      "id": 12821,
+      "sequenceId": 10883,
+      "animated": false,
+      "frame": 130,
+      "outputName": "colosseum/heredit-spear",
+      "comment": "Sol Heredit spear attack — Maya 10883 frame 130. Side yan 480; square 1536 crop=false; zoom 215 shiftX -370 shiftY -40; digitalZoom 3 focus (800,820) on spear+hand. VertexOverrideRender.",
+      "overrides": { "width": 1536, "height": 1536, "xan": 70, "yan": 480, "zoom": 215, "shiftX": -370, "shiftY": -40, "digitalZoom": 3, "focusX": 800, "focusY": 820, "cropToContent": false, "fitToCanvas": false }
+    },
+    {
+      "id": 12821,
+      "sequenceId": 10884,
+      "animated": false,
+      "frame": 33,
+      "outputName": "colosseum/heredit-grapple",
+      "comment": "Sol Heredit grapple telegraph — Maya 10884 frame 33. Pose viewer flipX/Y; zoom 565 xan 75 yan 1024 rotateY 257 shiftX -142 shiftY -9 modelsOnTop 52578,52582 ambient 75 contrast 20; 640x640.",
+      "overrides": { "width": 640, "height": 640, "xan": 75, "yan": 1024, "zoom": 565, "shiftX": -142, "shiftY": -9, "cropToContent": false, "fitToCanvas": false }
+    },
+    {
+      "id": 12821,
+      "sequenceId": 10885,
+      "animated": false,
+      "frame": 0,
+      "outputName": "colosseum/heredit-shield",
+      "comment": "Sol Heredit shield attack — isolated shield submodel 52578 (not helmet crest). SingleModelRender face-on zoom 160 xan 45 yan 8 cropToOpaque; transparent PNG (no Python pad).",
+      "overrides": { "width": 1536, "height": 1536, "xan": 45, "yan": 8, "zoom": 160, "cropToContent": true, "fitToCanvas": false, "modelId": 52578 }
+    },
+    {
+      "id": 12821,
+      "sequenceId": 10887,
+      "animated": false,
+      "frame": 65,
+      "outputName": "colosseum/heredit-combo",
+      "comment": "Sol Heredit triple parry — Maya 10887 frame 65 via pose viewer (zoom 641 xan 92 yan 753 rotateY 110 rotateX -50 shiftX 53 shiftY 17 modelsOnTop 52578 flipX/Y ambient 75 contrast 20). Sparse yellow telegraph sparkles from spotanim 2668 composited via scripts/composite_heredit_combo.py.",
+      "overrides": { "width": 640, "height": 640, "xan": 92, "yan": 753, "zoom": 641, "shiftX": 53, "shiftY": 17, "cropToContent": false, "fitToCanvas": false }
+    }
+  ],
+  "render": {
+    "npc": {
+      "width": 512,
+      "height": 512,
+      "zoom": 900,
+      "xan": 512,
+      "yan": 512,
+      "zan": 0,
+      "cropToContent": true,
+      "cropPadding": 4
+    }
+  }
+}

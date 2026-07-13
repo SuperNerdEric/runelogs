@@ -86,15 +86,21 @@ public final class AnimationFrameUtil
 		}
 
 		model.computeAnimationTables();
+		if (model.getVertexGroups() == null)
+		{
+			// Multi-part merges must copy packedVertexGroups; without them animate() NPEs.
+			return;
+		}
 		model.resetAnim();
 
 		for (int i = 0; i < frame.translatorCount; i++)
 		{
 			int boneIndex = frame.indexFrameIds[i];
 			int type = frame.framemap.types[boneIndex];
+			int[] frameMap = frame.framemap.frameMaps[boneIndex];
 			model.animate(
 				type,
-				new int[]{boneIndex},
+				frameMap,
 				frame.translator_x[i],
 				frame.translator_y[i],
 				frame.translator_z[i]

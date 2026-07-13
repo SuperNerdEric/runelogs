@@ -1,0 +1,48 @@
+{
+  "output": {
+    "npcs": "../src/assets/_charge_face_ship",
+    "graphicObjects": "../src/assets/_charge_particles"
+  },
+  "npcs": [
+    {
+      "id": 14707,
+      "sequenceId": 999999,
+      "animated": false,
+      "frame": 0,
+      "outputName": "doom_face",
+      "comment": "Legacy full-NPC face dump (superseded by face halves 56470:2+56467:-2 → face_sealed.png). Particles only here; ship via scripts/composite_mokhaiotl_charge.py",
+      "overrides": {
+        "width": 448,
+        "height": 448,
+        "xan": 100,
+        "yan": 1,
+        "zoom": 850,
+        "shiftY": -30,
+        "fitToCanvas": false,
+        "cropToContent": false
+      }
+    }
+  ],
+  "graphicObjects": [
+    {
+      "id": 3412,
+      "animated": true,
+      "outputName": "particles",
+      "comment": "VFX_BEAM_CHARGE_UP_01 — diamond islands composited onto doom face for charge.png",
+      "overrides": {
+        "width": 640,
+        "height": 640,
+        "zoom": 900,
+        "xan": 50,
+        "yan": 1,
+        "cropToContent": true,
+        "cropPadding": 8,
+        "fitToCanvas": false
+      }
+    }
+  ],
+  "render": {
+    "npc": { "width": 448, "height": 448, "zoom": 850, "xan": 100, "yan": 1, "zan": 0 },
+    "graphicObject": { "width": 640, "height": 640, "zoom": 900, "xan": 50, "yan": 1, "zan": 0 }
+  }
+}

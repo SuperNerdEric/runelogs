@@ -1,0 +1,30 @@
+{
+  "output": {
+    "gameObjects": "../src/assets/gameObjects",
+    "graphicObjects": "../src/assets/graphicObjects"
+  },
+  "gameObjects": [],
+  "graphicObjects": [
+    {
+      "id": 451,
+      "animated": false,
+      "frame": 15,
+      "outputName": "451",
+      "comment": "Jad ranged boulder tick-chart icon",
+      "overrides": {
+        "width": 384,
+        "height": 480,
+        "zoom": 210,
+        "xan": 150,
+        "yan": 1,
+        "cropToContent": true,
+        "cropPadding": 4,
+        "fitToCanvas": false
+      }
+    }
+  ],
+  "render": {
+    "gameObject": { "width": 512, "height": 384, "zoom": 900, "xan": 512, "yan": 512, "zan": 0 },
+    "graphicObject": { "width": 384, "height": 384, "zoom": 700, "xan": 512, "yan": 512, "zan": 0 }
+  }
+}

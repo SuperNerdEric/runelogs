@@ -13,16 +13,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.imageio.ImageIO;
 import net.runelite.cache.ConfigType;
 import net.runelite.cache.IndexType;
+import net.runelite.cache.NpcManager;
 import net.runelite.cache.ObjectManager;
 import net.runelite.cache.SpriteManager;
 import net.runelite.cache.TextureManager;
 import net.runelite.cache.definitions.ModelDefinition;
+import net.runelite.cache.definitions.NpcDefinition;
 import net.runelite.cache.definitions.ObjectDefinition;
 import net.runelite.cache.definitions.SequenceDefinition;
 import net.runelite.cache.definitions.SpotAnimDefinition;
@@ -36,6 +39,7 @@ import net.runelite.cache.fs.Index;
 import net.runelite.cache.fs.Storage;
 import net.runelite.cache.fs.Store;
 import net.runelite.cache.item.AnimationFrameUtil;
+import net.runelite.cache.item.ModelMergeUtil;
 import net.runelite.cache.item.ModelRenderUtil;
 
 public class AssetDumper
@@ -85,26 +89,29 @@ public class AssetDumper
 			throw new IllegalArgumentException("Cache directory does not exist: " + cacheDir);
 		}
 
-		File gameOut = moduleRoot.resolve(config.output.gameObjects).toFile();
-		File graphicOut = moduleRoot.resolve(config.output.graphicObjects).toFile();
-		gameOut.mkdirs();
-		graphicOut.mkdirs();
-
-		System.out.println("Writing game objects to " + gameOut.getAbsolutePath());
-		System.out.println("Writing graphic objects to " + graphicOut.getAbsolutePath());
+		File gameOut = resolveOutputDir(moduleRoot, config.output != null ? config.output.gameObjects : null);
+		File graphicOut = resolveOutputDir(moduleRoot, config.output != null ? config.output.graphicObjects : null);
+		File npcOut = resolveOutputDir(moduleRoot, config.output != null ? config.output.npcs : null);
 
 		Map<String, Object> dumpMetadata = new LinkedHashMap<>();
 		dumpMetadata.put("cacheDir", cacheDir.getAbsolutePath());
 		dumpMetadata.put("cacheFormat", CacheOpener.detectFormat(cacheDir).name());
-		dumpMetadata.put("gameObjectsDir", gameOut.getAbsolutePath());
-		dumpMetadata.put("graphicObjectsDir", graphicOut.getAbsolutePath());
+		if (gameOut != null)
+		{
+			dumpMetadata.put("gameObjectsDir", gameOut.getAbsolutePath());
+		}
+		if (graphicOut != null)
+		{
+			dumpMetadata.put("graphicObjectsDir", graphicOut.getAbsolutePath());
+		}
+		if (npcOut != null)
+		{
+			dumpMetadata.put("npcsDir", npcOut.getAbsolutePath());
+		}
 
 		try (Store store = CacheOpener.open(cacheDir))
 		{
 			store.load();
-
-			ObjectManager objectManager = new ObjectManager(store);
-			objectManager.load();
 
 			SpriteManager spriteManager = new SpriteManager(store);
 			spriteManager.load();
@@ -123,49 +130,123 @@ public class AssetDumper
 				return new ModelLoader().load(modelId, data);
 			};
 
-			AssetDumperConfig.RenderSettings gameRender = config.render.gameObject;
-			for (AssetDumperConfig.AssetEntry entry : config.gameObjects)
+			if (gameOut != null && config.gameObjects != null && !config.gameObjects.isEmpty())
 			{
-				dumpGameObject(
-					objectManager,
-					modelProvider,
-					spriteManager,
-					textureManager,
-					gameOut,
-					entry,
-					mergeRender(gameRender, entry.overrides)
-				);
-			}
+				gameOut.mkdirs();
+				System.out.println("Writing game objects to " + gameOut.getAbsolutePath());
 
-			SpotAnimLoader spotAnimLoader = new SpotAnimLoader();
-			Storage storage = store.getStorage();
-			Index configIndex = store.getIndex(IndexType.CONFIGS);
-			Archive spotArchive = configIndex.getArchive(ConfigType.SPOTANIM.getId());
-			ArchiveFiles spotFiles = spotArchive.getFiles(storage.loadArchive(spotArchive));
+				ObjectManager objectManager = new ObjectManager(store);
+				objectManager.load();
 
-			AssetDumperConfig.RenderSettings graphicRender = config.render.graphicObject;
-			Map<Integer, Map<String, Object>> graphicMetadata = new LinkedHashMap<>();
-
-			for (AssetDumperConfig.GraphicObjectEntry entry : config.graphicObjects)
-			{
-				Map<String, Object> meta = dumpGraphicObject(
-					store,
-					modelProvider,
-					spriteManager,
-					textureManager,
-					spotAnimLoader,
-					spotFiles,
-					graphicOut,
-					entry,
-					mergeRender(graphicRender, entry.overrides)
-				);
-				if (meta != null)
+				AssetDumperConfig.RenderSettings gameRender = config.render != null
+					? config.render.gameObject
+					: null;
+				if (gameRender == null)
 				{
-					graphicMetadata.put(entry.id, meta);
+					gameRender = new AssetDumperConfig.RenderSettings();
+				}
+				for (AssetDumperConfig.AssetEntry entry : config.gameObjects)
+				{
+					dumpGameObject(
+						objectManager,
+						modelProvider,
+						spriteManager,
+						textureManager,
+						gameOut,
+						entry,
+						mergeRender(gameRender, entry.overrides)
+					);
 				}
 			}
 
-			dumpMetadata.put("graphicObjects", graphicMetadata);
+			if (graphicOut != null && config.graphicObjects != null && !config.graphicObjects.isEmpty())
+			{
+				graphicOut.mkdirs();
+				System.out.println("Writing graphic objects to " + graphicOut.getAbsolutePath());
+
+				SpotAnimLoader spotAnimLoader = new SpotAnimLoader();
+				Storage storage = store.getStorage();
+				Index configIndex = store.getIndex(IndexType.CONFIGS);
+				Archive spotArchive = configIndex.getArchive(ConfigType.SPOTANIM.getId());
+				ArchiveFiles spotFiles = spotArchive.getFiles(storage.loadArchive(spotArchive));
+
+				AssetDumperConfig.RenderSettings graphicRender = config.render != null
+					? config.render.graphicObject
+					: null;
+				if (graphicRender == null)
+				{
+					graphicRender = new AssetDumperConfig.RenderSettings();
+				}
+				Map<Integer, Map<String, Object>> graphicMetadata = new LinkedHashMap<>();
+
+				for (AssetDumperConfig.GraphicObjectEntry entry : config.graphicObjects)
+				{
+					Map<String, Object> meta = dumpGraphicObject(
+						store,
+						modelProvider,
+						spriteManager,
+						textureManager,
+						spotAnimLoader,
+						spotFiles,
+						graphicOut,
+						entry,
+						mergeRender(graphicRender, entry.overrides)
+					);
+					if (meta != null)
+					{
+						graphicMetadata.put(entry.id, meta);
+					}
+				}
+
+				dumpMetadata.put("graphicObjects", graphicMetadata);
+			}
+
+			if (npcOut != null && config.npcs != null && !config.npcs.isEmpty())
+			{
+				npcOut.mkdirs();
+				System.out.println("Writing NPC poses to " + npcOut.getAbsolutePath());
+
+				NpcManager npcManager = new NpcManager(store);
+				npcManager.load();
+
+				AssetDumperConfig.RenderSettings npcRender = config.render != null
+					? config.render.npc
+					: null;
+				if (npcRender == null)
+				{
+					npcRender = new AssetDumperConfig.RenderSettings();
+					npcRender.width = 512;
+					npcRender.height = 512;
+					npcRender.zoom = 900;
+					npcRender.xan = 512;
+					npcRender.yan = 512;
+					npcRender.cropToContent = true;
+					npcRender.cropPadding = 4;
+				}
+
+				Map<String, Map<String, Object>> npcMetadata = new LinkedHashMap<>();
+				for (AssetDumperConfig.NpcPoseEntry entry : config.npcs)
+				{
+					Map<String, Object> meta = dumpNpcPose(
+						store,
+						npcManager,
+						modelProvider,
+						spriteManager,
+						textureManager,
+						npcOut,
+						entry,
+						mergeRender(npcRender, entry.overrides)
+					);
+					if (meta != null)
+					{
+						String key = entry.outputName != null
+							? entry.outputName
+							: entry.id + "_" + entry.sequenceId;
+						npcMetadata.put(key, meta);
+					}
+				}
+				dumpMetadata.put("npcs", npcMetadata);
+			}
 		}
 
 		File metadataFile = moduleRoot.resolve("config/last-dump.json").toFile();
@@ -181,12 +262,37 @@ public class AssetDumper
 		try (FileReader reader = new FileReader(configPath.toFile()))
 		{
 			AssetDumperConfig config = GSON.fromJson(reader, AssetDumperConfig.class);
-			if (config == null || config.gameObjects == null || config.graphicObjects == null)
+			if (config == null)
 			{
 				throw new IllegalArgumentException("Invalid config: " + configPath);
 			}
+			if (config.gameObjects == null)
+			{
+				config.gameObjects = Collections.emptyList();
+			}
+			if (config.graphicObjects == null)
+			{
+				config.graphicObjects = Collections.emptyList();
+			}
+			if (config.npcs == null)
+			{
+				config.npcs = Collections.emptyList();
+			}
+			if (config.gameObjects.isEmpty() && config.graphicObjects.isEmpty() && config.npcs.isEmpty())
+			{
+				throw new IllegalArgumentException("Config has no assets to dump: " + configPath);
+			}
 			return config;
 		}
+	}
+
+	private static File resolveOutputDir(Path moduleRoot, String relative)
+	{
+		if (relative == null || relative.trim().isEmpty())
+		{
+			return null;
+		}
+		return moduleRoot.resolve(relative).toFile();
 	}
 
 	private static AssetDumperConfig.RenderSettings mergeRender(
@@ -215,7 +321,40 @@ public class AssetDumper
 		merged.cropPadding = overrides.cropPadding != null
 			? overrides.cropPadding
 			: defaults.cropPadding;
+		merged.fitToCanvas = overrides.fitToCanvas != null
+			? overrides.fitToCanvas
+			: defaults.fitToCanvas;
+		merged.shiftY = overrides.shiftY != null
+			? overrides.shiftY
+			: defaults.shiftY;
+		merged.shiftX = overrides.shiftX != null
+			? overrides.shiftX
+			: defaults.shiftX;
+		merged.modelRotateX = overrides.modelRotateX != null
+			? overrides.modelRotateX
+			: defaults.modelRotateX;
 		return merged;
+	}
+
+	/** Pitch model around X (OSRS angle units). Mirrors {@link ModelDefinition#rotate(int)} but for Y/Z. */
+	private static void rotateModelX(ModelDefinition model, int angle)
+	{
+		if (angle == 0)
+		{
+			return;
+		}
+		int sin = net.runelite.cache.models.CircularAngle.SINE[angle & 2047];
+		int cos = net.runelite.cache.models.CircularAngle.COSINE[angle & 2047];
+		for (int i = 0; i < model.vertexCount; i++)
+		{
+			int y = model.vertexY[i];
+			int z = model.vertexZ[i];
+			model.vertexY[i] = (y * cos - z * sin) >> 16;
+			model.vertexZ[i] = (z * cos + y * sin) >> 16;
+		}
+		// Invalidate cached normals so lighting recomputes after the pitch.
+		model.setVertexNormals(null);
+		model.setFaceNormals(null);
 	}
 
 	private static BufferedImage cropToOpaqueBounds(BufferedImage image, int padding)
@@ -311,6 +450,7 @@ public class AssetDumper
 			return;
 		}
 
+		boolean fitToCanvas = render.fitToCanvas == null || render.fitToCanvas;
 		BufferedImage image = ModelRenderUtil.renderModel(
 			modelProvider,
 			spriteManager,
@@ -323,7 +463,8 @@ public class AssetDumper
 			render.yan,
 			render.zan,
 			object.getAmbient(),
-			object.getContrast()
+			object.getContrast(),
+			fitToCanvas
 		);
 
 		if (image == null)
@@ -370,19 +511,30 @@ public class AssetDumper
 		SpotAnimDefinition spotAnim = spotAnimLoader.load(entry.id, file.getContents());
 		SequenceDefinition sequence = AnimationFrameUtil.loadSequence(store, spotAnim.animationId);
 		int frameCount = 1;
+		int startFrame = 0;
 		if (entry.animated && sequence != null && sequence.frameIDs != null)
 		{
 			frameCount = sequence.frameIDs.length;
 		}
+		else if (entry.frame != null)
+		{
+			startFrame = entry.frame;
+			frameCount = 1;
+		}
+
+		String baseName = entry.outputName != null && !entry.outputName.trim().isEmpty()
+			? entry.outputName.trim()
+			: String.valueOf(entry.id);
 
 		System.out.println(entry.id + " modelId=" + spotAnim.modelId
 			+ " animationId=" + spotAnim.animationId
-			+ " frames=" + frameCount
+			+ " frames=" + (entry.animated ? frameCount : ("[" + startFrame + "]"))
 			+ (sequence != null && sequence.frameLengths != null
 				? " frameLengths=" + Arrays.toString(sequence.frameLengths) : ""));
 
-		for (int frameIndex = 0; frameIndex < frameCount; frameIndex++)
+		for (int offset = 0; offset < frameCount; offset++)
 		{
+			int frameIndex = entry.animated ? offset : startFrame;
 			ModelDefinition modelDefinition = prepareSpotAnimModel(modelProvider, spotAnim);
 			if (modelDefinition == null)
 			{
@@ -390,11 +542,14 @@ public class AssetDumper
 				break;
 			}
 
-			if (entry.animated && sequence != null)
+			if (sequence != null && (entry.animated || entry.frame != null))
 			{
 				AnimationFrameUtil.applySequenceFrame(store, modelDefinition, sequence, frameIndex);
 			}
 
+			boolean fitToCanvas = render.fitToCanvas == null || render.fitToCanvas;
+			int shiftX = render.shiftX != null ? render.shiftX : 0;
+			int shiftY = render.shiftY != null ? render.shiftY : 0;
 			BufferedImage image = ModelRenderUtil.renderModel(
 				modelProvider,
 				spriteManager,
@@ -407,7 +562,10 @@ public class AssetDumper
 				render.yan,
 				render.zan,
 				spotAnim.ambient,
-				spotAnim.contrast
+				spotAnim.contrast,
+				fitToCanvas,
+				shiftX,
+				shiftY
 			);
 
 			if (image == null)
@@ -416,10 +574,32 @@ public class AssetDumper
 				continue;
 			}
 
-			String fileName = frameCount > 1
-				? entry.id + "_" + frameIndex + ".png"
-				: entry.id + ".png";
+			if (render.postRotateDegrees != null && render.postRotateDegrees != 0)
+			{
+				image = rotateImageClockwise(image, render.postRotateDegrees);
+			}
+
+			if (Boolean.TRUE.equals(render.cropToContent))
+			{
+				int padding = render.cropPadding != null ? render.cropPadding : 2;
+				image = cropToOpaqueBounds(image, padding);
+			}
+
+			String fileName;
+			if (entry.animated && frameCount > 1)
+			{
+				fileName = baseName + "_" + frameIndex + ".png";
+			}
+			else
+			{
+				fileName = baseName + ".png";
+			}
 			File out = new File(outputDir, fileName);
+			File parent = out.getParentFile();
+			if (parent != null)
+			{
+				parent.mkdirs();
+			}
 			ImageIO.write(image, "png", out);
 			System.out.println("Wrote " + out.getAbsolutePath());
 		}
@@ -437,6 +617,175 @@ public class AssetDumper
 			meta.put("frameLengths", lengths);
 		}
 		return meta;
+	}
+
+	private static Map<String, Object> dumpNpcPose(
+		Store store,
+		NpcManager npcManager,
+		ModelProvider modelProvider,
+		SpriteManager spriteManager,
+		TextureManager textureManager,
+		File outputDir,
+		AssetDumperConfig.NpcPoseEntry entry,
+		AssetDumperConfig.RenderSettings render
+	) throws IOException
+	{
+		NpcDefinition npc = npcManager.get(entry.id);
+		if (npc == null)
+		{
+			System.err.println("Missing NPC definition " + entry.id);
+			return null;
+		}
+
+		int sequenceId = entry.sequenceId >= 0 ? entry.sequenceId : npc.getStandingAnimation();
+		SequenceDefinition sequence = AnimationFrameUtil.loadSequence(store, sequenceId);
+		int frameCount = 1;
+		int startFrame = 0;
+		if (entry.animated && sequence != null && sequence.frameIDs != null)
+		{
+			frameCount = sequence.frameIDs.length;
+		}
+		else if (entry.frame != null)
+		{
+			startFrame = entry.frame;
+			frameCount = 1;
+		}
+
+		String baseName = entry.outputName != null && !entry.outputName.trim().isEmpty()
+			? entry.outputName.trim()
+			: entry.id + "_" + sequenceId;
+
+		System.out.println(entry.id + " name=" + npc.getName()
+			+ " models=" + Arrays.toString(npc.getModels())
+			+ " sequenceId=" + sequenceId
+			+ " frames=" + (entry.animated ? frameCount : ("[" + startFrame + "]")));
+
+		for (int offset = 0; offset < frameCount; offset++)
+		{
+			int frameIndex = entry.animated ? offset : startFrame;
+			ModelDefinition modelDefinition = prepareNpcModel(modelProvider, npc);
+			if (modelDefinition == null)
+			{
+				System.err.println("Could not load model for NPC " + entry.id);
+				break;
+			}
+
+			if (sequence != null)
+			{
+				AnimationFrameUtil.applySequenceFrame(store, modelDefinition, sequence, frameIndex);
+			}
+
+			if (render.modelRotateX != null && render.modelRotateX != 0)
+			{
+				rotateModelX(modelDefinition, render.modelRotateX);
+			}
+
+			boolean fitToCanvas = render.fitToCanvas == null || render.fitToCanvas;
+			int shiftX = render.shiftX != null ? render.shiftX : 0;
+			int shiftY = render.shiftY != null ? render.shiftY : 0;
+			BufferedImage image = ModelRenderUtil.renderModel(
+				modelProvider,
+				spriteManager,
+				textureManager,
+				modelDefinition,
+				render.width,
+				render.height,
+				render.zoom,
+				render.xan,
+				render.yan,
+				render.zan,
+				npc.getAmbient(),
+				npc.getContrast(),
+				fitToCanvas,
+				shiftX,
+				shiftY
+			);
+
+			if (image == null)
+			{
+				System.err.println("Could not render NPC " + entry.id + " frame " + frameIndex);
+				continue;
+			}
+
+			if (render.postRotateDegrees != null && render.postRotateDegrees != 0)
+			{
+				image = rotateImageClockwise(image, render.postRotateDegrees);
+			}
+
+			if (Boolean.TRUE.equals(render.cropToContent))
+			{
+				int padding = render.cropPadding != null ? render.cropPadding : 2;
+				image = cropToOpaqueBounds(image, padding);
+			}
+
+			String fileName = entry.animated && frameCount > 1
+				? baseName + "_" + frameIndex + ".png"
+				: baseName + ".png";
+			File out = new File(outputDir, fileName);
+			File parent = out.getParentFile();
+			if (parent != null)
+			{
+				parent.mkdirs();
+			}
+			ImageIO.write(image, "png", out);
+			System.out.println("Wrote " + out.getAbsolutePath());
+		}
+
+		Map<String, Object> meta = new LinkedHashMap<>();
+		meta.put("npcId", entry.id);
+		meta.put("sequenceId", sequenceId);
+		meta.put("frameCount", entry.animated ? frameCount : 1);
+		if (entry.frame != null)
+		{
+			meta.put("frame", entry.frame);
+		}
+		if (sequence != null && sequence.frameLengths != null)
+		{
+			List<Integer> lengths = new ArrayList<>();
+			for (int length : sequence.frameLengths)
+			{
+				lengths.add(length);
+			}
+			meta.put("frameLengths", lengths);
+		}
+		return meta;
+	}
+
+	private static ModelDefinition prepareNpcModel(ModelProvider modelProvider, NpcDefinition npc) throws IOException
+	{
+		int[] modelIds = npc.getModels();
+		if (modelIds == null || modelIds.length == 0)
+		{
+			return null;
+		}
+
+		ModelDefinition[] parts = new ModelDefinition[modelIds.length];
+		for (int i = 0; i < modelIds.length; i++)
+		{
+			ModelDefinition part = modelProvider.provide(modelIds[i]);
+			if (part == null)
+			{
+				System.err.println("Missing model " + modelIds[i] + " for NPC " + npc.getId());
+				return null;
+			}
+			parts[i] = part;
+		}
+
+		ModelDefinition modelDefinition = ModelMergeUtil.merge(parts);
+		if (modelDefinition == null)
+		{
+			return null;
+		}
+
+		if (npc.getWidthScale() != 128 || npc.getHeightScale() != 128)
+		{
+			modelDefinition.resize(npc.getWidthScale(), npc.getHeightScale(), npc.getWidthScale());
+		}
+
+		applyRecolors(modelDefinition, npc.getRecolorToFind(), npc.getRecolorToReplace());
+		applyRetextures(modelDefinition, npc.getRetextureToFind(), npc.getRetextureToReplace());
+
+		return modelDefinition;
 	}
 
 	private static ModelDefinition prepareSpotAnimModel(ModelProvider modelProvider, SpotAnimDefinition spotAnim) throws IOException

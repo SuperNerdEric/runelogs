@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Maya pose viewer</title>
+  <style>
+    :root {
+      --bg: #12141a;
+      --panel: #1b1f2a;
+      --line: #2c3344;
+      --text: #e8ecf4;
+      --muted: #9aa3b5;
+      --accent: #d4a017;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 14px/1.4 "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      gap: 16px;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+    header h1 { margin: 0; font-size: 16px; font-weight: 650; }
+    header .status { color: var(--muted); font-size: 13px; }
+    main {
+      display: grid;
+      grid-template-columns: minmax(300px, 380px) 1fr;
+      min-height: calc(100vh - 52px);
+    }
+    .controls {
+      padding: 14px 16px 24px;
+      border-right: 1px solid var(--line);
+      background: var(--panel);
+      overflow: auto;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 88px 1fr 64px;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .row.label-wide { grid-template-columns: 88px 1fr; }
+    .row label { color: var(--muted); font-size: 12px; }
+    input[type="range"] { width: 100%; }
+    input[type="number"], input[type="text"], select {
+      width: 100%;
+      background: #0f1218;
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 4px;
+      padding: 4px 6px;
+    }
+    .checks {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 14px 0;
+    }
+    .checks label { display: flex; gap: 8px; align-items: center; color: var(--text); font-size: 13px; }
+    .btns { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 16px; }
+    button {
+      background: #273044;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 7px 12px;
+      cursor: pointer;
+    }
+    button:hover { border-color: #4a5670; }
+    button.primary { background: #3a2f12; border-color: var(--accent); color: #ffe7a0; }
+    .params {
+      margin-top: 8px;
+      padding: 10px;
+      background: #0f1218;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      color: #c9d2e3;
+    }
+    .hint { color: var(--muted); font-size: 12px; margin-top: 10px; }
+    .section-title {
+      margin: 16px 0 8px;
+      font-size: 12px;
+      font-weight: 650;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .npc-meta { color: var(--muted); font-size: 12px; margin: -4px 0 10px; min-height: 1.2em; }
+    .stage {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+    }
+    .frames {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .frame {
+      background: #0a0c10;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+    }
+    .frame h2 {
+      margin: 0 0 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .frame img {
+      display: block;
+      width: 480px;
+      height: 480px;
+      object-fit: contain;
+      image-rendering: pixelated;
+      background:
+        linear-gradient(45deg, #1a1e28 25%, transparent 25%),
+        linear-gradient(-45deg, #1a1e28 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #1a1e28 75%),
+        linear-gradient(-45deg, transparent 75%, #1a1e28 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+      background-color: #11141b;
+    }
+    .frame.loading img { opacity: 0.55; }
+    @media (max-width: 980px) {
+      main { grid-template-columns: 1fr; }
+      .controls { border-right: 0; border-bottom: 1px solid var(--line); }
+      .frame img { width: min(92vw, 480px); height: min(92vw, 480px); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Maya pose viewer</h1>
+    <div class="status" id="status">Loading…</div>
+  </header>
+  <main>
+    <aside class="controls">
+      <div class="btns">
+        <button type="button" class="primary" id="playBtn">Autoplay</button>
+        <button type="button" id="prevBtn">−1 frame</button>
+        <button type="button" id="nextBtn">+1 frame</button>
+        <button type="button" id="copyBtn">Copy params</button>
+      </div>
+
+      <h3 class="section-title">Subject</h3>
+      <div class="row label-wide">
+        <label>filter</label>
+        <input type="text" id="npcFilter" placeholder="Search name or id…" />
+      </div>
+      <div class="row label-wide">
+        <label>npc</label>
+        <select id="npcId" size="8" style="height:auto; min-height:10em"></select>
+      </div>
+      <div class="npc-meta" id="npcMeta"></div>
+      <div class="row label-wide">
+        <label>sequence</label>
+        <select id="sequenceId"></select>
+      </div>
+      <div class="row label-wide">
+        <label>seq id</label>
+        <input type="number" id="customSeq" placeholder="Any Maya sequence id" />
+      </div>
+      <div class="btns" style="margin-top:0">
+        <button type="button" id="exportSeqBtn" class="primary">Export / load sequence</button>
+      </div>
+
+      <div class="row"><label>speed</label><input type="range" id="speed" min="1" max="30" step="1" value="8" /><input type="number" id="speedN" value="8" /></div>
+      <div class="row"><label>frame</label><input type="range" id="frame" min="0" max="329" step="1" /><input type="number" id="frameN" /></div>
+      <div class="row"><label>zoom</label><input type="range" id="zoom" min="200" max="1200" step="1" /><input type="number" id="zoomN" /></div>
+      <div class="row"><label>xan</label><input type="range" id="xan" min="0" max="2047" step="1" /><input type="number" id="xanN" /></div>
+      <div class="row"><label>yan</label><input type="range" id="yan" min="0" max="2047" step="1" /><input type="number" id="yanN" /></div>
+      <div class="row"><label>rotateY</label><input type="range" id="rotateY" min="0" max="2047" step="1" /><input type="number" id="rotateYN" /></div>
+      <div class="row"><label>rotateX</label><input type="range" id="rotateX" min="-1024" max="2047" step="1" /><input type="number" id="rotateXN" /></div>
+      <div class="row"><label>shiftX</label><input type="range" id="shiftX" min="-200" max="200" step="1" /><input type="number" id="shiftXN" /></div>
+      <div class="row"><label>shiftY</label><input type="range" id="shiftY" min="-200" max="200" step="1" /><input type="number" id="shiftYN" /></div>
+
+      <h3 class="section-title">Lighting</h3>
+      <div class="btns" style="margin-top:0">
+        <button type="button" id="lightCacheBtn">Cache</button>
+        <button type="button" id="lightBrightBtn">Bright</button>
+        <button type="button" id="lightMaxBtn">Max</button>
+      </div>
+      <div class="row"><label>ambient</label><input type="range" id="ambient" min="0" max="255" step="1" /><input type="number" id="ambientN" /></div>
+      <div class="row"><label>contrast</label><input type="range" id="contrast" min="0" max="255" step="1" /><input type="number" id="contrastN" /></div>
+
+      <h3 class="section-title">Model parts on top</h3>
+      <div class="checks" id="modelsOnTop"></div>
+
+      <div class="checks">
+        <label><input type="checkbox" id="flipY" checked /> Flip Y (Maya → OSRS)</label>
+        <label><input type="checkbox" id="flipX" checked /> Flip X (mirror L/R)</label>
+        <label><input type="checkbox" id="flipZ" /> Flip Z</label>
+        <label><input type="checkbox" id="reverseWinding" /> Reverse face winding</label>
+        <label><input type="checkbox" id="autoWinding" checked /> Auto winding from flips</label>
+      </div>
+
+      <div class="params" id="paramsOut"></div>
+      <p class="hint">
+        Lists every NPC with Maya idle/walk/run (or matching exported verts).
+        Sequences on the NPC are listed first; use “seq id” for attack anims not on those slots.
+        First use of a sequence exports Maya verts on demand (can take a bit).
+        “On top” re-draws selected model parts after the body (painter’s-algorithm fix).
+      </p>
+    </aside>
+    <section class="stage">
+      <div class="frames">
+        <div class="frame" id="oursFrame">
+          <h2>Render</h2>
+          <img id="preview" alt="Pose preview" width="480" height="480" />
+        </div>
+      </div>
+    </section>
+  </main>
+  <script>
+    const camKeys = ["frame","zoom","xan","yan","rotateY","rotateX","shiftX","shiftY","ambient","contrast"];
+    const state = { npcId: 12821, sequenceId: 10884 };
+    let maxFrame = 329;
+    let sequences = [];
+    let npcModels = [];
+    let cacheAmbient = 25;
+    let cacheContrast = 20;
+    let onTop = new Set();
+    let timer = null;
+    let playing = false;
+    let playLoop = 0;
+    let reqToken = 0;
+    let fps = 8;
+    let canExport = false;
+    let ensuring = false;
+
+    const statusEl = document.getElementById("status");
+    const preview = document.getElementById("preview");
+    const oursFrame = document.getElementById("oursFrame");
+    const paramsOut = document.getElementById("paramsOut");
+    const npcMeta = document.getElementById("npcMeta");
+    const modelsOnTopEl = document.getElementById("modelsOnTop");
+    const flipX = document.getElementById("flipX");
+    const flipY = document.getElementById("flipY");
+    const flipZ = document.getElementById("flipZ");
+    const reverseWinding = document.getElementById("reverseWinding");
+    const autoWinding = document.getElementById("autoWinding");
+    const seqSelect = document.getElementById("sequenceId");
+    const npcSelect = document.getElementById("npcId");
+    let mayaNpcs = [];
+
+    function syncPair(id, value) {
+      const range = document.getElementById(id);
+      const num = document.getElementById(id + "N");
+      if (range) range.value = value;
+      if (num) num.value = value;
+      state[id] = Number(value);
+    }
+
+    function bind(id) {
+      const range = document.getElementById(id);
+      const num = document.getElementById(id + "N");
+      const apply = (v) => {
+        let n = Number(v);
+        if (!Number.isFinite(n)) return;
+        if (id === "frame") n = Math.max(0, Math.min(maxFrame, Math.round(n)));
+        syncPair(id, n);
+        scheduleRender();
+      };
+      range.addEventListener("input", () => apply(range.value));
+      num.addEventListener("change", () => apply(num.value));
+      num.addEventListener("keydown", (e) => { if (e.key === "Enter") apply(num.value); });
+    }
+    camKeys.forEach(bind);
+
+    function syncAutoWinding() {
+      if (!autoWinding.checked) return;
+      reverseWinding.checked = (flipX.checked + flipY.checked + flipZ.checked) % 2 === 1;
+    }
+
+    [flipX, flipY, flipZ].forEach((el) => el.addEventListener("change", () => {
+      syncAutoWinding();
+      scheduleRender();
+    }));
+    reverseWinding.addEventListener("change", () => {
+      autoWinding.checked = false;
+      scheduleRender();
+    });
+    autoWinding.addEventListener("change", () => {
+      syncAutoWinding();
+      scheduleRender();
+    });
+
+    function modelsOnTopParam() {
+      return [...onTop].sort((a, b) => a - b).join(",");
+    }
+
+    function paramsText() {
+      return [
+        `npcId=${state.npcId}`,
+        `sequenceId=${state.sequenceId}`,
+        `frame=${state.frame}`,
+        `zoom=${state.zoom}`,
+        `xan=${state.xan}`,
+        `yan=${state.yan}`,
+        `rotateY=${state.rotateY}`,
+        `rotateX=${state.rotateX}`,
+        `shiftX=${state.shiftX}`,
+        `shiftY=${state.shiftY}`,
+        `modelsOnTop=${modelsOnTopParam()}`,
+        `flipX=${flipX.checked}`,
+        `flipY=${flipY.checked}`,
+        `flipZ=${flipZ.checked}`,
+        `reverseWinding=${reverseWinding.checked}`,
+        `ambient=${state.ambient}`,
+        `contrast=${state.contrast}`,
+        `size=640x640`,
+      ].join("\n");
+    }
+
+    function updateParams() {
+      paramsOut.textContent = paramsText();
+    }
+
+    function scheduleRender() {
+      updateParams();
+      clearTimeout(timer);
+      timer = setTimeout(() => { void renderNow(); }, 80);
+    }
+
+    function sleep(ms) {
+      return new Promise((r) => setTimeout(r, ms));
+    }
+
+    async function renderNow() {
+      const token = ++reqToken;
+      const q = new URLSearchParams({
+        npcId: String(state.npcId),
+        sequenceId: String(state.sequenceId),
+        frame: String(state.frame),
+        zoom: String(state.zoom),
+        xan: String(state.xan),
+        yan: String(state.yan),
+        rotateY: String(state.rotateY),
+        rotateX: String(state.rotateX),
+        shiftX: String(state.shiftX),
+        shiftY: String(state.shiftY),
+        width: "640",
+        height: "640",
+        ambient: String(state.ambient),
+        contrast: String(state.contrast),
+        flipX: String(flipX.checked),
+        flipY: String(flipY.checked),
+        flipZ: String(flipZ.checked),
+        reverseWinding: String(reverseWinding.checked),
+        modelsOnTop: modelsOnTopParam(),
+      });
+      oursFrame.classList.add("loading");
+      if (!playing) statusEl.textContent = "Rendering…";
+      try {
+        const res = await fetch("/api/render?" + q.toString());
+        if (!res.ok) throw new Error(await res.text());
+        const blob = await res.blob();
+        if (token !== reqToken) return false;
+        const url = URL.createObjectURL(blob);
+        const prev = preview.src;
+        preview.onload = () => {
+          if (prev && prev.startsWith("blob:")) URL.revokeObjectURL(prev);
+        };
+        preview.src = url;
+        const ms = res.headers.get("X-Render-Ms") || "?";
+        statusEl.textContent = playing
+          ? `Autoplay · npc ${state.npcId} seq ${state.sequenceId} f${state.frame} · ${ms} ms`
+          : `npc ${state.npcId} · seq ${state.sequenceId} · frame ${state.frame} · ${ms} ms`;
+        return true;
+      } catch (err) {
+        if (token !== reqToken) return false;
+        statusEl.textContent = String(err.message || err);
+        return false;
+      } finally {
+        if (token === reqToken) oursFrame.classList.remove("loading");
+      }
+    }
+
+    async function runAutoplay(loopId) {
+      while (playing && playLoop === loopId) {
+        const ok = await renderNow();
+        if (!playing || playLoop !== loopId) break;
+        if (!ok) { stopAutoplay(); break; }
+        await sleep(Math.max(0, Math.round(1000 / Math.max(1, fps))));
+        if (!playing || playLoop !== loopId) break;
+        syncPair("frame", state.frame >= maxFrame ? 0 : state.frame + 1);
+        updateParams();
+      }
+    }
+
+    function stopAutoplay() {
+      playing = false;
+      playLoop += 1;
+      document.getElementById("playBtn").textContent = "Autoplay";
+      document.getElementById("playBtn").classList.add("primary");
+    }
+
+    function startAutoplay() {
+      playing = true;
+      const loopId = ++playLoop;
+      clearTimeout(timer);
+      document.getElementById("playBtn").textContent = "Pause";
+      document.getElementById("playBtn").classList.remove("primary");
+      void runAutoplay(loopId);
+    }
+
+    (() => {
+      const range = document.getElementById("speed");
+      const num = document.getElementById("speedN");
+      const apply = (v) => {
+        let n = Math.max(1, Math.min(30, Math.round(Number(v))));
+        range.value = n; num.value = n; fps = n;
+      };
+      range.addEventListener("input", () => apply(range.value));
+      num.addEventListener("change", () => apply(num.value));
+    })();
+
+    document.getElementById("prevBtn").onclick = () => {
+      if (playing) stopAutoplay();
+      syncPair("frame", Math.max(0, state.frame - 1));
+      scheduleRender();
+    };
+    document.getElementById("nextBtn").onclick = () => {
+      if (playing) stopAutoplay();
+      syncPair("frame", Math.min(maxFrame, state.frame + 1));
+      scheduleRender();
+    };
+    document.getElementById("playBtn").onclick = () => {
+      if (playing) stopAutoplay();
+      else startAutoplay();
+    };
+    document.getElementById("copyBtn").onclick = async () => {
+      await navigator.clipboard.writeText(paramsText());
+      statusEl.textContent = "Copied params";
+    };
+    document.getElementById("lightCacheBtn").onclick = () => {
+      syncPair("ambient", cacheAmbient);
+      syncPair("contrast", cacheContrast);
+      scheduleRender();
+    };
+    document.getElementById("lightBrightBtn").onclick = () => {
+      syncPair("ambient", 80);
+      syncPair("contrast", 35);
+      scheduleRender();
+    };
+    document.getElementById("lightMaxBtn").onclick = () => {
+      syncPair("ambient", 140);
+      syncPair("contrast", 50);
+      scheduleRender();
+    };
+
+    function setMaxFrame(n) {
+      maxFrame = n;
+      document.getElementById("frame").max = n;
+      document.getElementById("frameN").max = n;
+      if (state.frame > n) syncPair("frame", n);
+    }
+
+    function renderModelChecks(preferredOnTop) {
+      modelsOnTopEl.innerHTML = "";
+      onTop = new Set(preferredOnTop || []);
+      if (!npcModels.length) {
+        modelsOnTopEl.innerHTML = "<div class='npc-meta'>No models</div>";
+        return;
+      }
+      for (const m of npcModels) {
+        const label = document.createElement("label");
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = onTop.has(m.modelId);
+        cb.addEventListener("change", () => {
+          if (cb.checked) onTop.add(m.modelId);
+          else onTop.delete(m.modelId);
+          scheduleRender();
+        });
+        label.appendChild(cb);
+        label.appendChild(document.createTextNode(
+          ` ${m.modelId} (faces ${m.faceStart}:${m.faceCount})`
+        ));
+        modelsOnTopEl.appendChild(label);
+      }
+    }
+
+    async function ensureSequence(npcId, sequenceId) {
+      const q = new URLSearchParams({
+        npcId: String(npcId),
+        sequenceId: String(sequenceId),
+      });
+      statusEl.textContent = `Exporting Maya verts · npc ${npcId} seq ${sequenceId}…`;
+      const res = await fetch("/api/ensure?" + q.toString());
+      const text = await res.text();
+      if (!res.ok) throw new Error(text);
+      return JSON.parse(text);
+    }
+
+    async function ensureAndSelect(sequenceId, { render = true } = {}) {
+      if (!Number.isFinite(sequenceId) || sequenceId < 0) {
+        throw new Error("Invalid sequence id");
+      }
+      if (ensuring) return;
+      ensuring = true;
+      try {
+        if (playing) stopAutoplay();
+        const info = await ensureSequence(state.npcId, sequenceId);
+        state.sequenceId = sequenceId;
+        setMaxFrame(info.maxFrame ?? 0);
+        // Refresh dropdown so the new export appears.
+        await loadNpc(state.npcId, [...onTop], { skipEnsure: true });
+        seqSelect.value = String(sequenceId);
+        const custom = document.getElementById("customSeq");
+        if (custom) custom.value = String(sequenceId);
+        if (render) scheduleRender();
+        statusEl.textContent = info.cached
+          ? `Ready · seq ${sequenceId} already exported`
+          : `Exported seq ${sequenceId} · ${info.maxFrame + 1} frames`;
+      } finally {
+        ensuring = false;
+      }
+    }
+
+    async function loadNpc(id, preferredOnTop, opts = {}) {
+      state.npcId = id;
+      npcSelect.value = String(id);
+      const info = await fetch("/api/npc?id=" + id).then((r) => {
+        if (!r.ok) throw new Error("NPC " + id + " not found");
+        return r.json();
+      });
+      npcModels = info.models || [];
+      cacheAmbient = info.ambient ?? 0;
+      cacheContrast = info.contrast ?? 0;
+      canExport = !!info.canExport;
+      const mayaSeqs = info.mayaSequences || [];
+      const compatible = info.compatibleSequences || [];
+      const merged = mergeSequenceOptions(mayaSeqs, compatible);
+      npcMeta.textContent =
+        `id ${info.id} · verts ${info.vertexCount} · ambient ${info.ambient} · contrast ${info.contrast}` +
+        ` · ${mayaSeqs.length} Maya slot(s) · ${compatible.length} exported`;
+      fillSequenceDropdown(merged);
+      const preferred = preferredOnTop != null
+        ? preferredOnTop
+        : [...onTop].filter((mid) => npcModels.some((m) => m.modelId === mid));
+      renderModelChecks(preferred);
+
+      if (!opts.skipEnsure && state.sequenceId >= 0) {
+        const chosen = merged.find((s) => s.sequenceId === state.sequenceId) || merged[0];
+        if (chosen) {
+          state.sequenceId = chosen.sequenceId;
+          seqSelect.value = String(chosen.sequenceId);
+          if (!chosen.exported && canExport) {
+            await ensureAndSelect(chosen.sequenceId, { render: false });
+          } else if (chosen.maxFrame != null) {
+            setMaxFrame(chosen.maxFrame);
+          }
+        }
+      }
+    }
+
+    function mergeSequenceOptions(mayaSeqs, compatible) {
+      const byId = new Map();
+      for (const s of mayaSeqs) {
+        byId.set(s.sequenceId, {
+          sequenceId: s.sequenceId,
+          maxFrame: s.maxFrame,
+          vertexCount: s.vertexCount,
+          exported: !!s.exported,
+          slot: s.slot || "",
+        });
+      }
+      for (const s of compatible) {
+        const prev = byId.get(s.sequenceId);
+        byId.set(s.sequenceId, {
+          sequenceId: s.sequenceId,
+          maxFrame: s.maxFrame,
+          vertexCount: s.vertexCount,
+          exported: true,
+          slot: prev?.slot || "",
+        });
+      }
+      return [...byId.values()].sort((a, b) => a.sequenceId - b.sequenceId);
+    }
+
+    function fillNpcDropdown(preferredId, filterText = "") {
+      const q = String(filterText || "").trim().toLowerCase();
+      const filtered = !q
+        ? mayaNpcs
+        : mayaNpcs.filter((n) =>
+            String(n.id).includes(q) || String(n.name || "").toLowerCase().includes(q)
+          );
+      npcSelect.innerHTML = "";
+      if (!filtered.length) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = mayaNpcs.length ? "No NPCs match filter" : "No Maya NPCs found";
+        npcSelect.appendChild(opt);
+        npcSelect.disabled = true;
+        return;
+      }
+      npcSelect.disabled = false;
+      for (const n of filtered) {
+        const opt = document.createElement("option");
+        opt.value = n.id;
+        const slots = n.mayaSlotCount != null ? ` · ${n.mayaSlotCount} Maya` : "";
+        opt.textContent = `${n.name} (${n.id})${slots}`;
+        npcSelect.appendChild(opt);
+      }
+      const keep = filtered.find((n) => n.id === preferredId) || filtered.find((n) => n.id === state.npcId);
+      const chosen = keep || filtered[0];
+      state.npcId = chosen.id;
+      npcSelect.value = String(chosen.id);
+    }
+
+    function fillSequenceDropdown(list) {
+      seqSelect.innerHTML = "";
+      if (!list.length) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "Enter a Maya seq id below";
+        seqSelect.appendChild(opt);
+        return;
+      }
+      for (const s of list) {
+        const opt = document.createElement("option");
+        opt.value = s.sequenceId;
+        const slot = s.slot ? ` · ${s.slot}` : "";
+        const frames = s.exported && s.maxFrame != null ? ` · ${s.maxFrame + 1} frames` : " · not exported";
+        opt.textContent = `${s.sequenceId}${slot}${frames}`;
+        seqSelect.appendChild(opt);
+      }
+      const keep = list.find((s) => s.sequenceId === state.sequenceId);
+      const chosen = keep || list[0];
+      state.sequenceId = chosen.sequenceId;
+      seqSelect.value = String(chosen.sequenceId);
+      if (chosen.maxFrame != null) setMaxFrame(chosen.maxFrame);
+    }
+
+    document.getElementById("npcFilter").addEventListener("input", (e) => {
+      fillNpcDropdown(state.npcId, e.target.value);
+    });
+
+    npcSelect.addEventListener("change", async () => {
+      try {
+        if (playing) stopAutoplay();
+        if (!npcSelect.value) return;
+        await loadNpc(Number(npcSelect.value));
+        scheduleRender();
+      } catch (e) {
+        statusEl.textContent = String(e.message || e);
+      }
+    });
+
+    seqSelect.addEventListener("change", async () => {
+      try {
+        if (!seqSelect.value) return;
+        const sequenceId = Number(seqSelect.value);
+        const label = seqSelect.selectedOptions[0]?.textContent || "";
+        if (label.includes("not exported") && canExport) {
+          await ensureAndSelect(sequenceId);
+        } else {
+          state.sequenceId = sequenceId;
+          const m = label.match(/(\d+) frames/);
+          if (m) setMaxFrame(Number(m[1]) - 1);
+          scheduleRender();
+        }
+      } catch (e) {
+        statusEl.textContent = String(e.message || e);
+      }
+    });
+
+    document.getElementById("exportSeqBtn").onclick = async () => {
+      try {
+        const custom = Number(document.getElementById("customSeq").value);
+        const sequenceId = Number.isFinite(custom) && custom >= 0
+          ? custom
+          : Number(seqSelect.value);
+        await ensureAndSelect(sequenceId);
+      } catch (e) {
+        statusEl.textContent = String(e.message || e);
+      }
+    };
+
+    window.addEventListener("keydown", (e) => {
+      if (e.target.matches("input,select")) return;
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        syncPair("frame", Math.max(0, state.frame - 1));
+        scheduleRender();
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        syncPair("frame", Math.min(maxFrame, state.frame + 1));
+        scheduleRender();
+      } else if (e.key === " ") {
+        e.preventDefault();
+        document.getElementById("playBtn").click();
+      }
+    });
+
+    (async () => {
+      const meta = await fetch("/api/meta").then((r) => r.json());
+      sequences = meta.sequences || [];
+      mayaNpcs = meta.npcs || [];
+      canExport = !!meta.canExport;
+      const d = meta.defaults || {};
+      fillNpcDropdown(d.npcId ?? 12821);
+      state.sequenceId = d.sequenceId ?? (sequences[0] && sequences[0].sequenceId) ?? 0;
+      camKeys.forEach((k) => syncPair(k, d[k] ?? 0));
+      flipX.checked = d.flipX !== false;
+      flipY.checked = d.flipY !== false;
+      flipZ.checked = !!d.flipZ;
+      reverseWinding.checked = !!d.reverseWinding;
+      syncAutoWinding();
+      const preferredOnTop = String(d.modelsOnTop || "")
+        .split(/[,\s]+/)
+        .filter(Boolean)
+        .map(Number);
+      await loadNpc(state.npcId, preferredOnTop);
+      statusEl.textContent =
+        `Ready · ${mayaNpcs.length} Maya NPC(s) · ${sequences.length} exported · ${meta.mayaSequenceCount || "?"} Maya seqs in cache`;
+      scheduleRender();
+    })().catch((e) => {
+      statusEl.textContent = String(e.message || e);
+    });
+  </script>
+</body>
+</html>

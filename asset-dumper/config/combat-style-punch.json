@@ -1,0 +1,24 @@
+{
+  "output": "../src/assets/_punch_probe",
+  "defaults": {
+    "padToSize": 0,
+    "scaleToSize": 0
+  },
+  "icons": [
+    {
+      "archiveId": 247,
+      "name": "unarmed_punch",
+      "comment": "SpriteID.COMBAT_STYLE_UNARMED_PUNCH"
+    },
+    {
+      "archiveId": 248,
+      "name": "unarmed_kick",
+      "comment": "SpriteID.COMBAT_STYLE_UNARMED_KICK"
+    },
+    {
+      "archiveId": 239,
+      "name": "sword_slash",
+      "comment": "SpriteID.COMBAT_STYLE_SWORD_SLASH (mok melee overlay style ref)"
+    }
+  ]
+}

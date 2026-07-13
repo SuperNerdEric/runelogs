@@ -1,0 +1,23 @@
+﻿{
+  "output": { "npcs": "../src/assets/_charge_face_ship" },
+  "npcs": [
+    {
+      "id": 14707,
+      "sequenceId": 999999,
+      "animated": false,
+      "frame": 0,
+      "outputName": "doom_face",
+      "overrides": {
+        "width": 448,
+        "height": 448,
+        "xan": 100,
+        "yan": 1,
+        "zoom": 850,
+        "shiftY": -30,
+        "fitToCanvas": false,
+        "cropToContent": false
+      }
+    }
+  ],
+  "render": { "npc": { "width": 448, "height": 448, "zoom": 850, "xan": 100, "yan": 1, "zan": 0 } }
+}

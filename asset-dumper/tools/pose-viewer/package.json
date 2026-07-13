@@ -1,0 +1,8 @@
+{
+  "name": "pose-viewer",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "osrscachereader": "^1.1.3"
+  }
+}

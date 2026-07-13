@@ -1,4 +1,14 @@
 .gradle/
 build/
+bin/
 *.iml
 .idea/
+*.class
+**/__pycache__/
+*.pyc
+tools/**/node_modules/
+config/last-dump.json
+ProbeSeq.class
+ProbeNpc.class
+ProbeMaya.class
+dump-probe.log

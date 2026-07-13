@@ -124,10 +124,29 @@ Edit `config/assets.json`:
 
 - **`gameObjects`**: static object renders → `{id}.png`
 - **`graphicObjects`**: spotanims; with `"animated": true`, dumps every sequence frame as `{id}_{frame}.png`
-- **`render`**: camera/size defaults (angles use Jagex units, 2048 = full circle)
+- **`npcs`**: NPC models posed with an explicit `sequenceId` (attack anims are not on the NPC def). Use `config/npc-poses.json` for tick-chart attack poses.
+  - `"animated": true` dumps every classic frame as `{outputName}_{frame}.png`
+  - `"animated": false` + `"frame": N` dumps one frame as `{outputName}.png`
+  - `"sequenceId": -1` uses the NPC standing animation
+  - Maya-only sequences: use `tools/pose-viewer` (VertexOverrideRender + exported verts), not classic `frameIDs`
+- **`render`**: camera/size defaults (angles use Jagex units, 2048 = full circle); `render.npc` for NPC poses
 
-Per-entry `"overrides"` can override render settings for a single ID.
+Per-entry `"overrides"` can override render settings for a single ID (`cropToContent`, `zoom`, `xan`/`yan`, etc.).
 
+Dump NPC poses only:
+
+```powershell
+.\run.ps1 -CacheDir $env:OSRS_CACHE_DIR -Config config/npc-poses.json
+```
+
+Maya pose / camera picker (any NPC with Maya anims):
+
+```powershell
+powershell -File tools/pose-viewer/start.ps1
+# → http://127.0.0.1:8765/
+```
+
+Requires `OSRS_CACHE_DIR` (or the default cache path in `start.ps1`) and Node for on-demand vert export (`osrscachereader`).
 ---
 
 ## Updating graphicObjectIdMap

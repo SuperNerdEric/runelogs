@@ -48,7 +48,9 @@ public final class ModelRenderUtil
 			zan,
 			ambient,
 			contrast,
-			true
+			true,
+			0,
+			0
 		);
 	}
 
@@ -66,6 +68,91 @@ public final class ModelRenderUtil
 		int ambient,
 		int contrast,
 		boolean fitToCanvas
+	) throws IOException
+	{
+		return renderModel(
+			modelProvider,
+			spriteProvider,
+			textureProvider,
+			modelDefinition,
+			width,
+			height,
+			zoom,
+			xan,
+			yan,
+			zan,
+			ambient,
+			contrast,
+			fitToCanvas,
+			0,
+			0
+		);
+	}
+
+	/**
+	 * @param shiftY screen-space vertical offset in pixels. Positive moves the
+	 *               projected model down on the canvas so lower geometry can clip
+	 *               off the bottom (model-space move is cancelled by camera look-at).
+	 */
+	public static BufferedImage renderModel(
+		ModelProvider modelProvider,
+		SpriteProvider spriteProvider,
+		TextureProvider textureProvider,
+		ModelDefinition modelDefinition,
+		int width,
+		int height,
+		int zoom,
+		int xan,
+		int yan,
+		int zan,
+		int ambient,
+		int contrast,
+		boolean fitToCanvas,
+		int shiftY
+	) throws IOException
+	{
+		return renderModel(
+			modelProvider,
+			spriteProvider,
+			textureProvider,
+			modelDefinition,
+			width,
+			height,
+			zoom,
+			xan,
+			yan,
+			zan,
+			ambient,
+			contrast,
+			fitToCanvas,
+			0,
+			shiftY
+		);
+	}
+
+	/**
+	 * @param shiftX screen-space horizontal offset in pixels. Positive moves the
+	 *               projected model right on the canvas.
+	 * @param shiftY screen-space vertical offset in pixels. Positive moves the
+	 *               projected model down on the canvas so lower geometry can clip
+	 *               off the bottom (model-space move is cancelled by camera look-at).
+	 */
+	public static BufferedImage renderModel(
+		ModelProvider modelProvider,
+		SpriteProvider spriteProvider,
+		TextureProvider textureProvider,
+		ModelDefinition modelDefinition,
+		int width,
+		int height,
+		int zoom,
+		int xan,
+		int yan,
+		int zan,
+		int ambient,
+		int contrast,
+		boolean fitToCanvas,
+		int shiftX,
+		int shiftY
 	) throws IOException
 	{
 		if (modelDefinition == null)
@@ -92,7 +179,9 @@ public final class ModelRenderUtil
 			xan,
 			yan,
 			zan,
-			rasterizerZoom
+			rasterizerZoom,
+			shiftX,
+			shiftY
 		);
 
 		if (fitToCanvas)
@@ -114,7 +203,9 @@ public final class ModelRenderUtil
 						xan,
 						yan,
 						zan,
-						rasterizerZoom
+						rasterizerZoom,
+						shiftX,
+						shiftY
 					);
 				}
 			}
@@ -135,7 +226,9 @@ public final class ModelRenderUtil
 		int xan,
 		int yan,
 		int zan,
-		int rasterizerZoom
+		int rasterizerZoom,
+		int shiftX,
+		int shiftY
 	)
 	{
 		RSTextureProvider rsTextureProvider = new RSTextureProvider(textureProvider, spriteProvider);
@@ -147,7 +240,14 @@ public final class ModelRenderUtil
 		graphics.setRasterBuffer(spritePixels.pixels, width, height);
 		graphics.reset();
 		graphics.setRasterClipping();
-		graphics.setOffset(width / 2, height / 2);
+		// Graphics3D clamps scanlines with `y > clipHeight` (not >=), so y==height is still
+		// drawn and indexes pixels[width*height]. Shrink the clip bottom by 1.
+		if (height > 1)
+		{
+			graphics.setRasterClipping(0, 0, width, height - 1);
+		}
+		// Positive shiftX/shiftY move the projection center so the model sits right/lower.
+		graphics.setOffset(width / 2 + shiftX, height / 2 + shiftY);
 		graphics.rasterGouraudLowRes = false;
 		graphics.Rasterizer3D_zoom = rasterizerZoom;
 
