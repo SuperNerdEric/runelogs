@@ -1,7 +1,6 @@
 import * as semver from "semver";
-import { Actor } from "../models/Actor";
 import { Fight } from "../models/Fight";
-import { LogLine, LogTypes } from "../models/LogLine";
+import { LogTypes } from "../models/LogLine";
 import { npcIdMap } from "../lib/npcIdMap";
 
 /**
@@ -406,25 +405,6 @@ export function isMainBossTrackedNpc(
   return false;
 }
 
-function actorsFromLogLine(logLine: LogLine): Actor[] {
-  const actors: Actor[] = [];
-  if ("source" in logLine && logLine.source) {
-    actors.push(logLine.source);
-  }
-  if ("target" in logLine && logLine.target) {
-    actors.push(logLine.target);
-  }
-  if (logLine.type === LogTypes.NPC_CHANGED) {
-    if (logLine.oldNpc) {
-      actors.push(logLine.oldNpc);
-    }
-    if (logLine.newNpc) {
-      actors.push(logLine.newNpc);
-    }
-  }
-  return actors;
-}
-
 export interface PresentTrackedNpc {
   key: string;
   family: string;
@@ -435,8 +415,12 @@ export interface PresentTrackedNpc {
 }
 
 /**
- * Finds tracked NPC instances present in the fight when the log version supports
- * recording their attack animations.
+ * Finds tracked NPC instances that recorded at least one attack animation in the
+ * fight when the log version supports recording their attack animations.
+ *
+ * Only attack-animation sources create tick-chart rows. Brief sightings via
+ * position, damage, or NPC-changed logs (e.g. a fleeting wrong index) must not
+ * create empty duplicate rows.
  */
 export function getPresentTrackedNpcAttackNpcs(
   fight: Fight,
@@ -448,28 +432,31 @@ export function getPresentTrackedNpcAttackNpcs(
   const byKey = new Map<string, PresentTrackedNpc>();
 
   for (const logLine of fight.data) {
-    for (const actor of actorsFromLogLine(logLine)) {
-      const tracked = getTrackedNpcAttackNpc(actor.id);
-      if (!tracked || actor.index == null) {
-        continue;
-      }
-      if (!isNpcAttackTrackingSupported(fight.logVersion, tracked.minVersion)) {
-        continue;
-      }
+    if (logLine.type !== LogTypes.PLAYER_ATTACK_ANIMATION) {
+      continue;
+    }
 
-      const key = npcAttackRowKey(tracked.family, actor.index);
-      if (!byKey.has(key)) {
-        byKey.set(key, {
-          key,
-          family: tracked.family,
-          primaryId: tracked.primaryId,
-          index: actor.index,
-          name:
-            actor.chartLabel?.trim() ||
-            getTrackedNpcDisplayName(tracked, actor.name),
-          minVersion: tracked.minVersion,
-        });
-      }
+    const source = logLine.source;
+    const tracked = getTrackedNpcAttackNpc(source?.id);
+    if (!tracked || source?.index == null) {
+      continue;
+    }
+    if (!isNpcAttackTrackingSupported(fight.logVersion, tracked.minVersion)) {
+      continue;
+    }
+
+    const key = npcAttackRowKey(tracked.family, source.index);
+    if (!byKey.has(key)) {
+      byKey.set(key, {
+        key,
+        family: tracked.family,
+        primaryId: tracked.primaryId,
+        index: source.index,
+        name:
+          source.chartLabel?.trim() ||
+          getTrackedNpcDisplayName(tracked, source.name),
+        minVersion: tracked.minVersion,
+      });
     }
   }
 

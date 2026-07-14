@@ -86,36 +86,38 @@ describe("trackedNpcAttackNpcs", () => {
     expect(isNpcAttackTrackingSupported(undefined)).toBe(false);
   });
 
-  it("includes tracked NPCs present in a supported fight", () => {
+  it("includes tracked NPCs that recorded attack animations", () => {
     const fight = makeFight({
       data: [
         {
-          type: LogTypes.POSITION,
+          type: LogTypes.PLAYER_ATTACK_ANIMATION,
           date: "01-01-2026",
           time: "00:00:00",
           timezone: "Z+0000",
           tick: 1,
+          animationId: 8092,
           source: {
             name: "The Maiden of Sugadinti",
             id: 8361,
             index: 42,
             isPlayer: false,
           },
-          position: { x: 1, y: 2, plane: 0 },
+          target: { name: "Player", isPlayer: true },
         },
         {
-          type: LogTypes.POSITION,
+          type: LogTypes.PLAYER_ATTACK_ANIMATION,
           date: "01-01-2026",
           time: "00:00:01",
           timezone: "Z+0000",
           tick: 2,
+          animationId: 7610,
           source: {
             name: "Jal-Zek",
             id: 7699,
             index: 7,
             isPlayer: false,
           },
-          position: { x: 3, y: 4, plane: 0 },
+          target: { name: "Player", isPlayer: true },
         },
       ],
     });
@@ -136,6 +138,47 @@ describe("trackedNpcAttackNpcs", () => {
     const fight = makeFight({
       data: [
         {
+          type: LogTypes.PLAYER_ATTACK_ANIMATION,
+          date: "01-01-2026",
+          time: "00:00:00",
+          timezone: "Z+0000",
+          tick: 1,
+          animationId: 8092,
+          source: {
+            name: "The Maiden of Sugadinti",
+            id: 8360,
+            index: 42,
+            isPlayer: false,
+          },
+          target: { name: "Player", isPlayer: true },
+        },
+        {
+          type: LogTypes.PLAYER_ATTACK_ANIMATION,
+          date: "01-01-2026",
+          time: "00:00:01",
+          timezone: "Z+0000",
+          tick: 5,
+          animationId: 8092,
+          source: {
+            name: "The Maiden of Sugadinti",
+            id: 8363,
+            index: 42,
+            isPlayer: false,
+          },
+          target: { name: "Player", isPlayer: true },
+        },
+      ],
+    });
+
+    const present = getPresentTrackedNpcAttackNpcs(fight);
+    expect(present).toHaveLength(1);
+    expect(present[0].key).toBe(npcAttackRowKey("maiden", 42));
+  });
+
+  it("ignores tracked NPCs that never recorded an attack animation", () => {
+    const fight = makeFight({
+      data: [
+        {
           type: LogTypes.POSITION,
           date: "01-01-2026",
           time: "00:00:00",
@@ -144,24 +187,41 @@ describe("trackedNpcAttackNpcs", () => {
           source: {
             name: "The Maiden of Sugadinti",
             id: 8360,
-            index: 42,
+            index: 99,
             isPlayer: false,
           },
           position: { x: 1, y: 2, plane: 0 },
         },
         {
-          type: LogTypes.POSITION,
+          type: LogTypes.DAMAGE,
+          date: "01-01-2026",
+          time: "00:00:00",
+          timezone: "Z+0000",
+          tick: 1,
+          source: { name: "Player", isPlayer: true },
+          target: {
+            name: "The Maiden of Sugadinti",
+            id: 8360,
+            index: 99,
+            isPlayer: false,
+          },
+          hitsplatName: "DAMAGE_ME",
+          damageAmount: 1,
+        },
+        {
+          type: LogTypes.PLAYER_ATTACK_ANIMATION,
           date: "01-01-2026",
           time: "00:00:01",
           timezone: "Z+0000",
-          tick: 5,
+          tick: 2,
+          animationId: 8092,
           source: {
             name: "The Maiden of Sugadinti",
-            id: 8363,
+            id: 8360,
             index: 42,
             isPlayer: false,
           },
-          position: { x: 1, y: 2, plane: 0 },
+          target: { name: "Player", isPlayer: true },
         },
       ],
     });
@@ -176,18 +236,19 @@ describe("trackedNpcAttackNpcs", () => {
       logVersion: "1.6.8",
       data: [
         {
-          type: LogTypes.POSITION,
+          type: LogTypes.PLAYER_ATTACK_ANIMATION,
           date: "01-01-2026",
           time: "00:00:00",
           timezone: "Z+0000",
           tick: 1,
+          animationId: 8092,
           source: {
             name: "The Maiden of Sugadinti",
             id: 8360,
             index: 42,
             isPlayer: false,
           },
-          position: { x: 1, y: 2, plane: 0 },
+          target: { name: "Player", isPlayer: true },
         },
       ],
     });
