@@ -20,6 +20,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import DownloadIcon from "@mui/icons-material/Download";
 import EditIcon from "@mui/icons-material/Edit";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import SyncIcon from "@mui/icons-material/Sync";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { useSnackbar } from "notistack";
 import { format } from "date-fns";
@@ -646,6 +647,56 @@ const Admin: React.FC = () => {
     }
   };
 
+  const enqueueFinalReconcile = async () => {
+    if (!loadedLog) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Enqueue final reconcile for "${loadedLog.name ?? loadedLog.id}"?\n\n` +
+        "Use this for stuck live/finalizing sessions whose worker job was dropped. " +
+        "The worker will drain remaining chunks, compact the raw log, and mark the session complete.",
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    setActionLoading("final-reconcile");
+    try {
+      const headers = await getAuthHeaders();
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/admin/log/${loadedLog.id}/final-reconcile`,
+        {
+          method: "POST",
+          headers,
+        },
+      );
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}`);
+      }
+      const data = (await response.json()) as {
+        message?: string;
+        liveLogState?: string | null;
+        lastParsedSeq?: number;
+        maxSeq?: number;
+      };
+      enqueueSnackbar(
+        `${data.message ?? "Final reconcile enqueued"}` +
+          (data.lastParsedSeq != null && data.maxSeq != null
+            ? ` (parsed ${data.lastParsedSeq}/${data.maxSeq}, state=${data.liveLogState ?? "?"})`
+            : ""),
+        { variant: "success" },
+      );
+    } catch (err) {
+      console.error("Failed to enqueue final reconcile:", err);
+      enqueueSnackbar("Failed to enqueue final reconcile", {
+        variant: "error",
+      });
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   useEffect(() => {
     if (!isAdmin) {
       return;
@@ -868,7 +919,8 @@ const Admin: React.FC = () => {
         <Typography sx={sectionTitleSx}>Manage Log</Typography>
         <Typography sx={sectionDescriptionSx}>
           Look up a log by ID to download the raw upload, rename it, reparse it,
-          delete it, or toggle leaderboard eligibility.
+          delete it, toggle leaderboard eligibility, or re-enqueue live final
+          reconcile for a stuck session.
         </Typography>
 
         <Box sx={{ ...actionRowSx, mb: 2 }}>
@@ -1049,6 +1101,20 @@ const Admin: React.FC = () => {
               >
                 <DownloadIcon sx={{ fontSize: 20 }} />
                 Download Raw Log
+              </Box>
+              <Box
+                component="button"
+                type="button"
+                onClick={() => void enqueueFinalReconcile()}
+                disabled={actionLoading === "final-reconcile"}
+                sx={secondaryButtonSx}
+              >
+                {actionLoading === "final-reconcile" ? (
+                  <CircularProgress size={20} sx={{ color: "inherit" }} />
+                ) : (
+                  <SyncIcon sx={{ fontSize: 20 }} />
+                )}
+                Enqueue Final Reconcile
               </Box>
               <Box
                 component="button"
