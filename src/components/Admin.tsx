@@ -25,6 +25,7 @@ import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import { useSnackbar } from "notistack";
 import { format } from "date-fns";
 import SectionBox from "./SectionBox";
+import AdminRecentLogs from "./AdminRecentLogs";
 import ReparseProgressIndicator from "./ReparseProgressIndicator";
 import { useIsAdmin } from "../hooks/useIsAdmin";
 import { colors, contentColumnSx, fontSizes, fonts, media } from "../theme";
@@ -797,6 +798,10 @@ const Admin: React.FC = () => {
           Admin
         </Typography>
       </Box>
+
+      <SectionBox sx={{ ...adminSectionBoxSx, p: 0, overflow: "hidden" }}>
+        <AdminRecentLogs getAuthHeaders={getAuthHeaders} />
+      </SectionBox>
 
       <SectionBox sx={adminSectionBoxSx}>
         <Typography sx={sectionTitleSx}>

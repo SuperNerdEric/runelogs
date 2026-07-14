@@ -27,12 +27,12 @@ import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
-import SensorsIcon from "@mui/icons-material/Sensors";
 import { format } from "date-fns";
 import { useAuth0 } from "@auth0/auth0-react";
 import { closeSnackbar, SnackbarKey, useSnackbar } from "notistack";
 import { colors, contentColumnSx, logNameTextSx, media } from "../theme";
 import LogNameDisplay from "./LogNameDisplay";
+import LiveLogIndicator from "./LiveLogIndicator";
 import { displayUsername } from "../utils/utils";
 import { buildProfileHref } from "../utils/profile";
 import { logTableRowProps, stopRowClick } from "../utils/encounterTableRow";
@@ -44,7 +44,6 @@ import {
   pageHeaderTitleWrapperSx,
 } from "./pageHeaderStyles";
 import UploaderNameLink from "./UploaderNameLink";
-import AppTooltip from "./AppTooltip";
 import FilterSelect from "./filters/FilterSelect";
 import FilterToolbar from "./filters/FilterToolbar";
 import { filterFieldCompactSx } from "./filters/filterStyles";
@@ -54,7 +53,6 @@ import { getUploaderLogsPageMeta } from "../utils/encounterPageMeta";
 import {
   isLiveLogPending,
   isLiveLogSessionOpen,
-  wasEverLiveLogged,
   type LiveLogState,
 } from "../utils/liveLogState";
 import {
@@ -212,42 +210,6 @@ const getComparator = (order: Order, orderBy: SortKey) => {
   };
 };
 
-const liveLogIconSx = {
-  flexShrink: 0,
-  fontSize: 16,
-} as const;
-
-interface LiveLogIndicatorProps {
-  log: Pick<LogItem, "liveLogState">;
-}
-
-const LiveLogIndicator: React.FC<LiveLogIndicatorProps> = ({ log }) => {
-  const state = log.liveLogState ?? "none";
-  if (!wasEverLiveLogged(state)) {
-    return null;
-  }
-
-  const active = isLiveLogPending(state);
-  const tooltip =
-    state === "live"
-      ? "Live log in progress"
-      : state === "finalizing"
-        ? "Finalizing live log"
-        : "Uploaded via live logging";
-
-  return (
-    <AppTooltip title={tooltip} arrow placement="top" disableTouch>
-      <SensorsIcon
-        aria-label={tooltip}
-        sx={{
-          ...liveLogIconSx,
-          color: active ? colors.replay.marker : colors.text.muted,
-        }}
-      />
-    </AppTooltip>
-  );
-};
-
 interface LogNameCellProps {
   log: LogItem;
   canEdit: boolean;
@@ -378,7 +340,7 @@ const LogNameCell: React.FC<LogNameCellProps> = ({
             }}
           />
         </Link>
-        <LiveLogIndicator log={log} />
+        <LiveLogIndicator liveLogState={log.liveLogState} />
       </Box>
       {canEdit && (
         <IconButton
@@ -900,7 +862,7 @@ const Logs: React.FC = () => {
                           >
                             Parsing {log.processingProgress ?? 0}%
                           </Typography>
-                          <LiveLogIndicator log={log} />
+                          <LiveLogIndicator liveLogState={log.liveLogState} />
                         </Box>
                       ) : (
                         <LogNameCell
