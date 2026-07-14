@@ -5,6 +5,7 @@ import { AttackAnimationEvent } from "./attackAnimationBreakdown";
 import { serializeAnimationIdFilter } from "./animationIdFilter";
 import { DeathEvent } from "./deathEvents";
 import { BloatDownEvent } from "./bloatDownEvents";
+import { FailureEvent } from "./failureEvents";
 import { serializeEventTimeFilter } from "./eventTimeFilter";
 
 function withUpdatedSearchParams(
@@ -61,6 +62,42 @@ export function buildBloatDownEventSearch(
       params.delete("animationId");
     }
     params.delete("target");
+  });
+}
+
+export function buildFailureEventSearch(
+  baseSearchParams: URLSearchParams,
+  event: FailureEvent,
+): string {
+  return withUpdatedSearchParams(baseSearchParams, (params) => {
+    params.set("tab", TabsEnum.EVENTS);
+    params.set(
+      "eventType",
+      event.eventType ?? LogTypes.PLAYER_ATTACK_ANIMATION,
+    );
+    params.set("eventTime", serializeEventTimeFilter(event.fightTimeMs));
+    if (event.source?.name) {
+      params.set(
+        "source",
+        serializeActorFilter({
+          name: event.source.name,
+          id: event.source.id,
+          index: event.source.index,
+        }),
+      );
+    } else {
+      params.delete("source");
+    }
+    if (event.target?.name) {
+      params.set("target", serializeActorFilter(event.target));
+    } else {
+      params.delete("target");
+    }
+    if (event.animationId != null && event.animationId > 0) {
+      params.set("animationId", serializeAnimationIdFilter(event.animationId));
+    } else {
+      params.delete("animationId");
+    }
   });
 }
 

@@ -13,8 +13,10 @@ import {
 } from "../../utils/summaryDuration";
 import DeathCounter from "./DeathCounter";
 import BloatDownCounter from "./BloatDownCounter";
+import FailureEventCounter from "./FailureEventCounter";
 import EncounterDpsRankBadges from "../badges/EncounterDpsRankBadges";
 import { BloatDownEvent } from "../../utils/bloatDownEvents";
+import { FailureEvent, FailureEventSeries } from "../../utils/failureEvents";
 
 interface SummaryHeaderProps {
   fight: Fight;
@@ -23,6 +25,8 @@ interface SummaryHeaderProps {
   getDeathLinkSearch?: (death: DeathEvent) => string;
   bloatDowns?: BloatDownEvent[];
   getBloatDownLinkSearch?: (down: BloatDownEvent) => string;
+  failureSeries?: FailureEventSeries[];
+  getFailureEventLinkSearch?: (event: FailureEvent) => string;
   dpsRanks?: Record<string, number>;
   dpsPercentiles?: Record<string, number>;
   leaderboardName?: string | null;
@@ -37,6 +41,8 @@ const SummaryHeader: React.FC<SummaryHeaderProps> = ({
   getDeathLinkSearch,
   bloatDowns = [],
   getBloatDownLinkSearch,
+  failureSeries = [],
+  getFailureEventLinkSearch,
   dpsRanks = {},
   dpsPercentiles = {},
   leaderboardName = null,
@@ -105,6 +111,13 @@ const SummaryHeader: React.FC<SummaryHeaderProps> = ({
           downs={bloatDowns}
           getDownLinkSearch={getBloatDownLinkSearch}
         />
+        {failureSeries.map((series) => (
+          <FailureEventCounter
+            key={series.id}
+            series={series}
+            getEventLinkSearch={getFailureEventLinkSearch}
+          />
+        ))}
       </Box>
     </Box>
   );

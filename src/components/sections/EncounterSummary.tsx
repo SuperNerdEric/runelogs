@@ -16,10 +16,15 @@ import {
   BloatDownEvent,
 } from "../../utils/bloatDownEvents";
 import {
+  FailureEvent,
+  getEncounterFailureSeries,
+} from "../../utils/failureEvents";
+import {
   buildAttackEventSearch,
   buildBloatDownEventSearch,
   buildDamageDoneSourceSearch,
   buildDeathEventSearch,
+  buildFailureEventSearch,
 } from "../../utils/encounterSummaryLinks";
 import Boosts from "../charts/Boosts";
 import SummaryHeader from "../summary/SummaryHeader";
@@ -51,6 +56,10 @@ const EncounterSummary: React.FC<EncounterSummaryProps> = ({
 
   const deaths = useMemo(() => getDeathEvents(fight), [fight]);
   const bloatDowns = useMemo(() => getBloatDownEvents(fight), [fight]);
+  const failureSeries = useMemo(
+    () => getEncounterFailureSeries(fight),
+    [fight],
+  );
 
   const getDeathLinkSearch = useCallback(
     (death: DeathEvent) => buildDeathEventSearch(searchParams, death),
@@ -59,6 +68,11 @@ const EncounterSummary: React.FC<EncounterSummaryProps> = ({
 
   const getBloatDownLinkSearch = useCallback(
     (down: BloatDownEvent) => buildBloatDownEventSearch(searchParams, down),
+    [searchParams],
+  );
+
+  const getFailureEventLinkSearch = useCallback(
+    (event: FailureEvent) => buildFailureEventSearch(searchParams, event),
     [searchParams],
   );
 
@@ -82,6 +96,8 @@ const EncounterSummary: React.FC<EncounterSummaryProps> = ({
         getDeathLinkSearch={getDeathLinkSearch}
         bloatDowns={bloatDowns}
         getBloatDownLinkSearch={getBloatDownLinkSearch}
+        failureSeries={failureSeries}
+        getFailureEventLinkSearch={getFailureEventLinkSearch}
         dpsRanks={dpsRanks}
         dpsPercentiles={dpsPercentiles}
         leaderboardName={leaderboardName}
