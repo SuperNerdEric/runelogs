@@ -1,5 +1,4 @@
-import { Link as RouterLink } from "react-router-dom";
-import { Box, Link, Typography, IconButton, TextField } from "@mui/material";
+import { Box, Typography, IconButton, TextField } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
@@ -9,9 +8,10 @@ import { useNavigate } from "react-router-dom";
 import { closeSnackbar, SnackbarKey, useSnackbar } from "notistack";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useState } from "react";
-import { displayUsername } from "../../utils/utils";
-import { logNameTextSx, accountTextSx } from "../../theme";
+import { logNameTextSx } from "../../theme";
 import LogNameDisplay from "../LogNameDisplay";
+import UploaderNameLink from "../UploaderNameLink";
+import { buildProfileHref } from "../../utils/profile";
 import {
   isLiveLogSessionOpen,
   type LiveLogState,
@@ -154,16 +154,12 @@ const LogInfoBox: React.FC<Props> = ({
       )}
 
       <Typography className="log-info-label">Uploader</Typography>
-      <Link
-        component={RouterLink}
-        style={{ textTransform: "capitalize" }}
-        to={`/logs/${uploaderId}`}
-        underline="hover"
+      <UploaderNameLink
+        uploaderId={uploaderId}
+        to={buildProfileHref(uploaderId)}
         variant="body1"
-        sx={accountTextSx}
-      >
-        {displayUsername(uploaderId)}
-      </Link>
+        avatarSize={30}
+      />
 
       <Typography className="log-info-label">Log&nbsp;Name</Typography>
       {editing ? (

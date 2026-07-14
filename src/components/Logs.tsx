@@ -43,6 +43,7 @@ import {
   pageHeaderTitleTypographySx,
   pageHeaderTitleWrapperSx,
 } from "./pageHeaderStyles";
+import UploaderNameLink from "./UploaderNameLink";
 import AppTooltip from "./AppTooltip";
 import FilterSelect from "./filters/FilterSelect";
 import FilterToolbar from "./filters/FilterToolbar";
@@ -408,20 +409,23 @@ const LogsPageHeader: React.FC<LogsPageHeaderProps> = ({ uploaderId }) => (
       />
     </Box>
     <Box>
-      <Link
-        component={RouterLink}
-        to={buildProfileHref(uploaderId || "")}
-        underline="hover"
-        sx={pageHeaderTitleWrapperSx}
-      >
+      {uploaderId ? (
+        <UploaderNameLink
+          uploaderId={uploaderId}
+          to={buildProfileHref(uploaderId)}
+          variant="h4"
+          sx={pageHeaderTitleWrapperSx}
+          typographySx={pageHeaderTitleTypographySx}
+        />
+      ) : (
         <Typography
           component="span"
           variant="h4"
-          sx={pageHeaderTitleTypographySx}
+          sx={{ ...pageHeaderTitleWrapperSx, ...pageHeaderTitleTypographySx }}
         >
-          {displayUsername(uploaderId || "Unknown User")}
+          Unknown User
         </Typography>
-      </Link>
+      )}
       <Typography sx={pageHeaderSubtitleSx}>Uploaded logs</Typography>
     </Box>
   </Box>

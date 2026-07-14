@@ -62,7 +62,18 @@ const AvatarIcon: React.FC<AvatarIconProps> = ({
       }}
     >
       {isCrownAvatar(avatarId) ? (
-        <CrownIcon size={Math.round(size * 0.78)} />
+        <Box
+          sx={{
+            width: "78%",
+            height: "78%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            "& > svg": { width: "100%", height: "100%" },
+          }}
+        >
+          <CrownIcon size={Math.round(size * 0.78)} />
+        </Box>
       ) : (
         <Box
           component="img"
