@@ -1,7 +1,9 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
+  Box,
   Link,
+  Skeleton,
   SxProps,
   Theme,
   Typography,
@@ -10,7 +12,7 @@ import {
 import AvatarIcon from "./AvatarIcon";
 import { usePublicAvatarId } from "../hooks/usePublicAvatarId";
 import { displayUsername } from "../utils/utils";
-import { accountTextSx } from "../theme";
+import { accountTextSx, colors } from "../theme";
 
 interface UploaderNameLinkProps {
   uploaderId: string;
@@ -24,6 +26,7 @@ interface UploaderNameLinkProps {
 
 /**
  * Linked uploader name with a text-sized avatar to the left.
+ * Always reserves avatar space (skeleton while loading) to avoid layout shift.
  */
 const UploaderNameLink: React.FC<UploaderNameLinkProps> = ({
   uploaderId,
@@ -33,8 +36,13 @@ const UploaderNameLink: React.FC<UploaderNameLinkProps> = ({
   sx,
   typographySx,
 }) => {
-  const avatarId = usePublicAvatarId(uploaderId);
+  const { avatarId, loading } = usePublicAvatarId(uploaderId);
   const resolvedSize = avatarSize === "1em" ? 24 : avatarSize;
+  const avatarSlotSx = {
+    width: avatarSize,
+    height: avatarSize,
+    flexShrink: 0,
+  } as const;
 
   return (
     <Link
@@ -53,14 +61,28 @@ const UploaderNameLink: React.FC<UploaderNameLinkProps> = ({
         minWidth: 0,
       }}
     >
-      {avatarId && (
-        <AvatarIcon
-          avatarId={avatarId}
-          size={resolvedSize}
+      {loading ? (
+        <Skeleton
+          variant="circular"
+          width={avatarSize}
+          height={avatarSize}
+          animation="wave"
           sx={{
-            width: avatarSize,
-            height: avatarSize,
-            flexShrink: 0,
+            ...avatarSlotSx,
+            bgcolor: colors.background.surfaceAlt,
+          }}
+        />
+      ) : avatarId ? (
+        <AvatarIcon avatarId={avatarId} size={resolvedSize} sx={avatarSlotSx} />
+      ) : (
+        <Box
+          aria-hidden
+          sx={{
+            ...avatarSlotSx,
+            borderRadius: "50%",
+            border: `1px solid ${colors.border.default}`,
+            boxSizing: "border-box",
+            bgcolor: colors.background.surfaceAlt,
           }}
         />
       )}

@@ -1,16 +1,23 @@
 import { useEffect, useState } from "react";
 import { AvatarId, isAvatarId } from "../utils/avatars";
 
-export function usePublicAvatarId(userId: string | undefined): AvatarId | null {
+export function usePublicAvatarId(userId: string | undefined): {
+  avatarId: AvatarId | null;
+  loading: boolean;
+} {
   const [avatarId, setAvatarId] = useState<AvatarId | null>(null);
+  const [loading, setLoading] = useState(Boolean(userId));
 
   useEffect(() => {
     if (!userId) {
       setAvatarId(null);
+      setLoading(false);
       return;
     }
 
     let cancelled = false;
+    setAvatarId(null);
+    setLoading(true);
 
     const load = async () => {
       try {
@@ -33,6 +40,10 @@ export function usePublicAvatarId(userId: string | undefined): AvatarId | null {
         if (!cancelled) {
           setAvatarId(null);
         }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
@@ -43,5 +54,5 @@ export function usePublicAvatarId(userId: string | undefined): AvatarId | null {
     };
   }, [userId]);
 
-  return avatarId;
+  return { avatarId, loading };
 }
