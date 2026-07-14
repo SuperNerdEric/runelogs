@@ -14,7 +14,10 @@ import {
   getBloatDownWindows,
   BloatDownWindow,
 } from "../../utils/bloatDownEvents";
-import { resolveNpcAttackImageUrl } from "../../utils/npcAttackAnimationNames";
+import {
+  BLOAT_STOMP_IMAGE_URL,
+  resolveNpcAttackImageUrl,
+} from "../../utils/npcAttackAnimationNames";
 import { colors } from "../../theme";
 import AppTooltip from "../AppTooltip";
 import {
@@ -501,12 +504,11 @@ const DPSChart: React.FC<DPSChartProps> = ({
                 x={window.endFightTimeMs}
                 stroke={BLOAT_DOWN_LINE_COLOR}
                 strokeWidth={2}
-                strokeOpacity={0.75}
-                strokeDasharray="2 4"
+                strokeDasharray="6 3"
                 ifOverflow="visible"
                 label={
                   <BloatMarkerLabel
-                    iconUrl={BLOAT_DOWN_ICON_URL}
+                    iconUrl={BLOAT_STOMP_IMAGE_URL}
                     title={`Down ${window.downNumber} End`}
                   />
                 }
