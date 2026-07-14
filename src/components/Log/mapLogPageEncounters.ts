@@ -56,19 +56,25 @@ export function mapLogPageEncountersToMetadata(
   for (const enc of encounters) {
     if (enc.type === "fightGroup") {
       const sortedFights = enc.fights.slice().sort((a, b) => a.order - b.order);
-      // Prefer the log-page annotation: while the log is receiving,
-      // incomplete runs stay in-progress even when live pointers lag.
+      // Annotation alone is not enough: `/log` used to stamp receivingData on
+      // every fight group while the session was live, which left earlier wiped
+      // Mokhaiotl runs (success=false) stuck "in progress" after a new run
+      // started. Prefer active pointers; annotation only counts when it marks
+      // this group as the one still receiving.
+      const annotatedReceiving = enc.receivingData === true;
       const groupInProgress =
-        typeof enc.receivingData === "boolean"
-          ? enc.receivingData && !enc.success
-          : isFightGroupRunInProgress(
-              receivingData,
-              enc.success,
-              enc.id,
-              sortedFights.map((f) => f.id),
-              live.liveActiveFightGroupId,
-              live.liveActiveFightId,
-            );
+        isFightGroupRunInProgress(
+          receivingData,
+          enc.success,
+          enc.id,
+          sortedFights.map((f) => f.id),
+          live.liveActiveFightGroupId,
+          live.liveActiveFightId,
+        ) ||
+        (annotatedReceiving &&
+          !enc.success &&
+          (live.liveActiveFightGroupId == null ||
+            live.liveActiveFightGroupId === enc.id));
 
       const fightStates = sortedFights.map((f) => ({
         id: f.id,
@@ -78,7 +84,7 @@ export function mapLogPageEncountersToMetadata(
 
       const childFights: FightMetaData[] = sortedFights.map((f) => {
         const tileState = resolveLiveFightTileState(
-          receivingData,
+          groupInProgress,
           enc.success,
           fightStates,
           {

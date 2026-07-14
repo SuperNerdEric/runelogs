@@ -122,7 +122,95 @@ describe("mapLogPageEncountersToMetadata", () => {
     expect(meta.name).toBe("Yama");
   });
 
-  it("marks a live fight group in-progress from its receivingData annotation", () => {
+  it("does not keep an earlier wiped run in-progress when another group is active", () => {
+    // Reproduction: two Mokhaiotl wipe trips (success=false, last delve unfinished)
+    // while the log stays live for a later run. Old annotation painted receivingData
+    // onto every fight group, so both wiped trips stayed blue/in-progress.
+    const [wipe1, wipe2] = mapLogPageEncountersToMetadata(
+      [
+        {
+          type: "fightGroup",
+          id: "dom-1",
+          name: "Doom of Mokhaiotl - 1",
+          leaderboardName: "Doom of Mokhaiotl",
+          success: false,
+          receivingData: true,
+          order: 0,
+          fights: [
+            {
+              id: "d6",
+              name: "Delve 6",
+              mainEnemyName: "Doom of Mokhaiotl",
+              startTime: "2026-07-14T18:49:00.000Z",
+              fightDurationTicks: 248,
+              success: true,
+              order: 5,
+            },
+            {
+              id: "d7",
+              name: "Delve 7",
+              mainEnemyName: "Doom of Mokhaiotl",
+              startTime: "2026-07-14T18:50:00.000Z",
+              fightDurationTicks: 71,
+              success: false,
+              order: 6,
+            },
+          ],
+        },
+        {
+          type: "fightGroup",
+          id: "dom-2",
+          name: "Doom of Mokhaiotl - 2",
+          leaderboardName: "Doom of Mokhaiotl",
+          success: false,
+          receivingData: true,
+          order: 1,
+          fights: [
+            {
+              id: "d5b",
+              name: "Delve 5",
+              mainEnemyName: "Doom of Mokhaiotl",
+              startTime: "2026-07-14T19:00:00.000Z",
+              fightDurationTicks: 198,
+              success: true,
+              order: 4,
+            },
+            {
+              id: "d6b",
+              name: "Delve 6",
+              mainEnemyName: "Doom of Mokhaiotl",
+              startTime: "2026-07-14T19:02:00.000Z",
+              fightDurationTicks: 120,
+              success: false,
+              order: 5,
+            },
+          ],
+        },
+      ],
+      {
+        receivingData: true,
+        liveActiveFightGroupId: "dom-2",
+        liveActiveFightId: "d6b",
+      },
+    );
+
+    expect(isFightGroupMetadata(wipe1)).toBe(true);
+    expect(isFightGroupMetadata(wipe2)).toBe(true);
+    if (!isFightGroupMetadata(wipe1) || !isFightGroupMetadata(wipe2)) {
+      return;
+    }
+
+    expect(wipe1.inProgress).toBe(false);
+    expect(wipe1.fights.find((f) => f.name === "Delve 7")?.inProgress).toBe(
+      false,
+    );
+    expect(wipe2.inProgress).toBe(true);
+    expect(wipe2.fights.find((f) => f.name === "Delve 6")?.inProgress).toBe(
+      true,
+    );
+  });
+
+  it("keeps annotation fallback when there is no active group pointer yet", () => {
     const [meta] = mapLogPageEncountersToMetadata(
       [
         {
@@ -156,10 +244,9 @@ describe("mapLogPageEncountersToMetadata", () => {
         },
       ],
       {
-        // Pointers intentionally lag; annotation should still win.
         receivingData: true,
-        liveActiveFightGroupId: "other-group",
-        liveActiveFightId: "other-fight",
+        liveActiveFightGroupId: null,
+        liveActiveFightId: null,
       },
     );
 
