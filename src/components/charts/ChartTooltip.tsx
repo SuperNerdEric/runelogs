@@ -55,15 +55,26 @@ interface ChartTooltipAttackRowProps {
   weaponItemId?: number;
   weaponName?: string;
   animationId?: number;
+  iconUrl?: string;
 }
 
 export const ChartTooltipAttackRow: React.FC<ChartTooltipAttackRowProps> = ({
   weaponItemId,
   weaponName,
   animationId,
+  iconUrl,
 }) => (
   <div className="chart-tooltip__attack">
-    {weaponItemId ? (
+    {iconUrl ? (
+      <>
+        <img
+          src={iconUrl}
+          alt=""
+          className="osrs-item-icon chart-tooltip__weapon-icon"
+        />
+        <span>{weaponName || `Animation ${animationId}`}</span>
+      </>
+    ) : weaponItemId ? (
       <>
         <img
           src={getItemImageUrl(weaponItemId)}

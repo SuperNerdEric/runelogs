@@ -12,13 +12,17 @@ import {
   hasSummaryDuration,
 } from "../../utils/summaryDuration";
 import DeathCounter from "./DeathCounter";
+import BloatDownCounter from "./BloatDownCounter";
 import EncounterDpsRankBadges from "../badges/EncounterDpsRankBadges";
+import { BloatDownEvent } from "../../utils/bloatDownEvents";
 
 interface SummaryHeaderProps {
   fight: Fight;
   receivingData?: boolean;
   deaths: DeathEvent[];
   getDeathLinkSearch?: (death: DeathEvent) => string;
+  bloatDowns?: BloatDownEvent[];
+  getBloatDownLinkSearch?: (down: BloatDownEvent) => string;
   dpsRanks?: Record<string, number>;
   dpsPercentiles?: Record<string, number>;
   leaderboardName?: string | null;
@@ -31,6 +35,8 @@ const SummaryHeader: React.FC<SummaryHeaderProps> = ({
   receivingData = false,
   deaths,
   getDeathLinkSearch,
+  bloatDowns = [],
+  getBloatDownLinkSearch,
   dpsRanks = {},
   dpsPercentiles = {},
   leaderboardName = null,
@@ -93,7 +99,13 @@ const SummaryHeader: React.FC<SummaryHeaderProps> = ({
         dpsLeaderboardKey={dpsLeaderboardKey}
         fightName={dpsLeaderboardKey ?? fight.name}
       />
-      <DeathCounter deaths={deaths} getDeathLinkSearch={getDeathLinkSearch} />
+      <Box className="summary-header__counters">
+        <DeathCounter deaths={deaths} getDeathLinkSearch={getDeathLinkSearch} />
+        <BloatDownCounter
+          downs={bloatDowns}
+          getDownLinkSearch={getBloatDownLinkSearch}
+        />
+      </Box>
     </Box>
   );
 };

@@ -23,7 +23,8 @@ export interface AttackTooltipDetails {
   weaponItemId: number;
   weaponName: string;
   animationId: number;
-  targetName: string;
+  /** Omitted when the attack has no target (e.g. Bloat down/stomp). */
+  targetName?: string;
   fightTimeMs?: number;
   boostedLevels?: Levels;
   isSpecialAttack: boolean;
@@ -31,6 +32,9 @@ export interface AttackTooltipDetails {
   spells?: PlayerSpellName[];
   vengOtherCastTarget?: string;
   timeFallback?: string;
+  iconUrl?: string;
+  /** Extra section label shown above the attack row (e.g. "Down 1 Start"). */
+  contextLabel?: string;
 }
 
 export const ATTACK_TOOLTIP_SLOT_PROPS = {
@@ -252,6 +256,14 @@ const AttackTooltip: React.FC<AttackTooltipProps> = ({ attack }) => {
   return (
     <ChartTooltip className="chart-tooltip--replay">
       {timeLabel && <ChartTooltipTime>{timeLabel}</ChartTooltipTime>}
+      {attack.contextLabel && (
+        <>
+          <ChartTooltipDivider />
+          <div className="chart-tooltip__missed-label">
+            {attack.contextLabel}
+          </div>
+        </>
+      )}
       <ChartTooltipDivider />
       <ChartTooltipAttackRow
         weaponItemId={attack.weaponItemId}
@@ -261,9 +273,14 @@ const AttackTooltip: React.FC<AttackTooltipProps> = ({ attack }) => {
             : attack.weaponName
         }
         animationId={attack.animationId}
+        iconUrl={attack.iconUrl}
       />
-      <ChartTooltipDivider />
-      <ChartTooltipTargetRow targetName={attack.targetName} />
+      {attack.targetName && (
+        <>
+          <ChartTooltipDivider />
+          <ChartTooltipTargetRow targetName={attack.targetName} />
+        </>
+      )}
       {(!!attack.spells?.length || !!attack.vengOtherCastTarget) && (
         <>
           <ChartTooltipDivider />
@@ -310,6 +327,7 @@ export function attackEventToTooltipDetails(
     | "isSpecialAttack"
     | "spells"
     | "vengOtherCastTarget"
+    | "iconUrl"
   >,
 ): AttackTooltipDetails {
   return {
@@ -322,6 +340,7 @@ export function attackEventToTooltipDetails(
     isSpecialAttack: event.isSpecialAttack,
     spells: event.spells,
     vengOtherCastTarget: event.vengOtherCastTarget,
+    iconUrl: event.iconUrl,
   };
 }
 

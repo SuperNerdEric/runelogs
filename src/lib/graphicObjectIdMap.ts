@@ -19,7 +19,6 @@ import o1573_20 from "../assets/graphicObjects/1573_20.png";
 import o1573_27 from "../assets/graphicObjects/1573_27.png";
 
 import o1579 from "../assets/graphicObjects/1579.png";
-import o1595 from "../assets/graphicObjects/1595.png";
 
 import o505_0 from "../assets/graphicObjects/505_0.png";
 import o505_1 from "../assets/graphicObjects/505_1.png";
@@ -29,16 +28,6 @@ import o505_4 from "../assets/graphicObjects/505_4.png";
 import o505_5 from "../assets/graphicObjects/505_5.png";
 import o505_6 from "../assets/graphicObjects/505_6.png";
 import o505_7 from "../assets/graphicObjects/505_7.png";
-import o1556_0 from "../assets/graphicObjects/1556_0.png";
-import o1556_1 from "../assets/graphicObjects/1556_1.png";
-import o1556_2 from "../assets/graphicObjects/1556_2.png";
-import o1556_3 from "../assets/graphicObjects/1556_3.png";
-import o1556_4 from "../assets/graphicObjects/1556_4.png";
-import o1556_5 from "../assets/graphicObjects/1556_5.png";
-import o1556_6 from "../assets/graphicObjects/1556_6.png";
-import o1556_7 from "../assets/graphicObjects/1556_7.png";
-import o1556_8 from "../assets/graphicObjects/1556_8.png";
-import o1556_9 from "../assets/graphicObjects/1556_9.png";
 import o2669_0 from "../assets/graphicObjects/2669_0.png";
 import o2669_1 from "../assets/graphicObjects/2669_1.png";
 import o2669_2 from "../assets/graphicObjects/2669_2.png";
@@ -394,16 +383,6 @@ import o3404_7 from "../assets/graphicObjects/3404_7.png";
 import o3404_8 from "../assets/graphicObjects/3404_8.png";
 import o3404_9 from "../assets/graphicObjects/3404_9.png";
 import o3404_10 from "../assets/graphicObjects/3404_10.png";
-import o3405_0 from "../assets/graphicObjects/3405_0.png";
-import o3405_1 from "../assets/graphicObjects/3405_1.png";
-import o3405_2 from "../assets/graphicObjects/3405_2.png";
-import o3405_3 from "../assets/graphicObjects/3405_3.png";
-import o3405_4 from "../assets/graphicObjects/3405_4.png";
-import o3405_5 from "../assets/graphicObjects/3405_5.png";
-import o3405_6 from "../assets/graphicObjects/3405_6.png";
-import o3405_7 from "../assets/graphicObjects/3405_7.png";
-import o3405_8 from "../assets/graphicObjects/3405_8.png";
-import o3405_9 from "../assets/graphicObjects/3405_9.png";
 import o3406_0 from "../assets/graphicObjects/3406_0.png";
 import o3406_1 from "../assets/graphicObjects/3406_1.png";
 import o3406_2 from "../assets/graphicObjects/3406_2.png";
@@ -797,32 +776,16 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
     name: "Bloat foot",
     frames: [o1570_0, o1570_1, o1570_2, o1573, o1573_20, o1573_27],
   },
-  1579: { name: "Maiden blood", imageUrl: o1579 },
-  1595: { name: "Verzik yellow", imageUrl: o1595 },
+  1579: {
+    name: "Maiden lingering blood",
+    frames: [o1579],
+  },
   505: {
     name: "Sotetseg maze rag",
-    frameLengths: [2, 3, 3, 3, 3, 3, 3, 3],
     frames: [o505_0, o505_1, o505_2, o505_3, o505_4, o505_5, o505_6, o505_7],
-  },
-  1556: {
-    name: "Xarpus acid splash",
-    frameLengths: [10, 2, 2, 2, 3, 3, 3, 2, 2, 2],
-    frames: [
-      o1556_0,
-      o1556_1,
-      o1556_2,
-      o1556_3,
-      o1556_4,
-      o1556_5,
-      o1556_6,
-      o1556_7,
-      o1556_8,
-      o1556_9,
-    ],
   },
   2669: {
     name: "Colosseum Sol dust 1",
-    frameLengths: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
     frames: [
       o2669_0,
       o2669_1,
@@ -838,7 +801,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   2670: {
     name: "Colosseum Sol dust 2",
-    frameLengths: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
     frames: [
       o2670_0,
       o2670_1,
@@ -854,7 +816,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   2671: {
     name: "Colosseum Sol dust 3",
-    frameLengths: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
     frames: [
       o2671_0,
       o2671_1,
@@ -870,10 +831,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   2689: {
     name: "Colosseum Sol laser scan (north-south)",
-    frameLengths: [
-      1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-      3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-    ],
     frames: [
       o2689_0,
       o2689_1,
@@ -922,10 +879,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   2690: {
     name: "Colosseum Sol laser scan (west-east)",
-    frameLengths: [
-      1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-      3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-    ],
     frames: [
       o2690_0,
       o2690_1,
@@ -974,10 +927,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   2691: {
     name: "Colosseum Sol laser scan (north-south variant)",
-    frameLengths: [
-      1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-      3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-    ],
     frames: [
       o2691_0,
       o2691_1,
@@ -1026,10 +975,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   2693: {
     name: "Colosseum Sol laser shot (north-south)",
-    frameLengths: [
-      1, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-      5, 5,
-    ],
     frames: [
       o2693_0,
       o2693_1,
@@ -1062,10 +1007,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   2694: {
     name: "Colosseum Sol laser shot (west-east)",
-    frameLengths: [
-      1, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-      5, 5,
-    ],
     frames: [
       o2694_0,
       o2694_1,
@@ -1098,10 +1039,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   2695: {
     name: "Colosseum Sol laser shot (north-south variant)",
-    frameLengths: [
-      1, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-      5, 5,
-    ],
     frames: [
       o2695_0,
       o2695_1,
@@ -1134,11 +1071,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   2698: {
     name: "Colosseum Sol sunfire pool",
-    frameLengths: [
-      2, 2, 2, 2, 2, 2, 2, 2, 14, 30, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-      2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-      3,
-    ],
     frames: [
       o2698_0,
       o2698_1,
@@ -1194,7 +1126,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   2380: {
     name: "Doom rock throw shadow",
-    frameLengths: [5, 5, 5, 5, 5, 5, 7, 7, 7, 7, 9, 10, 13],
     frames: [
       o2380_0,
       o2380_1,
@@ -1213,10 +1144,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3373: {
     name: "Doom grub burrowed explosion",
-    frameLengths: [
-      3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-      3, 3, 3, 3, 3,
-    ],
     frames: [
       o3373_0,
       o3373_1,
@@ -1252,7 +1179,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3374: {
     name: "Doom grub death explosion",
-    frameLengths: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
     frames: [
       o3374_0,
       o3374_1,
@@ -1269,7 +1195,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3404: {
     name: "Doom rock shadow impact",
-    frameLengths: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
     frames: [
       o3404_0,
       o3404_1,
@@ -1284,25 +1209,8 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
       o3404_10,
     ],
   },
-  3405: {
-    name: "Doom shockwave shadow 1",
-    frameLengths: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-    frames: [
-      o3405_0,
-      o3405_1,
-      o3405_2,
-      o3405_3,
-      o3405_4,
-      o3405_5,
-      o3405_6,
-      o3405_7,
-      o3405_8,
-      o3405_9,
-    ],
-  },
   3406: {
     name: "Doom shockwave shadow 2",
-    frameLengths: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
     frames: [
       o3406_0,
       o3406_1,
@@ -1318,7 +1226,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3407: {
     name: "Doom shockwave shadow 3",
-    frameLengths: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
     frames: [
       o3407_0,
       o3407_1,
@@ -1334,7 +1241,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3408: {
     name: "Doom shockwave shadow 4",
-    frameLengths: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
     frames: [
       o3408_0,
       o3408_1,
@@ -1350,7 +1256,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3417: {
     name: "Doom grub spawn",
-    frameLengths: [3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 3, 3, 2, 10],
     frames: [
       o3417_0,
       o3417_1,
@@ -1371,7 +1276,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3418: {
     name: "Doom grub explosion 1",
-    frameLengths: [2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5],
     frames: [
       o3418_0,
       o3418_1,
@@ -1395,7 +1299,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3419: {
     name: "Doom grub explosion 2",
-    frameLengths: [2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5],
     frames: [
       o3419_0,
       o3419_1,
@@ -1419,7 +1322,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3420: {
     name: "Doom grub explosion 3",
-    frameLengths: [2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5],
     frames: [
       o3420_0,
       o3420_1,
@@ -1443,7 +1345,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3421: {
     name: "Doom grub explosion 4",
-    frameLengths: [2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5],
     frames: [
       o3421_0,
       o3421_1,
@@ -1467,7 +1368,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3422: {
     name: "Doom grub explosion 5",
-    frameLengths: [2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5],
     frames: [
       o3422_0,
       o3422_1,
@@ -1491,7 +1391,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3423: {
     name: "Doom grub explosion 6",
-    frameLengths: [2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5],
     frames: [
       o3423_0,
       o3423_1,
@@ -1515,7 +1414,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3424: {
     name: "Doom grub explosion 7",
-    frameLengths: [2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5],
     frames: [
       o3424_0,
       o3424_1,
@@ -1539,7 +1437,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3425: {
     name: "Doom grub explosion 8",
-    frameLengths: [2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5],
     frames: [
       o3425_0,
       o3425_1,
@@ -1563,7 +1460,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3426: {
     name: "Doom grub player impact",
-    frameLengths: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
     frames: [
       o3426_0,
       o3426_1,
@@ -1582,9 +1478,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3427: {
     name: "Doom grub absorption splat",
-    frameLengths: [
-      3, 3, 3, 3, 3, 15, 30, 30, 30, 30, 30, 30, 30, 30, 14, 4, 4, 4, 4,
-    ],
     frames: [
       o3427_0,
       o3427_1,
@@ -1609,9 +1502,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3428: {
     name: "Doom grub absorption splat (diagonal)",
-    frameLengths: [
-      3, 3, 3, 3, 3, 15, 30, 30, 30, 30, 30, 30, 30, 30, 14, 4, 4, 4, 4,
-    ],
     frames: [
       o3428_0,
       o3428_1,
@@ -1636,7 +1526,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3263: {
     name: "Yama shadow wall (small)",
-    frameLengths: [2, 2, 2, 3, 3, 3, 3, 3, 3, 2, 2, 2],
     frames: [
       o3263_0,
       o3263_1,
@@ -1654,7 +1543,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3267: {
     name: "Yama fire wall 1",
-    frameLengths: [2, 2, 2, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2],
     frames: [
       o3267_0,
       o3267_1,
@@ -1673,7 +1561,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3268: {
     name: "Yama fire wall 2",
-    frameLengths: [2, 2, 2, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2],
     frames: [
       o3268_0,
       o3268_1,
@@ -1692,7 +1579,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3269: {
     name: "Yama fire wall 3",
-    frameLengths: [2, 2, 2, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2],
     frames: [
       o3269_0,
       o3269_1,
@@ -1711,7 +1597,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3280: {
     name: "Yama fire immunity",
-    frameLengths: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
     frames: [
       o3280_0,
       o3280_1,
@@ -1727,7 +1612,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   2953: {
     name: "Maggot King dust wave",
-    frameLengths: [4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 2],
     frames: [
       o2953_0,
       o2953_1,
@@ -1748,7 +1632,6 @@ export const graphicObjectIdMap: Record<number, GraphicObject> = {
   },
   3998: {
     name: "Maggot King shadow warning",
-    frameLengths: [5, 5, 5, 5, 5, 5, 7, 7, 7, 5],
     frames: [
       o3998_0,
       o3998_1,

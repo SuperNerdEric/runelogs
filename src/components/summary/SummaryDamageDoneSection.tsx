@@ -58,7 +58,11 @@ const SummaryDamageDoneSection: React.FC<SummaryDamageDoneSectionProps> = ({
       <Box className="summary-damage-done-section__body">
         {hasChart && (
           <Box className="summary-damage-done-section__chart">
-            <DPSChart fight={fightWithDamageDoneLogs} height={140} />
+            <DPSChart
+              fight={fightWithDamageDoneLogs}
+              eventFight={fight}
+              height={140}
+            />
           </Box>
         )}
         {hasTable && (

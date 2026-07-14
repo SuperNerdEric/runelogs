@@ -26,6 +26,7 @@ import rangedImage from "../assets/Ranged.webp";
 import prayerImage from "../assets/Prayer.webp";
 import sailingImage from "../assets/Sailing.webp";
 import { formatHHmmss } from "../utils/utils";
+import { formatAttackAnimationEventDetail } from "../utils/npcAttackAnimationNames";
 import { colors, layout } from "../theme";
 import { ActorFilter, matchesLogActorFilters } from "../utils/actorFilter";
 import {
@@ -1091,7 +1092,7 @@ const EventsTable: React.FC<EventsTableProps> = ({
                             {log.type === LogTypes.PLAYER_ATTACK_ANIMATION ? (
                               <>
                                 <span className="attack-animation-text">
-                                  {log.animationId}{" "}
+                                  {formatAttackAnimationEventDetail(log)}{" "}
                                 </span>
                               </>
                             ) : (

@@ -817,6 +817,16 @@ a.encounter-title-bar.encounter-title-bar--clickable:hover {
     var(--color-bg-row-hover) 94%,
     var(--color-bg-surface-alt) 6%
   );
+  --replay-bloat-down-bg: color-mix(
+    in srgb,
+    var(--color-text-damage) 32%,
+    transparent
+  );
+  --replay-bloat-down-bg-highlighted: color-mix(
+    in srgb,
+    var(--color-bg-row-hover) 70%,
+    var(--color-text-damage) 30%
+  );
   overflow-x: auto;
   max-width: 100%;
   margin-bottom: 10px;
@@ -907,6 +917,10 @@ a.encounter-title-bar.encounter-title-bar--clickable:hover {
   background-color: var(--replay-missed-tick-bg);
 }
 
+.replay-tick-chart td.replay-tick-chart__cell--bloat-down {
+  background-color: var(--replay-bloat-down-bg);
+}
+
 .replay-tick-chart td.replay-tick-chart__cell--highlighted {
   background-color: var(--color-bg-row-hover);
 }
@@ -914,6 +928,11 @@ a.encounter-title-bar.encounter-title-bar--clickable:hover {
 .replay-tick-chart
   td.replay-tick-chart__cell--missed.replay-tick-chart__cell--highlighted {
   background-color: var(--replay-missed-tick-bg-highlighted);
+}
+
+.replay-tick-chart
+  td.replay-tick-chart__cell--bloat-down.replay-tick-chart__cell--highlighted {
+  background-color: var(--replay-bloat-down-bg-highlighted);
 }
 
 .replay-tick-chart tbody td.replay-tick-chart__cell:hover {
@@ -1794,6 +1813,14 @@ a.encounter-title-bar.encounter-title-bar--clickable:hover {
   text-align: center;
 }
 
+.summary-header__counters {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
 .summary-death-counter {
   align-self: center;
   display: flex;
@@ -1915,6 +1942,18 @@ a.summary-death-counter__entry {
   color: lightblue;
   font-family: monospace;
   font-size: 0.9rem;
+}
+
+.summary-death-counter__entry-name-wrap {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+}
+
+.summary-death-counter__entry-icon {
+  flex-shrink: 0;
+  image-rendering: pixelated;
 }
 
 .summary-death-counter__entry-name {
@@ -2425,6 +2464,31 @@ a.summary-death-counter__entry {
 }
 
 .boosts-chart-attack-icon-wrap:hover {
+  border-color: rgba(255, 255, 255, 0.28);
+  filter: brightness(1.12);
+}
+
+.dps-chart-bloat-icon-wrap {
+  --osrs-item-icon-size: 28px;
+  align-items: center;
+  background: rgba(13, 17, 23, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 5px;
+  box-sizing: border-box;
+  cursor: help;
+  display: inline-flex;
+  height: 28px;
+  justify-content: center;
+  line-height: 0;
+  margin: 0 auto;
+  padding: 0;
+  transition:
+    border-color 0.15s ease,
+    filter 0.15s ease;
+  width: 28px;
+}
+
+.dps-chart-bloat-icon-wrap:hover {
   border-color: rgba(255, 255, 255, 0.28);
   filter: brightness(1.12);
 }

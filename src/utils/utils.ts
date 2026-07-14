@@ -70,16 +70,11 @@ export const convertTimeToMillis = (time: string): number => {
  * @returns {Actor} An object representing the actor
  */
 export const getActor = (actorString: string): Actor => {
-  const [id, index] = actorString.split("-");
-  if (index) {
+  if (/^\d+-\d+$/.test(actorString)) {
+    const [id, index] = actorString.split("-");
     const monster = npcIdMap[Number(id)];
-    if (!monster) {
-      return {
-        name: actorString,
-      };
-    }
     return {
-      name: monster.name,
+      name: monster?.name || actorString,
       id: Number(id),
       index: Number(index),
     };

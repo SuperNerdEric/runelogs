@@ -17,6 +17,7 @@ import Upload from "./components/Upload";
 import Log from "./components/Log/Log";
 import Logs from "./components/Logs";
 import LogsPageHeaderVariants from "./components/dev/LogsPageHeaderVariants";
+import MaidenNpcAttackReplayPreview from "./components/dev/MaidenNpcAttackReplayPreview";
 import theme from "./theme";
 import ThemeVariables from "./theme/ThemeVariables";
 import { ThemeProvider } from "@mui/material";
@@ -93,6 +94,10 @@ function AppRoutes() {
           <Route
             path="/dev/logs-header-variants"
             element={<LogsPageHeaderVariants />}
+          />
+          <Route
+            path="/dev/replay/maiden-npc-attacks"
+            element={<MaidenNpcAttackReplayPreview />}
           />
           <Route path="*" element={<NotFound />} />
         </Routes>

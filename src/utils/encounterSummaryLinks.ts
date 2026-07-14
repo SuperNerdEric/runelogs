@@ -4,6 +4,7 @@ import { ActorFilter, serializeActorFilter } from "./actorFilter";
 import { AttackAnimationEvent } from "./attackAnimationBreakdown";
 import { serializeAnimationIdFilter } from "./animationIdFilter";
 import { DeathEvent } from "./deathEvents";
+import { BloatDownEvent } from "./bloatDownEvents";
 import { serializeEventTimeFilter } from "./eventTimeFilter";
 
 function withUpdatedSearchParams(
@@ -34,6 +35,32 @@ export function buildDeathEventSearch(
     params.set("eventType", LogTypes.DEATH);
     params.set("target", serializeActorFilter(death.target));
     params.set("eventTime", serializeEventTimeFilter(death.fightTimeMs));
+  });
+}
+
+export function buildBloatDownEventSearch(
+  baseSearchParams: URLSearchParams,
+  down: BloatDownEvent,
+): string {
+  return withUpdatedSearchParams(baseSearchParams, (params) => {
+    params.set("tab", TabsEnum.EVENTS);
+    params.set("eventType", LogTypes.PLAYER_ATTACK_ANIMATION);
+    params.set(
+      "source",
+      serializeActorFilter({
+        name: down.source.name,
+        id: down.source.id,
+        index: down.source.index,
+      }),
+    );
+    params.set("eventTime", serializeEventTimeFilter(down.fightTimeMs));
+    // Stomp rows use animationId 0; filtering on that over-matches, so rely on time+source.
+    if (down.animationId > 0) {
+      params.set("animationId", serializeAnimationIdFilter(down.animationId));
+    } else {
+      params.delete("animationId");
+    }
+    params.delete("target");
   });
 }
 

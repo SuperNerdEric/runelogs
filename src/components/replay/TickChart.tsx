@@ -30,6 +30,12 @@ import AttackTooltip, {
   MissedTickTooltip,
   TickPlayerStatsTooltip,
 } from "../AttackTooltip";
+import {
+  ChartTooltip,
+  ChartTooltipDivider,
+  ChartTooltipTime,
+} from "../charts/ChartTooltip";
+import { formatHHmmss } from "../../utils/utils";
 import { getReplayMissedTicks } from "../../utils/replayMissedTicks";
 import {
   BoostLevelsByTick,
@@ -43,6 +49,25 @@ import {
   VENGEANCE_OTHER_ICON_URL,
 } from "../../utils/playerSpells";
 import { getTimeFromTickOffset } from "../../lib/replayTiming";
+import {
+  getPresentTrackedNpcAttackNpcs,
+  getTrackedNpcAttackNpc,
+  isMainBossTrackedNpc,
+  npcAttackRowKey as trackedNpcAttackRowKey,
+} from "../../utils/trackedNpcAttackNpcs";
+import {
+  BLOAT_STOMP_IMAGE_URL,
+  resolveNpcAttackImageUrl,
+  getNpcAttackAnimationName,
+} from "../../utils/npcAttackAnimationNames";
+import {
+  buildBloatDownHighlightTicks,
+  formatBloatDownContextLabel,
+  synthesizeBloatStompAttacks,
+} from "../../utils/bloatDownHighlight";
+import { getBloatStompFightTimeMs } from "../../utils/bloatDownEvents";
+import { Actor } from "../../models/Actor";
+import { npcIdMap } from "../../lib/npcIdMap";
 
 const SPECIAL_ATTACK_ORB_URL = "/images/special-attack-orb-64.png";
 const SKULL_ICON_URL = "/images/skull-icon.png";
@@ -58,8 +83,11 @@ const attackCellStyle: CSSProperties = {
 };
 
 const attackIconStyle: CSSProperties = {
-  width: "30px",
-  height: "30px",
+  maxWidth: "30px",
+  maxHeight: "30px",
+  width: "auto",
+  height: "auto",
+  objectFit: "contain",
 };
 
 interface TickChartProps {
@@ -78,10 +106,20 @@ interface ReplayAttackCell {
   weaponItemId: number;
   weaponName: string;
   animationId: number;
-  targetName: string;
+  targetName?: string;
   fightTimeMs?: number;
   boostedLevels?: Levels;
   isSpecialAttack: boolean;
+}
+
+interface ReplayNpcAttackCell {
+  npcId: number;
+  npcName: string;
+  attackName: string;
+  attackImageUrl: string;
+  animationId: number;
+  targetName?: string;
+  fightTimeMs?: number;
 }
 
 type AttackAnimationsByTick = {
@@ -90,14 +128,36 @@ type AttackAnimationsByTick = {
   };
 };
 
+type NpcAttackAnimationsByTick = {
+  [tickNumber: number]: {
+    [npcKey: string]: ReplayNpcAttackCell;
+  };
+};
+
 type DeathsByTick = Record<number, Record<string, true>>;
 type SpellsByTick = Record<number, Record<string, PlayerSpellName[]>>;
 type VengOtherCastByTick = Record<number, Record<string, string>>;
 
+interface NpcRow {
+  key: string;
+  label: string;
+  npcId: number;
+  npcName: string;
+  /** Full monster name for row-label hover. */
+  fullName: string;
+  isMainBoss: boolean;
+}
+
 interface HoveredCell {
   anchorEl: HTMLElement;
   tick: number;
-  playerName: string;
+  rowKey: string;
+  rowKind: "player" | "npc";
+}
+
+interface HoveredNpcLabel {
+  anchorEl: HTMLElement;
+  fullName: string;
 }
 
 const animationIdToImage: Record<number, string> = {
@@ -120,13 +180,33 @@ const getAnimationOrItemImageUrl = (
   return nullImg;
 };
 
+function resolveAttackTargetName(
+  target: Actor | undefined,
+): string | undefined {
+  if (!target) {
+    return undefined;
+  }
+  if (target.id != null) {
+    const tracked = getTrackedNpcAttackNpc(target.id);
+    if (tracked?.shortName) {
+      return tracked.shortName;
+    }
+    const name = npcIdMap[target.id]?.name || target.name;
+    return name?.trim() || undefined;
+  }
+  return target.name?.trim() || undefined;
+}
+
 interface TickChartCellProps {
   tick: number;
-  playerName: string;
+  rowKey: string;
+  rowKind: "player" | "npc";
   isHighlighted: boolean;
   isMissed: boolean;
+  isBloatDown?: boolean;
   isDeath: boolean;
   attack?: ReplayAttackCell;
+  npcAttack?: ReplayNpcAttackCell;
   spells?: PlayerSpellName[];
   vengOtherCastTarget?: string;
   onCellClick: (tick: number) => void;
@@ -135,11 +215,14 @@ interface TickChartCellProps {
 
 const TickChartCell = memo(function TickChartCell({
   tick,
-  playerName,
+  rowKey,
+  rowKind,
   isHighlighted,
   isMissed,
+  isBloatDown = false,
   isDeath,
   attack,
+  npcAttack,
   spells,
   vengOtherCastTarget,
   onCellClick,
@@ -148,6 +231,7 @@ const TickChartCell = memo(function TickChartCell({
   const cellClassName = [
     "replay-tick-chart__cell",
     isMissed ? "replay-tick-chart__cell--missed" : "",
+    isBloatDown ? "replay-tick-chart__cell--bloat-down" : "",
     isHighlighted ? "replay-tick-chart__cell--highlighted" : "",
   ]
     .filter(Boolean)
@@ -158,8 +242,9 @@ const TickChartCell = memo(function TickChartCell({
   // Keep one primary icon in the fixed 30x30 cell; extras are corner overlays.
   const spellIconCount =
     (hasSpells ? spells!.length : 0) + (hasVengOtherCast ? 1 : 0);
-  const spellAsOverlay = spellIconCount > 0 && !!attack;
-  const deathAsOverlay = isDeath && (!!attack || spellIconCount > 0);
+  const hasPrimaryAttack = !!attack || !!npcAttack;
+  const spellAsOverlay = spellIconCount > 0 && hasPrimaryAttack;
+  const deathAsOverlay = isDeath && (hasPrimaryAttack || spellIconCount > 0);
 
   return (
     <td
@@ -178,7 +263,8 @@ const TickChartCell = memo(function TickChartCell({
         onCellHover({
           anchorEl: event.currentTarget,
           tick,
-          playerName,
+          rowKey,
+          rowKind,
         })
       }
       onMouseLeave={() => onCellHover(null)}
@@ -205,6 +291,9 @@ const TickChartCell = memo(function TickChartCell({
               />
             )}
           </>
+        )}
+        {npcAttack && (
+          <img src={npcAttack.attackImageUrl} alt="" style={attackIconStyle} />
         )}
         {hasVengOtherCast && (
           <span
@@ -285,13 +374,32 @@ const TickChart: React.FC<TickChartProps> = ({
   tooltipContainer,
 }) => {
   const [hoveredCell, setHoveredCell] = useState<HoveredCell | null>(null);
+  const [hoveredNpcLabel, setHoveredNpcLabel] =
+    useState<HoveredNpcLabel | null>(null);
 
   const chartData = useMemo(() => {
     const playerSet = new Set<string>();
+    const presentTrackedNpcs = getPresentTrackedNpcAttackNpcs(fight);
+    const npcRowsByKey = new Map<string, NpcRow>();
+    for (const npc of presentTrackedNpcs) {
+      npcRowsByKey.set(npc.key, {
+        key: npc.key,
+        label: npc.name,
+        npcId: npc.primaryId,
+        npcName: npc.name,
+        fullName: npcIdMap[npc.primaryId]?.name ?? npc.name,
+        isMainBoss: isMainBossTrackedNpc(
+          { shortName: npc.name, primaryId: npc.primaryId },
+          fight,
+        ),
+      });
+    }
+
     const lastKnownEquipment: Record<string, string[] | undefined> = {};
     const lastKnownBoostedLevels: Record<string, Levels | undefined> = {};
     const boostedLevelsAtTick: BoostLevelsByTick = {};
     const attackAnimationsByTick: AttackAnimationsByTick = {};
+    const npcAttackAnimationsByTick: NpcAttackAnimationsByTick = {};
     const deathsByTick: DeathsByTick = {};
     const spellsByTick: SpellsByTick = {};
     const vengOtherCastByTick: VengOtherCastByTick = {};
@@ -312,6 +420,43 @@ const TickChart: React.FC<TickChartProps> = ({
           playerSet.add(target.name);
         }
         return;
+      }
+
+      if (logLine.type === LogTypes.PLAYER_ATTACK_ANIMATION) {
+        const attackLog = logLine as AttackAnimationLog;
+        const source = attackLog.source;
+        const tracked = getTrackedNpcAttackNpc(source?.id);
+        if (tracked && source?.index != null) {
+          const npcKey = trackedNpcAttackRowKey(tracked.family, source.index);
+          // Only chart attacks for NPCs that belong in this fight's tracked set
+          if (npcRowsByKey.has(npcKey)) {
+            if (!npcAttackAnimationsByTick[tick]) {
+              npcAttackAnimationsByTick[tick] = {};
+            }
+            npcAttackAnimationsByTick[tick][npcKey] = {
+              npcId: tracked.primaryId,
+              npcName: npcRowsByKey.get(npcKey)!.npcName,
+              attackName: getNpcAttackAnimationName(
+                attackLog.animationId,
+                tracked.primaryId,
+                attackLog.projectileId,
+                attackLog.attackSpecial,
+              ),
+              attackImageUrl:
+                attackLog.attackImageUrl ??
+                resolveNpcAttackImageUrl(
+                  attackLog.animationId,
+                  tracked.primaryId,
+                  attackLog.projectileId,
+                  attackLog.attackSpecial,
+                ),
+              animationId: attackLog.animationId,
+              targetName: resolveAttackTargetName(attackLog.target),
+              fightTimeMs: attackLog.fightTimeMs,
+            };
+          }
+          return;
+        }
       }
 
       if (!("source" in logLine) || logLine.source?.id) {
@@ -385,7 +530,7 @@ const TickChart: React.FC<TickChartProps> = ({
             ? itemIdMap[parsedWeaponItemId] || `Item ${parsedWeaponItemId}`
             : "Unknown weapon"),
         animationId: attackLog.animationId,
-        targetName: attackLog.target?.name || "Unknown target",
+        targetName: resolveAttackTargetName(attackLog.target),
         fightTimeMs: attackLog.fightTimeMs,
         boostedLevels: lastKnownBoostedLevels[playerName]
           ? { ...lastKnownBoostedLevels[playerName]! }
@@ -413,9 +558,50 @@ const TickChart: React.FC<TickChartProps> = ({
       }
     }
 
+    const npcNameCounts = new Map<string, number>();
+    for (const row of npcRowsByKey.values()) {
+      npcNameCounts.set(row.npcName, (npcNameCounts.get(row.npcName) ?? 0) + 1);
+    }
+    for (const row of npcRowsByKey.values()) {
+      if ((npcNameCounts.get(row.npcName) ?? 0) > 1) {
+        const indexPart = row.key.split(":")[1];
+        row.label = `${row.npcName} (${indexPart ?? row.key})`;
+      }
+    }
+
+    const npcRows = Array.from(npcRowsByKey.values()).sort((a, b) => {
+      if (a.isMainBoss !== b.isMainBoss) {
+        return a.isMainBoss ? -1 : 1;
+      }
+      return a.label.localeCompare(b.label);
+    });
+
+    synthesizeBloatStompAttacks(
+      npcAttackAnimationsByTick,
+      maxTick,
+      (downAttack) => ({
+        npcId: downAttack.npcId,
+        npcName: downAttack.npcName,
+        attackName: "Stomp",
+        attackImageUrl: BLOAT_STOMP_IMAGE_URL,
+        animationId: 0,
+        targetName: downAttack.targetName,
+        fightTimeMs:
+          downAttack.fightTimeMs != null
+            ? getBloatStompFightTimeMs(downAttack.fightTimeMs)
+            : undefined,
+      }),
+    );
+
     return {
       players: Array.from(playerSet),
+      npcRows,
       attackAnimations: attackAnimationsByTick,
+      npcAttackAnimations: npcAttackAnimationsByTick,
+      bloatDownHighlights: buildBloatDownHighlightTicks(
+        npcAttackAnimationsByTick,
+        maxTick,
+      ),
       deathsByTick,
       spellsByTick,
       vengOtherCastByTick,
@@ -426,7 +612,10 @@ const TickChart: React.FC<TickChartProps> = ({
 
   const {
     players,
+    npcRows,
     attackAnimations,
+    npcAttackAnimations,
+    bloatDownHighlights,
     deathsByTick,
     spellsByTick,
     vengOtherCastByTick,
@@ -479,7 +668,13 @@ const TickChart: React.FC<TickChartProps> = ({
   );
 
   const handleCellHover = useCallback((hover: HoveredCell | null) => {
+    setHoveredNpcLabel(null);
     setHoveredCell(hover);
+  }, []);
+
+  const handleNpcLabelHover = useCallback((hover: HoveredNpcLabel | null) => {
+    setHoveredCell(null);
+    setHoveredNpcLabel(hover);
   }, []);
 
   const columnRefs = useRef<Record<number, HTMLTableHeaderCellElement | null>>(
@@ -498,18 +693,86 @@ const TickChart: React.FC<TickChartProps> = ({
   }, [highlightedTick, isPlaying]);
 
   const tooltipContent = useMemo(() => {
+    if (hoveredNpcLabel) {
+      return (
+        <ChartTooltip className="chart-tooltip--replay">
+          <div className="chart-tooltip__attack">
+            <span>{hoveredNpcLabel.fullName}</span>
+          </div>
+        </ChartTooltip>
+      );
+    }
+
     if (!hoveredCell) {
       return null;
     }
 
-    const { tick, playerName } = hoveredCell;
-    const attack = attackAnimations[tick]?.[playerName];
-    const isMissed = missedTicks[tick]?.[playerName] === true;
-    const isDeath = deathsByTick[tick]?.[playerName] === true;
-    const spells = spellsByTick[tick]?.[playerName];
-    const vengOtherCastTarget = vengOtherCastByTick[tick]?.[playerName];
+    const { tick, rowKey, rowKind } = hoveredCell;
+
+    if (rowKind === "npc") {
+      const downIndex = bloatDownHighlights[tick]?.[rowKey];
+      const npcAttack = npcAttackAnimations[tick]?.[rowKey];
+      const isDownAttack =
+        npcAttack != null &&
+        (npcAttack.animationId === 8082 || npcAttack.attackName === "Down");
+      const isWindowEnd =
+        downIndex != null &&
+        bloatDownHighlights[tick + 1]?.[rowKey] !== downIndex;
+      const downLabel =
+        downIndex != null
+          ? formatBloatDownContextLabel(downIndex, {
+              isDownAttack,
+              isWindowEnd,
+            })
+          : undefined;
+      if (npcAttack) {
+        return (
+          <AttackTooltip
+            attack={{
+              ...attackEventToTooltipDetails({
+                weaponItemId: 0,
+                weaponName: npcAttack.attackName,
+                animationId: npcAttack.animationId,
+                targetName: npcAttack.targetName,
+                fightTimeMs: npcAttack.fightTimeMs,
+                isSpecialAttack: false,
+                iconUrl: npcAttack.attackImageUrl,
+              }),
+              contextLabel: downLabel,
+              timeFallback:
+                npcAttack.fightTimeMs == null
+                  ? `Tick ${tick - initialTick + 1}`
+                  : undefined,
+            }}
+          />
+        );
+      }
+      if (downLabel) {
+        const fightTimeMs = getFightTimeMsForTick(
+          tick,
+          initialTick,
+          fightStartMs,
+        );
+        return (
+          <ChartTooltip className="chart-tooltip--replay">
+            <ChartTooltipTime>
+              {formatHHmmss(fightTimeMs, true)}
+            </ChartTooltipTime>
+            <ChartTooltipDivider />
+            <div className="chart-tooltip__missed-label">{downLabel}</div>
+          </ChartTooltip>
+        );
+      }
+      return null;
+    }
+
+    const attack = attackAnimations[tick]?.[rowKey];
+    const isMissed = missedTicks[tick]?.[rowKey] === true;
+    const isDeath = deathsByTick[tick]?.[rowKey] === true;
+    const spells = spellsByTick[tick]?.[rowKey];
+    const vengOtherCastTarget = vengOtherCastByTick[tick]?.[rowKey];
     const fightTimeMs = getFightTimeMsForTick(tick, initialTick, fightStartMs);
-    const boostedLevels = resolveBoostedLevels(tick, playerName);
+    const boostedLevels = resolveBoostedLevels(tick, rowKey);
 
     if (attack) {
       return (
@@ -562,7 +825,10 @@ const TickChart: React.FC<TickChartProps> = ({
     );
   }, [
     hoveredCell,
+    hoveredNpcLabel,
     attackAnimations,
+    npcAttackAnimations,
+    bloatDownHighlights,
     deathsByTick,
     spellsByTick,
     vengOtherCastByTick,
@@ -608,6 +874,39 @@ const TickChart: React.FC<TickChartProps> = ({
           </tr>
         </thead>
         <tbody>
+          {npcRows.map((npcRow) => (
+            <tr key={npcRow.key}>
+              <td
+                className="replay-tick-chart-sticky-col"
+                style={tdStyle}
+                onMouseEnter={(event) =>
+                  handleNpcLabelHover({
+                    anchorEl: event.currentTarget,
+                    fullName: npcRow.fullName,
+                  })
+                }
+                onMouseLeave={() => handleNpcLabelHover(null)}
+              >
+                {npcRow.label}
+              </td>
+
+              {columnTicks.map((tick) => (
+                <TickChartCell
+                  key={`${npcRow.key}-${tick}`}
+                  tick={tick}
+                  rowKey={npcRow.key}
+                  rowKind="npc"
+                  isHighlighted={tick === highlightedTick}
+                  isMissed={false}
+                  isBloatDown={bloatDownHighlights[tick]?.[npcRow.key] != null}
+                  isDeath={false}
+                  npcAttack={npcAttackAnimations[tick]?.[npcRow.key]}
+                  onCellClick={handleTickClick}
+                  onCellHover={handleCellHover}
+                />
+              ))}
+            </tr>
+          ))}
           {visiblePlayers.map((playerName) => (
             <tr key={playerName}>
               <td className="replay-tick-chart-sticky-col" style={tdStyle}>
@@ -618,7 +917,8 @@ const TickChart: React.FC<TickChartProps> = ({
                 <TickChartCell
                   key={`${playerName}-${tick}`}
                   tick={tick}
-                  playerName={playerName}
+                  rowKey={playerName}
+                  rowKind="player"
                   isHighlighted={tick === highlightedTick}
                   isMissed={missedTicks[tick]?.[playerName] === true}
                   isDeath={deathsByTick[tick]?.[playerName] === true}
@@ -635,8 +935,11 @@ const TickChart: React.FC<TickChartProps> = ({
       </table>
 
       <Popper
-        open={hoveredCell !== null && tooltipContent !== null}
-        anchorEl={hoveredCell?.anchorEl ?? null}
+        open={
+          tooltipContent !== null &&
+          (hoveredCell !== null || hoveredNpcLabel !== null)
+        }
+        anchorEl={hoveredNpcLabel?.anchorEl ?? hoveredCell?.anchorEl ?? null}
         placement="top"
         modifiers={[{ name: "offset", options: { offset: [0, 8] } }]}
         container={tooltipContainer ?? undefined}
@@ -648,4 +951,4 @@ const TickChart: React.FC<TickChartProps> = ({
   );
 };
 
-export default memo(TickChart);
+export default TickChart;

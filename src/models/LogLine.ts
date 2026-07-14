@@ -36,6 +36,7 @@ export enum LogTypes {
   PATH_COMPLETE = "ToA Path Complete",
   RAID_COMPLETE = "Raids Completion",
   DURATION = "Duration",
+  FIGHT_START = "Fight Start",
 }
 
 export interface BaseLog {
@@ -121,14 +122,41 @@ export interface HealLog extends BaseLog {
 export interface AttackAnimationLog extends BaseLog {
   type: LogTypes.PLAYER_ATTACK_ANIMATION;
   animationId: number;
+  /** Optional projectile id (e.g. Verzik P2 cabbage/zap/purple/mage). */
+  projectileId?: number;
+  /** Timed / helper-derived NPC special (e.g. Verzik P3 webs, Bloat stomp). */
+  attackSpecial?: NpcAttackSpecialName;
+  /**
+   * Optional icon URL override for tick-chart cells (dev comparison previews).
+   * When set, skips normal animation/special image resolution.
+   */
+  attackImageUrl?: string;
   source?: Actor;
   target: Actor;
 }
+
+export type NpcAttackSpecialName =
+  | "WEBS"
+  | "YELLOWS"
+  | "BALL"
+  | "AUTO"
+  | "MELEE"
+  | "RANGE"
+  | "MAGE"
+  | "DEATH_BALL"
+  | "SPIT"
+  | "TURN"
+  | "MANTICORE_MAGE"
+  | "MANTICORE_RANGE"
+  | "MANTICORE_MELEE"
+  | "SLAM"
+  | "SHOCKWAVE";
 
 export type PlayerSpellName =
   | "VENGEANCE"
   | "VENGEANCE_OTHER"
   | "SPELLBOOK_SWAP"
+  | "HEAL_OTHER"
   | "DEATH_CHARGE"
   | "MARK_OF_DARKNESS"
   | "WARD_OF_ARCEUUS"
@@ -246,6 +274,12 @@ export interface DurationLog extends BaseLog {
   duration: string;
 }
 
+/** TobHelper room fight-start marker. */
+export interface FightStartLog extends BaseLog {
+  type: LogTypes.FIGHT_START;
+  source: Actor;
+}
+
 export type LogLine =
   | LogVersionLog
   | LoggedInPlayerLog
@@ -277,7 +311,8 @@ export type LogLine =
   | ToAPathStartLog
   | ToAPathCompleteLog
   | RaidCompleteLog
-  | DurationLog;
+  | DurationLog
+  | FightStartLog;
 
 export function filterByType<T extends LogLine["type"]>(
   logs: LogLine[],

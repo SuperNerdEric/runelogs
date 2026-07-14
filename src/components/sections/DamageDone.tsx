@@ -209,7 +209,7 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
               }}
             >
               {fight && fight.data && fight.data.length > 1 && (
-                <DPSChart fight={fightWithActorFilters} />
+                <DPSChart fight={fightWithActorFilters} eventFight={fight} />
               )}
             </div>
           </SectionBox>

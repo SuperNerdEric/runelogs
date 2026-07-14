@@ -1,4 +1,7 @@
-import { calculateDPSByInterval } from "../components/charts/DPSChart";
+import {
+  calculateDPSByInterval,
+  densifyDpsToTicks,
+} from "../components/charts/DPSChart";
 import { DamageLog, LogTypes } from "../models/LogLine";
 import { convertTimeToMillis } from "../utils/utils";
 
@@ -56,6 +59,29 @@ describe("calculateDPSByInterval", () => {
     expect(dpsData[4].dps).toBeCloseTo(0, 3);
     expect(dpsData[5].dps).toBeCloseTo(0, 3);
     expect(dpsData[6].dps).toBeCloseTo(0, 3);
+  });
+});
+
+describe("densifyDpsToTicks", () => {
+  test("creates a selectable point every tick while preserving coarse values", () => {
+    const densified = densifyDpsToTicks(
+      [
+        { timestamp: 6000, dps: 10 },
+        { timestamp: 12000, dps: 20 },
+      ],
+      0,
+      12000,
+      600,
+    );
+
+    expect(densified).toHaveLength(21);
+    expect(densified[0]).toEqual({ timestamp: 0, dps: 10 });
+    expect(densified[10]).toEqual({ timestamp: 6000, dps: 10 });
+    expect(densified[20]).toEqual({ timestamp: 12000, dps: 20 });
+    // Flat approach into a ramp uses monotone easing (not a sharp linear seam).
+    expect(densified[15].dps).not.toBeCloseTo(15, 6);
+    expect(densified[15].dps).toBeGreaterThan(10);
+    expect(densified[15].dps).toBeLessThan(20);
   });
 });
 
