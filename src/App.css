@@ -2150,9 +2150,9 @@ a.summary-death-counter__entry {
   min-width: 0;
 }
 
-.summary-attack-breakdown__entry-time {
+.summary-attack-breakdown__entry-time.MuiTypography-root {
   color: rgba(255, 255, 255, 0.72);
-  font-size: 0.88rem;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -2165,15 +2165,15 @@ a.summary-death-counter__entry {
   width: 35px;
 }
 
-.summary-attack-breakdown__player-name {
-  font-size: 0.9rem;
+.summary-attack-breakdown__player-name.MuiTypography-root {
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.02em;
 }
 
-.summary-attack-breakdown__player-total {
+.summary-attack-breakdown__player-total.MuiTypography-root {
   color: var(--color-text-muted);
-  font-size: 0.8rem;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -2181,8 +2181,8 @@ a.summary-death-counter__entry {
   column-gap: 12px;
   display: grid;
   grid-template-columns:
-    28px 28px minmax(150px, max-content) 44px minmax(72px, 1fr)
-    40px;
+    28px 28px max-content 44px minmax(72px, 1fr)
+    52px;
 }
 
 .summary-attack-breakdown__weapon-block {
@@ -2230,20 +2230,22 @@ a.summary-death-counter__entry {
   image-rendering: pixelated;
 }
 
-.summary-attack-breakdown__weapon-name {
+.summary-attack-breakdown__weapon-name.MuiTypography-root {
   color: #f0f0f0;
-  font-size: 0.88rem;
+  font-size: 13px;
   line-height: 1.2;
-  min-width: 0;
   overflow: hidden;
+  padding-right: 8px;
   text-overflow: ellipsis;
   transition: color 0.15s ease;
   white-space: nowrap;
+  width: max-content;
+  max-width: 100%;
 }
 
-.summary-attack-breakdown__usage-percent {
+.summary-attack-breakdown__usage-percent.MuiTypography-root {
   color: rgba(255, 255, 255, 0.82);
-  font-size: 0.82rem;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
   justify-self: end;
   text-align: right;
@@ -2262,9 +2264,9 @@ a.summary-death-counter__entry {
   min-width: 1px;
 }
 
-.summary-attack-breakdown__usage-count {
+.summary-attack-breakdown__usage-count.MuiTypography-root {
   color: rgba(255, 255, 255, 0.82);
-  font-size: 0.82rem;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
   justify-self: end;
   text-align: right;
@@ -2546,8 +2548,8 @@ a.summary-death-counter__entry {
   .summary-attack-breakdown__weapons {
     column-gap: 8px;
     grid-template-columns:
-      28px 28px minmax(150px, max-content) 40px minmax(48px, 1fr)
-      32px;
+      28px 28px max-content 40px minmax(48px, 1fr)
+      44px;
   }
 
   .summary-attack-breakdown__weapon {
@@ -2557,6 +2559,18 @@ a.summary-death-counter__entry {
   .summary-attack-breakdown__entry {
     padding-left: calc(var(--summary-section-inset, 16px) + 44px);
     padding-right: var(--summary-section-inset, 16px);
+  }
+
+  .summary-attack-breakdown__player-name.MuiTypography-root,
+  .summary-attack-breakdown__weapon-name.MuiTypography-root,
+  .summary-attack-breakdown__usage-percent.MuiTypography-root,
+  .summary-attack-breakdown__usage-count.MuiTypography-root,
+  .summary-attack-breakdown__entry-time.MuiTypography-root {
+    font-size: 11px;
+  }
+
+  .summary-attack-breakdown__player-total.MuiTypography-root {
+    font-size: 11px;
   }
 
   .summary-damage-done-section .MuiTableCell-root,
