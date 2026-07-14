@@ -1,10 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
+import { useAuth0 } from "@auth0/auth0-react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
-import lumbridgeGuide from "../assets/lumbridge-guide.png";
 import lumbridgeHomeTeleport from "../assets/lumbridge-home-teleport.png";
-import { colors, centeredPageStateSx, fonts, media } from "../theme";
+import {
+  formatNotFoundQuoteLine,
+  NotFoundQuote,
+  pickNotFoundQuote,
+} from "../data/notFoundQuotes";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { colors, centeredPageStateSx, fonts, media } from "../theme";
+import { displayUsername } from "../utils/utils";
 
 const pixelIconSx = {
   width: 20,
@@ -18,6 +24,8 @@ const notFoundZoom = "clamp(0.62, calc((100svh - 20rem) / 24rem), 1)";
 
 const NotFound: React.FC = () => {
   const location = useLocation();
+  const { isAuthenticated, isLoading: authLoading, user } = useAuth0();
+  const [quote, setQuote] = useState<NotFoundQuote | null>(null);
   const canonicalPath = `${location.pathname}${location.search}`;
   const requestedPath = canonicalPath || "/";
 
@@ -28,6 +36,19 @@ const NotFound: React.FC = () => {
     canonicalPath,
     noIndex: true,
   });
+
+  useEffect(() => {
+    if (authLoading) {
+      return;
+    }
+    // Pick once per visit after auth state is known so player-name lines stay gated.
+    setQuote((current) => current ?? pickNotFoundQuote(isAuthenticated));
+  }, [authLoading, isAuthenticated]);
+
+  const playerName = user?.username ? displayUsername(user.username) : null;
+  const quoteLine = quote
+    ? formatNotFoundQuoteLine(quote, isAuthenticated ? playerName : null)
+    : null;
 
   return (
     <Box
@@ -44,22 +65,6 @@ const NotFound: React.FC = () => {
       }}
     >
       <Box
-        aria-hidden
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          width: "min(85vw, 22rem)",
-          height: "min(85vw, 22rem)",
-          transform: "translate(-50%, -50%)",
-          borderRadius: "50%",
-          background:
-            "radial-gradient(circle, rgba(229, 204, 128, 0.12) 0%, rgba(56, 139, 253, 0.06) 45%, transparent 72%)",
-          pointerEvents: "none",
-        }}
-      />
-
-      <Box
         sx={{
           position: "relative",
           zIndex: 1,
@@ -69,22 +74,57 @@ const NotFound: React.FC = () => {
           zoom: notFoundZoom,
         }}
       >
-        <Box
-          component="img"
-          src={lumbridgeGuide}
-          alt="Lumbridge Guide"
-          sx={{
-            display: "block",
-            width: {
-              xs: "clamp(5.25rem, 14vh, 6.75rem)",
-              sm: "clamp(8rem, 20vh, 11rem)",
-            },
-            height: "auto",
-            mx: "auto",
-            mb: { xs: 0, sm: "0.25rem" },
-            filter: "drop-shadow(0 8px 20px rgba(0, 0, 0, 0.4))",
-          }}
-        />
+        {quote && (
+          <Box
+            sx={{
+              position: "relative",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mx: "auto",
+              mb: { xs: 0, sm: "0.25rem" },
+              width: {
+                xs: "clamp(5.25rem, 14vh, 6.75rem)",
+                sm: "clamp(8rem, 20vh, 11rem)",
+              },
+              // Tall enough for full-body sprites; glow scales with this box.
+              aspectRatio: "1 / 1.35",
+              maxHeight: { xs: "28vh", sm: "32vh" },
+            }}
+          >
+            <Box
+              aria-hidden
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                width: "170%",
+                height: "140%",
+                transform: "translate(-50%, -50%)",
+                borderRadius: "50%",
+                background:
+                  "radial-gradient(circle, rgba(229, 204, 128, 0.22) 0%, rgba(229, 204, 128, 0.1) 35%, rgba(56, 139, 253, 0.08) 58%, transparent 72%)",
+                pointerEvents: "none",
+              }}
+            />
+            <Box
+              component="img"
+              src={encodeURI(quote.imageUrl)}
+              alt={quote.npc}
+              sx={{
+                position: "relative",
+                zIndex: 1,
+                display: "block",
+                width: "100%",
+                height: "100%",
+                objectFit: "contain",
+                objectPosition: "center bottom",
+                filter: "drop-shadow(0 8px 20px rgba(0, 0, 0, 0.4))",
+                imageRendering: "pixelated",
+              }}
+            />
+          </Box>
+        )}
 
         <Typography
           component="p"
@@ -103,19 +143,45 @@ const NotFound: React.FC = () => {
           404
         </Typography>
 
-        <Typography
-          component="h1"
-          sx={{
-            mt: { xs: 0.25, sm: "clamp(0.25rem, 1vh, 0.75rem)" },
-            mb: { xs: 0.5, sm: "clamp(0.5rem, 1.25vh, 1rem)" },
-            fontWeight: 700,
-            fontSize: { xs: "1.1rem", sm: "clamp(1.2rem, 3.2vh, 1.85rem)" },
-            lineHeight: 1.15,
-            color: colors.text.primary,
-          }}
-        >
-          You&apos;ve wandered off the map
-        </Typography>
+        {quoteLine && (
+          <Typography
+            component="h1"
+            sx={{
+              mt: { xs: 0.25, sm: "clamp(0.25rem, 1vh, 0.75rem)" },
+              mb: 0.25,
+              px: { xs: 0.5, sm: 1 },
+              fontWeight: 700,
+              fontSize: { xs: "1rem", sm: "clamp(1.05rem, 2.8vh, 1.45rem)" },
+              lineHeight: 1.35,
+              color: colors.text.primary,
+              fontStyle: "italic",
+              whiteSpace: "normal",
+              overflow: "visible",
+              textOverflow: "clip",
+              wordBreak: "break-word",
+            }}
+          >
+            &ldquo;{quoteLine}&rdquo;
+          </Typography>
+        )}
+
+        {quote && (
+          <Typography
+            component="p"
+            sx={{
+              m: 0,
+              mb: { xs: 0.5, sm: "clamp(0.5rem, 1.25vh, 1rem)" },
+              fontSize: { xs: "0.75rem", sm: "clamp(0.75rem, 1.6vh, 0.9rem)" },
+              color: colors.text.muted,
+            }}
+          >
+            — {quote.npc}
+            <Box component="span" sx={{ mx: 0.5 }}>
+              ·
+            </Box>
+            {quote.quest}
+          </Typography>
+        )}
 
         <Typography
           component="code"
