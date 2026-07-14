@@ -267,7 +267,9 @@ const FightGroupSummary: React.FC = () => {
   }
 
   const { displayDurationTicks, delve1to8DisplayDurationTicks } = data;
-  const runInProgress = Boolean(data.receivingData);
+  // receivingData alone is not enough — a cleared run can still receive bank /
+  // lobby ticks while the log stays open. Treat completed runs as finished.
+  const runInProgress = Boolean(data.receivingData) && !data.success;
   const liveLogState = parseLiveLogState(
     data.liveLogState ?? data.log.liveLogState,
   );
