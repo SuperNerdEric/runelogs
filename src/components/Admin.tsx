@@ -1036,7 +1036,7 @@ const Admin: React.FC = () => {
               <Link
                 component={RouterLink}
                 to={`/logs/${loadedLog.uploaderId}`}
-                sx={linkSx}
+                sx={{ ...linkSx, textTransform: "capitalize" }}
               >
                 {displayUsername(loadedLog.uploaderId)}
               </Link>

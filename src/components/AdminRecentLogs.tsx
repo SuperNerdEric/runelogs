@@ -373,6 +373,7 @@ const AdminRecentLogs: React.FC<AdminRecentLogsProps> = ({
                           to={`/logs/${log.uploaderId}`}
                           onClick={stopRowClick}
                           underline="hover"
+                          sx={{ textTransform: "capitalize" }}
                         >
                           {displayUsername(log.uploaderId)}
                         </Link>
