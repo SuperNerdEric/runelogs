@@ -118,6 +118,9 @@ describe("npcAttackAnimationNames", () => {
     expect(getNpcAttackAnimationName(8059, 8340)).toBe("Spit");
     expect(resolveNpcAttackImageUrl(8059, 8340)).toBe(icon("xarpus_spit.png"));
     expect(getNpcAttackAnimationName(0, 8340, undefined, "SPIT")).toBe("Spit");
+    expect(getNpcAttackAnimationName(0, 8340, undefined, "SCREECH")).toBe(
+      "Screech",
+    );
     expect(getNpcAttackAnimationName(0, 8340, undefined, "TURN")).toBe("Turn");
     expect(
       getNpcAttackAnimationName(0, 12818, undefined, "MANTICORE_MAGE"),

@@ -2,6 +2,7 @@ import { Fight } from "../../models/Fight";
 import {
   AttackAnimationLog,
   BoostedLevelsLog,
+  GroundObjectSpawned,
   LogLine,
   LogTypes,
   NpcAttackSpecialName,
@@ -12,6 +13,7 @@ import {
   NPC_ATTACK_ANIMATION_VERSION_1_6_9,
   TRACKED_NPC_ATTACK_NPCS,
 } from "../../utils/trackedNpcAttackNpcs";
+import { XARPUS_EXHUMED_GROUND_OBJECT_ID } from "../../utils/xarpusExhumeHighlight";
 import { npcIdMap } from "../../lib/npcIdMap";
 
 const DATE = "07-11-2026";
@@ -56,7 +58,7 @@ export const PREVIEW_ATTACKS_BY_FAMILY: Record<string, PreviewNpcAttack[]> = {
     { special: "DEATH_BALL" },
   ],
   bloat: [8082],
-  xarpus: [8059],
+  xarpus: [8059, { special: "TURN" }],
   verzik: [
     8109,
     { animationId: 8114, projectileId: 1583 },
@@ -196,6 +198,19 @@ function attack(
   };
 }
 
+function groundObjectSpawn(
+  tick: number,
+  id: number,
+  pos: GroundObjectSpawned["position"],
+): GroundObjectSpawned {
+  return {
+    type: LogTypes.GROUND_OBJECT_SPAWNED,
+    ...base(tick),
+    id,
+    position: pos,
+  };
+}
+
 /**
  * Synthetic fight with one tick-chart row per tracked NPC and every mapped
  * attack icon. Attacks share the earliest ticks (1st icon on display column 1
@@ -222,7 +237,12 @@ export function createNpcAttackIconPreviewFight(): Fight {
     data.push(position(0, actor, ROOM_POS));
 
     const animations = PREVIEW_ATTACKS_BY_FAMILY[npc.family] ?? [];
-    maxAttackIndex = Math.max(maxAttackIndex, animations.length - 1);
+    let familyAttackSlots = animations.length;
+    // P1 exhume spawns are ground objects, not attack anims — show on the Xarpus row.
+    if (npc.family === "xarpus") {
+      familyAttackSlots += 1;
+    }
+    maxAttackIndex = Math.max(maxAttackIndex, familyAttackSlots - 1);
     animations.forEach((entry, animIndex) => {
       if (typeof entry === "object" && "special" in entry) {
         data.push(
@@ -251,6 +271,16 @@ export function createNpcAttackIconPreviewFight(): Fight {
         ),
       );
     });
+
+    if (npc.family === "xarpus") {
+      data.push(
+        groundObjectSpawn(
+          FIRST_ATTACK_TICK + animations.length,
+          XARPUS_EXHUMED_GROUND_OBJECT_ID,
+          ROOM_POS,
+        ),
+      );
+    }
   });
 
   const fightTicks = FIRST_ATTACK_TICK + maxAttackIndex + 4;

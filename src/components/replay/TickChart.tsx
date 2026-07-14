@@ -57,6 +57,7 @@ import {
 } from "../../utils/trackedNpcAttackNpcs";
 import {
   BLOAT_STOMP_IMAGE_URL,
+  XARPUS_TURN_IMAGE_URL,
   resolveNpcAttackImageUrl,
   getNpcAttackAnimationName,
 } from "../../utils/npcAttackAnimationNames";
@@ -66,6 +67,17 @@ import {
   synthesizeBloatStompAttacks,
 } from "../../utils/bloatDownHighlight";
 import { getBloatStompFightTimeMs } from "../../utils/bloatDownEvents";
+import {
+  synthesizeXarpusTurnAttacks,
+  type XarpusScreechMarker,
+} from "../../utils/xarpusTurnHighlight";
+import { getXarpusTurnFightTimeMs } from "../../utils/xarpusTurnEvents";
+import {
+  injectXarpusExhumeAttacks,
+  isXarpusExhumedGroundObjectId,
+  XARPUS_EXHUMED_IMAGE_URL,
+  type XarpusExhumeSpawn,
+} from "../../utils/xarpusExhumeHighlight";
 import { Actor } from "../../models/Actor";
 import { npcIdMap } from "../../lib/npcIdMap";
 
@@ -400,6 +412,8 @@ const TickChart: React.FC<TickChartProps> = ({
     const boostedLevelsAtTick: BoostLevelsByTick = {};
     const attackAnimationsByTick: AttackAnimationsByTick = {};
     const npcAttackAnimationsByTick: NpcAttackAnimationsByTick = {};
+    const xarpusScreeches: XarpusScreechMarker[] = [];
+    const xarpusExhumeSpawns: XarpusExhumeSpawn[] = [];
     const deathsByTick: DeathsByTick = {};
     const spellsByTick: SpellsByTick = {};
     const vengOtherCastByTick: VengOtherCastByTick = {};
@@ -407,6 +421,17 @@ const TickChart: React.FC<TickChartProps> = ({
     fight.data.forEach((logLine: LogLine) => {
       const tick = logLine.tick;
       if (typeof tick !== "number") {
+        return;
+      }
+
+      if (
+        logLine.type === LogTypes.GROUND_OBJECT_SPAWNED &&
+        isXarpusExhumedGroundObjectId(logLine.id)
+      ) {
+        xarpusExhumeSpawns.push({
+          tick,
+          fightTimeMs: logLine.fightTimeMs,
+        });
         return;
       }
 
@@ -430,6 +455,18 @@ const TickChart: React.FC<TickChartProps> = ({
           const npcKey = trackedNpcAttackRowKey(tracked.family, source.index);
           // Only chart attacks for NPCs that belong in this fight's tracked set
           if (npcRowsByKey.has(npcKey)) {
+            // Screech is a phase marker; Turns are synthesized below (not charted).
+            if (attackLog.attackSpecial === "SCREECH") {
+              xarpusScreeches.push({
+                npcKey,
+                tick,
+                npcId: source.id ?? tracked.primaryId,
+                npcName: npcRowsByKey.get(npcKey)!.npcName,
+                fightTimeMs: attackLog.fightTimeMs,
+                targetName: resolveAttackTargetName(attackLog.target),
+              });
+              return;
+            }
             if (!npcAttackAnimationsByTick[tick]) {
               npcAttackAnimationsByTick[tick] = {};
             }
@@ -591,6 +628,44 @@ const TickChart: React.FC<TickChartProps> = ({
             ? getBloatStompFightTimeMs(downAttack.fightTimeMs)
             : undefined,
       }),
+    );
+
+    synthesizeXarpusTurnAttacks(
+      npcAttackAnimationsByTick,
+      xarpusScreeches,
+      maxTick,
+      (screech, _turnTick, turnIndex) => ({
+        npcId: screech.npcId,
+        npcName: screech.npcName,
+        attackName: "Turn",
+        attackImageUrl: XARPUS_TURN_IMAGE_URL,
+        animationId: 0,
+        targetName: screech.targetName,
+        fightTimeMs:
+          screech.fightTimeMs != null
+            ? getXarpusTurnFightTimeMs(screech.fightTimeMs, turnIndex)
+            : undefined,
+      }),
+    );
+
+    const xarpusNpcKeys = npcRows
+      .filter((row) => row.key.startsWith("xarpus:"))
+      .map((row) => row.key);
+    injectXarpusExhumeAttacks(
+      npcAttackAnimationsByTick,
+      xarpusNpcKeys,
+      xarpusExhumeSpawns,
+      (spawn, npcKey) => {
+        const row = npcRowsByKey.get(npcKey)!;
+        return {
+          npcId: row.npcId,
+          npcName: row.npcName,
+          attackName: "Exhume",
+          attackImageUrl: XARPUS_EXHUMED_IMAGE_URL,
+          animationId: 0,
+          fightTimeMs: spawn.fightTimeMs,
+        };
+      },
     );
 
     return {

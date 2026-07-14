@@ -33,6 +33,9 @@ function publicNpcAttackIcon(relativePath: string): string {
 /** Synthesized Bloat Stomp icon (not a logged attack special). */
 export const BLOAT_STOMP_IMAGE_URL = publicNpcAttackIcon("bloat_stomp.png");
 
+/** Synthesized Xarpus Turn icon (from logged SCREECH; not a per-tick special). */
+export const XARPUS_TURN_IMAGE_URL = publicNpcAttackIcon("xarpus_turn.png");
+
 /** Bloblets share Jal-Ak anims but always show their own moid icon. */
 function usesNpcMoidAttackIcon(npcId: number): boolean {
   const family = getTrackedNpcAttackNpc(npcId)?.family;
@@ -70,7 +73,7 @@ export const NPC_ATTACK_ANIMATION_META: Record<number, NpcAttackAnimationMeta> =
       name: "Ball",
       imageUrl: publicNpcAttackIcon("sote_magic_ball.png"),
     },
-    // Theatre of Blood — Xarpus (P2 spit / P3 look-spit)
+    // Theatre of Blood — Xarpus P2 spit (P3 turns synthesize from SCREECH)
     8059: {
       name: "Spit",
       imageUrl: publicNpcAttackIcon("xarpus_spit.png"),
@@ -341,9 +344,14 @@ export const NPC_ATTACK_SPECIAL_META: Record<
     name: "Spit",
     imageUrl: publicNpcAttackIcon("xarpus_spit.png"),
   },
+  /** Logged once at P3 start; Turn icons are synthesized on the tick chart. */
+  SCREECH: {
+    name: "Screech",
+  },
+  /** Legacy / synthesized Turn display. */
   TURN: {
     name: "Turn",
-    imageUrl: publicNpcAttackIcon("xarpus_turn.png"),
+    imageUrl: XARPUS_TURN_IMAGE_URL,
   },
   MANTICORE_MAGE: {
     name: "Magic attack",

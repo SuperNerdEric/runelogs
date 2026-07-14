@@ -146,6 +146,7 @@ export type NpcAttackSpecialName =
   | "DEATH_BALL"
   | "SPIT"
   | "TURN"
+  | "SCREECH"
   | "MANTICORE_MAGE"
   | "MANTICORE_RANGE"
   | "MANTICORE_MELEE"
