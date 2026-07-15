@@ -622,10 +622,11 @@ const Logs: React.FC = () => {
     }
   };
 
-  const handleDelete = async (logId: string) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this log?",
-    );
+  const deleteLogById = async (
+    logId: string,
+    options: { confirmMessage: string; successMessage: string },
+  ) => {
+    const confirmed = window.confirm(options.confirmMessage);
     if (!confirmed) return;
 
     try {
@@ -639,8 +640,7 @@ const Logs: React.FC = () => {
       if (!resp.ok) {
         throw new Error(`Delete failed with status ${resp.status}`);
       }
-      // Remove deleted log from state
-      enqueueSnackbar("Log Deleted", {
+      enqueueSnackbar(options.successMessage, {
         variant: "success",
         autoHideDuration: 1000,
         action,
@@ -650,6 +650,20 @@ const Logs: React.FC = () => {
       console.error("Failed to delete log:", err);
       alert(err.message || "Failed to delete");
     }
+  };
+
+  const handleDelete = async (logId: string) => {
+    await deleteLogById(logId, {
+      confirmMessage: "Are you sure you want to delete this log?",
+      successMessage: "Log Deleted",
+    });
+  };
+
+  const handleCancel = async (logId: string) => {
+    await deleteLogById(logId, {
+      confirmMessage: "Cancel this log? It will be permanently deleted.",
+      successMessage: "Log cancelled",
+    });
   };
 
   const handleRequestSort = (property: SortKey) => {
@@ -929,7 +943,21 @@ const Logs: React.FC = () => {
                         align="center"
                         sx={{ ...shrinkColumnSx, ...tableCellPaddingSx }}
                       >
-                        {!parsing && (
+                        {parsing ? (
+                          <IconButton
+                            aria-label="cancel"
+                            size="small"
+                            onClick={(e) => {
+                              stopRowClick(e);
+                              void handleCancel(log.id);
+                            }}
+                          >
+                            <CloseIcon
+                              fontSize="small"
+                              sx={{ color: "white" }}
+                            />
+                          </IconButton>
+                        ) : (
                           <IconButton
                             aria-label="delete"
                             onClick={(e) => {
