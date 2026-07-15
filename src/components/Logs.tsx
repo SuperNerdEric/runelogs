@@ -33,7 +33,7 @@ import { closeSnackbar, SnackbarKey, useSnackbar } from "notistack";
 import { colors, contentColumnSx, logNameTextSx, media } from "../theme";
 import LogNameDisplay from "./LogNameDisplay";
 import LiveLogIndicator from "./LiveLogIndicator";
-import { displayUsername } from "../utils/utils";
+import { formatDisplayUsername, usernamesEqual } from "../utils/utils";
 import { buildProfileHref } from "../utils/profile";
 import { logTableRowProps, stopRowClick } from "../utils/encounterTableRow";
 import {
@@ -103,6 +103,7 @@ interface LogStatusResponse {
 
 interface LogsResponse {
   logs: LogItem[];
+  uploaderId?: string;
 }
 
 async function fetchLogStatus(
@@ -412,13 +413,14 @@ const Logs: React.FC = () => {
   const [content, setContent] = useState(initialContent);
   const [playerCount, setPlayerCount] = useState(initialPlayerCount);
   const [logs, setLogs] = useState<LogItem[] | null>(null);
+  const [apiUploaderId, setApiUploaderId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Sorting state
   const [orderBy, setOrderBy] = useState<SortKey>("uploadedAt");
   const [order, setOrder] = useState<Order>("desc");
-  const canEditLogs = user?.username === uploaderId;
+  const canEditLogs = usernamesEqual(user?.username, uploaderId);
   const isAllContent = isRecentEncountersAllContent(content.value);
 
   useEffect(() => {
@@ -486,6 +488,9 @@ const Logs: React.FC = () => {
       }
       const data: LogsResponse = await resp.json();
       setLogs(data.logs);
+      if (data.uploaderId) {
+        setApiUploaderId(data.uploaderId);
+      }
     } catch (err: any) {
       console.error("Failed to fetch logs:", err);
       setError(err.message || "Unknown error");
@@ -711,19 +716,23 @@ const Logs: React.FC = () => {
   );
 
   const canonicalPath = `${location.pathname}${location.search}`;
+  const displayUploaderName = useMemo(() => {
+    if (apiUploaderId) return apiUploaderId;
+    return uploaderId ? formatDisplayUsername(uploaderId) : undefined;
+  }, [apiUploaderId, uploaderId]);
   const pageMeta = useMemo(
     () =>
       getUploaderLogsPageMeta({
-        uploaderName: displayUsername(uploaderId || "Unknown User"),
+        uploaderName: displayUploaderName || "Unknown User",
         canonicalPath,
       }),
-    [uploaderId, canonicalPath],
+    [displayUploaderName, canonicalPath],
   );
   usePageMeta(pageMeta);
 
   return (
     <Box sx={pageContainerSx}>
-      <LogsPageHeader uploaderId={uploaderId} />
+      <LogsPageHeader uploaderId={displayUploaderName} />
       {renderFilters()}
 
       <TableContainer component={Paper} sx={{ width: "100%" }}>

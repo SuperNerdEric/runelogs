@@ -25,7 +25,7 @@ import logoImage from "../assets/Logo.png";
 import { Link } from "react-router-dom";
 import PlayerSearch from "./PlayerSearch";
 import TopBarNavMenu from "./TopBarNavMenu";
-import { displayUsername } from "../utils/utils";
+import { formatDisplayUsername } from "../utils/utils";
 import { colors, fontSizes, accountTextSx, layout } from "../theme";
 import AvatarIcon from "./AvatarIcon";
 import { useUserProfile } from "../hooks/useUserProfile";
@@ -210,11 +210,12 @@ const TopBar: React.FC = () => {
                       variant="body1"
                       sx={{
                         ...accountTextSx,
-                        textTransform: "capitalize",
                         fontWeight: 600,
                       }}
                     >
-                      {displayUsername(user?.username) || "User"}
+                      {user?.username
+                        ? formatDisplayUsername(user.username)
+                        : "User"}
                     </Typography>
                     <ArrowDropDownIcon style={{ color: colors.text.primary }} />
                   </>

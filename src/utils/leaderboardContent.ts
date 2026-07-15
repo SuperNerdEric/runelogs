@@ -1,4 +1,6 @@
 /** Fight group names that appear on duration and/or DPS leaderboards. */
+import { usernameToPathSegment } from "./utils";
+
 export const LEADERBOARD_FIGHT_GROUP_NAMES = [
   "Theatre of Blood",
   "Theatre of Blood: Hard Mode",
@@ -310,7 +312,8 @@ export function buildUploaderLogsHref(
     search.set("playerCount", String(params.playerCount));
   }
   const query = search.toString();
-  return query ? `/logs/${uploaderId}?${query}` : `/logs/${uploaderId}`;
+  const pathId = encodeURIComponent(usernameToPathSegment(uploaderId));
+  return query ? `/logs/${pathId}?${query}` : `/logs/${pathId}`;
 }
 
 export type LeaderboardMode =

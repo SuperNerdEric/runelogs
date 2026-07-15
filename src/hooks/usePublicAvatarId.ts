@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { AvatarId, isAvatarId } from "../utils/avatars";
+import { usernameToPathSegment } from "../utils/utils";
 
 export function usePublicAvatarId(userId: string | undefined): {
   avatarId: AvatarId | null;
@@ -21,8 +22,9 @@ export function usePublicAvatarId(userId: string | undefined): {
 
     const load = async () => {
       try {
+        const pathId = usernameToPathSegment(userId);
         const resp = await fetch(
-          `${import.meta.env.VITE_API_URL}/profile/avatar/${encodeURIComponent(userId)}`,
+          `${import.meta.env.VITE_API_URL}/profile/avatar/${encodeURIComponent(pathId)}`,
         );
         if (!resp.ok) {
           if (!cancelled) {

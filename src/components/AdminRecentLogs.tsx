@@ -19,7 +19,7 @@ import { format } from "date-fns";
 import LogNameDisplay from "./LogNameDisplay";
 import LiveLogIndicator from "./LiveLogIndicator";
 import { colors, fontSizes, fonts, logNameTextSx, media } from "../theme";
-import { displayUsername } from "../utils/utils";
+import { usernameToPathSegment } from "../utils/utils";
 import { logTableRowProps, stopRowClick } from "../utils/encounterTableRow";
 import { isLiveLogSessionOpen, type LiveLogState } from "../utils/liveLogState";
 
@@ -370,12 +370,11 @@ const AdminRecentLogs: React.FC<AdminRecentLogsProps> = ({
                       >
                         <Link
                           component={RouterLink}
-                          to={`/logs/${log.uploaderId}`}
+                          to={`/logs/${encodeURIComponent(usernameToPathSegment(log.uploaderId))}`}
                           onClick={stopRowClick}
                           underline="hover"
-                          sx={{ textTransform: "capitalize" }}
                         >
-                          {displayUsername(log.uploaderId)}
+                          {log.uploaderId}
                         </Link>
                       </TableCell>
                       <TableCell

@@ -1,4 +1,5 @@
 import osrsIcon from "../assets/osrs-icon.png";
+import { usernameToPathSegment } from "./utils";
 
 export const BIO_MAX_LENGTH = 500;
 
@@ -75,7 +76,8 @@ export function getContactHref(key: ContactLinkKey, value: string): string {
 }
 
 export function buildProfileHref(profileId: string): string {
-  return `/profile/${encodeURIComponent(profileId)}`;
+  // API may return spaced display names; Auth0 path params use underscores.
+  return `/profile/${encodeURIComponent(usernameToPathSegment(profileId))}`;
 }
 
 export function isExternalUrl(value: string): boolean {

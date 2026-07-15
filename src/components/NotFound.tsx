@@ -10,7 +10,7 @@ import {
 } from "../data/notFoundQuotes";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { colors, centeredPageStateSx, fonts, media } from "../theme";
-import { displayUsername } from "../utils/utils";
+import { formatDisplayUsername } from "../utils/utils";
 
 const pixelIconSx = {
   width: 20,
@@ -45,7 +45,9 @@ const NotFound: React.FC = () => {
     setQuote((current) => current ?? pickNotFoundQuote(isAuthenticated));
   }, [authLoading, isAuthenticated]);
 
-  const playerName = user?.username ? displayUsername(user.username) : null;
+  const playerName = user?.username
+    ? formatDisplayUsername(user.username)
+    : null;
   const quoteLine = quote
     ? formatNotFoundQuoteLine(quote, isAuthenticated ? playerName : null)
     : null;

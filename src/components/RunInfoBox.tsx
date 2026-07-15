@@ -2,7 +2,6 @@ import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { Box, Link, Typography } from "@mui/material";
 import { format } from "date-fns";
-import { displayUsername } from "../utils/utils";
 import { buildProfileHref } from "../utils/profile";
 import UploaderNameLink from "./UploaderNameLink";
 
@@ -38,12 +37,12 @@ const RunInfoBox: React.FC<RunInfoBoxProps> = ({
           <React.Fragment key={player}>
             <Link
               component={RouterLink}
-              to={`/player/${player}`}
+              to={`/player/${encodeURIComponent(player)}`}
               underline="hover"
               color="primary"
               sx={{ fontSize: "inherit" }}
             >
-              {displayUsername(player)}
+              {player}
             </Link>
             {i < players.length - 1 ? ", " : ""}
           </React.Fragment>

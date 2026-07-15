@@ -4,7 +4,6 @@ import { Box, Typography } from "@mui/material";
 import PersonalBests from "./PersonalBests";
 import RecentEncounters from "./RecentEncounters";
 import { contentColumnSx, colors } from "../theme";
-import { displayUsername } from "../utils/utils";
 import playerAvatar from "../assets/player-avatar.png";
 import { usePageMeta } from "../hooks/usePageMeta";
 import {
@@ -16,17 +15,18 @@ const Player: React.FC = () => {
   const { playerName } = useParams<{ playerName: string }>();
   const location = useLocation();
   const canonicalPath = `${location.pathname}${location.search}`;
+  const displayName = playerName ? decodeURIComponent(playerName) : null;
 
   const pageMeta = useMemo(() => {
-    if (!playerName) {
+    if (!displayName) {
       return getLoadingEncounterPageMeta(canonicalPath);
     }
 
     return getPlayerPageMeta({
-      playerName: displayUsername(playerName),
+      playerName: displayName,
       canonicalPath,
     });
-  }, [playerName, canonicalPath]);
+  }, [displayName, canonicalPath]);
   usePageMeta(pageMeta);
 
   return (
@@ -35,11 +35,7 @@ const Player: React.FC = () => {
         <Box
           component="img"
           src={playerAvatar}
-          alt={
-            playerName
-              ? `${displayUsername(playerName)} avatar`
-              : "Player avatar"
-          }
+          alt={displayName ? `${displayName} avatar` : "Player avatar"}
           sx={{
             width: 40,
             height: 40,
@@ -51,9 +47,9 @@ const Player: React.FC = () => {
         <Typography
           variant="h4"
           gutterBottom
-          sx={{ textTransform: "capitalize", color: colors.text.player, m: 0 }}
+          sx={{ color: colors.text.player, m: 0 }}
         >
-          {displayUsername(playerName ?? "")}
+          {displayName ?? ""}
         </Typography>
       </Box>
       {playerName && <RecentEncounters />}

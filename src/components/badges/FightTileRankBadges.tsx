@@ -1,7 +1,6 @@
 import React from "react";
 import { Box } from "@mui/material";
 import PercentileRankBadge from "./PercentileRankBadge";
-import { displayUsername } from "../../utils/utils";
 
 export interface FightTileRankBadge {
   playerId: string;
@@ -36,7 +35,7 @@ const FightTileRankBadges: React.FC<FightTileRankBadgesProps> = ({
           rank={badge.rank}
           category="dps"
           percentile={badge.percentile}
-          label={displayUsername(badge.playerId)}
+          label={badge.playerId}
           compact
         />
       ))}

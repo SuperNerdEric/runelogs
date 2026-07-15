@@ -42,7 +42,11 @@ import {
 } from "../utils/avatars";
 import { colors, contentColumnSx, fontSizes } from "../theme";
 import { buildUploaderLogsHref } from "../utils/leaderboardContent";
-import { displayUsername } from "../utils/utils";
+import {
+  formatDisplayUsername,
+  usernamesEqual,
+  usernameToPathSegment,
+} from "../utils/utils";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { getProfilePageMeta } from "../utils/encounterPageMeta";
 
@@ -68,7 +72,7 @@ const MyProfile: React.FC = () => {
   const isOwnProfile =
     isAuthenticated &&
     (!profileId ||
-      (!!user?.username && profileId === user.username) ||
+      (!!user?.username && usernamesEqual(profileId, user.username)) ||
       profileId === user?.sub);
 
   useEffect(() => {
@@ -93,7 +97,7 @@ const MyProfile: React.FC = () => {
 
       try {
         const resp = await fetch(
-          `${import.meta.env.VITE_API_URL}/profile/${encodeURIComponent(profileId)}`,
+          `${import.meta.env.VITE_API_URL}/profile/${encodeURIComponent(usernameToPathSegment(profileId))}`,
         );
 
         if (!resp.ok) {
@@ -152,7 +156,7 @@ const MyProfile: React.FC = () => {
   const pageMeta = useMemo(
     () =>
       getProfilePageMeta({
-        displayName: displayUsername(displayName),
+        displayName: formatDisplayUsername(displayName),
         canonicalPath: `${location.pathname}${location.search}`,
       }),
     [displayName, location.pathname, location.search],
@@ -283,7 +287,7 @@ const MyProfile: React.FC = () => {
               variant="h4"
               sx={pageHeaderTitleTypographySx}
             >
-              {displayUsername(displayName)}
+              {formatDisplayUsername(displayName)}
             </Typography>
           </Box>
           {logsUsername && (

@@ -16,6 +16,7 @@ import {
   isLiveLogSessionOpen,
   type LiveLogState,
 } from "../../utils/liveLogState";
+import { usernamesEqual, usernameToPathSegment } from "../../utils/utils";
 
 interface Props {
   uploaderId: string;
@@ -38,7 +39,7 @@ const LogInfoBox: React.FC<Props> = ({
 }) => {
   const { user, getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
-  const canEdit = user?.username === uploaderId;
+  const canEdit = usernamesEqual(user?.username, uploaderId);
   const { enqueueSnackbar } = useSnackbar();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(logName ?? "");
@@ -78,7 +79,12 @@ const LogInfoBox: React.FC<Props> = ({
         autoHideDuration: 1000,
         action,
       });
-      navigate(`/logs/${uploaderId}`, { replace: true });
+      navigate(
+        `/logs/${encodeURIComponent(usernameToPathSegment(uploaderId))}`,
+        {
+          replace: true,
+        },
+      );
     } catch (err: any) {
       console.error("Failed to delete log:", err);
       alert(err.message || "Failed to delete");

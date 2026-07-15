@@ -15,7 +15,7 @@ import {
   contentColumnSx,
   pageHeroTitleSx,
 } from "../theme";
-import { displayUsername, ticksToTime } from "../utils/utils";
+import { ticksToTime } from "../utils/utils";
 import { getEncounterHref } from "../utils/encounterTableRow";
 import { isUnknownPlayer, UNKNOWN_PLAYER_NAME } from "../utils/actorUtils";
 import { getPlayerDpsDisplayColor } from "../utils/percentile";
@@ -282,7 +282,7 @@ const FightGroupSummary: React.FC = () => {
     ) {
       return "";
     }
-    return `${displayUsername(entry.playerId)} — Overall`;
+    return `${entry.playerId} — Overall`;
   };
 
   return (
@@ -422,7 +422,7 @@ const FightGroupSummary: React.FC = () => {
                         underline="hover"
                         color="inherit"
                       >
-                        {displayUsername(row.playerId)}
+                        {row.playerId}
                       </Link>
                     )}
                   </>

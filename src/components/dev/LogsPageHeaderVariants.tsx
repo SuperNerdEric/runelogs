@@ -2,10 +2,10 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined";
 import { colors, contentColumnSx, accountTextSx, media } from "../../theme";
-import { displayUsername } from "../../utils/utils";
+import { formatDisplayUsername } from "../../utils/utils";
 
 const SAMPLE_UPLOADER = "honorable";
-const displayName = displayUsername(SAMPLE_UPLOADER);
+const displayName = formatDisplayUsername(SAMPLE_UPLOADER);
 
 const iconBoxSx = {
   display: "flex",
@@ -91,7 +91,6 @@ const Variant01Current: React.FC = () => (
     <Typography
       sx={{
         ...accountTextSx,
-        textTransform: "capitalize",
         fontWeight: 500,
         fontSize: "1rem",
         mt: 0.25,
@@ -115,10 +114,7 @@ const Variant02InlineMiddot: React.FC = () => (
       >
         ·
       </Box>
-      <Box
-        component="span"
-        sx={{ ...accountTextSx, textTransform: "capitalize", fontWeight: 600 }}
-      >
+      <Box component="span" sx={{ ...accountTextSx, fontWeight: 600 }}>
         {displayName}
       </Box>
     </Typography>
@@ -136,7 +132,6 @@ const Variant03InlineColon: React.FC = () => (
         component="span"
         sx={{
           ...accountTextSx,
-          textTransform: "capitalize",
           fontWeight: 600,
           ml: 1,
         }}
@@ -161,7 +156,6 @@ const Variant04InlineNameSmaller: React.FC = () => (
       <Typography
         sx={{
           ...accountTextSx,
-          textTransform: "capitalize",
           fontWeight: 600,
           fontSize: "1.125rem",
         }}
@@ -189,7 +183,6 @@ const Variant05InlineNameSameSize: React.FC = () => (
           m: 0,
           fontWeight: 600,
           ...accountTextSx,
-          textTransform: "capitalize",
         }}
       >
         {displayName}
@@ -217,7 +210,6 @@ const Variant06EyebrowLogsNameHero: React.FC = () => (
       sx={{
         m: 0,
         fontWeight: 600,
-        textTransform: "capitalize",
         color: colors.text.primary,
       }}
     >
@@ -233,7 +225,6 @@ const Variant07NameHeroLogsCaption: React.FC = () => (
       sx={{
         m: 0,
         fontWeight: 600,
-        textTransform: "capitalize",
         ...accountTextSx,
       }}
     >
@@ -254,7 +245,6 @@ const Variant08NameHeroWhiteLogsCaption: React.FC = () => (
       sx={{
         m: 0,
         fontWeight: 600,
-        textTransform: "capitalize",
         color: colors.text.primary,
       }}
     >
@@ -279,7 +269,6 @@ const Variant09NameBelowLarger: React.FC = () => (
     <Typography
       sx={{
         ...accountTextSx,
-        textTransform: "capitalize",
         fontWeight: 600,
         fontSize: "1.25rem",
         mt: 0.25,
@@ -301,7 +290,6 @@ const Variant10NameBelowSmaller: React.FC = () => (
     <Typography
       sx={{
         ...accountTextSx,
-        textTransform: "capitalize",
         fontWeight: 500,
         fontSize: "0.8125rem",
         mt: 0.25,
@@ -323,7 +311,6 @@ const Variant11NameBelowBold: React.FC = () => (
     <Typography
       sx={{
         ...accountTextSx,
-        textTransform: "capitalize",
         fontWeight: 700,
         fontSize: "1rem",
         mt: 0.25,
@@ -345,7 +332,6 @@ const Variant12NameBelowMuted: React.FC = () => (
     <Typography
       sx={{
         color: colors.text.muted,
-        textTransform: "capitalize",
         fontWeight: 500,
         fontSize: "1rem",
         mt: 0.25,
@@ -386,7 +372,6 @@ const Variant14PossessiveTitle: React.FC = () => (
         m: 0,
         fontWeight: 600,
         color: colors.text.primary,
-        textTransform: "capitalize",
       }}
     >
       {displayName}&apos;s Logs
@@ -399,7 +384,6 @@ const Variant15NameAboveLogs: React.FC = () => (
     <Typography
       sx={{
         ...accountTextSx,
-        textTransform: "capitalize",
         fontWeight: 600,
         fontSize: "1.125rem",
         m: 0,
@@ -435,7 +419,6 @@ const Variant16NameRightInBlock: React.FC = () => (
     <Typography
       sx={{
         ...accountTextSx,
-        textTransform: "capitalize",
         fontWeight: 600,
         fontSize: "1.125rem",
       }}
@@ -452,7 +435,6 @@ const Variant17NameOnlyH4: React.FC = () => (
       sx={{
         m: 0,
         fontWeight: 600,
-        textTransform: "capitalize",
         ...accountTextSx,
       }}
     >
@@ -468,10 +450,7 @@ const Variant18LogsForName: React.FC = () => (
       sx={{ m: 0, fontWeight: 600, color: colors.text.primary }}
     >
       Logs for{" "}
-      <Box
-        component="span"
-        sx={{ ...accountTextSx, textTransform: "capitalize", fontWeight: 600 }}
-      >
+      <Box component="span" sx={{ ...accountTextSx, fontWeight: 600 }}>
         {displayName}
       </Box>
     </Typography>
@@ -494,7 +473,6 @@ const Variant19StackedTight: React.FC = () => (
     <Typography
       sx={{
         ...accountTextSx,
-        textTransform: "capitalize",
         fontWeight: 600,
         fontSize: "1.125rem",
         lineHeight: 1.15,
@@ -527,7 +505,6 @@ const Variant20StackedBothH4: React.FC = () => (
         lineHeight: 1.2,
         mt: 0.25,
         ...accountTextSx,
-        textTransform: "capitalize",
       }}
     >
       {displayName}
@@ -605,10 +582,7 @@ const LogsPageHeaderVariants: React.FC = () => (
         20 layouts for username positioning and size on{" "}
         <CodeInline>/logs/:uploaderId</CodeInline>. Icon is fixed at 56×56 with
         standard rounding on every variant. Sample user:{" "}
-        <Box
-          component="span"
-          sx={{ ...accountTextSx, textTransform: "capitalize" }}
-        >
+        <Box component="span" sx={{ ...accountTextSx }}>
           {displayName}
         </Box>
         . Reply with a variant number to apply it.

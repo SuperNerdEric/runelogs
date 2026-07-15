@@ -26,7 +26,7 @@ export const pageHeaderTitleWrapperSx = {
   display: "inline-block",
   m: 0,
   fontWeight: 600,
-  textTransform: "capitalize",
+  textTransform: "none",
   lineHeight: 1.15,
   ...accountTextSx,
 } as const;

@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import AvatarIcon from "./AvatarIcon";
 import { usePublicAvatarId } from "../hooks/usePublicAvatarId";
-import { displayUsername } from "../utils/utils";
 import { accountTextSx, colors } from "../theme";
 
 interface UploaderNameLinkProps {
@@ -27,6 +26,7 @@ interface UploaderNameLinkProps {
 /**
  * Linked uploader name with a text-sized avatar to the left.
  * Always reserves avatar space (skeleton while loading) to avoid layout shift.
+ * Expects uploaderId already display-formatted from the API.
  */
 const UploaderNameLink: React.FC<UploaderNameLinkProps> = ({
   uploaderId,
@@ -51,7 +51,6 @@ const UploaderNameLink: React.FC<UploaderNameLinkProps> = ({
       underline="hover"
       variant={variant}
       sx={{
-        textTransform: "capitalize",
         ...accountTextSx,
         ...sx,
         // Keep avatar+name layout after caller sx so display is not overridden.
@@ -94,14 +93,13 @@ const UploaderNameLink: React.FC<UploaderNameLinkProps> = ({
           fontWeight: "inherit",
           lineHeight: "inherit",
           color: "inherit",
-          textTransform: "inherit",
           minWidth: 0,
           overflowWrap: "anywhere",
           wordBreak: "break-word",
           ...typographySx,
         }}
       >
-        {displayUsername(uploaderId)}
+        {uploaderId}
       </Typography>
     </Link>
   );

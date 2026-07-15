@@ -34,7 +34,7 @@ import {
   createInitialReparseProgress,
   streamLogReparse,
 } from "../utils/streamLogReparse";
-import { displayUsername } from "../utils/utils";
+import { usernameToPathSegment } from "../utils/utils";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { ADMIN_PAGE_META } from "../utils/encounterPageMeta";
 
@@ -1353,10 +1353,10 @@ const Admin: React.FC = () => {
               </Box>{" "}
               <Link
                 component={RouterLink}
-                to={`/logs/${loadedLog.uploaderId}`}
-                sx={{ ...linkSx, textTransform: "capitalize" }}
+                to={`/logs/${encodeURIComponent(usernameToPathSegment(loadedLog.uploaderId))}`}
+                sx={linkSx}
               >
-                {displayUsername(loadedLog.uploaderId)}
+                {loadedLog.uploaderId}
               </Link>
             </Typography>
 

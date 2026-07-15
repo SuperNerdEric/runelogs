@@ -85,6 +85,35 @@ export const getActor = (actorString: string): Actor => {
   };
 };
 
-export const displayUsername = (username: string): string => {
-  return username.replace(/_/g, " ");
+/**
+ * Formats an Auth0 username for display when the value did not come from the
+ * API (Auth0 JWT claims, route params). Auth0 stores usernames lowercase with
+ * underscores; API responses already format uploaderId. Do not use for OSRS
+ * player names.
+ */
+export const formatDisplayUsername = (username: string): string => {
+  return username
+    .replace(/_/g, " ")
+    .split(/\s+/)
+    .filter((word) => word.length > 0)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
+/** @deprecated Use formatDisplayUsername */
+export const displayUsername = formatDisplayUsername;
+
+/** Auth0 usernames use underscores; display may use spaces — restore for paths. */
+export const usernameToPathSegment = (username: string): string => {
+  return username.trim().replace(/\s+/g, "_");
+};
+
+export const usernamesEqual = (
+  a: string | undefined | null,
+  b: string | undefined | null,
+): boolean => {
+  if (!a || !b) return false;
+  const normalize = (s: string) =>
+    s.replace(/_/g, " ").replace(/\s+/g, " ").trim().toLowerCase();
+  return normalize(a) === normalize(b);
 };

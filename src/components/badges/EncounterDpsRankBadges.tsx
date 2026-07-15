@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import PercentileRankBadge from "./PercentileRankBadge";
 import RankBadgeCallout from "./RankBadgeCallout";
-import { displayUsername } from "../../utils/utils";
 import { isUnknownPlayer } from "../../utils/actorUtils";
 import { buildFightDpsRankLeaderboardHref } from "../../utils/leaderboardContent";
 
@@ -53,7 +52,7 @@ const EncounterDpsRankBadges: React.FC<EncounterDpsRankBadgesProps> = ({
           rank={badge.rank}
           category="dps"
           percentile={badge.percentile}
-          label={displayUsername(badge.playerId)}
+          label={badge.playerId}
           tooltipFightName={fightName}
           href={badge.href}
         />
