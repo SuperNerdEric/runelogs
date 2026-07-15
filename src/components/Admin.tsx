@@ -48,6 +48,29 @@ interface ReparseAllStatus {
   startedAt?: string;
   completedAt?: string;
   currentLogId?: string;
+  jobId?: string;
+}
+
+interface TestReparseResultRow {
+  logId: string;
+  status: string;
+  encounterChurn: number | null;
+  changedLineCount: number | null;
+  error: string | null;
+}
+
+interface TestReparseJobStatus {
+  jobId?: string;
+  status: "idle" | "started" | "in_progress" | "completed" | "failed";
+  total?: number;
+  processed?: number;
+  succeeded?: number;
+  failed?: number;
+  progress?: string;
+  currentLogId?: string;
+  resultS3Key?: string | null;
+  error?: string | null;
+  results?: TestReparseResultRow[];
 }
 
 interface LogStatusResponse {
@@ -284,12 +307,156 @@ const Admin: React.FC = () => {
   const [editedName, setEditedName] = useState("");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
+  const [testReparseAllStatus, setTestReparseAllStatus] =
+    useState<TestReparseJobStatus | null>(null);
+  const [testReparseAllStarting, setTestReparseAllStarting] = useState(false);
+  const [testReparseJob, setTestReparseJob] =
+    useState<TestReparseJobStatus | null>(null);
+  const [testReparseStarting, setTestReparseStarting] = useState(false);
+
   const getAuthHeaders = useCallback(async () => {
     const token = await getAccessTokenSilently();
     return {
       Authorization: `Bearer ${token}`,
     };
   }, [getAccessTokenSilently]);
+
+  const fetchTestReparseAllStatus = useCallback(async () => {
+    try {
+      const headers = await getAuthHeaders();
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/admin/test-reparse-all/status`,
+        { headers },
+      );
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}`);
+      }
+      const data = (await response.json()) as TestReparseJobStatus;
+      setTestReparseAllStatus(data);
+    } catch (err) {
+      console.error("Failed to fetch test-reparse-all status:", err);
+    }
+  }, [getAuthHeaders]);
+
+  const startTestReparseAll = async () => {
+    if (
+      !window.confirm(
+        "Run test reparse on all logs? This parses without saving and ranks logs by how much their summaries would change.",
+      )
+    ) {
+      return;
+    }
+
+    setTestReparseAllStarting(true);
+    try {
+      const headers = await getAuthHeaders();
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/admin/test-reparse-all`,
+        { method: "POST", headers },
+      );
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}`);
+      }
+      const data = (await response.json()) as { jobId: string };
+      enqueueSnackbar("Test reparse-all job started", { variant: "success" });
+      if (data.jobId) {
+        const statusResponse = await fetch(
+          `${import.meta.env.VITE_API_URL}/admin/test-reparse-all/${data.jobId}`,
+          { headers },
+        );
+        if (statusResponse.ok) {
+          setTestReparseAllStatus(
+            (await statusResponse.json()) as TestReparseJobStatus,
+          );
+        }
+      } else {
+        await fetchTestReparseAllStatus();
+      }
+    } catch (err) {
+      console.error("Failed to start test-reparse-all:", err);
+      enqueueSnackbar("Failed to start test-reparse-all job", {
+        variant: "error",
+      });
+    } finally {
+      setTestReparseAllStarting(false);
+    }
+  };
+
+  const startSingleTestReparse = async (logId: string) => {
+    setTestReparseStarting(true);
+    setTestReparseJob(null);
+    try {
+      const headers = await getAuthHeaders();
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/admin/test-reparse`,
+        {
+          method: "POST",
+          headers: {
+            ...headers,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ logId }),
+        },
+      );
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}`);
+      }
+      const data = (await response.json()) as { jobId: string };
+      enqueueSnackbar("Test reparse started", { variant: "info" });
+
+      for (let attempt = 0; attempt < 1800; attempt++) {
+        const statusResponse = await fetch(
+          `${import.meta.env.VITE_API_URL}/admin/test-reparse/${data.jobId}`,
+          { headers },
+        );
+        if (!statusResponse.ok) {
+          throw new Error(`Server returned ${statusResponse.status}`);
+        }
+        const status = (await statusResponse.json()) as TestReparseJobStatus;
+        setTestReparseJob(status);
+        if (status.status === "completed" || status.status === "failed") {
+          enqueueSnackbar(
+            status.status === "completed"
+              ? "Test reparse finished"
+              : "Test reparse failed",
+            { variant: status.status === "completed" ? "success" : "error" },
+          );
+          break;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      }
+    } catch (err) {
+      console.error("Failed to run test reparse:", err);
+      enqueueSnackbar("Failed to run test reparse", { variant: "error" });
+    } finally {
+      setTestReparseStarting(false);
+    }
+  };
+
+  const downloadTestReparseZip = async (jobId: string) => {
+    try {
+      const headers = await getAuthHeaders();
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/admin/test-reparse/${jobId}/download`,
+        { headers },
+      );
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}`);
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `test-reparse-${jobId}.zip`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Failed to download test reparse zip:", err);
+      enqueueSnackbar("Failed to download test reparse zip", {
+        variant: "error",
+      });
+    }
+  };
 
   const fetchReparseStatus = useCallback(async () => {
     try {
@@ -704,7 +871,13 @@ const Admin: React.FC = () => {
     }
     void fetchReparseStatus();
     void fetchTotalLogCount();
-  }, [fetchReparseStatus, fetchTotalLogCount, isAdmin]);
+    void fetchTestReparseAllStatus();
+  }, [
+    fetchReparseStatus,
+    fetchTestReparseAllStatus,
+    fetchTotalLogCount,
+    isAdmin,
+  ]);
 
   useEffect(() => {
     if (!isAdmin || !reparseStatus) {
@@ -721,6 +894,21 @@ const Admin: React.FC = () => {
 
     return () => window.clearInterval(intervalId);
   }, [fetchReparseStatus, isAdmin, reparseStatus?.status]);
+
+  useEffect(() => {
+    if (!isAdmin || !testReparseAllStatus) {
+      return;
+    }
+    if (!isReparseJobActive(testReparseAllStatus.status)) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      void fetchTestReparseAllStatus();
+    }, 5000);
+
+    return () => window.clearInterval(intervalId);
+  }, [fetchTestReparseAllStatus, isAdmin, testReparseAllStatus?.status]);
 
   if (authLoading || adminLoading) {
     return (
@@ -871,6 +1059,136 @@ const Admin: React.FC = () => {
               {reparseStatus.completedAt &&
                 ` · Completed: ${new Date(reparseStatus.completedAt).toLocaleString()}`}
             </Typography>
+          </Box>
+        )}
+      </SectionBox>
+
+      <SectionBox sx={adminSectionBoxSx}>
+        <Typography sx={sectionTitleSx}>Test Reparse (dry run)</Typography>
+        <Typography sx={sectionDescriptionSx}>
+          Parse without saving. Test-all ranks logs by encounter churn then
+          changed line count. Single-log test produces a before/after zip.
+        </Typography>
+
+        <Box
+          component="button"
+          type="button"
+          onClick={() => void startTestReparseAll()}
+          disabled={
+            testReparseAllStarting ||
+            (testReparseAllStatus != null &&
+              isReparseJobActive(testReparseAllStatus.status))
+          }
+          sx={primaryButtonSx}
+        >
+          {testReparseAllStarting ? (
+            <CircularProgress size={24} sx={{ color: "inherit" }} />
+          ) : (
+            "Start Test Reparse All"
+          )}
+        </Box>
+
+        {testReparseAllStatus && testReparseAllStatus.status !== "idle" && (
+          <Box sx={{ mt: 2 }}>
+            <Typography sx={{ ...detailTextSx, mb: 1 }}>
+              Status:{" "}
+              <Box component="span" sx={{ fontWeight: 600 }}>
+                {testReparseAllStatus.status}
+              </Box>
+              {testReparseAllStatus.progress &&
+                ` · ${testReparseAllStatus.progress}`}
+              {testReparseAllStatus.currentLogId && (
+                <>
+                  {" · "}
+                  Current:{" "}
+                  <Link
+                    component={RouterLink}
+                    to={`/log/${testReparseAllStatus.currentLogId}`}
+                    sx={linkSx}
+                  >
+                    {testReparseAllStatus.currentLogId}
+                  </Link>
+                </>
+              )}
+            </Typography>
+            {testReparseAllStatus.results &&
+              testReparseAllStatus.results.length > 0 && (
+                <Box
+                  sx={{
+                    mt: 1,
+                    maxHeight: 320,
+                    overflow: "auto",
+                    border: `1px solid ${colors.border.default}`,
+                    borderRadius: 1,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr 90px 90px",
+                      gap: 1,
+                      px: 1.5,
+                      py: 1,
+                      fontWeight: 600,
+                      fontSize: fontSizes.sm,
+                      borderBottom: `1px solid ${colors.border.default}`,
+                    }}
+                  >
+                    <Box>Log ID</Box>
+                    <Box>Churn</Box>
+                    <Box>Lines</Box>
+                  </Box>
+                  {testReparseAllStatus.results.map((row) => (
+                    <Box
+                      key={row.logId}
+                      sx={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr 90px 90px",
+                        gap: 1,
+                        px: 1.5,
+                        py: 0.75,
+                        fontSize: fontSizes.sm,
+                        borderBottom: `1px solid ${colors.border.default}`,
+                      }}
+                    >
+                      <Link
+                        component={RouterLink}
+                        to={`/log/${row.logId}`}
+                        sx={linkSx}
+                      >
+                        {row.logId}
+                      </Link>
+                      <Box>{row.encounterChurn ?? "—"}</Box>
+                      <Box>{row.changedLineCount ?? "—"}</Box>
+                    </Box>
+                  ))}
+                </Box>
+              )}
+          </Box>
+        )}
+
+        {testReparseJob && (
+          <Box sx={{ mt: 2 }}>
+            <Typography sx={detailTextSx}>
+              Single test job: {testReparseJob.status}
+              {testReparseJob.results?.[0] &&
+                ` · churn ${testReparseJob.results[0].encounterChurn ?? "—"} · lines ${testReparseJob.results[0].changedLineCount ?? "—"}`}
+            </Typography>
+            {testReparseJob.status === "completed" &&
+              testReparseJob.jobId &&
+              testReparseJob.resultS3Key && (
+                <Box
+                  component="button"
+                  type="button"
+                  onClick={() =>
+                    void downloadTestReparseZip(testReparseJob.jobId!)
+                  }
+                  sx={{ ...secondaryButtonSx, mt: 1 }}
+                >
+                  <DownloadIcon sx={{ fontSize: 18 }} />
+                  Download before/after zip
+                </Box>
+              )}
           </Box>
         )}
       </SectionBox>
@@ -1096,6 +1414,20 @@ const Admin: React.FC = () => {
                   <RefreshIcon sx={{ fontSize: 20 }} />
                 )}
                 Reparse Log
+              </Box>
+              <Box
+                component="button"
+                type="button"
+                onClick={() => void startSingleTestReparse(loadedLog.id)}
+                disabled={testReparseStarting}
+                sx={secondaryButtonSx}
+              >
+                {testReparseStarting ? (
+                  <CircularProgress size={20} sx={{ color: "inherit" }} />
+                ) : (
+                  <SyncIcon sx={{ fontSize: 20 }} />
+                )}
+                Test Reparse
               </Box>
               <Box
                 component="button"

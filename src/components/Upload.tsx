@@ -32,82 +32,51 @@ import { usePageMeta } from "../hooks/usePageMeta";
 import { UPLOAD_PAGE_META } from "../utils/seoContent";
 import { combineOverallUploadProgress } from "../utils/uploadProgress";
 
-type UploadProgressPayload = {
-  progress?: number;
-  logId?: string;
-  error?: string;
-};
-
 async function pollLogUntilReadable(
   logId: string,
   token: string,
+  onProgress?: (progress: number) => void,
 ): Promise<boolean> {
-  const maxAttempts = 180;
+  const maxAttempts = 360;
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/log/${logId}`,
+      `${import.meta.env.VITE_API_URL}/log/${logId}/status`,
       {
         headers: { Authorization: `Bearer ${token}` },
       },
     );
 
-    if (response.status === 200) {
-      return true;
+    if (response.status === 404) {
+      return false;
     }
+
+    if (response.ok) {
+      const body = (await response.json()) as {
+        saveStatus?: string;
+        processingProgress?: number;
+      };
+
+      if (typeof body.processingProgress === "number") {
+        onProgress?.(body.processingProgress);
+      }
+
+      if (body.saveStatus === "complete") {
+        return true;
+      }
+      if (body.saveStatus === "failed") {
+        return false;
+      }
+    }
+
     if (response.status === 410) {
       return false;
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
   }
 
   return false;
-}
-
-function parseSseChunk(
-  chunk: string,
-): Array<{ eventType: string; dataText: string }> {
-  const events: Array<{ eventType: string; dataText: string }> = [];
-
-  for (const part of chunk.split("\n\n")) {
-    const lines = part.split("\n").map((line) => line.trim());
-    let eventType: string | null = null;
-    let dataText: string | null = null;
-
-    for (const line of lines) {
-      if (line.startsWith("event:")) {
-        eventType = line.replace(/^event:\s*/, "");
-      } else if (line.startsWith("data:")) {
-        dataText = line.replace(/^data:\s*/, "");
-      }
-    }
-
-    if (eventType && dataText) {
-      events.push({ eventType, dataText });
-    }
-  }
-
-  return events;
-}
-
-function extractCompleteLogId(responseText: string): string | null {
-  for (const { eventType, dataText } of parseSseChunk(responseText)) {
-    if (eventType !== "complete") {
-      continue;
-    }
-
-    try {
-      const payload = JSON.parse(dataText) as UploadProgressPayload;
-      if (payload.logId) {
-        return payload.logId;
-      }
-    } catch {
-      continue;
-    }
-  }
-
-  return null;
 }
 
 const STEP_LINE_HEIGHT = 1.4;
@@ -370,8 +339,6 @@ const Upload: React.FC = () => {
         }
       };
 
-      let pendingLogId: string | null = null;
-
       const resetUploadState = () => {
         setIsSubmitting(false);
         setUploadPercent(null);
@@ -385,56 +352,17 @@ const Upload: React.FC = () => {
         navigate(`/log/${logId}`);
       };
 
-      const handleUploadEvent = (
-        eventType: string,
-        dataText: string,
-      ): "stop" | "continue" => {
-        let payload: UploadProgressPayload;
-        try {
-          payload = JSON.parse(dataText);
-        } catch {
-          return "continue";
-        }
+      const pollAfterAccept = async (logId: string) => {
+        setParseStarted(true);
+        setParsePercent(0);
+        setRecovering(false);
 
-        if (eventType === "error") {
-          setErrorText(payload.error || "Upload failed");
-          resetUploadState();
-          return "stop";
-        }
-
-        if (eventType === "progress" && typeof payload.progress === "number") {
-          if (payload.logId || payload.progress > 0) {
-            setParseStarted(true);
-          }
-          if (payload.logId) {
-            pendingLogId = payload.logId;
-          }
+        const ready = await pollLogUntilReadable(logId, token, (progress) => {
           flushSync(() => {
-            setParsePercent(payload.progress!);
+            setParsePercent(progress);
           });
-        }
+        });
 
-        if (eventType === "complete" && payload.logId) {
-          finishUpload(payload.logId);
-          return "stop";
-        }
-
-        return "continue";
-      };
-
-      const recoverAfterDisconnect = async () => {
-        const logId = pendingLogId ?? extractCompleteLogId(xhr.responseText);
-        if (!logId) {
-          setErrorText("Upload failed due to a network error.");
-          resetUploadState();
-          return;
-        }
-
-        setRecovering(true);
-        setErrorText(null);
-        setParsePercent((current) => current ?? 0);
-
-        const ready = await pollLogUntilReadable(logId, token);
         if (ready) {
           finishUpload(logId);
           return;
@@ -444,15 +372,9 @@ const Upload: React.FC = () => {
         resetUploadState();
       };
 
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === XMLHttpRequest.HEADERS_RECEIVED) {
-          setUploadPercent(100);
-          setParsePercent(0);
-        }
-      };
-
       xhr.onerror = () => {
-        void recoverAfterDisconnect();
+        setErrorText("Upload failed due to a network error.");
+        resetUploadState();
       };
 
       xhr.onabort = () => {
@@ -460,40 +382,43 @@ const Upload: React.FC = () => {
         setIsSubmitting(false);
       };
 
-      xhr.onprogress = () => {
-        const newText = xhr.responseText.substring(lastResponseLength);
-        lastResponseLength = xhr.responseText.length;
-
-        for (const { eventType, dataText } of parseSseChunk(newText)) {
-          if (handleUploadEvent(eventType, dataText) === "stop") {
-            return;
-          }
-        }
-      };
-
       xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          for (const { eventType, dataText } of parseSseChunk(
-            xhr.responseText,
-          )) {
-            if (handleUploadEvent(eventType, dataText) === "stop") {
-              return;
-            }
-          }
+        setUploadPercent(100);
 
-          const completedLogId = extractCompleteLogId(xhr.responseText);
-          if (completedLogId) {
-            finishUpload(completedLogId);
+        if (xhr.status >= 200 && xhr.status < 300) {
+          let logId: string | undefined;
+          try {
+            const body = JSON.parse(xhr.responseText) as { logId?: string };
+            logId = body.logId;
+          } catch {
+            setErrorText("Upload accepted but response was invalid.");
+            resetUploadState();
             return;
           }
+
+          if (!logId) {
+            setErrorText("Upload accepted but no logId was returned.");
+            resetUploadState();
+            return;
+          }
+
+          void pollAfterAccept(logId);
+          return;
         }
 
-        if (xhr.status >= 400) {
-          resetUploadState();
+        let message = `Server returned ${xhr.status}`;
+        try {
+          const body = JSON.parse(xhr.responseText) as { error?: string };
+          if (body.error) {
+            message = body.error;
+          }
+        } catch {
+          // ignore
         }
+        setErrorText(message);
+        resetUploadState();
       };
 
-      let lastResponseLength = 0;
       xhr.send(formData);
     } catch (err: any) {
       console.error(err);
