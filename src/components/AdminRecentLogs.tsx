@@ -52,19 +52,13 @@ const sectionTitleSx = {
   fontSize: fontSizes.lg,
 } as const;
 
-const sectionDescriptionSx = {
-  color: colors.text.muted,
-  fontSize: fontSizes.base,
-} as const;
-
 const sectionInsetSx = {
   px: { xs: 2.25, md: 3 },
 } as const;
 
 const sectionHeaderSx = {
   ...sectionInsetSx,
-  pt: { xs: 2.25, md: 3 },
-  pb: 2,
+  py: 1.5,
 } as const;
 
 const expandHeaderSx = {
@@ -74,7 +68,6 @@ const expandHeaderSx = {
   width: "100%",
   p: 0,
   m: 0,
-  mb: 1.5,
   border: "none",
   background: "none",
   cursor: "pointer",
@@ -92,18 +85,23 @@ const tableContainerSx = {
   border: "none",
   borderRadius: 0,
   boxShadow: "none",
+  margin: 0,
   borderTop: `1px solid ${colors.border.default}`,
+  "& .MuiTableBody-root .MuiTableRow-root:last-of-type .MuiTableCell-root": {
+    borderBottom: "none",
+  },
 } as const;
 
 const paginationWrapSx = {
   display: "flex",
   justifyContent: "center",
+  alignItems: "center",
   ...sectionInsetSx,
-  pt: 2,
-  pb: { xs: 2.25, md: 3 },
+  py: 1,
 } as const;
 
 const paginationSx = {
+  "& .MuiPagination-ul": { margin: 0, padding: 0 },
   "& .MuiPaginationItem-root": { color: "white" },
   "& .MuiPaginationItem-root.Mui-selected": {
     backgroundColor: "white",
@@ -227,16 +225,25 @@ const AdminRecentLogs: React.FC<AdminRecentLogsProps> = ({
           />
           <Typography className="admin-recent-logs-title" sx={sectionTitleSx}>
             Recently Uploaded Logs
-            {hasLoaded && ` (${total.toLocaleString()})`}
           </Typography>
         </Box>
-        <Typography sx={sectionDescriptionSx}>
-          Browse every log on the site, newest uploads first. Includes live
-          logs.
-        </Typography>
       </Box>
 
       <Collapse in={expanded} unmountOnExit={false} sx={{ width: "100%" }}>
+        {hasLoaded && (
+          <Typography
+            sx={{
+              ...sectionInsetSx,
+              color: colors.text.muted,
+              fontSize: fontSizes.sm,
+              pb: 1.5,
+            }}
+          >
+            {total === 0
+              ? "0 logs"
+              : `${((page - 1) * PAGE_SIZE + 1).toLocaleString()}–${Math.min(page * PAGE_SIZE, total).toLocaleString()} of ${total.toLocaleString()} logs`}
+          </Typography>
+        )}
         <TableContainer sx={tableContainerSx}>
           <Table sx={{ tableLayout: "auto", width: "100%" }}>
             <TableHead>
