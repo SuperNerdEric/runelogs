@@ -1,5 +1,5 @@
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import {
   Alert,
@@ -259,6 +259,7 @@ function UploadProgressIndicator({
 const Upload: React.FC = () => {
   const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
+  const location = useLocation();
   usePageMeta(UPLOAD_PAGE_META);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -272,9 +273,17 @@ const Upload: React.FC = () => {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated && !isPrerenderPass()) {
-      navigate("/");
+      navigate("/login", {
+        state: { from: location.pathname + location.search },
+      });
     }
-  }, [isLoading, isAuthenticated, navigate]);
+  }, [
+    isLoading,
+    isAuthenticated,
+    navigate,
+    location.pathname,
+    location.search,
+  ]);
 
   const onDrop = React.useCallback((files: File[]) => {
     if (files.length > 1) {

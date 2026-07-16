@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import {
   Alert,
@@ -135,6 +135,7 @@ interface AccessKeyResponse {
 const LiveLog: React.FC = () => {
   const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
+  const location = useLocation();
   usePageMeta(LIVE_LOG_PAGE_META);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -145,9 +146,17 @@ const LiveLog: React.FC = () => {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated && !isPrerenderPass()) {
-      navigate("/");
+      navigate("/login", {
+        state: { from: location.pathname + location.search },
+      });
     }
-  }, [isLoading, isAuthenticated, navigate]);
+  }, [
+    isLoading,
+    isAuthenticated,
+    navigate,
+    location.pathname,
+    location.search,
+  ]);
 
   const fetchAccessKey = useCallback(async () => {
     setLoading(true);

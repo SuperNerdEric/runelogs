@@ -77,9 +77,18 @@ const MyProfile: React.FC = () => {
 
   useEffect(() => {
     if (!isLoading && !profileId && !isAuthenticated) {
-      navigate("/");
+      navigate("/login", {
+        state: { from: location.pathname + location.search },
+      });
     }
-  }, [isLoading, profileId, isAuthenticated, navigate]);
+  }, [
+    isLoading,
+    profileId,
+    isAuthenticated,
+    navigate,
+    location.pathname,
+    location.search,
+  ]);
 
   useEffect(() => {
     if (!profileId || isOwnProfile) {

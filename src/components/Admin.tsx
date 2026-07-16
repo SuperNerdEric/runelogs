@@ -1077,13 +1077,7 @@ const Admin: React.FC = () => {
   }
 
   if (!isAuthenticated) {
-    return (
-      <Navigate
-        to="/login"
-        replace
-        state={{ from: "/admin" }}
-      />
-    );
+    return <Navigate to="/login" replace state={{ from: "/admin" }} />;
   }
 
   if (!isAdmin) {
