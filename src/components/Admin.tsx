@@ -1882,7 +1882,7 @@ const Admin: React.FC = () => {
                       sx={{ ...secondaryButtonSx, mt: 1.5 }}
                     >
                       <DownloadIcon sx={{ fontSize: 18 }} />
-                      Download before/after zip
+                      Download Reparse Zip
                     </Box>
                   )}
               </Box>
