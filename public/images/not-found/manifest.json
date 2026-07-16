@@ -1,345 +1,290 @@
 {
   "source": "oldschool.runescape.wiki",
-  "count": 85,
+  "count": 95,
   "files": [
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Acatzin.png?fbf6c",
+      "local": "/images/not-found/200px-Anna.png"
+    },
+    {
+      "local": "/images/not-found/200px-Arsen_the_Thief.png"
+    },
+    {
+      "local": "/images/not-found/200px-Ava.png"
+    },
+    {
+      "local": "/images/not-found/200px-Bandit.png"
+    },
+    {
+      "local": "/images/not-found/200px-Barbarian_guard.png"
+    },
+    {
+      "local": "/images/not-found/200px-Bill_Teach.png"
+    },
+    {
+      "local": "/images/not-found/200px-Cassius.png"
+    },
+    {
+      "local": "/images/not-found/200px-Chancy.png"
+    },
+    {
+      "local": "/images/not-found/200px-Dondakan_the_Dwarf_(pickaxe).png"
+    },
+    {
+      "local": "/images/not-found/200px-Goblin_Cook.png"
+    },
+    {
+      "local": "/images/not-found/200px-High_Priest_(Sophanem).png"
+    },
+    {
+      "local": "/images/not-found/200px-Jenny_Blade.png"
+    },
+    {
+      "local": "/images/not-found/200px-Khazard_Guard.png"
+    },
+    {
+      "local": "/images/not-found/200px-Lalli.png"
+    },
+    {
+      "local": "/images/not-found/200px-Mandy.png"
+    },
+    {
+      "local": "/images/not-found/200px-Menaphite_Thug.png"
+    },
+    {
+      "local": "/images/not-found/200px-My_Arm.png"
+    },
+    {
+      "local": "/images/not-found/200px-Reinn.png"
+    },
+    {
+      "local": "/images/not-found/200px-Rowdy_dwarf.png"
+    },
+    {
+      "local": "/images/not-found/200px-Sheep_(dark_grey_1).png"
+    },
+    {
+      "local": "/images/not-found/200px-Sigmund.png"
+    },
+    {
+      "local": "/images/not-found/200px-Skippy.png"
+    },
+    {
+      "local": "/images/not-found/200px-Terrorbird_Guard_21.png"
+    },
+    {
+      "local": "/images/not-found/200px-Thaerisk.png"
+    },
+    {
+      "local": "/images/not-found/200px-Tyras_guard.png"
+    },
+    {
+      "local": "/images/not-found/200px-Vanescula_Drakan.png"
+    },
+    {
+      "local": "/images/not-found/200px-Viyeldi.png"
+    },
+    {
       "local": "/images/not-found/Acatzin.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Alan_%28Scrambled%21%29.png?5d4a3",
-      "local": "/images/not-found/Alan_(Scrambled_).png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Ali_the_Hag.png?97649",
-      "local": "/images/not-found/Ali_the_Hag.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Apprentice_Cordelia.png?f0d3e",
-      "local": "/images/not-found/Apprentice_Cordelia.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Arhein.png?48696",
-      "local": "/images/not-found/Arhein.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Aris.png?da559",
-      "local": "/images/not-found/Aris.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Asgarnia_Smith.png?2bd4c",
-      "local": "/images/not-found/Asgarnia_Smith.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Askeladden.png?c5242",
       "local": "/images/not-found/Askeladden.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Awowogei.png?0ea6b",
       "local": "/images/not-found/Awowogei.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Barbarian_guard.png?5eb58",
-      "local": "/images/not-found/Barbarian_guard.png"
+      "local": "/images/not-found/Black_Knight_Captain.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Bill_Teach.png?9f122",
-      "local": "/images/not-found/Bill_Teach.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Blanin.png?92cfb",
-      "local": "/images/not-found/Blanin.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Bonafido.png?19b2b",
       "local": "/images/not-found/Bonafido.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Brundt_the_Chieftain.png?07ceb",
-      "local": "/images/not-found/Brundt_the_Chieftain.png"
+      "local": "/images/not-found/Bravek.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Burntmeat.png?07ceb",
+      "local": "/images/not-found/Brewer_(1).png"
+    },
+    {
       "local": "/images/not-found/Burntmeat.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Cassius.png?9461c",
-      "local": "/images/not-found/Cassius.png"
+      "local": "/images/not-found/Cyrisus.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Councillor_Catherine.png?00369",
-      "local": "/images/not-found/Councillor_Catherine.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Dairy_cow.png?835c9",
-      "local": "/images/not-found/Dairy_cow.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Davey.png?4f061",
-      "local": "/images/not-found/Davey.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Dr_Fenkenstrain.png?552ea",
       "local": "/images/not-found/Dr_Fenkenstrain.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Draul_Leptoc.png?20a45",
-      "local": "/images/not-found/Draul_Leptoc.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Drezel.png?ab6d5",
       "local": "/images/not-found/Drezel.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Drunk_parrot.png?0b998",
       "local": "/images/not-found/Drunk_parrot.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Effigy.png?cf694",
-      "local": "/images/not-found/Effigy.png"
+      "local": "/images/not-found/Evil_Dave.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Essyllt.png?7e75e",
-      "local": "/images/not-found/Essyllt.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Farmer_%28Tal_Teklan%29.png?0445f",
-      "local": "/images/not-found/Farmer_(Tal_Teklan).png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Filliman_Tarlock.png?37b7d",
       "local": "/images/not-found/Filliman_Tarlock.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Florin.png?06b6d",
       "local": "/images/not-found/Florin.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/G.L.O._Caranock.png?f8c1a",
-      "local": "/images/not-found/G.L.O._Caranock.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Gary.png?8ced3",
       "local": "/images/not-found/Gary.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/General_Khazard.png?15c61",
+      "local": "/images/not-found/General_Bentnoze.png"
+    },
+    {
       "local": "/images/not-found/General_Khazard.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/General_Wartface.png?0080a",
-      "local": "/images/not-found/General_Wartface.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Genie_%28Spirits_of_the_Elid%29.png?ee6f2",
-      "local": "/images/not-found/Genie_(Spirits_of_the_Elid).png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Glough.png?81044",
-      "local": "/images/not-found/Glough.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Gnome.png?92efc",
       "local": "/images/not-found/Gnome.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Gnome_on_a_Rack.png?c6c87",
       "local": "/images/not-found/Gnome_on_a_Rack.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Gorad.png?e8fc0",
       "local": "/images/not-found/Gorad.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Gordon.png?66dee",
-      "local": "/images/not-found/Gordon.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Gossip.png?bb311",
-      "local": "/images/not-found/Gossip.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Guard_Captain.png?f43e2",
       "local": "/images/not-found/Guard_Captain.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Guild_Hunter_Wolf_%28Master%29.png?d10cf",
-      "local": "/images/not-found/Guild_Hunter_Wolf_(Master).png"
+      "local": "/images/not-found/Hazelmere.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Hammerspike_Stoutbeard.png?9dac3",
-      "local": "/images/not-found/Hammerspike_Stoutbeard.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Head_Guard.png?15c0b",
       "local": "/images/not-found/Head_Guard.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Henryeta_Carnillean.png?ce9ac",
-      "local": "/images/not-found/Henryeta_Carnillean.png"
+      "local": "/images/not-found/High_Priest_(Entrana).png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Ictus.png?31227",
-      "local": "/images/not-found/Ictus.png"
+      "local": "/images/not-found/High_Priest_of_Scabaras.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Ingrid_Hradson.png?2e353",
-      "local": "/images/not-found/Ingrid_Hradson.png"
+      "local": "/images/not-found/Injured_Tortugan.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Ithoi_the_Navigator.png?1a5c5",
-      "local": "/images/not-found/Ithoi_the_Navigator.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Jimmy_Dazzler.png?eed9f",
       "local": "/images/not-found/Jimmy_Dazzler.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Junior_Jim.png?8307e",
       "local": "/images/not-found/Junior_Jim.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Khorvak%2C_a_dwarven_engineer.png?1e10c",
-      "local": "/images/not-found/Khorvak_a_dwarven_engineer.png"
+      "local": "/images/not-found/King_Black_Dragon.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/King_Gjuki_Sorvott_IV.png?5989d",
       "local": "/images/not-found/King_Gjuki_Sorvott_IV.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Lazim.png?8f20c",
+      "local": "/images/not-found/Knight_of_Ardougne.png"
+    },
+    {
+      "local": "/images/not-found/Lady_Shauna_Piscarilius.png"
+    },
+    {
+      "local": "/images/not-found/Lady_Vulcana_Lovakengj.png"
+    },
+    {
       "local": "/images/not-found/Lazim.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Longramble.png?9a81c",
+      "local": "/images/not-found/Local_Gnome.png"
+    },
+    {
       "local": "/images/not-found/Longramble.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Lord_Baxtorian_Cadarn.png?17563",
-      "local": "/images/not-found/Lord_Baxtorian_Cadarn.png"
+      "local": "/images/not-found/Maisa.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Man.png?6a35a",
       "local": "/images/not-found/Man.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Mandy.png?6a35a",
-      "local": "/images/not-found/Mandy.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Marcellus.png?65b9c",
       "local": "/images/not-found/Marcellus.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Miazrqa.png?b13e2",
       "local": "/images/not-found/Miazrqa.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Mother.png?1b765",
-      "local": "/images/not-found/Mother.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Murcaily.png?0ad41",
-      "local": "/images/not-found/Murcaily.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Murky_Pat.png?e2bf6",
-      "local": "/images/not-found/Murky_Pat.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/My_Arm.png?c3b8e",
       "local": "/images/not-found/My_Arm.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Neite.png?cdeeb",
       "local": "/images/not-found/Neite.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Not_Bob.png?738e0",
+      "local": "/images/not-found/Nickolaus.png"
+    },
+    {
       "local": "/images/not-found/Not_Bob.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Odd_Mushroom.png?98a8b",
-      "local": "/images/not-found/Odd_Mushroom.png"
+      "local": "/images/not-found/Osman.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Parrot_%28NPC%29.png?a396f",
-      "local": "/images/not-found/Parrot_(NPC).png"
+      "local": "/images/not-found/Pirate_Pete.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Poison_Salesman.png?c1e76",
       "local": "/images/not-found/Poison_Salesman.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Prince_Itzla_Arkan.png?2d286",
       "local": "/images/not-found/Prince_Itzla_Arkan.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Red_Axe_Director.png?0c1bf",
       "local": "/images/not-found/Red_Axe_Director.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Reinn.png?f0a8a",
       "local": "/images/not-found/Reinn.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Romeo.png?ef788",
       "local": "/images/not-found/Romeo.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Safalaan_Hallow.png?eabf9",
-      "local": "/images/not-found/Safalaan_Hallow.png"
-    },
-    {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Sawmill_operator.png?5bb3b",
       "local": "/images/not-found/Sawmill_operator.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Sin_Seer.png?00361",
       "local": "/images/not-found/Sin_Seer.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Sir_Lancelot.png?0a5d7",
       "local": "/images/not-found/Sir_Lancelot.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Sir_Tiffy_Cashien.png?39891",
       "local": "/images/not-found/Sir_Tiffy_Cashien.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Slave_%28Underground_Pass%2C_1%29.png?91586",
+      "local": "/images/not-found/Sir_Tristram.png"
+    },
+    {
       "local": "/images/not-found/Slave_(Underground_Pass_1).png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Solus_Dellagar.png?c74a1",
       "local": "/images/not-found/Solus_Dellagar.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Stanford.png?dd42e",
       "local": "/images/not-found/Stanford.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Stradius.png?dc092",
       "local": "/images/not-found/Stradius.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Surok_Magis.png?508cc",
       "local": "/images/not-found/Surok_Magis.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Ug.png?482a5",
-      "local": "/images/not-found/Ug.png"
+      "local": "/images/not-found/Tenzing.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Vanescula_Drakan.png?530d4",
-      "local": "/images/not-found/Vanescula_Drakan.png"
+      "local": "/images/not-found/Warrior_(Lost_City).png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Witch.png?6bdba",
+      "local": "/images/not-found/Winelda.png"
+    },
+    {
       "local": "/images/not-found/Witch.png"
     },
     {
-      "wikiUrl": "https://oldschool.runescape.wiki/images/Wizard_Cromperty.png?eaf12",
+      "local": "/images/not-found/Wizard.png"
+    },
+    {
       "local": "/images/not-found/Wizard_Cromperty.png"
     }
   ]
