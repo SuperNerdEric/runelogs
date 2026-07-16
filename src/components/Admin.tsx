@@ -971,9 +971,9 @@ const Admin: React.FC = () => {
     }
 
     const confirmed = window.confirm(
-      `Enqueue final reconcile for "${loadedLog.name ?? loadedLog.id}"?\n\n` +
-        "Use this for stuck live/finalizing sessions whose worker job was dropped. " +
-        "The worker will drain remaining chunks, compact the raw log, and mark the session complete.",
+      `Retry stuck live log "${loadedLog.name ?? loadedLog.id}"?\n\n` +
+        "Use this when a live log is stuck finalizing. " +
+        "The worker will try to finish remaining chunks, compact the raw log, and mark the session complete.",
     );
     if (!confirmed) {
       return;
@@ -999,15 +999,15 @@ const Admin: React.FC = () => {
         maxSeq?: number;
       };
       enqueueSnackbar(
-        `${data.message ?? "Final reconcile enqueued"}` +
+        `${data.message ?? "Retry stuck live log started"}` +
           (data.lastParsedSeq != null && data.maxSeq != null
             ? ` (parsed ${data.lastParsedSeq}/${data.maxSeq}, state=${data.liveLogState ?? "?"})`
             : ""),
         { variant: "success" },
       );
     } catch (err) {
-      console.error("Failed to enqueue final reconcile:", err);
-      enqueueSnackbar("Failed to enqueue final reconcile", {
+      console.error("Failed to retry stuck live log:", err);
+      enqueueSnackbar("Failed to retry stuck live log", {
         variant: "error",
       });
     } finally {
@@ -1575,8 +1575,7 @@ const Admin: React.FC = () => {
         <Typography sx={sectionTitleSx}>Manage Log</Typography>
         <Typography sx={sectionDescriptionSx}>
           Look up a log by ID to download the raw upload, rename it, reparse it,
-          delete it, toggle leaderboard eligibility, or re-enqueue live final
-          reconcile for a stuck session.
+          delete it, toggle leaderboard eligibility, or retry a stuck live log.
         </Typography>
 
         <Box sx={{ ...actionRowSx, mb: 2 }}>
@@ -1784,7 +1783,7 @@ const Admin: React.FC = () => {
                 ) : (
                   <SyncIcon sx={{ fontSize: 20 }} />
                 )}
-                Enqueue Final Reconcile
+                Retry Stuck Live Log
               </Box>
               <Box
                 component="button"
