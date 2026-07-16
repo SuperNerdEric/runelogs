@@ -12,10 +12,17 @@ export type BlogPostHeading = {
   beforeParagraph: number;
 };
 
+export type BlogPostList = {
+  items: string[];
+  /** Render inline after this paragraph index; omit to render at the end. */
+  afterParagraph?: number;
+};
+
 export type BlogPostBody = {
   summary: string;
   paragraphs: string[];
   bullets?: string[];
+  lists?: BlogPostList[];
   images?: BlogPostImage[];
   headings?: BlogPostHeading[];
 };
@@ -72,6 +79,9 @@ export function getBlogPostPlainText(body: BlogPostBody): string {
   if (body.bullets?.length) {
     parts.push(body.bullets.join(" "));
   }
+  if (body.lists?.length) {
+    parts.push(body.lists.map((list) => list.items.join(" ")).join(" "));
+  }
   return parts.join(" ");
 }
 
@@ -81,6 +91,60 @@ export function getBlogPostSummary(post: BlogPost): string {
 
 const BLOG_POSTS_RAW: BlogPostInput[] = [
   // Runelogs
+  {
+    date: "2026-07-15",
+    title: "Player Spells and NPC Attacks",
+    category: "runelogs",
+    body: {
+      summary:
+        "NPC attacks and player spell casts now show in the Events tables and on the replay tick chart, marking Bloat downs, Xarpus turns, and Vengeance casts, plus upload and live logging upgrades.",
+      paragraphs: [
+        "This update adds enemy attacks to the fight timeline. When your logs come from Combat Logger 1.6.9 or newer, NPC attack animations are recorded, so you can see when a boss attacked and which attack it used. They show up in the Events tab, where you can search and filter by event type or animation ID, and they appear on the replay tick chart on their own rows right next to your own attacks. The tick chart is where they are easiest to follow at a glance. Rows only show for NPCs that actually attack, and Theatre of Blood, the Inferno, Fortis Colosseum, and Doom of Mokhaiotl are all covered.",
+        "Theatre of Blood gets the most detail, and where a boss reuses one animation across styles Runelogs reads the projectile to label the exact attack. Verzik is fully broken down: her Phase 1 auto, Phase 2 bounce along with the cabbage, zap, purple crab, and mage throws, and Phase 3 melee, magic, ranged, green ball, yellows, and web attacks. Sotetseg's melee and his magic and ranged balls, the Nylocas Vasilias mage, ranged, and melee forms, and Maiden's blood throw and auto all land on their own rows.",
+        "Xarpus and Pestilent Bloat get special handling. Xarpus shows his Phase 2 spit per tick, and because his Phase 3 turns are not logged as individual attacks, Runelogs derives them from the Screech that opens the phase so you can follow the rotation, with Phase 1 exhume spawns flagged as they appear. Bloat downs are marked directly on the tick chart, the stomp timing is derived from the number of ticks since the down started, and each down is counted in the Encounter Summary and on the DPS chart.",
+        "Player spell casts get the same treatment, so support and utility play is visible right alongside damage. Every cast is listed in the Events tab and marked on the tick chart on the tick it went out, which makes it easy to line up a spec or a switch with the moment a Vengeance actually went up. This needs Combat Logger 1.6.8 or newer, which logs the casts in the first place. Spells now shown include:",
+      ],
+      headings: [
+        { text: "NPC Attacks", beforeParagraph: 0 },
+        { text: "Player Spells", beforeParagraph: 3 },
+        { text: "Other Changes", beforeParagraph: 4 },
+      ],
+      lists: [
+        {
+          afterParagraph: 3,
+          items: [
+            "Vengeance and Vengeance Other, with a cast arrow and tooltip showing who received the Vengeance Other",
+            "Ghost, Skeleton, and Zombie thralls",
+            "Death Charge, Mark of Darkness, and Ward of Arceuus",
+            "Lesser and Greater Corruption, Dark Lure, Heal Other, and Spellbook Swap",
+          ],
+        },
+      ],
+      images: [
+        {
+          src: "/blog/attack-animations-bloat-down.png",
+          alt: "Replay tick chart for a Pestilent Bloat fight showing a Bloat NPC row with a Down marker tooltip",
+          caption:
+            "NPC attacks on the tick chart: Pestilent Bloat gets its own row, and hovering shows when the boss went down.",
+          afterParagraph: 2,
+        },
+        {
+          src: "/blog/tick-chart-improvements.png",
+          alt: "Replay tick chart with a Vengeance Other cast tooltip showing the target and their combat stats",
+          caption:
+            "Player spells on the tick chart: a Vengeance Other cast arrow points to its target, with combat stats in the tooltip.",
+          afterParagraph: 3,
+        },
+      ],
+      bullets: [
+        "Uploader avatars now show on logs and run pages",
+        "Uploads and reparses now run on a durable worker pipeline with live progress during long parses",
+        "Expandable Verzik melee failure counter on the Encounter Summary",
+        "A friendlier not-found page with random Old School quest quotes",
+        "Live logging hardening for delves, nested raid fights, and late official-duration completions",
+      ],
+    },
+  },
   {
     date: "2026-07-08",
     title: "Encounter Summaries and Replay Tick Chart Improvements",
@@ -415,6 +479,42 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
 
   // Combat Logger
+  {
+    date: "2026-07-14",
+    title: "1.6.9 Release",
+    category: "combat-logger",
+    body: {
+      summary:
+        "Combat Logger 1.6.9 logs NPC attack animations for Theatre of Blood, the Inferno, Fortis Colosseum, and Doom of Mokhaiotl, so Runelogs can chart boss attacks tick by tick.",
+      paragraphs: [
+        "Combat Logger 1.6.9 logs NPC attack animations, not just your own. Boss and encounter NPC attacks are recorded across Theatre of Blood (Maiden, Nylocas Vasilias, Sotetseg, Xarpus, Pestilent Bloat, and Verzik), the Inferno, Fortis Colosseum, and Doom of Mokhaiotl.",
+        "This is the plugin side of the new NPC attacks on the Runelogs replay tick chart. With these lines in your logs, the site can show when a boss attacked, which style it used, and moments like the Bloat going down. Install 1.6.9 before logging fights you want to review with boss attacks on the tick chart.",
+      ],
+      bullets: [
+        "NPC attack animation logging for Theatre of Blood, the Inferno, Fortis Colosseum, and Doom of Mokhaiotl",
+        "Pairs with NPC attacks on the Runelogs replay tick chart",
+        "Bloat sleep animation logged so Runelogs can mark downs",
+      ],
+    },
+  },
+  {
+    date: "2026-07-10",
+    title: "1.6.8 Release",
+    category: "combat-logger",
+    body: {
+      summary:
+        "Combat Logger 1.6.8 logs player spell casts like Vengeance, thralls, Death Charge, and Mark of Darkness, so Runelogs can place them on the replay tick chart.",
+      paragraphs: [
+        "Combat Logger 1.6.8 logs player spell casts alongside your attacks. Cast Vengeance, receive a Vengeance Other, summon a thrall, or use spells like Death Charge, Mark of Darkness, Ward of Arceuus, Lesser and Greater Corruption, Dark Lure, Heal Other, or a spellbook swap, and the plugin writes a line for it.",
+        "These lines give Runelogs the data to place spell casts on the replay tick chart, so you can see exactly when a Vengeance went up or a thrall was summoned during a fight. This release also fixes a startup issue that could stop the plugin from loading. Install 1.6.8 before logging fights where player spells matter.",
+      ],
+      bullets: [
+        "Logs Vengeance, Vengeance Other, thralls, and other player spell casts",
+        "Feeds player spells on the Runelogs replay tick chart",
+        "Fixes a startup issue that could stop the plugin from loading",
+      ],
+    },
+  },
   {
     date: "2026-07-08",
     title: "1.6.7 Release",

@@ -9,29 +9,23 @@ import {
 
 describe("getRecentHomeBlogPosts", () => {
   it("returns at most one post per category, newest first within each", () => {
-    const posts = getRecentHomeBlogPosts(14, new Date(2026, 6, 8));
+    const posts = getRecentHomeBlogPosts(14, new Date(2026, 6, 15));
     expect(posts).toHaveLength(2);
     expect(posts[0].category).toBe("runelogs");
-    expect(posts[0].title).toBe(
-      "Encounter Summaries and Replay Tick Chart Improvements",
-    );
+    expect(posts[0].title).toBe("Player Spells and NPC Attacks");
     expect(posts[1].category).toBe("combat-logger");
-    expect(posts[1].title).toBe("1.6.7 Release");
+    expect(posts[1].title).toBe("1.6.9 Release");
   });
 
   it("excludes posts older than the max age", () => {
-    const posts = getRecentHomeBlogPosts(14, new Date(2026, 6, 23));
+    const posts = getRecentHomeBlogPosts(14, new Date(2026, 6, 30));
     expect(posts).toHaveLength(0);
   });
 
   it("includes posts published exactly on the cutoff day", () => {
-    const posts = getRecentHomeBlogPosts(14, new Date(2026, 6, 22));
+    const posts = getRecentHomeBlogPosts(14, new Date(2026, 6, 29));
     expect(
-      posts.some(
-        (post) =>
-          post.title ===
-          "Encounter Summaries and Replay Tick Chart Improvements",
-      ),
+      posts.some((post) => post.title === "Player Spells and NPC Attacks"),
     ).toBe(true);
   });
 

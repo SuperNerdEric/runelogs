@@ -259,6 +259,22 @@ const BlogPostPage: React.FC = () => {
               {paragraph}
             </Typography>
 
+            {post.body.lists
+              ?.filter((list) => list.afterParagraph === index)
+              .map((list, listIndex) => (
+                <Box
+                  component="ul"
+                  sx={listSx}
+                  key={`list-${index}-${listIndex}`}
+                >
+                  {list.items.map((item) => (
+                    <Box component="li" key={item}>
+                      {item}
+                    </Box>
+                  ))}
+                </Box>
+              ))}
+
             {post.body.images
               ?.filter((image) => image.afterParagraph === index)
               .map((image) => (
