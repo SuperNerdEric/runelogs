@@ -5,9 +5,11 @@ import {
   Alert,
   Box,
   CircularProgress,
+  Collapse,
   IconButton,
   LinearProgress,
   Link,
+  Pagination,
   Switch,
   TextField,
   Typography,
@@ -19,6 +21,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DownloadIcon from "@mui/icons-material/Download";
 import EditIcon from "@mui/icons-material/Edit";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SyncIcon from "@mui/icons-material/Sync";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
@@ -26,9 +29,17 @@ import { useSnackbar } from "notistack";
 import { format } from "date-fns";
 import SectionBox from "./SectionBox";
 import AdminRecentLogs from "./AdminRecentLogs";
+import LogNameDisplay from "./LogNameDisplay";
 import ReparseProgressIndicator from "./ReparseProgressIndicator";
 import { useIsAdmin } from "../hooks/useIsAdmin";
-import { colors, contentColumnSx, fontSizes, fonts, media } from "../theme";
+import {
+  colors,
+  contentColumnSx,
+  fontSizes,
+  fonts,
+  logNameTextSx,
+  media,
+} from "../theme";
 import type { ReparseProgressPayload } from "../utils/reparseProgress";
 import {
   createInitialReparseProgress,
@@ -53,6 +64,9 @@ interface ReparseAllStatus {
 
 interface TestReparseResultRow {
   logId: string;
+  name: string | null;
+  uploadedAt: string | null;
+  uploaderId: string | null;
   status: string;
   encounterChurn: number | null;
   changedLineCount: number | null;
@@ -67,11 +81,18 @@ interface TestReparseJobStatus {
   succeeded?: number;
   failed?: number;
   progress?: string;
+  startedAt?: string;
+  completedAt?: string;
   currentLogId?: string;
   resultS3Key?: string | null;
   error?: string | null;
+  resultsPage?: number;
+  resultsPageSize?: number;
+  resultsTotal?: number;
   results?: TestReparseResultRow[];
 }
+
+const TEST_REPARSE_ALL_PAGE_SIZE = 20;
 
 interface LogStatusResponse {
   id: string;
@@ -265,6 +286,33 @@ const mutedDetailTextSx = {
   mt: 1,
 } as const;
 
+const subsectionTitleSx = {
+  color: colors.text.primary,
+  fontWeight: 600,
+  fontSize: fontSizes.base,
+  mb: 1,
+} as const;
+
+const resultsExpandHeaderSx = {
+  display: "flex",
+  alignItems: "center",
+  gap: 1,
+  width: "100%",
+  p: 0,
+  m: 0,
+  mt: 1.5,
+  mb: 0,
+  border: "none",
+  background: "none",
+  cursor: "pointer",
+  textAlign: "left",
+  fontFamily: fonts.body,
+  color: colors.text.primary,
+  "&:hover": {
+    color: colors.text.link,
+  },
+} as const;
+
 function parseLogIdInput(input: string): string[] {
   return input
     .split(",")
@@ -274,6 +322,10 @@ function parseLogIdInput(input: string): string[] {
 
 function isReparseJobActive(status: ReparseAllStatus["status"]): boolean {
   return status === "started" || status === "in_progress";
+}
+
+function formatJobDateTime(value: string): string {
+  return format(new Date(value), "PPp");
 }
 
 const Admin: React.FC = () => {
@@ -310,6 +362,9 @@ const Admin: React.FC = () => {
   const [testReparseAllStatus, setTestReparseAllStatus] =
     useState<TestReparseJobStatus | null>(null);
   const [testReparseAllStarting, setTestReparseAllStarting] = useState(false);
+  const [testReparseAllResultsPage, setTestReparseAllResultsPage] = useState(1);
+  const [testReparseAllResultsExpanded, setTestReparseAllResultsExpanded] =
+    useState(false);
   const [testReparseJob, setTestReparseJob] =
     useState<TestReparseJobStatus | null>(null);
   const [testReparseStarting, setTestReparseStarting] = useState(false);
@@ -321,22 +376,32 @@ const Admin: React.FC = () => {
     };
   }, [getAccessTokenSilently]);
 
-  const fetchTestReparseAllStatus = useCallback(async () => {
-    try {
-      const headers = await getAuthHeaders();
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/admin/test-reparse-all/status`,
-        { headers },
-      );
-      if (!response.ok) {
-        throw new Error(`Server returned ${response.status}`);
+  const fetchTestReparseAllStatus = useCallback(
+    async (page = testReparseAllResultsPage) => {
+      try {
+        const headers = await getAuthHeaders();
+        const params = new URLSearchParams({
+          page: String(page),
+          limit: String(TEST_REPARSE_ALL_PAGE_SIZE),
+        });
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/admin/test-reparse-all/status?${params}`,
+          { headers },
+        );
+        if (!response.ok) {
+          throw new Error(`Server returned ${response.status}`);
+        }
+        const data = (await response.json()) as TestReparseJobStatus;
+        setTestReparseAllStatus(data);
+        if (data.resultsPage != null) {
+          setTestReparseAllResultsPage(data.resultsPage);
+        }
+      } catch (err) {
+        console.error("Failed to fetch test-reparse-all status:", err);
       }
-      const data = (await response.json()) as TestReparseJobStatus;
-      setTestReparseAllStatus(data);
-    } catch (err) {
-      console.error("Failed to fetch test-reparse-all status:", err);
-    }
-  }, [getAuthHeaders]);
+    },
+    [getAuthHeaders, testReparseAllResultsPage],
+  );
 
   const startTestReparseAll = async () => {
     if (
@@ -359,9 +424,14 @@ const Admin: React.FC = () => {
       }
       const data = (await response.json()) as { jobId: string };
       enqueueSnackbar("Test reparse-all job started", { variant: "success" });
+      setTestReparseAllResultsPage(1);
       if (data.jobId) {
+        const params = new URLSearchParams({
+          page: "1",
+          limit: String(TEST_REPARSE_ALL_PAGE_SIZE),
+        });
         const statusResponse = await fetch(
-          `${import.meta.env.VITE_API_URL}/admin/test-reparse-all/${data.jobId}`,
+          `${import.meta.env.VITE_API_URL}/admin/test-reparse-all/${data.jobId}?${params}`,
           { headers },
         );
         if (statusResponse.ok) {
@@ -370,7 +440,7 @@ const Admin: React.FC = () => {
           );
         }
       } else {
-        await fetchTestReparseAllStatus();
+        await fetchTestReparseAllStatus(1);
       }
     } catch (err) {
       console.error("Failed to start test-reparse-all:", err);
@@ -532,6 +602,7 @@ const Admin: React.FC = () => {
     setLogError(null);
     setLoadedLog(null);
     setIsEditingName(false);
+    setTestReparseJob(null);
 
     try {
       const response = await fetch(
@@ -904,11 +975,16 @@ const Admin: React.FC = () => {
     }
 
     const intervalId = window.setInterval(() => {
-      void fetchTestReparseAllStatus();
+      void fetchTestReparseAllStatus(testReparseAllResultsPage);
     }, 5000);
 
     return () => window.clearInterval(intervalId);
-  }, [fetchTestReparseAllStatus, isAdmin, testReparseAllStatus?.status]);
+  }, [
+    fetchTestReparseAllStatus,
+    isAdmin,
+    testReparseAllResultsPage,
+    testReparseAllStatus?.status,
+  ]);
 
   if (authLoading || adminLoading) {
     return (
@@ -943,6 +1019,26 @@ const Admin: React.FC = () => {
     reparseStatus && reparseStatus.total > 0
       ? (reparseStatus.processed / reparseStatus.total) * 100
       : 0;
+  const testReparseAllPercent =
+    testReparseAllStatus &&
+    (testReparseAllStatus.total ?? 0) > 0 &&
+    testReparseAllStatus.processed != null
+      ? (testReparseAllStatus.processed / testReparseAllStatus.total!) * 100
+      : 0;
+  const testReparseAllResultsTotal = testReparseAllStatus?.resultsTotal ?? 0;
+  const testReparseAllPageCount = Math.max(
+    1,
+    Math.ceil(testReparseAllResultsTotal / TEST_REPARSE_ALL_PAGE_SIZE),
+  );
+  const manageReparsePercent = reparseProgress?.payload.progress ?? 0;
+  const manageTestReparsePercent =
+    testReparseJob &&
+    (testReparseJob.total ?? 0) > 0 &&
+    testReparseJob.processed != null
+      ? (testReparseJob.processed / testReparseJob.total!) * 100
+      : testReparseJob?.status === "completed"
+        ? 100
+        : 0;
 
   return (
     <Box
@@ -993,204 +1089,280 @@ const Admin: React.FC = () => {
 
       <SectionBox sx={adminSectionBoxSx}>
         <Typography sx={sectionTitleSx}>
-          Reparse All Logs
-          {totalLogCount != null && ` (${totalLogCount.toLocaleString()})`}
+          Bulk Reparse
+          {totalLogCount != null && ` (${totalLogCount.toLocaleString()} logs)`}
         </Typography>
         <Typography sx={sectionDescriptionSx}>
-          Reprocess every stored log from its original raw upload. Progress
-          updates automatically while a job is running.
+          Reparse every stored log, or run a dry-run test reparse that ranks
+          logs by encounter churn and changed line count without saving.
         </Typography>
 
-        <Box
-          component="button"
-          type="button"
-          onClick={() => void startReparseAll()}
-          disabled={
-            reparseStarting ||
-            (reparseStatus != null && isReparseJobActive(reparseStatus.status))
-          }
-          sx={warningButtonSx}
-        >
-          {reparseStarting ? (
-            <CircularProgress size={24} sx={{ color: "inherit" }} />
-          ) : (
-            <>
-              <WarningAmberIcon sx={{ fontSize: 20 }} />
-              Start Reparse All
-            </>
-          )}
-        </Box>
-
-        {reparseStatus && (
-          <Box sx={{ mt: 2 }}>
-            <Typography sx={{ ...detailTextSx, mb: 1 }}>
-              Status:{" "}
-              <Box component="span" sx={{ fontWeight: 600 }}>
-                {reparseStatus.status}
-              </Box>
-              {" · "}
-              {reparseStatus.progress}
-              {reparseStatus.currentLogId && (
-                <>
-                  {" · "}
-                  Current:{" "}
-                  <Link
-                    component={RouterLink}
-                    to={`/log/${reparseStatus.currentLogId}`}
-                    sx={linkSx}
-                  >
-                    {reparseStatus.currentLogId}
-                  </Link>
-                </>
-              )}
-            </Typography>
-            {reparseStatus.total > 0 && (
-              <LinearProgress
-                variant="determinate"
-                value={reparsePercent}
-                sx={progressBarSx}
-              />
+        <Box sx={{ mb: 3 }}>
+          <Typography sx={subsectionTitleSx}>Reparse All</Typography>
+          <Box
+            component="button"
+            type="button"
+            onClick={() => void startReparseAll()}
+            disabled={
+              reparseStarting ||
+              (reparseStatus != null &&
+                isReparseJobActive(reparseStatus.status))
+            }
+            sx={warningButtonSx}
+          >
+            {reparseStarting ? (
+              <CircularProgress size={24} sx={{ color: "inherit" }} />
+            ) : (
+              <>
+                <WarningAmberIcon sx={{ fontSize: 20 }} />
+                Start Reparse All
+              </>
             )}
-            <Typography sx={mutedDetailTextSx}>
-              Succeeded: {reparseStatus.succeeded} · Failed:{" "}
-              {reparseStatus.failed}
-              {reparseStatus.startedAt &&
-                ` · Started: ${new Date(reparseStatus.startedAt).toLocaleString()}`}
-              {reparseStatus.completedAt &&
-                ` · Completed: ${new Date(reparseStatus.completedAt).toLocaleString()}`}
-            </Typography>
           </Box>
-        )}
-      </SectionBox>
 
-      <SectionBox sx={adminSectionBoxSx}>
-        <Typography sx={sectionTitleSx}>Test Reparse (dry run)</Typography>
-        <Typography sx={sectionDescriptionSx}>
-          Parse without saving. Test-all ranks logs by encounter churn then
-          changed line count. Single-log test produces a before/after zip.
-        </Typography>
-
-        <Box
-          component="button"
-          type="button"
-          onClick={() => void startTestReparseAll()}
-          disabled={
-            testReparseAllStarting ||
-            (testReparseAllStatus != null &&
-              isReparseJobActive(testReparseAllStatus.status))
-          }
-          sx={primaryButtonSx}
-        >
-          {testReparseAllStarting ? (
-            <CircularProgress size={24} sx={{ color: "inherit" }} />
-          ) : (
-            "Start Test Reparse All"
+          {reparseStatus && (
+            <Box sx={{ mt: 2 }}>
+              <Typography sx={{ ...detailTextSx, mb: 1 }}>
+                Status:{" "}
+                <Box component="span" sx={{ fontWeight: 600 }}>
+                  {reparseStatus.status}
+                </Box>
+                {" · "}
+                {reparseStatus.progress}
+                {reparseStatus.currentLogId && (
+                  <>
+                    {" · "}
+                    Current:{" "}
+                    <Link
+                      component={RouterLink}
+                      to={`/log/${reparseStatus.currentLogId}`}
+                      sx={linkSx}
+                    >
+                      {reparseStatus.currentLogId}
+                    </Link>
+                  </>
+                )}
+              </Typography>
+              {reparseStatus.total > 0 && (
+                <LinearProgress
+                  variant="determinate"
+                  value={reparsePercent}
+                  sx={progressBarSx}
+                />
+              )}
+              <Typography sx={mutedDetailTextSx}>
+                Succeeded: {reparseStatus.succeeded} · Failed:{" "}
+                {reparseStatus.failed}
+                {reparseStatus.startedAt &&
+                  ` · Started: ${formatJobDateTime(reparseStatus.startedAt)}`}
+                {reparseStatus.completedAt &&
+                  ` · Completed: ${formatJobDateTime(reparseStatus.completedAt)}`}
+              </Typography>
+            </Box>
           )}
         </Box>
 
-        {testReparseAllStatus && testReparseAllStatus.status !== "idle" && (
-          <Box sx={{ mt: 2 }}>
-            <Typography sx={{ ...detailTextSx, mb: 1 }}>
-              Status:{" "}
-              <Box component="span" sx={{ fontWeight: 600 }}>
-                {testReparseAllStatus.status}
-              </Box>
-              {testReparseAllStatus.progress &&
-                ` · ${testReparseAllStatus.progress}`}
-              {testReparseAllStatus.currentLogId && (
-                <>
-                  {" · "}
-                  Current:{" "}
-                  <Link
-                    component={RouterLink}
-                    to={`/log/${testReparseAllStatus.currentLogId}`}
-                    sx={linkSx}
-                  >
-                    {testReparseAllStatus.currentLogId}
-                  </Link>
-                </>
-              )}
+        <Box>
+          <Typography sx={subsectionTitleSx}>Test Reparse All</Typography>
+          <Box
+            component="button"
+            type="button"
+            onClick={() => void startTestReparseAll()}
+            disabled={
+              testReparseAllStarting ||
+              (testReparseAllStatus != null &&
+                isReparseJobActive(testReparseAllStatus.status))
+            }
+            sx={primaryButtonSx}
+          >
+            {testReparseAllStarting ? (
+              <CircularProgress size={24} sx={{ color: "inherit" }} />
+            ) : (
+              "Start Test Reparse All"
+            )}
+          </Box>
+
+          {testReparseAllStatus == null ||
+          testReparseAllStatus.status === "idle" ? (
+            <Typography sx={{ ...mutedDetailTextSx, mt: 2 }}>
+              Last run: Never run
             </Typography>
-            {testReparseAllStatus.results &&
-              testReparseAllStatus.results.length > 0 && (
-                <Box
-                  sx={{
-                    mt: 1,
-                    maxHeight: 320,
-                    overflow: "auto",
-                    border: `1px solid ${colors.border.default}`,
-                    borderRadius: 1,
-                  }}
-                >
+          ) : (
+            <Box sx={{ mt: 2 }}>
+              <Typography sx={{ ...detailTextSx, mb: 1 }}>
+                Status:{" "}
+                <Box component="span" sx={{ fontWeight: 600 }}>
+                  {testReparseAllStatus.status}
+                </Box>
+                {testReparseAllStatus.progress &&
+                  ` · ${testReparseAllStatus.progress}`}
+                {testReparseAllStatus.currentLogId && (
+                  <>
+                    {" · "}
+                    Current:{" "}
+                    <Link
+                      component={RouterLink}
+                      to={`/log/${testReparseAllStatus.currentLogId}`}
+                      sx={linkSx}
+                    >
+                      {testReparseAllStatus.currentLogId}
+                    </Link>
+                  </>
+                )}
+              </Typography>
+              {(testReparseAllStatus.total ?? 0) > 0 && (
+                <LinearProgress
+                  variant="determinate"
+                  value={testReparseAllPercent}
+                  sx={progressBarSx}
+                />
+              )}
+              <Typography sx={mutedDetailTextSx}>
+                Succeeded: {testReparseAllStatus.succeeded ?? 0} · Failed:{" "}
+                {testReparseAllStatus.failed ?? 0}
+                {testReparseAllStatus.startedAt &&
+                  ` · Started: ${formatJobDateTime(testReparseAllStatus.startedAt)}`}
+                {testReparseAllStatus.completedAt &&
+                  ` · Completed: ${formatJobDateTime(testReparseAllStatus.completedAt)}`}
+                {!testReparseAllStatus.startedAt &&
+                  !testReparseAllStatus.completedAt &&
+                  " · Last run: Never run"}
+              </Typography>
+
+              {testReparseAllResultsTotal > 0 && (
+                <>
                   <Box
-                    sx={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 90px 90px",
-                      gap: 1,
-                      px: 1.5,
-                      py: 1,
-                      fontWeight: 600,
-                      fontSize: fontSizes.sm,
-                      borderBottom: `1px solid ${colors.border.default}`,
-                    }}
+                    component="button"
+                    type="button"
+                    onClick={() =>
+                      setTestReparseAllResultsExpanded((open) => !open)
+                    }
+                    sx={resultsExpandHeaderSx}
+                    aria-expanded={testReparseAllResultsExpanded}
                   >
-                    <Box>Log ID</Box>
-                    <Box>Churn</Box>
-                    <Box>Lines</Box>
-                  </Box>
-                  {testReparseAllStatus.results.map((row) => (
-                    <Box
-                      key={row.logId}
+                    <ExpandMoreIcon
                       sx={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr 90px 90px",
-                        gap: 1,
-                        px: 1.5,
-                        py: 0.75,
-                        fontSize: fontSizes.sm,
-                        borderBottom: `1px solid ${colors.border.default}`,
+                        fontSize: 22,
+                        transform: testReparseAllResultsExpanded
+                          ? "rotate(0deg)"
+                          : "rotate(-90deg)",
+                        transition: "transform 0.2s ease",
+                      }}
+                    />
+                    <Typography
+                      sx={{ fontWeight: 600, fontSize: fontSizes.sm }}
+                    >
+                      Results ({testReparseAllResultsTotal.toLocaleString()})
+                    </Typography>
+                  </Box>
+                  <Collapse in={testReparseAllResultsExpanded}>
+                    <Box
+                      sx={{
+                        mt: 1,
+                        border: `1px solid ${colors.border.default}`,
+                        borderRadius: 1,
+                        overflow: "auto",
                       }}
                     >
-                      <Link
-                        component={RouterLink}
-                        to={`/log/${row.logId}`}
-                        sx={linkSx}
+                      <Box
+                        sx={{
+                          display: "grid",
+                          gridTemplateColumns:
+                            "minmax(140px, 2fr) minmax(100px, 1fr) minmax(140px, 1.2fr) 70px 70px",
+                          gap: 1,
+                          px: 1.5,
+                          py: 1,
+                          fontWeight: 600,
+                          fontSize: fontSizes.sm,
+                          borderBottom: `1px solid ${colors.border.default}`,
+                        }}
                       >
-                        {row.logId}
-                      </Link>
-                      <Box>{row.encounterChurn ?? "—"}</Box>
-                      <Box>{row.changedLineCount ?? "—"}</Box>
+                        <Box>Name</Box>
+                        <Box>Uploader</Box>
+                        <Box>Uploaded</Box>
+                        <Box>Churn</Box>
+                        <Box>Lines</Box>
+                      </Box>
+                      {(testReparseAllStatus.results ?? []).map((row) => (
+                        <Box
+                          key={row.logId}
+                          sx={{
+                            display: "grid",
+                            gridTemplateColumns:
+                              "minmax(140px, 2fr) minmax(100px, 1fr) minmax(140px, 1.2fr) 70px 70px",
+                            gap: 1,
+                            px: 1.5,
+                            py: 0.75,
+                            fontSize: fontSizes.sm,
+                            borderBottom: `1px solid ${colors.border.default}`,
+                            alignItems: "center",
+                          }}
+                        >
+                          <Link
+                            component={RouterLink}
+                            to={`/log/${row.logId}`}
+                            sx={{ ...linkSx, ...logNameTextSx }}
+                          >
+                            <LogNameDisplay
+                              name={row.name}
+                              isLive={false}
+                              fallback={row.logId}
+                              sx={{ color: "inherit" }}
+                            />
+                          </Link>
+                          {row.uploaderId ? (
+                            <Link
+                              component={RouterLink}
+                              to={`/logs/${encodeURIComponent(usernameToPathSegment(row.uploaderId))}`}
+                              sx={linkSx}
+                            >
+                              {row.uploaderId}
+                            </Link>
+                          ) : (
+                            <Box>—</Box>
+                          )}
+                          <Box>
+                            {row.uploadedAt
+                              ? format(new Date(row.uploadedAt), "PPp")
+                              : "—"}
+                          </Box>
+                          <Box>{row.encounterChurn ?? "—"}</Box>
+                          <Box>{row.changedLineCount ?? "—"}</Box>
+                        </Box>
+                      ))}
                     </Box>
-                  ))}
-                </Box>
+                    {testReparseAllPageCount > 1 && (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          pt: 2,
+                        }}
+                      >
+                        <Pagination
+                          count={testReparseAllPageCount}
+                          page={testReparseAllResultsPage}
+                          onChange={(_event, page) => {
+                            setTestReparseAllResultsPage(page);
+                            void fetchTestReparseAllStatus(page);
+                          }}
+                          sx={{
+                            "& .MuiPaginationItem-root": { color: "white" },
+                            "& .MuiPaginationItem-root.Mui-selected": {
+                              backgroundColor: "white",
+                              color: "black",
+                              borderRadius: "4px",
+                            },
+                          }}
+                        />
+                      </Box>
+                    )}
+                  </Collapse>
+                </>
               )}
-          </Box>
-        )}
-
-        {testReparseJob && (
-          <Box sx={{ mt: 2 }}>
-            <Typography sx={detailTextSx}>
-              Single test job: {testReparseJob.status}
-              {testReparseJob.results?.[0] &&
-                ` · churn ${testReparseJob.results[0].encounterChurn ?? "—"} · lines ${testReparseJob.results[0].changedLineCount ?? "—"}`}
-            </Typography>
-            {testReparseJob.status === "completed" &&
-              testReparseJob.jobId &&
-              testReparseJob.resultS3Key && (
-                <Box
-                  component="button"
-                  type="button"
-                  onClick={() =>
-                    void downloadTestReparseZip(testReparseJob.jobId!)
-                  }
-                  sx={{ ...secondaryButtonSx, mt: 1 }}
-                >
-                  <DownloadIcon sx={{ fontSize: 18 }} />
-                  Download before/after zip
-                </Box>
-              )}
-          </Box>
-        )}
+            </Box>
+          )}
+        </Box>
       </SectionBox>
 
       <SectionBox sx={adminSectionBoxSx}>
@@ -1466,7 +1638,94 @@ const Admin: React.FC = () => {
             </Box>
 
             {reparseProgress?.source === "manage" && (
-              <ReparseProgressIndicator progress={reparseProgress.payload} />
+              <Box sx={{ mt: 2 }}>
+                <Typography sx={{ ...detailTextSx, mb: 1 }}>
+                  Reparse:{" "}
+                  <Box component="span" sx={{ fontWeight: 600 }}>
+                    {reparseProgress.payload.phaseLabel ??
+                      reparseProgress.payload.phase ??
+                      "in progress"}
+                  </Box>
+                  {reparseProgress.payload.logTotal != null && (
+                    <>
+                      {" · "}
+                      {reparseProgress.payload.logIndex ?? 0}/
+                      {reparseProgress.payload.logTotal}
+                    </>
+                  )}
+                  {reparseProgress.payload.logId && (
+                    <>
+                      {" · "}
+                      Current:{" "}
+                      <Link
+                        component={RouterLink}
+                        to={`/log/${reparseProgress.payload.logId}`}
+                        sx={linkSx}
+                      >
+                        {reparseProgress.payload.logId}
+                      </Link>
+                    </>
+                  )}
+                </Typography>
+                <LinearProgress
+                  variant="determinate"
+                  value={manageReparsePercent}
+                  sx={progressBarSx}
+                />
+              </Box>
+            )}
+
+            {(testReparseStarting || testReparseJob) && (
+              <Box sx={{ mt: 2 }}>
+                <Typography sx={{ ...detailTextSx, mb: 1 }}>
+                  Test reparse:{" "}
+                  <Box component="span" sx={{ fontWeight: 600 }}>
+                    {testReparseJob?.status ?? "started"}
+                  </Box>
+                  {testReparseJob?.progress && ` · ${testReparseJob.progress}`}
+                  {testReparseJob?.results?.[0] &&
+                    ` · churn ${testReparseJob.results[0].encounterChurn ?? "—"} · lines ${testReparseJob.results[0].changedLineCount ?? "—"}`}
+                </Typography>
+                {(testReparseStarting || testReparseJob) && (
+                  <LinearProgress
+                    variant={
+                      (testReparseJob?.total ?? 0) > 0 ||
+                      testReparseJob?.status === "completed"
+                        ? "determinate"
+                        : "indeterminate"
+                    }
+                    value={manageTestReparsePercent}
+                    sx={progressBarSx}
+                  />
+                )}
+                <Typography sx={mutedDetailTextSx}>
+                  {testReparseJob?.startedAt
+                    ? `Started: ${formatJobDateTime(testReparseJob.startedAt)}`
+                    : null}
+                  {testReparseJob?.completedAt
+                    ? `${testReparseJob.startedAt ? " · " : ""}Completed: ${formatJobDateTime(testReparseJob.completedAt)}`
+                    : null}
+                  {!testReparseJob?.startedAt &&
+                    !testReparseJob?.completedAt &&
+                    testReparseStarting &&
+                    "Running…"}
+                </Typography>
+                {testReparseJob?.status === "completed" &&
+                  testReparseJob.jobId &&
+                  testReparseJob.resultS3Key && (
+                    <Box
+                      component="button"
+                      type="button"
+                      onClick={() =>
+                        void downloadTestReparseZip(testReparseJob.jobId!)
+                      }
+                      sx={{ ...secondaryButtonSx, mt: 1.5 }}
+                    >
+                      <DownloadIcon sx={{ fontSize: 18 }} />
+                      Download before/after zip
+                    </Box>
+                  )}
+              </Box>
             )}
           </Box>
         )}
