@@ -74,6 +74,7 @@ interface TestReparseResultRow {
   logId: string;
   name: string | null;
   uploadedAt: string | null;
+  lastParsedAt: string | null;
   uploaderId: string | null;
   status: string;
   encounterChurn: number | null;
@@ -107,6 +108,7 @@ interface LogStatusResponse {
   name: string | null;
   uploaderId: string;
   uploadedAt: string;
+  lastParsedAt: string;
   eligible: boolean;
   saveStatus: "saving" | "complete" | "failed";
   processingProgress: number;
@@ -1075,7 +1077,13 @@ const Admin: React.FC = () => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{ from: "/admin" }}
+      />
+    );
   }
 
   if (!isAdmin) {
@@ -1385,6 +1393,9 @@ const Admin: React.FC = () => {
                       <TableCell sx={resultsShrinkColumnSx}>
                         <strong>Uploaded</strong>
                       </TableCell>
+                      <TableCell sx={resultsShrinkColumnSx}>
+                        <strong>Parsed</strong>
+                      </TableCell>
                       <TableCell
                         align="right"
                         sx={{
@@ -1481,6 +1492,16 @@ const Admin: React.FC = () => {
                         >
                           {row.uploadedAt
                             ? format(new Date(row.uploadedAt), "MMM d, yyyy")
+                            : "—"}
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            ...resultsShrinkColumnSx,
+                            ...resultsTableCellPaddingSx,
+                          }}
+                        >
+                          {row.lastParsedAt
+                            ? format(new Date(row.lastParsedAt), "MMM d, yyyy")
                             : "—"}
                         </TableCell>
                         <TableCell
@@ -1697,6 +1718,13 @@ const Admin: React.FC = () => {
                 Uploaded:
               </Box>{" "}
               {format(new Date(loadedLog.uploadedAt), "PPpp")}
+            </Typography>
+
+            <Typography sx={detailTextSx}>
+              <Box component="span" sx={{ color: colors.text.muted }}>
+                Last parsed:
+              </Box>{" "}
+              {format(new Date(loadedLog.lastParsedAt), "PPpp")}
             </Typography>
 
             <Typography sx={detailTextSx}>
