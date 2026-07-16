@@ -3,12 +3,13 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import "./App.css";
 import { SnackbarProvider } from "notistack";
-import { Auth0Provider } from "@auth0/auth0-react";
+import { AppState, Auth0Provider } from "@auth0/auth0-react";
 import {
   BrowserRouter,
   Navigate,
   Route,
   Routes,
+  useNavigate,
   useParams,
 } from "react-router-dom";
 import TopBar from "./components/TopBar";
@@ -56,6 +57,40 @@ initGA();
 function FightGroupUrlRedirect() {
   const { id } = useParams<{ id: string }>();
   return <Navigate to={getRunSummaryHref(id!)} replace />;
+}
+
+function Auth0ProviderWithNavigate({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const navigate = useNavigate();
+
+  const onRedirectCallback = (appState?: AppState) => {
+    const returnTo = appState?.returnTo;
+    const target =
+      returnTo && returnTo.startsWith("/") && !returnTo.startsWith("//")
+        ? returnTo
+        : window.location.pathname;
+    navigate(target, { replace: true });
+  };
+
+  return (
+    <Auth0Provider
+      domain={domain}
+      clientId={clientId}
+      authorizationParams={{
+        redirect_uri: window.location.origin,
+        audience: "https://api.runelogs.com",
+        scope: "openid profile email offline_access create:logs",
+      }}
+      cacheLocation="localstorage"
+      useRefreshTokens={true}
+      onRedirectCallback={onRedirectCallback}
+    >
+      {children}
+    </Auth0Provider>
+  );
 }
 
 function AppRoutes() {
@@ -110,27 +145,17 @@ function AppRoutes() {
 root.render(
   <React.StrictMode>
     <SnackbarProvider anchorOrigin={{ vertical: "top", horizontal: "center" }}>
-      <Auth0Provider
-        domain={domain}
-        clientId={clientId}
-        authorizationParams={{
-          redirect_uri: window.location.origin,
-          audience: "https://api.runelogs.com",
-          scope: "openid profile email offline_access create:logs",
-        }}
-        cacheLocation="localstorage"
-        useRefreshTokens={true}
-      >
-        <ThemeProvider theme={theme}>
-          <ThemeVariables />
-          <BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <ThemeVariables />
+        <BrowserRouter>
+          <Auth0ProviderWithNavigate>
             <SessionGuard />
             <UserProfileProvider>
               <AppRoutes />
             </UserProfileProvider>
-          </BrowserRouter>
-        </ThemeProvider>
-      </Auth0Provider>
+          </Auth0ProviderWithNavigate>
+        </BrowserRouter>
+      </ThemeProvider>
     </SnackbarProvider>
   </React.StrictMode>,
 );
