@@ -37,6 +37,8 @@ export enum LogTypes {
   RAID_COMPLETE = "Raids Completion",
   DURATION = "Duration",
   FIGHT_START = "Fight Start",
+  TOB_SCALE = "ToB Scale",
+  TOB_BOSS_HP = "ToB Boss HP",
 }
 
 export interface BaseLog {
@@ -109,6 +111,10 @@ export interface DamageLog extends BaseLog {
   target: Actor;
   hitsplatName: string;
   damageAmount: number;
+  /** Target's health bar ratio as RuneLite exposes it (log version >= 1.7.0). */
+  targetHealthRatio?: number;
+  /** Target's health bar scale as RuneLite exposes it (log version >= 1.7.0). */
+  targetHealthScale?: number;
 }
 
 export interface HealLog extends BaseLog {
@@ -117,6 +123,10 @@ export interface HealLog extends BaseLog {
   target: Actor;
   hitsplatName: string;
   healAmount: number;
+  /** Target's health bar ratio as RuneLite exposes it (log version >= 1.7.0). */
+  targetHealthRatio?: number;
+  /** Target's health bar scale as RuneLite exposes it (log version >= 1.7.0). */
+  targetHealthScale?: number;
 }
 
 export interface AttackAnimationLog extends BaseLog {
@@ -281,6 +291,21 @@ export interface FightStartLog extends BaseLog {
   source: Actor;
 }
 
+/** ToB raid scale (party size 1-5), logged once per raid. */
+export interface TobScaleLog extends BaseLog {
+  type: LogTypes.TOB_SCALE;
+  scale: number;
+}
+
+/**
+ * ToB active boss health, logged when the wave-progress varbit changes.
+ * `value` is 0-1000 (permille of the boss's health remaining).
+ */
+export interface TobBossHpLog extends BaseLog {
+  type: LogTypes.TOB_BOSS_HP;
+  value: number;
+}
+
 export type LogLine =
   | LogVersionLog
   | LoggedInPlayerLog
@@ -313,7 +338,9 @@ export type LogLine =
   | ToAPathCompleteLog
   | RaidCompleteLog
   | DurationLog
-  | FightStartLog;
+  | FightStartLog
+  | TobScaleLog
+  | TobBossHpLog;
 
 export function filterByType<T extends LogLine["type"]>(
   logs: LogLine[],

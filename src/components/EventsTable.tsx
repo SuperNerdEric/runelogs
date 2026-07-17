@@ -126,6 +126,20 @@ const getItemImageUrl = (itemId: number): string => {
   return `https://chisel.weirdgloop.org/static/img/osrs-sprite/${itemId}.png`;
 };
 
+/**
+ * Formats the target's logged health for display "as is": the RuneLite health bar
+ * (`ratio/scale`).
+ */
+const formatTargetHealth = (log: {
+  targetHealthRatio?: number;
+  targetHealthScale?: number;
+}): string | null => {
+  if (log.targetHealthRatio == null || log.targetHealthScale == null) {
+    return null;
+  }
+  return `${log.targetHealthRatio}/${log.targetHealthScale}`;
+};
+
 const getFilterTextColor = (
   filter: ActorFilter,
   loggedInPlayer: string,
@@ -974,6 +988,12 @@ const EventsTable: React.FC<EventsTableProps> = ({
                                 {(log as DamageLog).damageAmount}
                               </span>
                             )}
+                            {formatTargetHealth(log as DamageLog) != null && (
+                              <span className="target-health">
+                                {" "}
+                                ({formatTargetHealth(log as DamageLog)})
+                              </span>
+                            )}
                           </TableCell>
                         </>
                       ) : (
@@ -1073,6 +1093,12 @@ const EventsTable: React.FC<EventsTableProps> = ({
                                 <span className="damage-amount">
                                   {log.damageAmount}
                                 </span>
+                                {formatTargetHealth(log) != null && (
+                                  <span className="target-health">
+                                    {" "}
+                                    ({formatTargetHealth(log)})
+                                  </span>
+                                )}
                               </>
                             ) : (
                               ""
@@ -1085,6 +1111,12 @@ const EventsTable: React.FC<EventsTableProps> = ({
                                 <span className="heal-amount">
                                   {log.healAmount}
                                 </span>
+                                {formatTargetHealth(log) != null && (
+                                  <span className="target-health">
+                                    {" "}
+                                    ({formatTargetHealth(log)})
+                                  </span>
+                                )}
                               </>
                             ) : (
                               ""
