@@ -2,12 +2,14 @@ import { Fight } from "../../models/Fight";
 import {
   BaseLevelsLog,
   BoostedLevelsLog,
+  DamageLog,
   GameObjectDespawned,
   GameObjectSpawned,
   GraphicsObjectDespawned,
   GraphicsObjectSpawned,
   GroundObjectDespawned,
   GroundObjectSpawned,
+  HealLog,
   LogTypes,
   NpcChangedLog,
   NPCDespawned,
@@ -15,7 +17,10 @@ import {
   PlayerEquipmentLog,
   PositionLog,
   PrayerLog,
+  TobBossHpLog,
+  TobScaleLog,
 } from "../../models/LogLine";
+import { Actor } from "../../models/Actor";
 import { Levels } from "../../models/Levels";
 import { getTargetTickFromTime } from "../../lib/replayTiming";
 
@@ -25,7 +30,17 @@ export interface GamePosition {
   plane: number;
 }
 
-export interface PlayerState {
+/**
+ * The target's health bar as RuneLite exposes it at the last hitsplat, plus the tick it was last
+ * hit. `lastHitTick` drives the fade-after-hit behaviour of on-map health bars for non-bosses.
+ */
+export interface EntityHealth {
+  healthRatio?: number;
+  healthScale?: number;
+  lastHitTick?: number;
+}
+
+export interface PlayerState extends EntityHealth {
   baseLevels?: Levels;
   boostedLevels?: Levels;
   position?: GamePosition;
@@ -34,8 +49,17 @@ export interface PlayerState {
   equipment?: string[];
 }
 
-export interface NPCState {
+export interface NPCState extends EntityHealth {
   position?: GamePosition;
+}
+
+/** A single hitsplat applied to an actor on a given tick, for the replay damage overlay. */
+export interface CombatHitsplat {
+  /** Player name, or `name|id|index` for an NPC — matches the position map keys. */
+  targetKey: string;
+  isPlayer: boolean;
+  hitsplatName: string;
+  amount: number;
 }
 
 export interface GraphicsObjectState {
@@ -67,6 +91,18 @@ export interface GameState {
   graphicsObjects: { [key: string]: GraphicsObjectState };
   gameObjects: { [key: string]: GameObjectState };
   groundObjects: { [key: string]: GameObjectState };
+  /** Hitsplats applied on this exact tick (not held forward like positions). */
+  hitsplats: CombatHitsplat[];
+  /** ToB raid party size (1-5), held from the last `TOB_SCALE` log. */
+  tobScale?: number;
+  /** ToB active-boss wave-progress varbit (0-1000), held from the last `TOB_BOSS_HP` log. */
+  tobBossHpValue?: number;
+  /**
+   * Whether this fight's logs carry health-bar data at all (log version >= 1.7.0 exposes
+   * `targetHealthRatio`/`targetHealthScale`, or ToB varbit logs). Older logs still show
+   * hitsplats but must not render health bars.
+   */
+  hasHealthData: boolean;
 }
 
 function clonePlayerMap(players: GameState["players"]): GameState["players"] {
@@ -98,7 +134,60 @@ function snapshotGameState(currentState: GameState, tick: number): GameState {
     graphicsObjects: snapshotGraphicsObjects(currentState.graphicsObjects),
     gameObjects: cloneObjectMap(currentState.gameObjects),
     groundObjects: cloneObjectMap(currentState.groundObjects),
+    hitsplats: [...currentState.hitsplats],
+    tobScale: currentState.tobScale,
+    tobBossHpValue: currentState.tobBossHpValue,
+    hasHealthData: currentState.hasHealthData,
   };
+}
+
+function resolveTargetKey(target: Actor): { key: string; isPlayer: boolean } {
+  const isPlayer = !target.id;
+  const key = isPlayer
+    ? target.name
+    : `${target.name}|${target.id}|${target.index}`;
+  return { key, isPlayer };
+}
+
+/** Records a hitsplat against its target: updates the target's health bar and appends the splat. */
+function applyHitsplat(
+  currentState: GameState,
+  target: Actor,
+  hitsplatName: string,
+  amount: number,
+  healthRatio: number | undefined,
+  healthScale: number | undefined,
+  tick: number,
+): void {
+  const { key, isPlayer } = resolveTargetKey(target);
+
+  // Only attach health-bar data to entities we already track (those that have appeared via
+  // position/state logs). Damage/heal logs must not create new players or NPCs, otherwise
+  // combat-only participants (e.g. nearby non-party players) would leak into the replay
+  // selector and tick chart, and position-less entities can't render a bar anyway.
+  const entity: EntityHealth | undefined = isPlayer
+    ? currentState.players[key]
+    : currentState.npcs[key];
+
+  if (entity) {
+    if (
+      typeof healthRatio === "number" &&
+      healthRatio >= 0 &&
+      typeof healthScale === "number" &&
+      healthScale > 0
+    ) {
+      entity.healthRatio = healthRatio;
+      entity.healthScale = healthScale;
+    }
+    entity.lastHitTick = tick;
+  }
+
+  currentState.hitsplats.push({
+    targetKey: key,
+    isPlayer,
+    hitsplatName,
+    amount,
+  });
 }
 
 export function createGameStates(fight: Fight): GameState[] {
@@ -116,6 +205,32 @@ export function createGameStates(fight: Fight): GameState[] {
     }
   }
 
+  // A log carries health-bar data only from version >= 1.7.0 (damage/heal logs expose
+  // targetHealthRatio/Scale) or when ToB wave-progress varbit logs are present. Older logs
+  // still show hitsplats but must not render any health bars.
+  const hasHealthData = fight.data.some((log) => {
+    if (log.type === LogTypes.DAMAGE || log.type === LogTypes.HEAL) {
+      return (log as DamageLog | HealLog).targetHealthRatio !== undefined;
+    }
+    return log.type === LogTypes.TOB_BOSS_HP;
+  });
+
+  // The raid scale (party size) is only logged once per raid, so per-room fights usually miss it.
+  // Fall back to the number of party members present so ToB boss hitpoints can still be resolved;
+  // the authoritative TOB_SCALE log, when present, overrides this below.
+  const partyPlayers = new Set<string>(playersWithActivity);
+  if (partyPlayers.size === 0) {
+    for (const log of fight.data) {
+      if ("source" in log && !log.source?.id) {
+        partyPlayers.add(log.source!.name);
+      }
+    }
+  }
+  const fallbackTobScale =
+    partyPlayers.size > 0
+      ? Math.max(1, Math.min(5, partyPlayers.size))
+      : undefined;
+
   const gameStates: GameState[] = [];
   const currentState: GameState = {
     tick: 0,
@@ -124,6 +239,9 @@ export function createGameStates(fight: Fight): GameState[] {
     graphicsObjects: {},
     gameObjects: {},
     groundObjects: {},
+    hitsplats: [],
+    hasHealthData,
+    tobScale: fallbackTobScale,
   };
 
   let currentTick: number | undefined = undefined;
@@ -143,6 +261,9 @@ export function createGameStates(fight: Fight): GameState[] {
           delete currentState.graphicsObjects[key];
         }
       }
+
+      // Hitsplats are instantaneous — reset them when a new tick begins.
+      currentState.hitsplats = [];
 
       currentTick = tick;
     }
@@ -234,6 +355,44 @@ export function createGameStates(fight: Fight): GameState[] {
           currentState.players[actorName] = playerState;
         }
         playerState.equipment = equipmentLog.playerEquipment;
+        break;
+      }
+
+      case LogTypes.DAMAGE: {
+        const damageLog = log as DamageLog;
+        applyHitsplat(
+          currentState,
+          damageLog.target,
+          damageLog.hitsplatName,
+          damageLog.damageAmount,
+          damageLog.targetHealthRatio,
+          damageLog.targetHealthScale,
+          tick,
+        );
+        break;
+      }
+
+      case LogTypes.HEAL: {
+        const healLog = log as HealLog;
+        applyHitsplat(
+          currentState,
+          healLog.target,
+          healLog.hitsplatName,
+          healLog.healAmount,
+          healLog.targetHealthRatio,
+          healLog.targetHealthScale,
+          tick,
+        );
+        break;
+      }
+
+      case LogTypes.TOB_SCALE: {
+        currentState.tobScale = (log as TobScaleLog).scale;
+        break;
+      }
+
+      case LogTypes.TOB_BOSS_HP: {
+        currentState.tobBossHpValue = (log as TobBossHpLog).value;
         break;
       }
 

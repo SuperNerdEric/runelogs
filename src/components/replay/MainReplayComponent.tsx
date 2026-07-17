@@ -15,6 +15,7 @@ import {
   getGameStateAtTick,
   getTargetTick,
 } from "./GameState";
+import { buildReplayCombat } from "./replayCombat";
 import PlayerEquipment from "./PlayerEquipment";
 import * as semver from "semver";
 import Prayers from "./Prayers";
@@ -198,6 +199,11 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({ fight }) => {
     );
   }, [currentGameState]);
 
+  const combat = useMemo(
+    () => buildReplayCombat(currentGameState, currentTargetTick),
+    [currentGameState, currentTargetTick],
+  );
+
   const handleTickChartTimeChange = useCallback((newTime: number) => {
     setCurrentTime(newTime);
     setIsPlaying(false);
@@ -296,6 +302,7 @@ const MainReplayComponent: React.FC<MainReplayComponentProps> = ({ fight }) => {
               initialTick={initialTick}
               fightEpochCycle={fightEpochCycle}
               highlightObjects={highlightObjects}
+              combat={combat}
             />
           </div>
           {fight.logVersion && semver.gte(fight.logVersion, "1.3.0") && (

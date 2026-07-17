@@ -4,11 +4,13 @@ import "leaflet/dist/leaflet.css";
 import MapMarkers from "./MapMarkers";
 import MouseHover from "./MouseHover";
 import MapCenterSetter from "./MapCenterSetter";
+import CombatOverlay from "./CombatOverlay";
 import {
   GameObjectState,
   GamePosition,
   GraphicsObjectState,
 } from "./GameState";
+import { ReplayCombat } from "./replayCombat";
 
 interface MapComponentProps {
   playerPositions: { [playerName: string]: GamePosition };
@@ -23,6 +25,7 @@ interface MapComponentProps {
   initialTick: number;
   fightEpochCycle?: number;
   highlightObjects?: boolean;
+  combat: ReplayCombat;
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({
@@ -38,6 +41,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
   initialTick,
   fightEpochCycle,
   highlightObjects,
+  combat,
 }) => {
   return (
     <MapContainer
@@ -61,6 +65,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
       <Pane name="objects" style={{ zIndex: 500 }} />
       <Pane name="objectHighlights" style={{ zIndex: 550 }} />
       <Pane name="npcs" style={{ zIndex: 600 }} />
+      <Pane name="healthbars" style={{ zIndex: 650 }} />
+      <Pane name="hitsplats" style={{ zIndex: 700 }} />
       <MapMarkers
         playerPositions={playerPositions}
         npcPositions={npcPositions}
@@ -73,6 +79,11 @@ const MapComponent: React.FC<MapComponentProps> = ({
         initialTick={initialTick}
         fightEpochCycle={fightEpochCycle}
         highlightObjects={highlightObjects}
+      />
+      <CombatOverlay
+        playerPositions={playerPositions}
+        npcPositions={npcPositions}
+        combat={combat}
       />
       <MouseHover plane={plane} />
     </MapContainer>
