@@ -15,11 +15,16 @@ import {
   BloatDownWindow,
 } from "../../utils/bloatDownEvents";
 import {
+  getMaidenPhaseMarkers,
+  MaidenPhaseMarker,
+} from "../../utils/maidenPhaseEvents";
+import {
   BLOAT_STOMP_IMAGE_URL,
+  NYLOCAS_MATOMENOS_IMAGE_URL,
   resolveNpcAttackImageUrl,
 } from "../../utils/npcAttackAnimationNames";
+import { Popper } from "@mui/material";
 import { colors } from "../../theme";
-import AppTooltip from "../AppTooltip";
 import {
   CHART_SERIES_ACCENT_COLOR,
   ChartTooltip,
@@ -38,38 +43,99 @@ interface DPSChartProps {
 type DpsChartPoint = {
   timestamp: number;
   dps: number;
-  bloatMarkerLabel?: string;
+  markerLabel?: string;
 };
 
 const BLOAT_NPC_ID = 8359;
 const BLOAT_DOWN_ICON_URL = resolveNpcAttackImageUrl(8082, BLOAT_NPC_ID);
-const BLOAT_MARKER_ICON_SIZE = 28;
-/** Extra gap between the icon bottom and the top of the reference line. */
-const BLOAT_MARKER_LINE_GAP = 10;
+const PHASE_MARKER_ICON_SIZE = 28;
+const PHASE_MARKER_SUBLABEL_HEIGHT = 15;
+const PHASE_MARKER_BOX_WIDTH = 60;
+/** Extra gap between the marker bottom and the top of the reference line. */
+const PHASE_MARKER_LINE_GAP = 8;
 
-interface BloatMarkerLabelProps {
+interface DpsPointTooltipProps {
+  /** Chart timestamp (fight-time ms) to render as the tooltip time. */
+  timestamp: number;
+  /** Optional context line (e.g. a phase-marker label). */
+  markerLabel?: string;
+  dpsEntries: Array<{ value: number; color?: string }>;
+}
+
+/** Shared DPS-chart tooltip body: time, optional label, and DPS value(s). */
+const DpsPointTooltip: React.FC<DpsPointTooltipProps> = ({
+  timestamp,
+  markerLabel,
+  dpsEntries,
+}) => {
+  const labelDate = new Date(timestamp);
+  if (isNaN(labelDate.getTime())) {
+    return null;
+  }
+
+  const isoTimeString = labelDate.toISOString().substr(11, 12);
+
+  return (
+    <ChartTooltip>
+      <ChartTooltipTime>{isoTimeString}</ChartTooltipTime>
+      <ChartTooltipDivider />
+      {markerLabel && (
+        <div className="chart-tooltip__missed-label">{markerLabel}</div>
+      )}
+      {dpsEntries.map((entry, index) => (
+        <div
+          key={`tooltip-entry-${index}`}
+          className="chart-tooltip__stat-value"
+          style={{
+            color:
+              resolveChartTooltipStatColor(entry.color) ??
+              CHART_SERIES_ACCENT_COLOR,
+            textAlign: "center",
+          }}
+        >
+          {entry.value.toFixed(2)} DPS
+        </div>
+      ))}
+    </ChartTooltip>
+  );
+};
+
+interface PhaseMarkerLabelProps {
   viewBox?: { x: number; y: number; height: number };
   iconUrl: string;
   title: string;
+  /** Fight-time ms of the event, always shown in the tooltip. */
+  fightTimeMs: number;
+  /** DPS at this point, shown in the tooltip like the chart hover tooltip. */
+  dps: number;
+  /** Optional caption rendered directly beneath the icon (e.g. "70%"). */
+  subLabel?: string;
 }
 
-const BloatMarkerLabel: React.FC<BloatMarkerLabelProps> = ({
+/** Icon (+ optional caption) with tooltip drawn above a phase-divider line. */
+const PhaseMarkerLabel: React.FC<PhaseMarkerLabelProps> = ({
   viewBox,
   iconUrl,
   title,
+  fightTimeMs,
+  dps,
+  subLabel,
 }) => {
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+
   if (!viewBox || viewBox.x == null) {
     return null;
   }
 
-  const hitSize = BLOAT_MARKER_ICON_SIZE + 12;
+  const contentHeight =
+    PHASE_MARKER_ICON_SIZE + (subLabel ? PHASE_MARKER_SUBLABEL_HEIGHT : 0);
 
   return (
     <foreignObject
-      x={viewBox.x - hitSize / 2}
-      y={(viewBox.y ?? 0) - hitSize - BLOAT_MARKER_LINE_GAP}
-      width={hitSize}
-      height={hitSize}
+      x={viewBox.x - PHASE_MARKER_BOX_WIDTH / 2}
+      y={(viewBox.y ?? 0) - contentHeight - PHASE_MARKER_LINE_GAP}
+      width={PHASE_MARKER_BOX_WIDTH}
+      height={contentHeight}
       style={{ overflow: "visible", pointerEvents: "all" }}
     >
       <div
@@ -77,22 +143,40 @@ const BloatMarkerLabel: React.FC<BloatMarkerLabelProps> = ({
           xmlns: "http://www.w3.org/1999/xhtml",
         } as React.HTMLAttributes<HTMLDivElement>)}
       >
-        <AppTooltip
-          title={title}
-          placement="top"
-          arrow
-          slotProps={{ popper: { sx: { zIndex: 1500 } } }}
+        <span
+          className="dps-chart-phase-marker"
+          onMouseEnter={(event) => setAnchorEl(event.currentTarget)}
+          onMouseLeave={() => setAnchorEl(null)}
         >
-          <span className="dps-chart-bloat-icon-wrap">
-            <img
-              src={iconUrl}
-              alt=""
-              width={BLOAT_MARKER_ICON_SIZE}
-              height={BLOAT_MARKER_ICON_SIZE}
-              className="boosts-chart-attack-icon"
-            />
-          </span>
-        </AppTooltip>
+          <img
+            src={iconUrl}
+            alt=""
+            className="boosts-chart-attack-icon"
+            style={{
+              maxWidth: PHASE_MARKER_ICON_SIZE,
+              maxHeight: PHASE_MARKER_ICON_SIZE,
+              width: "auto",
+              height: "auto",
+              objectFit: "contain",
+            }}
+          />
+          {subLabel && (
+            <span className="dps-chart-phase-marker__caption">{subLabel}</span>
+          )}
+        </span>
+        <Popper
+          open={Boolean(anchorEl)}
+          anchorEl={anchorEl}
+          placement="top"
+          modifiers={[{ name: "offset", options: { offset: [0, 8] } }]}
+          sx={{ zIndex: 1500, pointerEvents: "none" }}
+        >
+          <DpsPointTooltip
+            timestamp={fightTimeMs}
+            markerLabel={title}
+            dpsEntries={[{ value: dps }]}
+          />
+        </Popper>
       </div>
     </foreignObject>
   );
@@ -112,41 +196,16 @@ const CustomTooltip: React.FC<{
     return null;
   }
 
-  const labelDate = new Date(label ?? NaN);
-  if (isNaN(labelDate.getTime())) {
-    return null;
-  }
-
-  const isoTimeString = labelDate.toISOString().substr(11, 12);
-  const markerLabel = payload[0]?.payload?.bloatMarkerLabel;
+  const dpsEntries = payload
+    .filter((entry) => typeof entry.value === "number")
+    .map((entry) => ({ value: entry.value as number, color: entry.color }));
 
   return (
-    <ChartTooltip>
-      <ChartTooltipTime>{isoTimeString}</ChartTooltipTime>
-      <ChartTooltipDivider />
-      {markerLabel && (
-        <div className="chart-tooltip__missed-label">{markerLabel}</div>
-      )}
-      {payload.map((entry, index) => {
-        if (typeof entry.value !== "number") {
-          return null;
-        }
-        return (
-          <div
-            key={`tooltip-entry-${index}`}
-            className="chart-tooltip__stat-value"
-            style={{
-              color:
-                resolveChartTooltipStatColor(entry.color) ??
-                CHART_SERIES_ACCENT_COLOR,
-              textAlign: "center",
-            }}
-          >
-            {entry.value.toFixed(2)} DPS
-          </div>
-        );
-      })}
-    </ChartTooltip>
+    <DpsPointTooltip
+      timestamp={typeof label === "number" ? label : Number(label)}
+      markerLabel={payload[0]?.payload?.markerLabel}
+      dpsEntries={dpsEntries}
+    />
   );
 };
 
@@ -336,14 +395,15 @@ function snapFightTimeToTick(
   return Math.max(startTime, Math.min(endTime, snapped));
 }
 
-function attachBloatMarkerLabels(
+function attachMarkerLabels(
   points: { timestamp: number; dps: number }[],
   windows: BloatDownWindow[],
+  maidenMarkers: MaidenPhaseMarker[],
   startTime: number,
   endTime: number,
   tickMs: number,
 ): DpsChartPoint[] {
-  if (windows.length === 0) {
+  if (windows.length === 0 && maidenMarkers.length === 0) {
     return points;
   }
 
@@ -373,13 +433,24 @@ function attachBloatMarkerLabels(
     }
   }
 
+  for (const marker of maidenMarkers) {
+    const markerTs = snapFightTimeToTick(
+      marker.fightTimeMs,
+      startTime,
+      endTime,
+      tickMs,
+    );
+    labelsByTimestamp.set(markerTs, `${marker.label} Nylocas Matomenos Spawn`);
+  }
+
   return points.map((point) => {
-    const bloatMarkerLabel = labelsByTimestamp.get(point.timestamp);
-    return bloatMarkerLabel ? { ...point, bloatMarkerLabel } : point;
+    const markerLabel = labelsByTimestamp.get(point.timestamp);
+    return markerLabel ? { ...point, markerLabel } : point;
   });
 }
 
-const BLOAT_DOWN_LINE_COLOR = colors.text.damage;
+/** Shared deep red for all boss phase-divider lines (Bloat downs, Maiden). */
+const PHASE_DIVIDER_LINE_COLOR = colors.text.damageDark;
 
 const DPSChart: React.FC<DPSChartProps> = ({
   fight,
@@ -399,6 +470,13 @@ const DPSChart: React.FC<DPSChartProps> = ({
     () => getBloatDownWindows(markerSource),
     [markerSource],
   );
+  const maidenPhaseMarkers = useMemo(
+    () => getMaidenPhaseMarkers(markerSource),
+    [markerSource],
+  );
+
+  const topMarkerMargin =
+    maidenPhaseMarkers.length > 0 ? 54 : bloatDownWindows.length > 0 ? 44 : 16;
 
   const dpsData = useMemo(() => {
     const coarse = calculateDPSByInterval(
@@ -413,14 +491,41 @@ const DPSChart: React.FC<DPSChartProps> = ({
       endTime,
       TICK_DURATION_MS,
     );
-    return attachBloatMarkerLabels(
+    return attachMarkerLabels(
       densified,
       bloatDownWindows,
+      maidenPhaseMarkers,
       startTime,
       endTime,
       TICK_DURATION_MS,
     );
-  }, [filteredLogs, interval, startTime, endTime, bloatDownWindows]);
+  }, [
+    filteredLogs,
+    interval,
+    startTime,
+    endTime,
+    bloatDownWindows,
+    maidenPhaseMarkers,
+  ]);
+
+  const dpsByTimestamp = useMemo(() => {
+    const map = new Map<number, number>();
+    for (const point of dpsData) {
+      map.set(point.timestamp, point.dps);
+    }
+    return map;
+  }, [dpsData]);
+
+  /** DPS plotted at the tick nearest a marker, matching the chart hover tooltip. */
+  const dpsAtFightTime = (fightTimeMs: number): number => {
+    const ts = snapFightTimeToTick(
+      fightTimeMs,
+      startTime,
+      endTime,
+      TICK_DURATION_MS,
+    );
+    return dpsByTimestamp.get(ts) ?? 0;
+  };
 
   const axisLabelEvery = Math.max(1, Math.ceil(dpsData.length / 5));
 
@@ -429,7 +534,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
       <AreaChart
         data={dpsData}
         margin={{
-          top: bloatDownWindows.length > 0 ? 44 : 16,
+          top: topMarkerMargin,
           left: 40,
           bottom: height <= 150 ? -4 : 0,
         }}
@@ -488,33 +593,57 @@ const DPSChart: React.FC<DPSChartProps> = ({
           <React.Fragment key={`bloat-down-${window.downNumber}`}>
             <ReferenceLine
               x={window.startFightTimeMs}
-              stroke={BLOAT_DOWN_LINE_COLOR}
+              stroke={PHASE_DIVIDER_LINE_COLOR}
               strokeWidth={2}
               strokeDasharray="6 3"
               ifOverflow="visible"
               label={
-                <BloatMarkerLabel
+                <PhaseMarkerLabel
                   iconUrl={BLOAT_DOWN_ICON_URL}
                   title={`Down ${window.downNumber} Start`}
+                  fightTimeMs={window.startFightTimeMs}
+                  dps={dpsAtFightTime(window.startFightTimeMs)}
                 />
               }
             />
             {window.endsWithStomp && (
               <ReferenceLine
                 x={window.endFightTimeMs}
-                stroke={BLOAT_DOWN_LINE_COLOR}
+                stroke={PHASE_DIVIDER_LINE_COLOR}
                 strokeWidth={2}
                 strokeDasharray="6 3"
                 ifOverflow="visible"
                 label={
-                  <BloatMarkerLabel
+                  <PhaseMarkerLabel
                     iconUrl={BLOAT_STOMP_IMAGE_URL}
                     title={`Down ${window.downNumber} End`}
+                    fightTimeMs={window.endFightTimeMs}
+                    dps={dpsAtFightTime(window.endFightTimeMs)}
                   />
                 }
               />
             )}
           </React.Fragment>
+        ))}
+
+        {maidenPhaseMarkers.map((marker) => (
+          <ReferenceLine
+            key={`maiden-phase-${marker.waveNumber}`}
+            x={marker.fightTimeMs}
+            stroke={PHASE_DIVIDER_LINE_COLOR}
+            strokeWidth={2}
+            strokeDasharray="6 3"
+            ifOverflow="visible"
+            label={
+              <PhaseMarkerLabel
+                iconUrl={NYLOCAS_MATOMENOS_IMAGE_URL}
+                title={`${marker.label} Nylocas Matomenos Spawn`}
+                fightTimeMs={marker.fightTimeMs}
+                dps={dpsAtFightTime(marker.fightTimeMs)}
+                subLabel={marker.label}
+              />
+            }
+          />
         ))}
       </AreaChart>
     </ResponsiveContainer>

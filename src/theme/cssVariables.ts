@@ -35,6 +35,7 @@ export const cssVariables: Record<string, string> = {
   "--color-text-unknown": colors.text.unknown,
   "--color-text-dps": colors.text.dps,
   "--color-text-damage": colors.text.damage,
+  "--color-text-damage-dark": colors.text.damageDark,
   "--color-text-heal": colors.text.heal,
   "--color-text-link": colors.text.link,
   "--color-text-instructions-heading": colors.text.instructionsHeading,

@@ -57,6 +57,7 @@ import {
 } from "../../utils/trackedNpcAttackNpcs";
 import {
   BLOAT_STOMP_IMAGE_URL,
+  NYLOCAS_MATOMENOS_IMAGE_URL,
   XARPUS_TURN_IMAGE_URL,
   resolveNpcAttackImageUrl,
   getNpcAttackAnimationName,
@@ -67,6 +68,11 @@ import {
   synthesizeBloatStompAttacks,
 } from "../../utils/bloatDownHighlight";
 import { getBloatStompFightTimeMs } from "../../utils/bloatDownEvents";
+import {
+  getMaidenPhaseMarkers,
+  injectMaidenPhaseSpawnAttacks,
+  MAIDEN_ROW_PREFIX,
+} from "../../utils/maidenPhaseEvents";
 import {
   synthesizeXarpusTurnAttacks,
   type XarpusScreechMarker,
@@ -664,6 +670,27 @@ const TickChart: React.FC<TickChartProps> = ({
           attackImageUrl: XARPUS_EXHUMED_IMAGE_URL,
           animationId: 0,
           fightTimeMs: spawn.fightTimeMs,
+        };
+      },
+    );
+
+    const maidenNpcKeys = npcRows
+      .filter((row) => row.key.startsWith(MAIDEN_ROW_PREFIX))
+      .map((row) => row.key);
+    injectMaidenPhaseSpawnAttacks(
+      npcAttackAnimationsByTick,
+      maidenNpcKeys,
+      getMaidenPhaseMarkers(fight),
+      (marker, npcKey) => {
+        const row = npcRowsByKey.get(npcKey)!;
+        return {
+          npcId: row.npcId,
+          npcName: row.npcName,
+          attackName: `${marker.label} Nylocas Matomenos Spawn`,
+          attackImageUrl: NYLOCAS_MATOMENOS_IMAGE_URL,
+          animationId: 0,
+          targetName: undefined,
+          fightTimeMs: marker.fightTimeMs,
         };
       },
     );

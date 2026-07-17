@@ -35,6 +35,8 @@ export const colors = {
     unknown: "#d8c48a",
     dps: "#d1fa99",
     damage: "rgb(92%, 27%, 38%)",
+    /** Deeper red for phase dividers / boss-phase highlights (charts + replay). */
+    damageDark: "rgb(63%, 13%, 18%)",
     heal: "rgb(0, 255, 4)",
     link: "#61dafb",
     instructionsHeading: "#333",

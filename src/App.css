@@ -823,13 +823,13 @@ a.encounter-title-bar.encounter-title-bar--clickable:hover {
   );
   --replay-bloat-down-bg: color-mix(
     in srgb,
-    var(--color-text-damage) 32%,
+    var(--color-text-damage-dark) 40%,
     transparent
   );
   --replay-bloat-down-bg-highlighted: color-mix(
     in srgb,
-    var(--color-bg-row-hover) 70%,
-    var(--color-text-damage) 30%
+    var(--color-bg-row-hover) 65%,
+    var(--color-text-damage-dark) 35%
   );
   overflow-x: auto;
   max-width: 100%;
@@ -2482,29 +2482,31 @@ a.summary-death-counter__entry {
   filter: brightness(1.12);
 }
 
-.dps-chart-bloat-icon-wrap {
+.dps-chart-phase-marker {
   --osrs-item-icon-size: 28px;
   align-items: center;
-  background: rgba(13, 17, 23, 0.82);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 5px;
   box-sizing: border-box;
   cursor: help;
   display: inline-flex;
-  height: 28px;
-  justify-content: center;
+  flex-direction: column;
+  gap: 1px;
+  justify-content: flex-start;
   line-height: 0;
   margin: 0 auto;
   padding: 0;
-  transition:
-    border-color 0.15s ease,
-    filter 0.15s ease;
-  width: 28px;
+  transition: filter 0.15s ease;
 }
 
-.dps-chart-bloat-icon-wrap:hover {
-  border-color: rgba(255, 255, 255, 0.28);
+.dps-chart-phase-marker:hover {
   filter: brightness(1.12);
+}
+
+.dps-chart-phase-marker__caption {
+  color: var(--color-text-primary, #fff);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
 }
 
 .boosts-chart-attack-icon {
