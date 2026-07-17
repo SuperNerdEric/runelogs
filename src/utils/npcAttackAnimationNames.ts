@@ -42,6 +42,9 @@ export const NYLOCAS_VASILIAS_IMAGE_URL = getNpcImageUrl(8355);
 /** Nylocas Prinkipas moid, used for the HMT miniboss-spawn markers. */
 export const NYLOCAS_PRINKIPAS_IMAGE_URL = getNpcImageUrl(10803);
 
+/** Sotetseg moid, used for the maze-phase highlight markers. */
+export const SOTETSEG_IMAGE_URL = getNpcImageUrl(8388);
+
 /** Synthesized Xarpus Turn icon (from logged SCREECH; not a per-tick special). */
 export const XARPUS_TURN_IMAGE_URL = publicNpcAttackIcon("xarpus_turn.png");
 

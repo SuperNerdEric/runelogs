@@ -29,10 +29,15 @@ import {
   NyloPrinkipasPhaseMarker,
 } from "../../utils/nyloPrinkipasPhaseEvents";
 import {
+  getSotetsegMazeWindows,
+  SotetsegMazeWindow,
+} from "../../utils/sotetsegMazeEvents";
+import {
   BLOAT_STOMP_IMAGE_URL,
   NYLOCAS_MATOMENOS_IMAGE_URL,
   NYLOCAS_PRINKIPAS_IMAGE_URL,
   NYLOCAS_VASILIAS_IMAGE_URL,
+  SOTETSEG_IMAGE_URL,
   resolveNpcAttackImageUrl,
 } from "../../utils/npcAttackAnimationNames";
 import { Popper } from "@mui/material";
@@ -413,6 +418,7 @@ function attachMarkerLabels(
   maidenMarkers: MaidenPhaseMarker[],
   nyloBossMarkers: NyloBossPhaseMarker[],
   nyloPrinkipasMarkers: NyloPrinkipasPhaseMarker[],
+  mazeWindows: SotetsegMazeWindow[],
   startTime: number,
   endTime: number,
   tickMs: number,
@@ -421,7 +427,8 @@ function attachMarkerLabels(
     windows.length === 0 &&
     maidenMarkers.length === 0 &&
     nyloBossMarkers.length === 0 &&
-    nyloPrinkipasMarkers.length === 0
+    nyloPrinkipasMarkers.length === 0 &&
+    mazeWindows.length === 0
   ) {
     return points;
   }
@@ -482,8 +489,31 @@ function attachMarkerLabels(
     labelsByTimestamp.set(markerTs, marker.label);
   }
 
+  for (const maze of mazeWindows) {
+    const startTs = snapFightTimeToTick(
+      maze.startFightTimeMs,
+      startTime,
+      endTime,
+      tickMs,
+    );
+    labelsByTimestamp.set(startTs, `Maze ${maze.mazeNumber} Start`);
+
+    if (!maze.endsWithCombat) {
+      continue;
+    }
+    const endTs = snapFightTimeToTick(
+      maze.endFightTimeMs,
+      startTime,
+      endTime,
+      tickMs,
+    );
+    if (endTs !== startTs) {
+      labelsByTimestamp.set(endTs, `Maze ${maze.mazeNumber} End`);
+    }
+  }
+
   return points.map((point) => {
-    // Exact start/end (or Maiden) labels take precedence at their tick.
+    // Exact start/end (or point-marker) labels take precedence at their tick.
     const exact = labelsByTimestamp.get(point.timestamp);
     if (exact) {
       return { ...point, markerLabel: exact };
@@ -494,14 +524,24 @@ function attachMarkerLabels(
         point.timestamp >= w.startFightTimeMs &&
         point.timestamp <= w.endFightTimeMs,
     );
-    return window
-      ? { ...point, markerLabel: `Down ${window.downNumber}` }
-      : point;
+    if (window) {
+      return { ...point, markerLabel: `Down ${window.downNumber}` };
+    }
+    // Anywhere inside a maze window, report which maze it is.
+    const maze = mazeWindows.find(
+      (w) =>
+        point.timestamp >= w.startFightTimeMs &&
+        point.timestamp <= w.endFightTimeMs,
+    );
+    return maze ? { ...point, markerLabel: `Maze ${maze.mazeNumber}` } : point;
   });
 }
 
 /** Shared deep red for all boss phase-divider lines (Bloat downs, Maiden). */
 const PHASE_DIVIDER_LINE_COLOR = colors.text.damageDark;
+
+/** Neutral grey for the Sotetseg maze-phase highlight. */
+const MAZE_PHASE_COLOR = colors.text.mazePhase;
 
 const DPSChart: React.FC<DPSChartProps> = ({
   fight,
@@ -533,11 +573,16 @@ const DPSChart: React.FC<DPSChartProps> = ({
     () => getNyloPrinkipasPhaseMarkers(markerSource),
     [markerSource],
   );
+  const sotetsegMazeWindows = useMemo(
+    () => getSotetsegMazeWindows(markerSource),
+    [markerSource],
+  );
 
   const topMarkerMargin =
     maidenPhaseMarkers.length > 0 ||
     nyloBossPhaseMarkers.length > 0 ||
-    nyloPrinkipasPhaseMarkers.length > 0
+    nyloPrinkipasPhaseMarkers.length > 0 ||
+    sotetsegMazeWindows.length > 0
       ? 54
       : bloatDownWindows.length > 0
         ? 44
@@ -562,6 +607,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
       maidenPhaseMarkers,
       nyloBossPhaseMarkers,
       nyloPrinkipasPhaseMarkers,
+      sotetsegMazeWindows,
       startTime,
       endTime,
       TICK_DURATION_MS,
@@ -575,6 +621,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
     maidenPhaseMarkers,
     nyloBossPhaseMarkers,
     nyloPrinkipasPhaseMarkers,
+    sotetsegMazeWindows,
   ]);
 
   const dpsByTimestamp = useMemo(() => {
@@ -666,6 +713,18 @@ const DPSChart: React.FC<DPSChartProps> = ({
             stroke="none"
             fill={PHASE_DIVIDER_LINE_COLOR}
             fillOpacity={0.18}
+            ifOverflow="visible"
+          />
+        ))}
+
+        {sotetsegMazeWindows.map((maze) => (
+          <ReferenceArea
+            key={`sote-maze-area-${maze.mazeNumber}`}
+            x1={maze.startFightTimeMs}
+            x2={maze.endFightTimeMs}
+            stroke="none"
+            fill={MAZE_PHASE_COLOR}
+            fillOpacity={0.22}
             ifOverflow="visible"
           />
         ))}
@@ -765,6 +824,36 @@ const DPSChart: React.FC<DPSChartProps> = ({
               />
             }
           />
+        ))}
+
+        {sotetsegMazeWindows.map((maze) => (
+          <React.Fragment key={`sote-maze-${maze.mazeNumber}`}>
+            <ReferenceLine
+              x={maze.startFightTimeMs}
+              stroke={MAZE_PHASE_COLOR}
+              strokeWidth={2}
+              strokeDasharray="6 3"
+              ifOverflow="visible"
+              label={
+                <PhaseMarkerLabel
+                  iconUrl={SOTETSEG_IMAGE_URL}
+                  title={`Maze ${maze.mazeNumber} Start`}
+                  fightTimeMs={maze.startFightTimeMs}
+                  dps={dpsAtFightTime(maze.startFightTimeMs)}
+                  subLabel="Maze"
+                />
+              }
+            />
+            {maze.endsWithCombat && (
+              <ReferenceLine
+                x={maze.endFightTimeMs}
+                stroke={MAZE_PHASE_COLOR}
+                strokeWidth={2}
+                strokeDasharray="6 3"
+                ifOverflow="visible"
+              />
+            )}
+          </React.Fragment>
         ))}
       </AreaChart>
     </ResponsiveContainer>
