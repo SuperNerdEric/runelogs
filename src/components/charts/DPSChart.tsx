@@ -20,8 +20,14 @@ import {
   MaidenPhaseMarker,
 } from "../../utils/maidenPhaseEvents";
 import {
+  getNyloBossPhaseMarkers,
+  NYLO_BOSS_PHASE_TITLE,
+  NyloBossPhaseMarker,
+} from "../../utils/nyloBossPhaseEvents";
+import {
   BLOAT_STOMP_IMAGE_URL,
   NYLOCAS_MATOMENOS_IMAGE_URL,
+  NYLOCAS_VASILIAS_IMAGE_URL,
   resolveNpcAttackImageUrl,
 } from "../../utils/npcAttackAnimationNames";
 import { Popper } from "@mui/material";
@@ -400,11 +406,16 @@ function attachMarkerLabels(
   points: { timestamp: number; dps: number }[],
   windows: BloatDownWindow[],
   maidenMarkers: MaidenPhaseMarker[],
+  nyloBossMarkers: NyloBossPhaseMarker[],
   startTime: number,
   endTime: number,
   tickMs: number,
 ): DpsChartPoint[] {
-  if (windows.length === 0 && maidenMarkers.length === 0) {
+  if (
+    windows.length === 0 &&
+    maidenMarkers.length === 0 &&
+    nyloBossMarkers.length === 0
+  ) {
     return points;
   }
 
@@ -442,6 +453,16 @@ function attachMarkerLabels(
       tickMs,
     );
     labelsByTimestamp.set(markerTs, `${marker.label} Nylocas Matomenos Spawn`);
+  }
+
+  for (const marker of nyloBossMarkers) {
+    const markerTs = snapFightTimeToTick(
+      marker.fightTimeMs,
+      startTime,
+      endTime,
+      tickMs,
+    );
+    labelsByTimestamp.set(markerTs, NYLO_BOSS_PHASE_TITLE);
   }
 
   return points.map((point) => {
@@ -487,9 +508,17 @@ const DPSChart: React.FC<DPSChartProps> = ({
     () => getMaidenPhaseMarkers(markerSource),
     [markerSource],
   );
+  const nyloBossPhaseMarkers = useMemo(
+    () => getNyloBossPhaseMarkers(markerSource),
+    [markerSource],
+  );
 
   const topMarkerMargin =
-    maidenPhaseMarkers.length > 0 ? 54 : bloatDownWindows.length > 0 ? 44 : 16;
+    maidenPhaseMarkers.length > 0 || nyloBossPhaseMarkers.length > 0
+      ? 54
+      : bloatDownWindows.length > 0
+        ? 44
+        : 16;
 
   const dpsData = useMemo(() => {
     const coarse = calculateDPSByInterval(
@@ -508,6 +537,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
       densified,
       bloatDownWindows,
       maidenPhaseMarkers,
+      nyloBossPhaseMarkers,
       startTime,
       endTime,
       TICK_DURATION_MS,
@@ -519,6 +549,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
     endTime,
     bloatDownWindows,
     maidenPhaseMarkers,
+    nyloBossPhaseMarkers,
   ]);
 
   const dpsByTimestamp = useMemo(() => {
@@ -663,6 +694,26 @@ const DPSChart: React.FC<DPSChartProps> = ({
               <PhaseMarkerLabel
                 iconUrl={NYLOCAS_MATOMENOS_IMAGE_URL}
                 title={`${marker.label} Nylocas Matomenos Spawn`}
+                fightTimeMs={marker.fightTimeMs}
+                dps={dpsAtFightTime(marker.fightTimeMs)}
+                subLabel={marker.label}
+              />
+            }
+          />
+        ))}
+
+        {nyloBossPhaseMarkers.map((marker) => (
+          <ReferenceLine
+            key={`nylo-boss-phase-${marker.tick}`}
+            x={marker.fightTimeMs}
+            stroke={PHASE_DIVIDER_LINE_COLOR}
+            strokeWidth={2}
+            strokeDasharray="6 3"
+            ifOverflow="visible"
+            label={
+              <PhaseMarkerLabel
+                iconUrl={NYLOCAS_VASILIAS_IMAGE_URL}
+                title={NYLO_BOSS_PHASE_TITLE}
                 fightTimeMs={marker.fightTimeMs}
                 dps={dpsAtFightTime(marker.fightTimeMs)}
                 subLabel={marker.label}

@@ -58,6 +58,7 @@ import {
 import {
   BLOAT_STOMP_IMAGE_URL,
   NYLOCAS_MATOMENOS_IMAGE_URL,
+  NYLOCAS_VASILIAS_IMAGE_URL,
   XARPUS_TURN_IMAGE_URL,
   resolveNpcAttackImageUrl,
   getNpcAttackAnimationName,
@@ -73,6 +74,12 @@ import {
   injectMaidenPhaseSpawnAttacks,
   MAIDEN_ROW_PREFIX,
 } from "../../utils/maidenPhaseEvents";
+import {
+  getNyloBossPhaseMarkers,
+  injectNyloBossPhaseSpawnAttacks,
+  NYLO_BOSS_PHASE_TITLE,
+  NYLO_BOSS_ROW_PREFIX,
+} from "../../utils/nyloBossPhaseEvents";
 import {
   synthesizeXarpusTurnAttacks,
   type XarpusScreechMarker,
@@ -688,6 +695,27 @@ const TickChart: React.FC<TickChartProps> = ({
           npcName: row.npcName,
           attackName: `${marker.label} Nylocas Matomenos Spawn`,
           attackImageUrl: NYLOCAS_MATOMENOS_IMAGE_URL,
+          animationId: 0,
+          targetName: undefined,
+          fightTimeMs: marker.fightTimeMs,
+        };
+      },
+    );
+
+    const nyloBossNpcKeys = npcRows
+      .filter((row) => row.key.startsWith(NYLO_BOSS_ROW_PREFIX))
+      .map((row) => row.key);
+    injectNyloBossPhaseSpawnAttacks(
+      npcAttackAnimationsByTick,
+      nyloBossNpcKeys,
+      getNyloBossPhaseMarkers(fight),
+      (marker, npcKey) => {
+        const row = npcRowsByKey.get(npcKey)!;
+        return {
+          npcId: row.npcId,
+          npcName: row.npcName,
+          attackName: NYLO_BOSS_PHASE_TITLE,
+          attackImageUrl: NYLOCAS_VASILIAS_IMAGE_URL,
           animationId: 0,
           targetName: undefined,
           fightTimeMs: marker.fightTimeMs,

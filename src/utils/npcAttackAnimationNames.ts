@@ -36,6 +36,9 @@ export const BLOAT_STOMP_IMAGE_URL = publicNpcAttackIcon("bloat_stomp.png");
 /** Nylocas Matomenos moid, used for Maiden phase-spawn markers/tick events. */
 export const NYLOCAS_MATOMENOS_IMAGE_URL = getNpcImageUrl(8366);
 
+/** Nylocas Vasilias moid, used for the Nylo boss-spawn marker/tick event. */
+export const NYLOCAS_VASILIAS_IMAGE_URL = getNpcImageUrl(8355);
+
 /** Synthesized Xarpus Turn icon (from logged SCREECH; not a per-tick special). */
 export const XARPUS_TURN_IMAGE_URL = publicNpcAttackIcon("xarpus_turn.png");
 
