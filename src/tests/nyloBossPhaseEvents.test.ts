@@ -95,7 +95,7 @@ describe("getNyloBossPhaseMarkers", () => {
     ]);
 
     expect(getNyloBossPhaseMarkers(fight)).toEqual([
-      { label: "Boss", fightTimeMs: 90 * TICK_MS, tick: 90 },
+      { label: "Boss Spawn", fightTimeMs: 90 * TICK_MS, tick: 90 },
     ]);
   });
 
@@ -129,7 +129,7 @@ describe("getNyloBossPhaseMarkers", () => {
     ]);
 
     expect(getNyloBossPhaseMarkers(fight)).toEqual([
-      { label: "Boss", fightTimeMs: 88 * TICK_MS, tick: 88 },
+      { label: "Boss Spawn", fightTimeMs: 88 * TICK_MS, tick: 88 },
     ]);
   });
 
@@ -152,7 +152,12 @@ interface TestCell {
 function marker(
   overrides: Partial<NyloBossPhaseMarker> = {},
 ): NyloBossPhaseMarker {
-  return { label: "Boss", fightTimeMs: 90 * TICK_MS, tick: 90, ...overrides };
+  return {
+    label: "Boss Spawn",
+    fightTimeMs: 90 * TICK_MS,
+    tick: 90,
+    ...overrides,
+  };
 }
 
 describe("injectNyloBossPhaseSpawnAttacks", () => {
@@ -165,7 +170,7 @@ describe("injectNyloBossPhaseSpawnAttacks", () => {
       (m) => ({ attackName: m.label, attackImageUrl: "boss.png" }),
     );
 
-    expect(byTick[90]["nylocas-vasilias:5"].attackName).toBe("Boss");
+    expect(byTick[90]["nylocas-vasilias:5"].attackName).toBe("Boss Spawn");
   });
 
   it("does not overwrite a real boss attack already on that tick", () => {

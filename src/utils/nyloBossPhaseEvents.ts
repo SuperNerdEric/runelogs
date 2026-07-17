@@ -24,7 +24,7 @@ export const NYLOCAS_VASILIAS_IDS: ReadonlySet<number> = new Set([
 ]);
 
 /** Divider caption for the boss-spawn marker. */
-export const NYLO_BOSS_PHASE_LABEL = "Boss";
+export const NYLO_BOSS_PHASE_LABEL = "Boss Spawn";
 
 /** Tooltip / tick-event title for the boss-spawn marker. */
 export const NYLO_BOSS_PHASE_TITLE = "Nylocas Vasilias Spawn";
