@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import {
   Area,
   AreaChart,
+  ReferenceArea,
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
@@ -444,8 +445,20 @@ function attachMarkerLabels(
   }
 
   return points.map((point) => {
-    const markerLabel = labelsByTimestamp.get(point.timestamp);
-    return markerLabel ? { ...point, markerLabel } : point;
+    // Exact start/end (or Maiden) labels take precedence at their tick.
+    const exact = labelsByTimestamp.get(point.timestamp);
+    if (exact) {
+      return { ...point, markerLabel: exact };
+    }
+    // Anywhere inside a shaded Down window, report which Down it is.
+    const window = windows.find(
+      (w) =>
+        point.timestamp >= w.startFightTimeMs &&
+        point.timestamp <= w.endFightTimeMs,
+    );
+    return window
+      ? { ...point, markerLabel: `Down ${window.downNumber}` }
+      : point;
   });
 }
 
@@ -588,6 +601,18 @@ const DPSChart: React.FC<DPSChartProps> = ({
           activeDot={{ r: 4, strokeWidth: 0 }}
           isAnimationActive={false}
         />
+
+        {bloatDownWindows.map((window) => (
+          <ReferenceArea
+            key={`bloat-down-area-${window.downNumber}`}
+            x1={window.startFightTimeMs}
+            x2={window.endFightTimeMs}
+            stroke="none"
+            fill={PHASE_DIVIDER_LINE_COLOR}
+            fillOpacity={0.18}
+            ifOverflow="visible"
+          />
+        ))}
 
         {bloatDownWindows.map((window) => (
           <React.Fragment key={`bloat-down-${window.downNumber}`}>
