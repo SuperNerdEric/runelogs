@@ -25,8 +25,13 @@ import {
   NyloBossPhaseMarker,
 } from "../../utils/nyloBossPhaseEvents";
 import {
+  getNyloPrinkipasPhaseMarkers,
+  NyloPrinkipasPhaseMarker,
+} from "../../utils/nyloPrinkipasPhaseEvents";
+import {
   BLOAT_STOMP_IMAGE_URL,
   NYLOCAS_MATOMENOS_IMAGE_URL,
+  NYLOCAS_PRINKIPAS_IMAGE_URL,
   NYLOCAS_VASILIAS_IMAGE_URL,
   resolveNpcAttackImageUrl,
 } from "../../utils/npcAttackAnimationNames";
@@ -407,6 +412,7 @@ function attachMarkerLabels(
   windows: BloatDownWindow[],
   maidenMarkers: MaidenPhaseMarker[],
   nyloBossMarkers: NyloBossPhaseMarker[],
+  nyloPrinkipasMarkers: NyloPrinkipasPhaseMarker[],
   startTime: number,
   endTime: number,
   tickMs: number,
@@ -414,7 +420,8 @@ function attachMarkerLabels(
   if (
     windows.length === 0 &&
     maidenMarkers.length === 0 &&
-    nyloBossMarkers.length === 0
+    nyloBossMarkers.length === 0 &&
+    nyloPrinkipasMarkers.length === 0
   ) {
     return points;
   }
@@ -465,6 +472,16 @@ function attachMarkerLabels(
     labelsByTimestamp.set(markerTs, NYLO_BOSS_PHASE_TITLE);
   }
 
+  for (const marker of nyloPrinkipasMarkers) {
+    const markerTs = snapFightTimeToTick(
+      marker.fightTimeMs,
+      startTime,
+      endTime,
+      tickMs,
+    );
+    labelsByTimestamp.set(markerTs, marker.label);
+  }
+
   return points.map((point) => {
     // Exact start/end (or Maiden) labels take precedence at their tick.
     const exact = labelsByTimestamp.get(point.timestamp);
@@ -512,9 +529,15 @@ const DPSChart: React.FC<DPSChartProps> = ({
     () => getNyloBossPhaseMarkers(markerSource),
     [markerSource],
   );
+  const nyloPrinkipasPhaseMarkers = useMemo(
+    () => getNyloPrinkipasPhaseMarkers(markerSource),
+    [markerSource],
+  );
 
   const topMarkerMargin =
-    maidenPhaseMarkers.length > 0 || nyloBossPhaseMarkers.length > 0
+    maidenPhaseMarkers.length > 0 ||
+    nyloBossPhaseMarkers.length > 0 ||
+    nyloPrinkipasPhaseMarkers.length > 0
       ? 54
       : bloatDownWindows.length > 0
         ? 44
@@ -538,6 +561,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
       bloatDownWindows,
       maidenPhaseMarkers,
       nyloBossPhaseMarkers,
+      nyloPrinkipasPhaseMarkers,
       startTime,
       endTime,
       TICK_DURATION_MS,
@@ -550,6 +574,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
     bloatDownWindows,
     maidenPhaseMarkers,
     nyloBossPhaseMarkers,
+    nyloPrinkipasPhaseMarkers,
   ]);
 
   const dpsByTimestamp = useMemo(() => {
@@ -714,6 +739,26 @@ const DPSChart: React.FC<DPSChartProps> = ({
               <PhaseMarkerLabel
                 iconUrl={NYLOCAS_VASILIAS_IMAGE_URL}
                 title={NYLO_BOSS_PHASE_TITLE}
+                fightTimeMs={marker.fightTimeMs}
+                dps={dpsAtFightTime(marker.fightTimeMs)}
+                subLabel={marker.label}
+              />
+            }
+          />
+        ))}
+
+        {nyloPrinkipasPhaseMarkers.map((marker) => (
+          <ReferenceLine
+            key={`nylo-prinkipas-phase-${marker.waveNumber}`}
+            x={marker.fightTimeMs}
+            stroke={PHASE_DIVIDER_LINE_COLOR}
+            strokeWidth={2}
+            strokeDasharray="6 3"
+            ifOverflow="visible"
+            label={
+              <PhaseMarkerLabel
+                iconUrl={NYLOCAS_PRINKIPAS_IMAGE_URL}
+                title={marker.label}
                 fightTimeMs={marker.fightTimeMs}
                 dps={dpsAtFightTime(marker.fightTimeMs)}
                 subLabel={marker.label}

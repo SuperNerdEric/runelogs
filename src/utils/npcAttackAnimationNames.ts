@@ -39,6 +39,9 @@ export const NYLOCAS_MATOMENOS_IMAGE_URL = getNpcImageUrl(8366);
 /** Nylocas Vasilias moid, used for the Nylo boss-spawn marker/tick event. */
 export const NYLOCAS_VASILIAS_IMAGE_URL = getNpcImageUrl(8355);
 
+/** Nylocas Prinkipas moid, used for the HMT miniboss-spawn markers. */
+export const NYLOCAS_PRINKIPAS_IMAGE_URL = getNpcImageUrl(10803);
+
 /** Synthesized Xarpus Turn icon (from logged SCREECH; not a per-tick special). */
 export const XARPUS_TURN_IMAGE_URL = publicNpcAttackIcon("xarpus_turn.png");
 
