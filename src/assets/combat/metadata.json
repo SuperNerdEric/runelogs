@@ -39,11 +39,7 @@
       "textOffsetY": 1,
       "varbitID": 14196,
       "varpID": -1,
-      "multihitsplats": [
-        70,
-        68,
-        70
-      ]
+      "multihitsplats": [70, 68, 70]
     },
     "3": {
       "background": 1361,
@@ -122,11 +118,7 @@
       "textOffsetY": 2,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        7,
-        7,
-        7
-      ]
+      "multihitsplats": [7, 7, 7]
     },
     "9": {
       "background": 3512,
@@ -140,11 +132,7 @@
       "textOffsetY": 2,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        38,
-        7,
-        38
-      ]
+      "multihitsplats": [38, 7, 38]
     },
     "10": {
       "background": 3519,
@@ -158,11 +146,7 @@
       "textOffsetY": 2,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        39,
-        39,
-        39
-      ]
+      "multihitsplats": [39, 39, 39]
     },
     "11": {
       "background": 3569,
@@ -176,11 +160,7 @@
       "textOffsetY": 2,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        40,
-        39,
-        40
-      ]
+      "multihitsplats": [40, 39, 40]
     },
     "12": {
       "background": 1358,
@@ -194,11 +174,7 @@
       "textOffsetY": 1,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        26,
-        26,
-        26
-      ]
+      "multihitsplats": [26, 26, 26]
     },
     "13": {
       "background": 1630,
@@ -212,11 +188,7 @@
       "textOffsetY": 1,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        27,
-        26,
-        27
-      ]
+      "multihitsplats": [27, 26, 27]
     },
     "14": {
       "background": 3520,
@@ -230,11 +202,7 @@
       "textOffsetY": 2,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        41,
-        41,
-        41
-      ]
+      "multihitsplats": [41, 41, 41]
     },
     "15": {
       "background": 3570,
@@ -248,11 +216,7 @@
       "textOffsetY": 2,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        42,
-        41,
-        42
-      ]
+      "multihitsplats": [42, 41, 42]
     },
     "16": {
       "background": 1359,
@@ -266,11 +230,7 @@
       "textOffsetY": 1,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        28,
-        28,
-        28
-      ]
+      "multihitsplats": [28, 28, 28]
     },
     "17": {
       "background": 1631,
@@ -284,11 +244,7 @@
       "textOffsetY": 1,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        29,
-        28,
-        29
-      ]
+      "multihitsplats": [29, 28, 29]
     },
     "18": {
       "background": 1419,
@@ -302,11 +258,7 @@
       "textOffsetY": 0,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        34,
-        34,
-        34
-      ]
+      "multihitsplats": [34, 34, 34]
     },
     "19": {
       "background": 1339,
@@ -320,11 +272,7 @@
       "textOffsetY": 0,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        35,
-        34,
-        35
-      ]
+      "multihitsplats": [35, 34, 35]
     },
     "20": {
       "background": 1628,
@@ -338,11 +286,7 @@
       "textOffsetY": 0,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        36,
-        36,
-        36
-      ]
+      "multihitsplats": [36, 36, 36]
     },
     "21": {
       "background": 1544,
@@ -356,11 +300,7 @@
       "textOffsetY": 0,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        37,
-        36,
-        37
-      ]
+      "multihitsplats": [37, 36, 37]
     },
     "22": {
       "background": 1362,
@@ -374,11 +314,7 @@
       "textOffsetY": 0,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        30,
-        30,
-        30
-      ]
+      "multihitsplats": [30, 30, 30]
     },
     "23": {
       "background": 1634,
@@ -392,11 +328,7 @@
       "textOffsetY": 0,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        31,
-        30,
-        31
-      ]
+      "multihitsplats": [31, 30, 31]
     },
     "24": {
       "background": 1363,
@@ -410,11 +342,7 @@
       "textOffsetY": 0,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        32,
-        32,
-        32
-      ]
+      "multihitsplats": [32, 32, 32]
     },
     "25": {
       "background": 1105,
@@ -428,11 +356,7 @@
       "textOffsetY": 0,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        33,
-        32,
-        33
-      ]
+      "multihitsplats": [33, 32, 33]
     },
     "26": {
       "background": 1358,
@@ -667,11 +591,7 @@
       "textOffsetY": 1,
       "varbitID": 14196,
       "varpID": -1,
-      "multihitsplats": [
-        48,
-        28,
-        48
-      ]
+      "multihitsplats": [48, 28, 48]
     },
     "44": {
       "background": 4556,
@@ -685,11 +605,7 @@
       "textOffsetY": 0,
       "varbitID": 14196,
       "varpID": -1,
-      "multihitsplats": [
-        51,
-        34,
-        51
-      ]
+      "multihitsplats": [51, 34, 51]
     },
     "45": {
       "background": 4557,
@@ -703,11 +619,7 @@
       "textOffsetY": 0,
       "varbitID": 14196,
       "varpID": -1,
-      "multihitsplats": [
-        52,
-        36,
-        52
-      ]
+      "multihitsplats": [52, 36, 52]
     },
     "46": {
       "background": 3572,
@@ -721,11 +633,7 @@
       "textOffsetY": 0,
       "varbitID": 14196,
       "varpID": -1,
-      "multihitsplats": [
-        49,
-        30,
-        49
-      ]
+      "multihitsplats": [49, 30, 49]
     },
     "47": {
       "background": 3573,
@@ -739,11 +647,7 @@
       "textOffsetY": 0,
       "varbitID": 14196,
       "varpID": -1,
-      "multihitsplats": [
-        50,
-        32,
-        50
-      ]
+      "multihitsplats": [50, 32, 50]
     },
     "48": {
       "background": 3571,
@@ -822,11 +726,7 @@
       "textOffsetY": 2,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        56,
-        56,
-        56
-      ]
+      "multihitsplats": [56, 56, 56]
     },
     "54": {
       "background": 4559,
@@ -840,11 +740,7 @@
       "textOffsetY": 2,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        57,
-        56,
-        57
-      ]
+      "multihitsplats": [57, 56, 57]
     },
     "55": {
       "background": 4560,
@@ -858,11 +754,7 @@
       "textOffsetY": 2,
       "varbitID": 14196,
       "varpID": -1,
-      "multihitsplats": [
-        58,
-        56,
-        58
-      ]
+      "multihitsplats": [58, 56, 58]
     },
     "56": {
       "background": 4558,
@@ -915,11 +807,7 @@
       "textOffsetY": 2,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        62,
-        62,
-        62
-      ]
+      "multihitsplats": [62, 62, 62]
     },
     "60": {
       "background": 4562,
@@ -933,11 +821,7 @@
       "textOffsetY": 2,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        63,
-        62,
-        63
-      ]
+      "multihitsplats": [63, 62, 63]
     },
     "61": {
       "background": 4563,
@@ -951,11 +835,7 @@
       "textOffsetY": 2,
       "varbitID": 14196,
       "varpID": -1,
-      "multihitsplats": [
-        64,
-        62,
-        64
-      ]
+      "multihitsplats": [64, 62, 64]
     },
     "62": {
       "background": 4561,
@@ -1008,11 +888,7 @@
       "textOffsetY": 1,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        68,
-        68,
-        68
-      ]
+      "multihitsplats": [68, 68, 68]
     },
     "66": {
       "background": 2245,
@@ -1026,11 +902,7 @@
       "textOffsetY": 1,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        69,
-        68,
-        69
-      ]
+      "multihitsplats": [69, 68, 69]
     },
     "67": {
       "background": 4564,
@@ -1174,11 +1046,7 @@
       "textOffsetY": 0,
       "varbitID": 14196,
       "varpID": -1,
-      "multihitsplats": [
-        51,
-        34,
-        51
-      ]
+      "multihitsplats": [51, 34, 51]
     },
     "78": {
       "background": 4770,
@@ -1244,11 +1112,7 @@
       "textOffsetY": 1,
       "varbitID": 10236,
       "varpID": -1,
-      "multihitsplats": [
-        28,
-        28,
-        28
-      ]
+      "multihitsplats": [28, 28, 28]
     }
   },
   "healthbars": {
