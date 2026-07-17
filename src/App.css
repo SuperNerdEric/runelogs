@@ -1965,6 +1965,14 @@ a.summary-death-counter__entry {
   font-size: 0.95rem;
 }
 
+.summary-death-counter__entry-amount {
+  color: #6fcf6f;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
 .summary-section__title-bar {
   display: flex;
   align-items: center;

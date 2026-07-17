@@ -207,7 +207,7 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
         });
       });
 
-    if (variant === "damage") {
+    if (onSelectHitsplatTypeFilter) {
       getDistinctHitsplatTypes(fight.data).forEach((type) => {
         filterOptions.push({
           kind: "hitsplatType",
@@ -226,7 +226,12 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
     });
 
     return filterOptions;
-  }, [fight.data, onSelectEventTypeFilter, variant]);
+  }, [
+    fight.data,
+    onSelectEventTypeFilter,
+    onSelectHitsplatTypeFilter,
+    variant,
+  ]);
 
   const goBackToCategories = () => {
     keepOpenRef.current = true;
@@ -270,7 +275,15 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
             "hitsplatType",
             "hitsplat",
           ]
-        : ["eventType", "source", "target", "equipment", "prayer", "hitsplat"];
+        : [
+            "eventType",
+            "source",
+            "target",
+            "equipment",
+            "prayer",
+            "hitsplatType",
+            "hitsplat",
+          ];
     return categories
       .filter((category) =>
         itemOptions.some((option) => option.kind === category),

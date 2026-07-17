@@ -25,7 +25,12 @@ const FailureEventCounter: React.FC<FailureEventCounterProps> = ({
   }
 
   const expandable = count > 0;
-  const label = count === 1 ? series.singularLabel : series.pluralLabel;
+  const hasDisplayValue = series.displayValue != null;
+  const badgeValue = hasDisplayValue
+    ? series.displayValue!.toLocaleString()
+    : count;
+  const label =
+    hasDisplayValue || count !== 1 ? series.pluralLabel : series.singularLabel;
 
   return (
     <Box className="summary-death-counter">
@@ -45,7 +50,7 @@ const FailureEventCounter: React.FC<FailureEventCounterProps> = ({
             className="summary-death-counter__icon"
           />
           <Typography component="span" className="summary-death-counter__count">
-            {count}
+            {badgeValue}
           </Typography>
         </Box>
         <Box className="summary-death-counter__label-wrap">
@@ -80,6 +85,11 @@ const FailureEventCounter: React.FC<FailureEventCounterProps> = ({
                   <Typography className="summary-death-counter__entry-name">
                     {event.subjectLabel}
                   </Typography>
+                  {event.amount != null && (
+                    <Typography className="summary-death-counter__entry-amount">
+                      +{event.amount.toLocaleString()}
+                    </Typography>
+                  )}
                 </Box>
               </>
             );

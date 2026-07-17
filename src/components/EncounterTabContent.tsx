@@ -73,7 +73,7 @@ const EncounterTabContent: React.FC<EncounterTabContentProps> = ({
   equipmentFilter,
   prayerFilter,
   hitsplatFilter,
-  hitsplatTypeFilter: _hitsplatTypeFilter,
+  hitsplatTypeFilter,
   eventTypeFilter,
   eventTimeFilter,
   animationIdFilter,
@@ -175,11 +175,13 @@ const EncounterTabContent: React.FC<EncounterTabContentProps> = ({
           equipmentFilter={equipmentFilter}
           prayerFilter={prayerFilter}
           hitsplatFilter={hitsplatFilter}
+          hitsplatTypeFilter={hitsplatTypeFilter}
           dataSourceFilter={dataSourceFilter}
           dataTargetFilter={dataTargetFilter}
           dataEquipmentFilter={dataEquipmentFilter}
           dataPrayerFilter={dataPrayerFilter}
           dataHitsplatFilter={dataHitsplatFilter}
+          dataHitsplatTypeFilter={dataHitsplatTypeFilter}
           dataEventTypeFilter={dataEventTypeFilter}
           dataEventTimeFilter={dataEventTimeFilter}
           dataAnimationIdFilter={dataAnimationIdFilter}
@@ -188,11 +190,13 @@ const EncounterTabContent: React.FC<EncounterTabContentProps> = ({
           onSelectEquipmentFilter={onSelectEquipmentFilter}
           onSelectPrayerFilter={onSelectPrayerFilter}
           onSelectHitsplatFilter={onSelectHitsplatFilter}
+          onSelectHitsplatTypeFilter={onSelectHitsplatTypeFilter}
           onClearSourceFilter={onClearSourceFilter}
           onClearTargetFilter={onClearTargetFilter}
           onClearEquipmentFilter={onClearEquipmentFilter}
           onClearPrayerFilter={onClearPrayerFilter}
           onClearHitsplatFilter={onClearHitsplatFilter}
+          onClearHitsplatTypeFilter={onClearHitsplatTypeFilter}
           eventTypeFilter={eventTypeFilter}
           eventTimeFilter={eventTimeFilter}
           animationIdFilter={animationIdFilter}

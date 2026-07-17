@@ -44,6 +44,7 @@ interface FilterableTabProps {
   dataEquipmentFilter?: EquipmentFilter | null;
   dataPrayerFilter?: PrayerFilter | null;
   dataHitsplatFilter?: HitsplatFilter | null;
+  dataHitsplatTypeFilter?: HitsplatTypeFilter | null;
   dataEventTypeFilter?: string | null;
   onSelectEventTypeFilter?: (eventType: string) => void;
   onClearEventTypeFilter?: () => void;
@@ -192,22 +193,26 @@ export const EventsTab: React.FC<FilterableTabProps> = ({
   equipmentFilter,
   prayerFilter,
   hitsplatFilter,
+  hitsplatTypeFilter,
   dataSourceFilter,
   dataTargetFilter,
   dataEquipmentFilter,
   dataPrayerFilter,
   dataHitsplatFilter,
+  dataHitsplatTypeFilter,
   dataEventTypeFilter,
   onSelectSourceFilter,
   onSelectTargetFilter,
   onSelectEquipmentFilter,
   onSelectPrayerFilter,
   onSelectHitsplatFilter,
+  onSelectHitsplatTypeFilter,
   onClearSourceFilter,
   onClearTargetFilter,
   onClearEquipmentFilter,
   onClearPrayerFilter,
   onClearHitsplatFilter,
+  onClearHitsplatTypeFilter,
   eventTypeFilter,
   onSelectEventTypeFilter,
   onClearEventTypeFilter,
@@ -228,22 +233,26 @@ export const EventsTab: React.FC<FilterableTabProps> = ({
       equipmentFilter={equipmentFilter}
       prayerFilter={prayerFilter}
       hitsplatFilter={hitsplatFilter}
+      hitsplatTypeFilter={hitsplatTypeFilter}
       dataSourceFilter={dataSourceFilter}
       dataTargetFilter={dataTargetFilter}
       dataEquipmentFilter={dataEquipmentFilter}
       dataPrayerFilter={dataPrayerFilter}
       dataHitsplatFilter={dataHitsplatFilter}
+      dataHitsplatTypeFilter={dataHitsplatTypeFilter}
       dataEventTypeFilter={dataEventTypeFilter}
       onSelectSourceFilter={onSelectSourceFilter}
       onSelectTargetFilter={onSelectTargetFilter}
       onSelectEquipmentFilter={onSelectEquipmentFilter}
       onSelectPrayerFilter={onSelectPrayerFilter}
       onSelectHitsplatFilter={onSelectHitsplatFilter}
+      onSelectHitsplatTypeFilter={onSelectHitsplatTypeFilter}
       onClearSourceFilter={onClearSourceFilter}
       onClearTargetFilter={onClearTargetFilter}
       onClearEquipmentFilter={onClearEquipmentFilter}
       onClearPrayerFilter={onClearPrayerFilter}
       onClearHitsplatFilter={onClearHitsplatFilter}
+      onClearHitsplatTypeFilter={onClearHitsplatTypeFilter}
       eventTypeFilter={eventTypeFilter}
       onSelectEventTypeFilter={onSelectEventTypeFilter}
       onClearEventTypeFilter={onClearEventTypeFilter}
