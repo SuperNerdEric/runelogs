@@ -68,6 +68,7 @@ import {
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { matchesEventTimeFilter } from "../utils/eventTimeFilter";
 import { matchesAnimationIdFilter } from "../utils/animationIdFilter";
+import { buildTobBossHpByLog } from "../utils/tobBossHealth";
 
 interface EventsTableProps {
   fight: Fight;
@@ -249,6 +250,11 @@ const EventsTable: React.FC<EventsTableProps> = ({
 
   const prayerTimelines = useMemo(
     () => buildPrayerTimelines(dataSource),
+    [dataSource],
+  );
+
+  const tobBossHpByLog = useMemo(
+    () => buildTobBossHpByLog(dataSource),
     [dataSource],
   );
 
@@ -1164,6 +1170,18 @@ const EventsTable: React.FC<EventsTableProps> = ({
                               : ""}
                             {log.type === LogTypes.DURATION
                               ? `${log.duration}`
+                              : ""}
+                            {log.type === LogTypes.TOB_SCALE
+                              ? `Scale: ${log.scale}`
+                              : ""}
+                            {log.type === LogTypes.TOB_BOSS_HP
+                              ? (() => {
+                                  const hp = tobBossHpByLog.get(log);
+                                  const percent = (log.value / 10).toFixed(1);
+                                  return hp
+                                    ? `${hp.current} / ${hp.max} (${percent}%)`
+                                    : `${percent}%`;
+                                })()
                               : ""}
                           </TableCell>
                         </>

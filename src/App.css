@@ -1826,7 +1826,7 @@ a.encounter-title-bar.encounter-title-bar--clickable:hover {
 }
 
 .summary-death-counter {
-  align-self: center;
+  align-self: flex-start;
   display: flex;
   flex-direction: column;
   gap: 10px;

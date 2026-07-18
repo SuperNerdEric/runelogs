@@ -10,6 +10,9 @@
  * per-room boss can be reconstructed as `maxHp * value / 1000`.
  */
 
+import { LogLine, LogTypes, TobBossHpLog } from "../models/LogLine";
+import { getActorFromLog } from "./actorUtils";
+
 type BossMode = "entry" | "normal";
 
 interface TobBossHp {
@@ -268,4 +271,104 @@ export function computeTobBossHp(
   const clamped = Math.max(0, Math.min(1000, waveProgressValue));
   const current = Math.min(Math.round((max * clamped) / 1000), max);
   return { current, max };
+}
+
+/**
+ * Resolves the raid scale (party size 1-5) for a set of fight logs, mirroring the replay's
+ * {@link createGameStates} logic: prefer the authoritative `TOB_SCALE` log, otherwise fall back to
+ * the number of party members (player actors carry no NPC id) that acted after the first tick.
+ */
+function resolveTobScale(logs: LogLine[]): number | undefined {
+  for (const log of logs) {
+    if (log.type === LogTypes.TOB_SCALE) {
+      return log.scale;
+    }
+  }
+
+  const firstTick = logs[0]?.tick ?? 0;
+  const playersWithActivity = new Set<string>();
+  for (const log of logs) {
+    if ((log.tick ?? 0) > firstTick && "source" in log) {
+      const source = getActorFromLog(log, "source");
+      if (source && !source.id) {
+        playersWithActivity.add(source.name);
+      }
+    }
+  }
+
+  const partyPlayers = new Set<string>(playersWithActivity);
+  if (partyPlayers.size === 0) {
+    for (const log of logs) {
+      if ("source" in log) {
+        const source = getActorFromLog(log, "source");
+        if (source && !source.id) {
+          partyPlayers.add(source.name);
+        }
+      }
+    }
+  }
+
+  return partyPlayers.size > 0
+    ? Math.max(1, Math.min(5, partyPlayers.size))
+    : undefined;
+}
+
+/**
+ * Builds a lookup from each `TOB_BOSS_HP` log to its reconstructed `{ current, max }` hitpoints,
+ * using the same scale + active-boss reasoning as the replay overlay.
+ *
+ * The wave-progress varbit doesn't name which boss it belongs to, so we track the most recently
+ * referenced ToB boss NPC (as source/target of any log) as the "active" boss. `TOB_BOSS_HP` logs
+ * seen before the boss is first referenced (e.g. the opening full-health reading) are back-filled
+ * with the first boss id that appears.
+ *
+ * @param logs the fight's full (unfiltered) log lines, in order
+ * @returns a map keyed by the `TOB_BOSS_HP` log object
+ */
+export function buildTobBossHpByLog(
+  logs: LogLine[],
+): Map<LogLine, { current: number; max: number }> {
+  const result = new Map<LogLine, { current: number; max: number }>();
+  const scale = resolveTobScale(logs);
+  if (scale == null) {
+    return result;
+  }
+
+  let activeBossId: number | undefined;
+  const pending: TobBossHpLog[] = [];
+
+  const compute = (log: TobBossHpLog, bossId: number) => {
+    const hp = computeTobBossHp(bossId, scale, log.value);
+    if (hp) {
+      result.set(log, hp);
+    }
+  };
+
+  for (const log of logs) {
+    const sourceId = getActorFromLog(log, "source")?.id;
+    if (sourceId != null && isTobBoss(sourceId)) {
+      activeBossId = sourceId;
+    }
+    const targetId = getActorFromLog(log, "target")?.id;
+    if (targetId != null && isTobBoss(targetId)) {
+      activeBossId = targetId;
+    }
+
+    if (activeBossId != null && pending.length > 0) {
+      for (const deferred of pending) {
+        compute(deferred, activeBossId);
+      }
+      pending.length = 0;
+    }
+
+    if (log.type === LogTypes.TOB_BOSS_HP) {
+      if (activeBossId != null) {
+        compute(log, activeBossId);
+      } else {
+        pending.push(log);
+      }
+    }
+  }
+
+  return result;
 }
