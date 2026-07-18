@@ -85,14 +85,14 @@ describe("getXarpusScreechMarkers", () => {
   it("marks the P3 Screech", () => {
     const fight = makeFight([spit(40), spit(50), screech(90)]);
     expect(getXarpusScreechMarkers(fight)).toEqual([
-      { label: "Screech", fightTimeMs: 90 * TICK_MS, tick: 90 },
+      { label: "Phase 3", fightTimeMs: 90 * TICK_MS, tick: 90 },
     ]);
   });
 
   it("detects Screech across Xarpus mode ids and ignores other specials", () => {
     const fight = makeFight([spit(40), screech(88, 10768)]); // hard-mode id
     expect(getXarpusScreechMarkers(fight)).toEqual([
-      { label: "Screech", fightTimeMs: 88 * TICK_MS, tick: 88 },
+      { label: "Phase 3", fightTimeMs: 88 * TICK_MS, tick: 88 },
     ]);
   });
 

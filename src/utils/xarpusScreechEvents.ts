@@ -1,11 +1,14 @@
 import { Fight } from "../models/Fight";
 import { AttackAnimationLog, filterByType, LogTypes } from "../models/LogLine";
 
-/** Divider caption / tooltip name for the Xarpus Screech marker. */
-export const XARPUS_SCREECH_PHASE_LABEL = "Screech";
+/** Tooltip / hover-context name for the Xarpus Screech marker. */
+export const XARPUS_SCREECH_PHASE_TITLE = "Phase 3: Screech";
+
+/** Short divider caption rendered under the icon. */
+export const XARPUS_SCREECH_PHASE_CAPTION = "Phase 3";
 
 export interface XarpusScreechPhaseMarker {
-  /** Divider caption, always "Screech". */
+  /** Short divider caption ("Phase 3"). */
   label: string;
   /** Fight-time ms of the Screech. */
   fightTimeMs: number;
@@ -40,7 +43,7 @@ export function getXarpusScreechMarkers(
     }
     seenTicks.add(attackLog.tick);
     markers.push({
-      label: XARPUS_SCREECH_PHASE_LABEL,
+      label: XARPUS_SCREECH_PHASE_CAPTION,
       fightTimeMs: attackLog.fightTimeMs,
       tick: attackLog.tick,
     });
