@@ -45,6 +45,9 @@ export const NYLOCAS_PRINKIPAS_IMAGE_URL = getNpcImageUrl(10803);
 /** Sotetseg moid, used for the maze-phase highlight markers. */
 export const SOTETSEG_IMAGE_URL = getNpcImageUrl(8388);
 
+/** Xarpus moid, used for the P3 Screech phase marker. */
+export const XARPUS_IMAGE_URL = getNpcImageUrl(8340);
+
 /** Synthesized Xarpus Turn icon (from logged SCREECH; not a per-tick special). */
 export const XARPUS_TURN_IMAGE_URL = publicNpcAttackIcon("xarpus_turn.png");
 

@@ -33,11 +33,16 @@ import {
   SotetsegMazeWindow,
 } from "../../utils/sotetsegMazeEvents";
 import {
+  getXarpusScreechMarkers,
+  XarpusScreechPhaseMarker,
+} from "../../utils/xarpusScreechEvents";
+import {
   BLOAT_STOMP_IMAGE_URL,
   NYLOCAS_MATOMENOS_IMAGE_URL,
   NYLOCAS_PRINKIPAS_IMAGE_URL,
   NYLOCAS_VASILIAS_IMAGE_URL,
   SOTETSEG_IMAGE_URL,
+  XARPUS_IMAGE_URL,
   resolveNpcAttackImageUrl,
 } from "../../utils/npcAttackAnimationNames";
 import { Popper } from "@mui/material";
@@ -419,6 +424,7 @@ function attachMarkerLabels(
   nyloBossMarkers: NyloBossPhaseMarker[],
   nyloPrinkipasMarkers: NyloPrinkipasPhaseMarker[],
   mazeWindows: SotetsegMazeWindow[],
+  xarpusScreechMarkers: XarpusScreechPhaseMarker[],
   startTime: number,
   endTime: number,
   tickMs: number,
@@ -428,7 +434,8 @@ function attachMarkerLabels(
     maidenMarkers.length === 0 &&
     nyloBossMarkers.length === 0 &&
     nyloPrinkipasMarkers.length === 0 &&
-    mazeWindows.length === 0
+    mazeWindows.length === 0 &&
+    xarpusScreechMarkers.length === 0
   ) {
     return points;
   }
@@ -512,6 +519,16 @@ function attachMarkerLabels(
     }
   }
 
+  for (const marker of xarpusScreechMarkers) {
+    const markerTs = snapFightTimeToTick(
+      marker.fightTimeMs,
+      startTime,
+      endTime,
+      tickMs,
+    );
+    labelsByTimestamp.set(markerTs, marker.label);
+  }
+
   return points.map((point) => {
     // Exact start/end (or point-marker) labels take precedence at their tick.
     const exact = labelsByTimestamp.get(point.timestamp);
@@ -577,12 +594,17 @@ const DPSChart: React.FC<DPSChartProps> = ({
     () => getSotetsegMazeWindows(markerSource),
     [markerSource],
   );
+  const xarpusScreechMarkers = useMemo(
+    () => getXarpusScreechMarkers(markerSource),
+    [markerSource],
+  );
 
   const topMarkerMargin =
     maidenPhaseMarkers.length > 0 ||
     nyloBossPhaseMarkers.length > 0 ||
     nyloPrinkipasPhaseMarkers.length > 0 ||
-    sotetsegMazeWindows.length > 0
+    sotetsegMazeWindows.length > 0 ||
+    xarpusScreechMarkers.length > 0
       ? 54
       : bloatDownWindows.length > 0
         ? 44
@@ -608,6 +630,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
       nyloBossPhaseMarkers,
       nyloPrinkipasPhaseMarkers,
       sotetsegMazeWindows,
+      xarpusScreechMarkers,
       startTime,
       endTime,
       TICK_DURATION_MS,
@@ -622,6 +645,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
     nyloBossPhaseMarkers,
     nyloPrinkipasPhaseMarkers,
     sotetsegMazeWindows,
+    xarpusScreechMarkers,
   ]);
 
   const dpsByTimestamp = useMemo(() => {
@@ -854,6 +878,26 @@ const DPSChart: React.FC<DPSChartProps> = ({
               />
             )}
           </React.Fragment>
+        ))}
+
+        {xarpusScreechMarkers.map((marker) => (
+          <ReferenceLine
+            key={`xarpus-screech-${marker.tick}`}
+            x={marker.fightTimeMs}
+            stroke={PHASE_DIVIDER_LINE_COLOR}
+            strokeWidth={2}
+            strokeDasharray="6 3"
+            ifOverflow="visible"
+            label={
+              <PhaseMarkerLabel
+                iconUrl={XARPUS_IMAGE_URL}
+                title={marker.label}
+                fightTimeMs={marker.fightTimeMs}
+                dps={dpsAtFightTime(marker.fightTimeMs)}
+                subLabel={marker.label}
+              />
+            }
+          />
         ))}
       </AreaChart>
     </ResponsiveContainer>

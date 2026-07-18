@@ -1,0 +1,51 @@
+import { Fight } from "../models/Fight";
+import { AttackAnimationLog, filterByType, LogTypes } from "../models/LogLine";
+
+/** Divider caption / tooltip name for the Xarpus Screech marker. */
+export const XARPUS_SCREECH_PHASE_LABEL = "Screech";
+
+export interface XarpusScreechPhaseMarker {
+  /** Divider caption, always "Screech". */
+  label: string;
+  /** Fight-time ms of the Screech. */
+  fightTimeMs: number;
+  /** Absolute log tick of the Screech. */
+  tick: number;
+}
+
+/**
+ * Phase divider for Xarpus damage charts, at the P3 Screech. Xarpus logs a
+ * SCREECH attack special when it enters its final "staring" phase, so it is a
+ * reliable phase signal even for logs recorded before boss-HP tracking existed.
+ * Returns a marker per Screech (normally one) in chronological order.
+ */
+export function getXarpusScreechMarkers(
+  fight: Fight,
+): XarpusScreechPhaseMarker[] {
+  const markers: XarpusScreechPhaseMarker[] = [];
+  const seenTicks = new Set<number>();
+
+  for (const log of filterByType(
+    fight.data,
+    LogTypes.PLAYER_ATTACK_ANIMATION,
+  )) {
+    const attackLog = log as AttackAnimationLog;
+    if (
+      attackLog.attackSpecial !== "SCREECH" ||
+      attackLog.fightTimeMs == null ||
+      attackLog.tick == null ||
+      seenTicks.has(attackLog.tick)
+    ) {
+      continue;
+    }
+    seenTicks.add(attackLog.tick);
+    markers.push({
+      label: XARPUS_SCREECH_PHASE_LABEL,
+      fightTimeMs: attackLog.fightTimeMs,
+      tick: attackLog.tick,
+    });
+  }
+
+  markers.sort((a, b) => a.fightTimeMs - b.fightTimeMs);
+  return markers;
+}
