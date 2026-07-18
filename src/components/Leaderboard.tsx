@@ -133,6 +133,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ entriesPerPage = 25 }) => {
     "fight" | "fightGroup"
   >("fight");
   const [dpsEntries, setDpsEntries] = useState<DpsEntry[] | null>(null);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
@@ -149,37 +150,42 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ entriesPerPage = 25 }) => {
       .catch(() => setDpsConfig([]));
   }, []);
 
+  const pageQuery = `&page=${page}&limit=${entriesPerPage}`;
+
   const fetchHighScoreData = useCallback(async () => {
     const url = `${import.meta.env.VITE_API_URL}/high-score-leaderboard?content=${encodeURIComponent(
       content.value,
-    )}&playerCount=${playerCount}`;
+    )}&playerCount=${playerCount}${pageQuery}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Server returned ${res.status}`);
     const data = await res.json();
     setDurationEntries(data.leaderboard);
+    setTotal(data.total ?? data.leaderboard.length);
     setDurationResultType("fightGroup");
-  }, [content, playerCount]);
+  }, [content, playerCount, pageQuery]);
 
   const fetchDurationData = useCallback(async () => {
     const url = `${import.meta.env.VITE_API_URL}/leaderboard?content=${encodeURIComponent(
       content.value,
-    )}&playerCount=${playerCount}`;
+    )}&playerCount=${playerCount}${pageQuery}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Server returned ${res.status}`);
     const data = await res.json();
     setDurationEntries(data.leaderboard);
+    setTotal(data.total ?? data.leaderboard.length);
     setDurationResultType(data.type === "fightGroup" ? "fightGroup" : "fight");
-  }, [content, playerCount]);
+  }, [content, playerCount, pageQuery]);
 
   const fetchDpsData = useCallback(async () => {
     const url = `${import.meta.env.VITE_API_URL}/dps-leaderboard?content=${encodeURIComponent(
       content.value,
-    )}&fight=${encodeURIComponent(selectedFight)}&playerCount=${playerCount}`;
+    )}&fight=${encodeURIComponent(selectedFight)}&playerCount=${playerCount}${pageQuery}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Server returned ${res.status}`);
     const data = await res.json();
     setDpsEntries(data.leaderboard);
-  }, [content, playerCount, selectedFight]);
+    setTotal(data.total ?? data.leaderboard.length);
+  }, [content, playerCount, selectedFight, pageQuery]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -263,9 +269,10 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ entriesPerPage = 25 }) => {
     );
   };
 
-  const dpsTotal = dpsEntries?.length ?? 0;
+  const dpsTotal = total;
   const durationRows = durationEntries ?? [];
   const dpsRows = dpsEntries ?? [];
+  const pageCount = Math.max(1, Math.ceil(total / entriesPerPage));
 
   const renderTableStatusRow = (colSpan: number, content: React.ReactNode) => (
     <TableRow>
@@ -317,86 +324,84 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ entriesPerPage = 25 }) => {
               )}
             {!loading &&
               !error &&
-              durationRows
-                .slice((page - 1) * entriesPerPage, page * entriesPerPage)
-                .map((row, idx) => {
-                  const actualRank = (page - 1) * entriesPerPage + idx + 1;
-                  const isHighlighted = highlightRank === actualRank;
-                  const rankColor = getPercentileAccentColor(row.percentile);
-                  return (
-                    <TableRow
-                      key={row.id}
-                      ref={isHighlighted ? highlightedRowRef : undefined}
-                      {...encounterTableRowProps(navigate, row.id, {
-                        durationResultType,
-                      })}
-                      sx={{
-                        cursor: "pointer",
-                        ...(isHighlighted ? highlightedRowSx : {}),
-                      }}
-                    >
-                      <TableCell sx={{ color: rankColor, fontWeight: "bold" }}>
-                        <Link
-                          component={RouterLink}
-                          to={getEncounterHref(row.id, { durationResultType })}
-                          onClick={stopRowClick}
+              durationRows.map((row, idx) => {
+                const actualRank = (page - 1) * entriesPerPage + idx + 1;
+                const isHighlighted = highlightRank === actualRank;
+                const rankColor = getPercentileAccentColor(row.percentile);
+                return (
+                  <TableRow
+                    key={row.id}
+                    ref={isHighlighted ? highlightedRowRef : undefined}
+                    {...encounterTableRowProps(navigate, row.id, {
+                      durationResultType,
+                    })}
+                    sx={{
+                      cursor: "pointer",
+                      ...(isHighlighted ? highlightedRowSx : {}),
+                    }}
+                  >
+                    <TableCell sx={{ color: rankColor, fontWeight: "bold" }}>
+                      <Link
+                        component={RouterLink}
+                        to={getEncounterHref(row.id, { durationResultType })}
+                        onClick={stopRowClick}
+                        sx={{
+                          textDecoration: "none",
+                          color: "inherit",
+                          "&:hover": { textDecoration: "underline" },
+                        }}
+                      >
+                        <Box
                           sx={{
-                            textDecoration: "none",
-                            color: "inherit",
-                            "&:hover": { textDecoration: "underline" },
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
                           }}
                         >
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                            }}
+                          {actualRank}
+                          {actualRank === 1 && <CrownIcon />}
+                          {actualRank === 2 && (
+                            <MedalIcon color={colors.medal.silver} />
+                          )}
+                          {actualRank === 3 && (
+                            <MedalIcon color={colors.medal.bronze} />
+                          )}
+                        </Box>
+                      </Link>
+                    </TableCell>
+                    {isHighScoreMode && (
+                      <TableCell sx={{ color: "white" }}>
+                        {row.highScoreLevel ?? "—"}
+                      </TableCell>
+                    )}
+                    <TableCell sx={{ color: "white" }}>
+                      {ticksToTime(row.duration)}
+                    </TableCell>
+                    <TableCell sx={{ color: "white" }}>
+                      {row.players.map((player, i) => (
+                        <React.Fragment key={player}>
+                          <Link
+                            component={RouterLink}
+                            to={`/player/${player}`}
+                            underline="hover"
+                            onClick={stopRowClick}
                           >
-                            {actualRank}
-                            {actualRank === 1 && <CrownIcon />}
-                            {actualRank === 2 && (
-                              <MedalIcon color={colors.medal.silver} />
-                            )}
-                            {actualRank === 3 && (
-                              <MedalIcon color={colors.medal.bronze} />
-                            )}
-                          </Box>
-                        </Link>
-                      </TableCell>
-                      {isHighScoreMode && (
-                        <TableCell sx={{ color: "white" }}>
-                          {row.highScoreLevel ?? "—"}
-                        </TableCell>
-                      )}
-                      <TableCell sx={{ color: "white" }}>
-                        {ticksToTime(row.duration)}
-                      </TableCell>
-                      <TableCell sx={{ color: "white" }}>
-                        {row.players.map((player, i) => (
-                          <React.Fragment key={player}>
-                            <Link
-                              component={RouterLink}
-                              to={`/player/${player}`}
-                              underline="hover"
-                              onClick={stopRowClick}
-                            >
-                              {player}
-                            </Link>
-                            {i < row.players.length - 1 ? ", " : ""}
-                          </React.Fragment>
-                        ))}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                            {player}
+                          </Link>
+                          {i < row.players.length - 1 ? ", " : ""}
+                        </React.Fragment>
+                      ))}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
           </TableBody>
         </Table>
       </TableContainer>
-      {!loading && durationRows.length > 0 && (
+      {!loading && total > 0 && (
         <Box display="flex" justifyContent="center" pt={0} pb={1}>
           <Pagination
-            count={Math.ceil(durationRows.length / entriesPerPage)}
+            count={pageCount}
             page={page}
             onChange={(_, value) => setPage(value)}
             sx={paginationSx}
@@ -443,86 +448,84 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ entriesPerPage = 25 }) => {
               )}
             {!loading &&
               !error &&
-              dpsRows
-                .slice((page - 1) * entriesPerPage, page * entriesPerPage)
-                .map((row) => {
-                  const percentile =
-                    dpsTotal <= 1
-                      ? 100
-                      : Math.round(
-                          ((dpsTotal - row.rank) / (dpsTotal - 1)) * 100,
-                        );
-                  const dpsColor = getDpsPercentileColor(percentile);
-                  const isHighlighted = highlightRank === row.rank;
+              dpsRows.map((row) => {
+                const percentile =
+                  dpsTotal <= 1
+                    ? 100
+                    : Math.round(
+                        ((dpsTotal - row.rank) / (dpsTotal - 1)) * 100,
+                      );
+                const dpsColor = getDpsPercentileColor(percentile);
+                const isHighlighted = highlightRank === row.rank;
 
-                  return (
-                    <TableRow
-                      key={`${row.player}-${row.rank}`}
-                      ref={isHighlighted ? highlightedRowRef : undefined}
-                      {...encounterTableRowProps(navigate, row.encounterId, {
-                        encounterType: row.encounterType,
-                        fightKey: selectedFight,
-                      })}
-                      sx={{
-                        cursor: "pointer",
-                        ...(isHighlighted ? highlightedRowSx : {}),
-                      }}
-                    >
-                      <TableCell sx={{ color: dpsColor, fontWeight: "bold" }}>
-                        <Link
-                          component={RouterLink}
-                          to={getEncounterHref(row.encounterId, {
-                            encounterType: row.encounterType,
-                            fightKey: selectedFight,
-                          })}
-                          onClick={stopRowClick}
+                return (
+                  <TableRow
+                    key={`${row.player}-${row.rank}`}
+                    ref={isHighlighted ? highlightedRowRef : undefined}
+                    {...encounterTableRowProps(navigate, row.encounterId, {
+                      encounterType: row.encounterType,
+                      fightKey: selectedFight,
+                    })}
+                    sx={{
+                      cursor: "pointer",
+                      ...(isHighlighted ? highlightedRowSx : {}),
+                    }}
+                  >
+                    <TableCell sx={{ color: dpsColor, fontWeight: "bold" }}>
+                      <Link
+                        component={RouterLink}
+                        to={getEncounterHref(row.encounterId, {
+                          encounterType: row.encounterType,
+                          fightKey: selectedFight,
+                        })}
+                        onClick={stopRowClick}
+                        sx={{
+                          textDecoration: "none",
+                          color: "inherit",
+                          "&:hover": { textDecoration: "underline" },
+                        }}
+                      >
+                        <Box
                           sx={{
-                            textDecoration: "none",
-                            color: "inherit",
-                            "&:hover": { textDecoration: "underline" },
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
                           }}
                         >
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                            }}
-                          >
-                            {row.rank}
-                            {row.rank === 1 && <CrownIcon />}
-                            {row.rank === 2 && (
-                              <MedalIcon color={colors.medal.silver} />
-                            )}
-                            {row.rank === 3 && (
-                              <MedalIcon color={colors.medal.bronze} />
-                            )}
-                          </Box>
-                        </Link>
-                      </TableCell>
-                      <TableCell sx={{ color: "white" }}>
-                        <Link
-                          component={RouterLink}
-                          to={`/player/${row.player}`}
-                          underline="hover"
-                          onClick={stopRowClick}
-                        >
-                          {row.player}
-                        </Link>
-                      </TableCell>
-                      <TableCell sx={{ color: dpsColor, fontWeight: "bold" }}>
-                        {row.dps}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                          {row.rank}
+                          {row.rank === 1 && <CrownIcon />}
+                          {row.rank === 2 && (
+                            <MedalIcon color={colors.medal.silver} />
+                          )}
+                          {row.rank === 3 && (
+                            <MedalIcon color={colors.medal.bronze} />
+                          )}
+                        </Box>
+                      </Link>
+                    </TableCell>
+                    <TableCell sx={{ color: "white" }}>
+                      <Link
+                        component={RouterLink}
+                        to={`/player/${row.player}`}
+                        underline="hover"
+                        onClick={stopRowClick}
+                      >
+                        {row.player}
+                      </Link>
+                    </TableCell>
+                    <TableCell sx={{ color: dpsColor, fontWeight: "bold" }}>
+                      {row.dps}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
           </TableBody>
         </Table>
       </TableContainer>
-      {!loading && dpsRows.length > 0 && (
+      {!loading && total > 0 && (
         <Box display="flex" justifyContent="center" pt={0} pb={1}>
           <Pagination
-            count={Math.ceil(dpsRows.length / entriesPerPage)}
+            count={pageCount}
             page={page}
             onChange={(_, value) => setPage(value)}
             sx={paginationSx}
