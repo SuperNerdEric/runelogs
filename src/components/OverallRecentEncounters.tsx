@@ -30,6 +30,7 @@ import {
   buildBrowsePlayerCountOptions,
   buildRecentEncountersHref,
   browsePlayerCountToApiParam,
+  getContentNoun,
   isRecentEncountersAllContent,
   RECENT_ENCOUNTERS_CONTENT_OPTIONS,
   RecentEncountersContentOption,
@@ -246,6 +247,8 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
 
   const rows = encounters ?? [];
   const pageCount = Math.max(1, Math.ceil(total / entriesPerPage));
+  const rangeStart = total === 0 ? 0 : (page - 1) * entriesPerPage + 1;
+  const rangeEnd = (page - 1) * entriesPerPage + rows.length;
 
   const renderTableStatusRow = (content: React.ReactNode) => (
     <TableRow>
@@ -295,6 +298,14 @@ const OverallRecentEncounters: React.FC<OverallRecentEncountersProps> = ({
             />
           )}
         </FilterToolbar>
+      )}
+
+      {!embedded && !loading && !error && rows.length > 0 && (
+        <Typography sx={{ color: colors.text.muted, mb: 1 }}>
+          Showing {rangeStart.toLocaleString()}–{rangeEnd.toLocaleString()} of{" "}
+          {total.toLocaleString()}
+          {isAllContent ? "" : ` ${getContentNoun(content.value, true)}`}
+        </Typography>
       )}
 
       <Box>

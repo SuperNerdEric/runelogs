@@ -18,6 +18,58 @@ export const MOKHAIOTL_CONTENT_NAME = "Doom of Mokhaiotl";
 export const YAMA_CONTENT_NAME = "Yama";
 export const MAGGOT_KING_CONTENT_NAME = "Maggot King";
 
+/** Content whose encounters are referred to as "raids". */
+export const RAID_CONTENT_NAMES = [
+  "Theatre of Blood",
+  "Theatre of Blood: Hard Mode",
+  "Tombs of Amascut",
+  "Tombs of Amascut: Expert Mode",
+] as const;
+
+/** Content whose encounters are referred to as "runs". */
+export const RUN_CONTENT_NAMES = [
+  "Fight Caves",
+  "The Inferno",
+  "Fortis Colosseum",
+  "The Gauntlet",
+  "Corrupted Gauntlet",
+  MOKHAIOTL_CONTENT_NAME,
+] as const;
+
+export type ContentCategory = "raid" | "run" | "encounter";
+
+/** Categorizes leaderboard/browse content as a raid, run, or generic encounter. */
+export function getContentCategory(
+  contentValue: string | null | undefined,
+): ContentCategory {
+  if (
+    contentValue &&
+    RAID_CONTENT_NAMES.includes(
+      contentValue as (typeof RAID_CONTENT_NAMES)[number],
+    )
+  ) {
+    return "raid";
+  }
+  if (
+    contentValue &&
+    RUN_CONTENT_NAMES.includes(
+      contentValue as (typeof RUN_CONTENT_NAMES)[number],
+    )
+  ) {
+    return "run";
+  }
+  return "encounter";
+}
+
+/** User-facing noun for a piece of content (e.g. "raid", "run", "encounter"). */
+export function getContentNoun(
+  contentValue: string | null | undefined,
+  plural = false,
+): string {
+  const noun = getContentCategory(contentValue);
+  return plural ? `${noun}s` : noun;
+}
+
 /** Standalone boss fights (no fight group) that appear on leaderboards. */
 export const STANDALONE_LEADERBOARD_CONTENT_NAMES = [
   YAMA_CONTENT_NAME,
