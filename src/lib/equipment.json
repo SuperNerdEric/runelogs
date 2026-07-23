@@ -15331,7 +15331,7 @@
     "id": 33631,
     "version": "",
     "slot": "weapon",
-    "category": "Axe",
+    "category": "Spiked",
     "isTwoHanded": true,
     "speed": 4
   },
@@ -25908,7 +25908,7 @@
     "slot": "weapon",
     "category": "Staff",
     "isTwoHanded": false,
-    "speed": 5
+    "speed": 4
   },
   {
     "name": "Guthix stole",
@@ -39291,7 +39291,7 @@
     "slot": "weapon",
     "category": "Staff",
     "isTwoHanded": false,
-    "speed": 5
+    "speed": 4
   },
   {
     "name": "Saradomin stole",
@@ -39460,7 +39460,7 @@
     "id": 33577,
     "version": "",
     "slot": "ammo",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -39469,7 +39469,7 @@
     "id": 33589,
     "version": "",
     "slot": "ammo",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -39478,7 +39478,7 @@
     "id": 33601,
     "version": "",
     "slot": "ammo",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -39487,7 +39487,7 @@
     "id": 33553,
     "version": "",
     "slot": "ammo",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -39496,7 +39496,7 @@
     "id": 33595,
     "version": "",
     "slot": "ammo",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -39505,7 +39505,7 @@
     "id": 33559,
     "version": "",
     "slot": "ammo",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -39514,7 +39514,7 @@
     "id": 33571,
     "version": "",
     "slot": "ammo",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -39523,7 +39523,7 @@
     "id": 33583,
     "version": "",
     "slot": "ammo",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -39532,7 +39532,7 @@
     "id": 33565,
     "version": "",
     "slot": "ammo",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -49371,7 +49371,7 @@
     "slot": "weapon",
     "category": "Staff",
     "isTwoHanded": false,
-    "speed": 5
+    "speed": 4
   },
   {
     "name": "Zamorak stole",
