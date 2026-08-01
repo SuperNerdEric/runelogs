@@ -23,11 +23,23 @@ jobs:
       - name: Install Python dependencies
         run: pip install requests
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install Node dependencies
+        run: npm ci
+
       - name: Run generateEquipment
         run: python3 scripts/generateEquipment.py
 
       - name: Run createIdMaps
         run: python3 scripts/createIdMaps.py
+
+      - name: Format generated files with Prettier
+        run: npx prettier --write src/lib/equipment.json src/lib/itemIdMap.ts src/lib/npcIdMap.ts
 
       - name: Configure git
         run: |
