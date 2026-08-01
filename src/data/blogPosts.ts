@@ -92,6 +92,48 @@ export function getBlogPostSummary(post: BlogPost): string {
 const BLOG_POSTS_RAW: BlogPostInput[] = [
   // Runelogs
   {
+    date: "2026-07-31",
+    title: "Health Bars, Hitsplats, and Phase Markers",
+    category: "runelogs",
+    body: {
+      summary:
+        "The replay map now draws health bars and hitsplats on players and bosses, Theatre of Blood shows exact boss hitpoints, and the damage charts mark fight phases.",
+      paragraphs: [
+        "This update brings health bars and hitsplats to the replay map. As you step through a fight, players and NPCs now show a health bar and any hits they took that tick, so you can watch a boss drop and read the damage right on the map. Regular entities show a bar that fades a few ticks after a hit, bosses keep a permanent wider bar with a percent label, and hitsplats stack in a 3x3 grid. This needs Combat Logger 1.7.0 or newer, which logs the target's remaining health with every hit.",
+        "For most NPCs, RuneLite only exposes the health bar as a fraction, so Runelogs draws the bar without exact numbers. Theatre of Blood is a special case: when your logs come from 1.7.0, the plugin also logs the raid scale and the boss health signal, so Runelogs can resolve the boss's current and max hitpoints and show them on a single bar. That means you can see how much health Maiden, the Bloat, or Verzik had left on any tick. The events table shows the same health information, with the target's health bar on damage and heal events and the Theatre of Blood boss HP values in their own column.",
+        "The damage charts now mark fight phases so you can line up damage with what was happening in the room. These markers cover the Theatre of Blood rooms: Maiden's 70, 50, and 30 percent dividers, the Nylocas Vasilias and Nylocas Prinkipas boss spawns, Sotetseg's maze phases shaded grey, Xarpus Phase 2 and the Phase 3 Screech, and the Bloat's down windows shaded with a hover label.",
+      ],
+      headings: [
+        { text: "Health Bars and Hitsplats", beforeParagraph: 0 },
+        { text: "Phase Markers", beforeParagraph: 2 },
+        { text: "Other Changes", beforeParagraph: 3 },
+      ],
+      images: [
+        {
+          src: "/blog/hitsplats-and-healthbars.png",
+          alt: "Replay map showing a boss with a health bar reading 1197 out of 2843 and a 3x3 grid of stacked hitsplats, with party members nearby",
+          caption:
+            "Health bars and hitsplats on the replay map: bosses keep a permanent bar with current and max hitpoints, and hitsplats stack in a 3x3 grid.",
+          afterParagraph: 1,
+        },
+        {
+          src: "/blog/phase-markers.png",
+          alt: "Damage Done DPS chart with red dashed dividers and Maiden head icons at the 70, 50, and 30 percent phases",
+          caption:
+            "Phase markers on the damage chart: Maiden's 70, 50, and 30 percent transitions are marked so you can line up DPS with the fight.",
+          afterParagraph: 2,
+        },
+      ],
+      bullets: [
+        "New Boss Healing summary counter on boss fights, expandable to a per-heal timeline that links into the Events tab",
+        "Leaderboards now page through the backend for faster loads on long boards",
+        "The recent encounters page shows a result range and labels raids, runs, and encounters",
+        "Enemies appear on the replay map from the first tick now that pre-fight NPC positions are backfilled",
+        "Longer Theatre of Blood inactivity timeout and better Mokhaiotl delve and lobby detection",
+      ],
+    },
+  },
+  {
     date: "2026-07-15",
     title: "Player Spells and NPC Attacks",
     category: "runelogs",
@@ -479,6 +521,24 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
 
   // Combat Logger
+  {
+    date: "2026-07-31",
+    title: "1.7.0 Release",
+    category: "combat-logger",
+    body: {
+      summary:
+        "Combat Logger 1.7.0 logs the target's remaining health with every hit and records Theatre of Blood party scale and boss hitpoints, so Runelogs can draw health bars and exact boss HP.",
+      paragraphs: [
+        "Combat Logger 1.7.0 records the target's health bar with every damage and heal line. RuneLite exposes health as a ratio out of a scale, so the plugin writes that value alongside the hit for whichever actor is being struck. Runelogs uses it to draw health bars and hitsplats on the replay map and to show remaining health in the events table.",
+        "For Theatre of Blood, 1.7.0 also logs the raid scale and the active boss's health as it changes. Together these let Runelogs resolve exact hitpoints and show a single boss health bar with current and max values. Install 1.7.0 before logging fights you want to review with health bars on the replay map.",
+      ],
+      bullets: [
+        "Target health bar logged on every damage and heal line",
+        "Theatre of Blood party scale and boss HP logging for exact boss hitpoints",
+        "Pairs with health bars and hitsplats on the Runelogs replay map",
+      ],
+    },
+  },
   {
     date: "2026-07-14",
     title: "1.6.9 Release",

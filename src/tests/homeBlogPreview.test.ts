@@ -9,23 +9,25 @@ import {
 
 describe("getRecentHomeBlogPosts", () => {
   it("returns at most one post per category, newest first within each", () => {
-    const posts = getRecentHomeBlogPosts(14, new Date(2026, 6, 15));
+    const posts = getRecentHomeBlogPosts(14, new Date(2026, 6, 31));
     expect(posts).toHaveLength(2);
     expect(posts[0].category).toBe("runelogs");
-    expect(posts[0].title).toBe("Player Spells and NPC Attacks");
+    expect(posts[0].title).toBe("Health Bars, Hitsplats, and Phase Markers");
     expect(posts[1].category).toBe("combat-logger");
-    expect(posts[1].title).toBe("1.6.9 Release");
+    expect(posts[1].title).toBe("1.7.0 Release");
   });
 
   it("excludes posts older than the max age", () => {
-    const posts = getRecentHomeBlogPosts(14, new Date(2026, 6, 30));
+    const posts = getRecentHomeBlogPosts(14, new Date(2026, 7, 20));
     expect(posts).toHaveLength(0);
   });
 
   it("includes posts published exactly on the cutoff day", () => {
-    const posts = getRecentHomeBlogPosts(14, new Date(2026, 6, 29));
+    const posts = getRecentHomeBlogPosts(14, new Date(2026, 7, 14));
     expect(
-      posts.some((post) => post.title === "Player Spells and NPC Attacks"),
+      posts.some(
+        (post) => post.title === "Health Bars, Hitsplats, and Phase Markers",
+      ),
     ).toBe(true);
   });
 
