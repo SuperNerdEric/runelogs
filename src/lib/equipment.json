@@ -15331,7 +15331,7 @@
     "id": 33631,
     "version": "",
     "slot": "weapon",
-    "category": "Axe",
+    "category": "Spiked",
     "isTwoHanded": true,
     "speed": 4
   },
@@ -25908,7 +25908,7 @@
     "slot": "weapon",
     "category": "Staff",
     "isTwoHanded": false,
-    "speed": 5
+    "speed": 4
   },
   {
     "name": "Guthix stole",
@@ -26035,6 +26035,15 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Hallowfell",
+    "id": 34027,
+    "version": "",
+    "slot": "weapon",
+    "category": "2h Sword",
+    "isTwoHanded": true,
+    "speed": 6
   },
   {
     "name": "Ham boots",
@@ -32769,6 +32778,69 @@
     "speed": -1
   },
   {
+    "name": "Noble robe top",
+    "id": 33851,
+    "version": "Black",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Noble robe top",
+    "id": 33839,
+    "version": "Blue",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Noble robe top",
+    "id": 33836,
+    "version": "Green",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Noble robe top",
+    "id": 33854,
+    "version": "Pink",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Noble robe top",
+    "id": 33842,
+    "version": "Red",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Noble robe top",
+    "id": 33848,
+    "version": "White",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Noble robe top",
+    "id": 33845,
+    "version": "Yellow",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Noose wand",
     "id": 10150,
     "version": "",
@@ -39291,7 +39363,7 @@
     "slot": "weapon",
     "category": "Staff",
     "isTwoHanded": false,
-    "speed": 5
+    "speed": 4
   },
   {
     "name": "Saradomin stole",
@@ -39460,7 +39532,7 @@
     "id": 33577,
     "version": "",
     "slot": "ammo",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -39469,7 +39541,7 @@
     "id": 33589,
     "version": "",
     "slot": "ammo",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -39478,7 +39550,7 @@
     "id": 33601,
     "version": "",
     "slot": "ammo",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -39487,7 +39559,7 @@
     "id": 33553,
     "version": "",
     "slot": "ammo",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -39496,7 +39568,7 @@
     "id": 33595,
     "version": "",
     "slot": "ammo",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -39505,7 +39577,7 @@
     "id": 33559,
     "version": "",
     "slot": "ammo",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -39514,7 +39586,7 @@
     "id": 33571,
     "version": "",
     "slot": "ammo",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -39523,7 +39595,7 @@
     "id": 33583,
     "version": "",
     "slot": "ammo",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -39532,7 +39604,7 @@
     "id": 33565,
     "version": "",
     "slot": "ammo",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -48762,6 +48834,483 @@
     "speed": 0
   },
   {
+    "name": "Wyrmscraig boots",
+    "id": 33881,
+    "version": "",
+    "slot": "feet",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig noble skirt",
+    "id": 33872,
+    "version": "Black",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig noble skirt",
+    "id": 33860,
+    "version": "Blue",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig noble skirt",
+    "id": 33857,
+    "version": "Green",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig noble skirt",
+    "id": 33875,
+    "version": "Pink",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig noble skirt",
+    "id": 33863,
+    "version": "Red",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig noble skirt",
+    "id": 33869,
+    "version": "White",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig noble skirt",
+    "id": 33866,
+    "version": "Yellow",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig shoes",
+    "id": 33878,
+    "version": "",
+    "slot": "feet",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe bottom (A)",
+    "id": 33923,
+    "version": "Black",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe bottom (A)",
+    "id": 33911,
+    "version": "Blue",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe bottom (A)",
+    "id": 33908,
+    "version": "Green",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe bottom (A)",
+    "id": 33926,
+    "version": "Pink",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe bottom (A)",
+    "id": 33914,
+    "version": "Red",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe bottom (A)",
+    "id": 33920,
+    "version": "White",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe bottom (A)",
+    "id": 33917,
+    "version": "Yellow",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe bottom (B)",
+    "id": 33944,
+    "version": "Black",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe bottom (B)",
+    "id": 33932,
+    "version": "Blue",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe bottom (B)",
+    "id": 33929,
+    "version": "Green",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe bottom (B)",
+    "id": 33947,
+    "version": "Pink",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe bottom (B)",
+    "id": 33935,
+    "version": "Red",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe bottom (B)",
+    "id": 33941,
+    "version": "White",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe bottom (B)",
+    "id": 33938,
+    "version": "Yellow",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe top (A)",
+    "id": 33905,
+    "version": "Beige",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe top (A)",
+    "id": 33899,
+    "version": "Black",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe top (A)",
+    "id": 33887,
+    "version": "Blue",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe top (A)",
+    "id": 33884,
+    "version": "Green",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe top (A)",
+    "id": 33902,
+    "version": "Pink",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe top (A)",
+    "id": 33890,
+    "version": "Red",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe top (A)",
+    "id": 33896,
+    "version": "White",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe top (A)",
+    "id": 33893,
+    "version": "Yellow",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe top (B)",
+    "id": 33965,
+    "version": "Black",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe top (B)",
+    "id": 33953,
+    "version": "Blue",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe top (B)",
+    "id": 33950,
+    "version": "Green",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe top (B)",
+    "id": 33968,
+    "version": "Pink",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe top (B)",
+    "id": 33956,
+    "version": "Red",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe top (B)",
+    "id": 33962,
+    "version": "White",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager robe top (B)",
+    "id": 33959,
+    "version": "Yellow",
+    "slot": "body",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager skirt",
+    "id": 33986,
+    "version": "Black",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager skirt",
+    "id": 33974,
+    "version": "Blue",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager skirt",
+    "id": 33971,
+    "version": "Green",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager skirt",
+    "id": 33989,
+    "version": "Pink",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager skirt",
+    "id": 33977,
+    "version": "Red",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager skirt",
+    "id": 33983,
+    "version": "White",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager skirt",
+    "id": 33980,
+    "version": "Yellow",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager work skirt",
+    "id": 34013,
+    "version": "Beige",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager work skirt",
+    "id": 34007,
+    "version": "Black",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager work skirt",
+    "id": 33995,
+    "version": "Blue",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager work skirt",
+    "id": 33992,
+    "version": "Green",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager work skirt",
+    "id": 34010,
+    "version": "Pink",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager work skirt",
+    "id": 33998,
+    "version": "Red",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager work skirt",
+    "id": 34004,
+    "version": "White",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Wyrmscraig villager work skirt",
+    "id": 34001,
+    "version": "Yellow",
+    "slot": "legs",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Xeric's champion",
     "id": 22396,
     "version": "",
@@ -49371,7 +49920,7 @@
     "slot": "weapon",
     "category": "Staff",
     "isTwoHanded": false,
-    "speed": 5
+    "speed": 4
   },
   {
     "name": "Zamorak stole",
