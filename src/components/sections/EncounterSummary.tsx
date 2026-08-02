@@ -30,8 +30,11 @@ import Boosts from "../charts/Boosts";
 import SummaryHeader from "../summary/SummaryHeader";
 import AttackAnimationBreakdown from "../summary/AttackAnimationBreakdown";
 import SummaryDamageDoneSection from "../summary/SummaryDamageDoneSection";
+import GearSetupDisplay from "../gear/GearSetupDisplay";
 import { DeathEvent } from "../../utils/deathEvents";
+import { resolveGearSetups } from "../../utils/gearSetup/deriveGearSetup";
 import { layout } from "../../theme";
+import { stripFightGroupNumber } from "../../utils/leaderboardContent";
 
 interface EncounterSummaryProps {
   fight: Fight;
@@ -41,6 +44,8 @@ interface EncounterSummaryProps {
   leaderboardName?: string | null;
   playerCount?: number;
   dpsLeaderboardKey?: string | null;
+  /** Name of the run this fight belongs to, if any. */
+  runName?: string | null;
 }
 
 const EncounterSummary: React.FC<EncounterSummaryProps> = ({
@@ -51,6 +56,7 @@ const EncounterSummary: React.FC<EncounterSummaryProps> = ({
   leaderboardName = null,
   playerCount = 0,
   dpsLeaderboardKey = null,
+  runName = null,
 }) => {
   const [searchParams] = useSearchParams();
 
@@ -87,6 +93,12 @@ const EncounterSummary: React.FC<EncounterSummaryProps> = ({
     [searchParams],
   );
 
+  const gearSetups = useMemo(() => resolveGearSetups(fight), [fight]);
+
+  const gearSetupName = runName
+    ? `${stripFightGroupNumber(runName)} - ${fight.name}`
+    : fight.name;
+
   return (
     <Box sx={{ maxWidth: layout.contentMaxWidth, width: "100%" }}>
       <SummaryHeader
@@ -104,6 +116,10 @@ const EncounterSummary: React.FC<EncounterSummaryProps> = ({
         playerCount={playerCount}
         dpsLeaderboardKey={dpsLeaderboardKey}
       />
+      {gearSetups.length > 0 && (
+        <GearSetupDisplay gearSetups={gearSetups} name={gearSetupName} />
+      )}
+
       <SummaryDamageDoneSection
         fight={fight}
 

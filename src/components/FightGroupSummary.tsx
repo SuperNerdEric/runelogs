@@ -24,9 +24,13 @@ import { resolvePlayerRankPercentile } from "./badges/playerRankPercentile";
 import ColosseumModifiers from "./ColosseumModifiers";
 import ToaRaidLevel from "./ToaRaidLevel";
 import { hasColosseumModifierData } from "../utils/colosseumModifiers";
-import { MOKHAIOTL_HIGH_SCORE_MODE_LABEL } from "../utils/leaderboardContent";
+import {
+  MOKHAIOTL_HIGH_SCORE_MODE_LABEL,
+  stripFightGroupNumber,
+} from "../utils/leaderboardContent";
 import { resolveFightGroupSpriteKey } from "../lib/hiscoreSprites";
 import { FightGroupExtraInfo } from "../utils/fightGroupExtraInfo";
+import GearSetupDisplay from "./gear/GearSetupDisplay";
 import {
   resolveFightOutcomeColor,
   resolveLiveFightTileState,
@@ -395,6 +399,15 @@ const FightGroupSummary: React.FC = () => {
 
       {hasColosseumModifierData(data.extraInfo?.colosseum) && (
         <ColosseumModifiers modifiers={data.extraInfo!.colosseum} />
+      )}
+
+      {data.extraInfo?.gearSetups && data.extraInfo.gearSetups.length > 0 && (
+        <Box sx={{ mb: 2 }}>
+          <GearSetupDisplay
+            gearSetups={data.extraInfo.gearSetups}
+            name={stripFightGroupNumber(data.name)}
+          />
+        </Box>
       )}
 
       {data.overallDps.length > 0 && (

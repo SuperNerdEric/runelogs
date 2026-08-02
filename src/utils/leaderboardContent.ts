@@ -616,8 +616,16 @@ export function isLeaderboardContent(
   );
 }
 
+/**
+ * Strip the trailing run-instance number or "Incomplete" suffix from a fight
+ * group display name (e.g. "Doom of Mokhaiotl - 1" -> "Doom of Mokhaiotl").
+ */
+export function stripFightGroupNumber(name: string): string {
+  return name.replace(/ - Incomplete$/, "").replace(/ - \d+$/, "");
+}
+
 /** Infer leaderboard content from a fight group display name (e.g. "Theatre of Blood - 1"). */
 export function inferLeaderboardFightGroupName(name: string): string | null {
-  const base = name.replace(/ - Incomplete$/, "").replace(/ - \d+$/, "");
+  const base = stripFightGroupNumber(name);
   return isLeaderboardFightGroup(base) ? base : null;
 }

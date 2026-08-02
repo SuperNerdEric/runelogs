@@ -23,6 +23,7 @@ export interface EncounterTabContentProps {
   leaderboardName: string | null;
   playerCount: number;
   dpsLeaderboardKey: string | null;
+  runName?: string | null;
   sourceFilter: ActorFilter | null;
   targetFilter: ActorFilter | null;
   equipmentFilter: EquipmentFilter | null;
@@ -68,6 +69,7 @@ const EncounterTabContent: React.FC<EncounterTabContentProps> = ({
   leaderboardName,
   playerCount,
   dpsLeaderboardKey,
+  runName = null,
   sourceFilter,
   targetFilter,
   equipmentFilter,
@@ -114,6 +116,7 @@ const EncounterTabContent: React.FC<EncounterTabContentProps> = ({
           leaderboardName={leaderboardName}
           playerCount={playerCount}
           dpsLeaderboardKey={dpsLeaderboardKey}
+          runName={runName}
         />
       );
     case TabsEnum.DAMAGE_DONE:

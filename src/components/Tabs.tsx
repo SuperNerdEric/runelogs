@@ -164,6 +164,7 @@ export const SummaryTab: React.FC<{
   leaderboardName?: string | null;
   playerCount?: number;
   dpsLeaderboardKey?: string | null;
+  runName?: string | null;
 }> = ({
   selectedLogs,
   receivingData = false,
@@ -172,6 +173,7 @@ export const SummaryTab: React.FC<{
   leaderboardName = null,
   playerCount = 0,
   dpsLeaderboardKey = null,
+  runName = null,
 }) => {
   return (
     <EncounterSummary
@@ -182,6 +184,7 @@ export const SummaryTab: React.FC<{
       leaderboardName={leaderboardName}
       playerCount={playerCount}
       dpsLeaderboardKey={dpsLeaderboardKey}
+      runName={runName}
     />
   );
 };

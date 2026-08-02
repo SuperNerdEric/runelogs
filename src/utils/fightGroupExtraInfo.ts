@@ -1,4 +1,5 @@
 import { ColosseumModifierData } from "./colosseumModifiers";
+import { GearSetup } from "../models/GearSetup";
 
 export interface ToaExtraInfo {
   raidLevel: number;
@@ -14,4 +15,9 @@ export interface FightGroupExtraInfo {
       durationTicks: number;
     };
   };
+  /**
+   * Gear setup snapshots from the start of the first fight in the run, one per
+   * player with complete data (logged-in player first).
+   */
+  gearSetups?: GearSetup[];
 }

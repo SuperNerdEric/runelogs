@@ -799,6 +799,7 @@ const Encounter: React.FC = () => {
               leaderboardName={leaderboardName}
               playerCount={playerCount}
               dpsLeaderboardKey={dpsLeaderboardKey}
+              runName={runMeta?.name ?? null}
               sourceFilter={sourceFilter}
               targetFilter={targetFilter}
               equipmentFilter={equipmentFilter}

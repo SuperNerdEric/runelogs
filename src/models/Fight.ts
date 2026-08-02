@@ -1,4 +1,5 @@
 import { Encounter, LogLine } from "./LogLine";
+import { GearSetup } from "./GearSetup";
 
 export interface Fight {
   id: string;
@@ -18,6 +19,14 @@ export interface Fight {
   // Just for easy reference later
   firstLine: LogLine;
   lastLine: LogLine;
+
+  /**
+   * Gear setup snapshots (worn equipment, inventory, and rune pouch) at the
+   * start of the fight, one per player with complete data (logged-in player
+   * first). May be absent on older parsed data; the frontend falls back to
+   * deriving them from {@link data}.
+   */
+  gearSetups?: GearSetup[];
 }
 
 export interface FightMetaData {
