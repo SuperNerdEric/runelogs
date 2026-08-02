@@ -13,6 +13,10 @@ export enum LogTypes {
   PRAYER = "Prayers",
   OVERHEAD = "Overhead Prayer",
   PLAYER_EQUIPMENT = "Player Equipment",
+  PLAYER_INVENTORY = "Player Inventory",
+  RUNE_POUCH = "Rune Pouch",
+  SPELLBOOK = "Spellbook",
+  SPECIAL_ATTACK = "Special Attack",
   DEATH = "Death",
   TARGET_CHANGE = "Target Change",
   DAMAGE = "Damage",
@@ -92,6 +96,41 @@ export interface PlayerEquipmentLog extends BaseLog {
   type: LogTypes.PLAYER_EQUIPMENT;
   source: Actor;
   playerEquipment: string[];
+}
+
+/**
+ * A single stack of items: an item id plus its quantity. Empty inventory slots
+ * are represented with an id of -1. A quantity of 1 is used for non-stacked items.
+ */
+export interface GameItem {
+  id: number;
+  quantity: number;
+}
+
+export interface PlayerInventoryLog extends BaseLog {
+  type: LogTypes.PLAYER_INVENTORY;
+  source: Actor;
+  inventory: GameItem[];
+}
+
+export interface RunePouchLog extends BaseLog {
+  type: LogTypes.RUNE_POUCH;
+  source: Actor;
+  runePouch: GameItem[];
+}
+
+/** 0 = Standard, 1 = Ancient, 2 = Lunar, 3 = Arceuus. */
+export interface SpellbookLog extends BaseLog {
+  type: LogTypes.SPELLBOOK;
+  source: Actor;
+  spellbook: number;
+}
+
+/** Special attack energy as a 0-100 percent value. */
+export interface SpecialAttackLog extends BaseLog {
+  type: LogTypes.SPECIAL_ATTACK;
+  source: Actor;
+  specialAttack: number;
 }
 
 export interface DeathLog extends BaseLog {
@@ -315,6 +354,10 @@ export type LogLine =
   | PrayerLog
   | OverheadLog
   | PlayerEquipmentLog
+  | PlayerInventoryLog
+  | RunePouchLog
+  | SpellbookLog
+  | SpecialAttackLog
   | DeathLog
   | TargetChangeLog
   | DamageLog

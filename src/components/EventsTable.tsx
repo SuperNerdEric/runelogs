@@ -127,6 +127,79 @@ const getItemImageUrl = (itemId: number): string => {
   return `https://chisel.weirdgloop.org/static/img/osrs-sprite/${itemId}.png`;
 };
 
+const spellbookNames: Record<number, string> = {
+  0: "Standard",
+  1: "Ancient",
+  2: "Lunar",
+  3: "Arceuus",
+};
+
+const formatItemQuantity = (quantity: number): string => {
+  if (quantity >= 10_000_000) {
+    return `${Math.floor(quantity / 1_000_000)}M`;
+  }
+  if (quantity >= 100_000) {
+    return `${Math.floor(quantity / 1000)}K`;
+  }
+  return `${quantity}`;
+};
+
+/** Renders a compact list of item icons (inventory / rune pouch) with stack sizes. */
+const renderItemList = (items: { id: number; quantity: number }[]) => {
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "2px" }}>
+      {items.map((item, i) =>
+        item.id > 0 ? (
+          <div
+            key={i}
+            style={{
+              position: "relative",
+              width: "22px",
+              height: "22px",
+              overflow: "hidden",
+              backgroundColor: "#494945",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <img
+              src={getItemImageUrl(item.id)}
+              alt={`Item ${item.id}`}
+              style={{ height: "22px" }}
+            />
+            {item.quantity > 1 && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 1,
+                  fontSize: "9px",
+                  lineHeight: "9px",
+                  color: "#ffff00",
+                  textShadow: "1px 1px 0 #000",
+                  pointerEvents: "none",
+                }}
+              >
+                {formatItemQuantity(item.quantity)}
+              </span>
+            )}
+          </div>
+        ) : (
+          <div
+            key={i}
+            style={{
+              width: "22px",
+              height: "22px",
+              backgroundColor: "#3a3a37",
+            }}
+          />
+        ),
+      )}
+    </div>
+  );
+};
+
 /**
  * Formats the target's logged health for display "as is": the RuneLite health bar
  * (`ratio/scale`).
@@ -1091,6 +1164,21 @@ const EventsTable: React.FC<EventsTableProps> = ({
                             ) : (
                               ""
                             )}
+                            {log.type === LogTypes.PLAYER_INVENTORY &&
+                            Array.isArray(log.inventory)
+                              ? renderItemList(log.inventory)
+                              : ""}
+                            {log.type === LogTypes.RUNE_POUCH &&
+                            Array.isArray(log.runePouch)
+                              ? renderItemList(log.runePouch)
+                              : ""}
+                            {log.type === LogTypes.SPELLBOOK
+                              ? (spellbookNames[log.spellbook] ??
+                                `Spellbook ${log.spellbook}`)
+                              : ""}
+                            {log.type === LogTypes.SPECIAL_ATTACK
+                              ? `${log.specialAttack}%`
+                              : ""}
                             {log.type === LogTypes.DAMAGE ? (
                               <>
                                 <span className="hitsplat-name">
