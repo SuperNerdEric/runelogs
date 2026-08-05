@@ -16,28 +16,22 @@ interface BoostPotionsDisplayProps {
 
 const BoostPotionsDisplay: React.FC<BoostPotionsDisplayProps> = ({ fight }) => {
   const potions = getBoostPotionsForRaid(getEncounterRaidType(fight));
+  const potion = potions[0];
+
+  if (!potion) {
+    return null;
+  }
 
   return (
     <Box className="summary-boost-potions summary-boost-potions--icons-only">
-      {potions.map((potion) => (
-        <Box
-          key={potion.id}
-
-          className="summary-boost-potion-icon"
-
-          component="span"
-        >
-          <img
-            src={getItemImageUrl(potion.itemId)}
-
-            alt=""
-
-            className="osrs-item-icon"
-
-            loading="lazy"
-          />
-        </Box>
-      ))}
+      <Box className="summary-boost-potion-icon" component="span">
+        <img
+          src={getItemImageUrl(potion.itemId)}
+          alt=""
+          className="osrs-item-icon"
+          loading="lazy"
+        />
+      </Box>
     </Box>
   );
 };

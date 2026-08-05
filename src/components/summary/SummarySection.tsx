@@ -20,6 +20,8 @@ interface SummarySectionProps {
 
   titleTooltip?: string;
 
+  titleIcon?: React.ReactNode;
+
   titleAdornment?: React.ReactNode;
 
   defaultExpanded?: boolean;
@@ -33,6 +35,8 @@ const SummarySection: React.FC<SummarySectionProps> = ({
   className,
 
   titleTooltip,
+
+  titleIcon,
 
   titleAdornment,
 
@@ -54,6 +58,8 @@ const SummarySection: React.FC<SummarySectionProps> = ({
         className="summary-section__title-bar encounter-title-bar"
       >
         <Box className="summary-section__title-row">
+          {titleIcon}
+
           {titleTooltip ? (
             <TableColumnHeaderTooltip label={title} tooltip={titleTooltip} />
           ) : (

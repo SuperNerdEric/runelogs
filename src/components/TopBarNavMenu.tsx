@@ -23,6 +23,7 @@ import HistoryIcon from "@mui/icons-material/History";
 import { Icon } from "@iconify/react";
 import { Link as RouterLink } from "react-router-dom";
 import logoImage from "../assets/Logo.png";
+import gearSetupsIcon from "../assets/gearSetupsIcon.png";
 import TrophyIcon from "./TrophyIcon";
 import {
   buildLeaderboardHref,
@@ -331,6 +332,29 @@ const TopBarNavMenu: React.FC<TopBarNavMenuProps> = ({
                 ))}
               </List>
             </Collapse>
+
+            <ListItemButton
+              component={RouterLink}
+              to="/gear-setups"
+              onClick={closeMenu}
+              sx={navItemSx}
+            >
+              <ListItemIcon sx={menuItemIconSx}>
+                <Box
+                  component="img"
+                  src={gearSetupsIcon}
+                  alt=""
+                  aria-hidden
+                  sx={{
+                    width: 20,
+                    height: 20,
+                    objectFit: "contain",
+                    imageRendering: "pixelated",
+                  }}
+                />
+              </ListItemIcon>
+              <ListItemText primary="Gear Setups" />
+            </ListItemButton>
 
             <ListItemButton
               onClick={() => setCommunityExpanded((prev) => !prev)}

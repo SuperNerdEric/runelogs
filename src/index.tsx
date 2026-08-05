@@ -33,6 +33,8 @@ import Blog from "./components/Blog";
 import BlogPostPage from "./components/BlogPostPage";
 import LeaderboardsPage from "./components/LeaderboardsPage";
 import RecentEncountersPage from "./components/RecentEncountersPage";
+import GearSetupsPage from "./components/GearSetupsPage";
+import GearSetupPage from "./components/GearSetupPage";
 import LiveLog from "./components/LiveLog";
 import Login from "./components/Login";
 import Logout from "./components/Logout";
@@ -120,6 +122,8 @@ function AppRoutes() {
           <Route path="/upload" element={<Upload />} />
           <Route path="/leaderboards" element={<LeaderboardsPage />} />
           <Route path="/recent-encounters" element={<RecentEncountersPage />} />
+          <Route path="/gear-setups" element={<GearSetupsPage />} />
+          <Route path="/gear-setups/:id" element={<GearSetupPage />} />
           <Route path="/live-log" element={<LiveLog />} />
           <Route path="/profile" element={<MyProfile />} />
           <Route path="/profile/:profileId" element={<MyProfile />} />

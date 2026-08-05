@@ -501,7 +501,7 @@ const Boosts: React.FC<DPSChartProps> = ({ fight }) => {
     <SummarySection
       title="Stat Boosts"
       titleTooltip={COLUMN_TOOLTIPS.statBoosts}
-      titleAdornment={<BoostPotionsDisplay fight={fight} />}
+      titleIcon={<BoostPotionsDisplay fight={fight} />}
       className="stat-boosts-section"
     >
       <Box className="stat-boosts-section__body">

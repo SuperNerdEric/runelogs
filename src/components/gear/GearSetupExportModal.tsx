@@ -21,7 +21,7 @@ import { buildBankTagExport } from "../../utils/gearSetup/bankTagLayout";
 import { buildInventorySetupJson } from "../../utils/gearSetup/inventorySetup";
 import inventorySetupsImportIcon from "../../assets/inventorySetupsImport.png";
 import bankTagsNewTabIcon from "../../assets/bankTagsNewTab.png";
-import inventorySetupsSidePanelIcon from "../../assets/inventorySetupsSidePanel.png";
+import inventorySetupsSidePanelIcon from "../../assets/gearSetupsIcon.png";
 
 interface GearSetupExportModalProps {
   open: boolean;

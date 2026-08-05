@@ -62,3 +62,42 @@ export const NUM_EQUIPMENT_SLOTS = 14;
 
 /** Number of inventory slots. */
 export const NUM_INVENTORY_SLOTS = 28;
+
+/** A deduped gear setup row returned by `GET /gear-setups`. */
+export interface GearSetupListItem {
+  id: string;
+  contentName: string;
+  playerCount: number;
+  player: string;
+  equipment: number[];
+  inventory: GearSetupItem[];
+  runePouch: GearSetupItem[];
+  spellbook: number | null;
+  /** Encounter this setup links to (the fastest with this loadout). */
+  encounterId: string;
+  encounterType: "fight" | "fightGroup";
+  durationTicks: number;
+  /** The log this setup's best occurrence came from. */
+  logId: string;
+  /** Upload time of that log (ISO), or null when unavailable. */
+  uploadedAt: string | null;
+  /** Live time-leaderboard rank, or null if unranked. */
+  rank: number | null;
+  /** Live time-leaderboard percentile (0-100), or null if unranked. */
+  percentile: number | null;
+  /** Average rating in stars (0-5), or null when unrated. */
+  ratingAverage: number | null;
+  ratingCount: number;
+  /** The signed-in viewer's rating in stars (0.5-5), or null. */
+  viewerRating: number | null;
+  createdAt: string;
+}
+
+export type GearSetupSort = "topRated" | "newest" | "fastest";
+
+export interface GearSetupsResponse {
+  items: GearSetupListItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
