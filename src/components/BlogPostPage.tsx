@@ -94,6 +94,62 @@ const listSx = {
   },
 };
 
+const INLINE_LINK_PATTERN = /\[([^\]]+)\]\((https?:\/\/[^\s)]+|\/[^\s)]+)\)/g;
+
+/**
+ * Renders blog text with inline `[label](url)` links. Absolute `http(s)` urls
+ * open in a new tab; site-relative `/path` urls use client-side routing.
+ */
+function renderRichText(text: string): React.ReactNode {
+  const nodes: React.ReactNode[] = [];
+  let lastIndex = 0;
+
+  INLINE_LINK_PATTERN.lastIndex = 0;
+  let match: RegExpExecArray | null;
+  while ((match = INLINE_LINK_PATTERN.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      nodes.push(text.slice(lastIndex, match.index));
+    }
+
+    const label = match[1];
+    const url = match[2];
+    const key = `${match.index}-${url}`;
+
+    if (url.startsWith("/")) {
+      nodes.push(
+        <Link
+          key={key}
+          component={RouterLink}
+          to={url}
+          sx={{ color: colors.text.link }}
+        >
+          {label}
+        </Link>,
+      );
+    } else {
+      nodes.push(
+        <Link
+          key={key}
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          sx={{ color: colors.text.link }}
+        >
+          {label}
+        </Link>,
+      );
+    }
+
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    nodes.push(text.slice(lastIndex));
+  }
+
+  return nodes.length > 0 ? nodes : text;
+}
+
 const backLinkSx = {
   display: "inline-flex",
 
@@ -239,6 +295,10 @@ const BlogPostPage: React.FC = () => {
           px: { xs: 2, sm: 3 },
 
           py: 2.5,
+
+          // A heading right after an image relies on the figure's own bottom
+          // margin for spacing, so it should not add its own top margin.
+          "& figure + h2": { mt: 0 },
         }}
       >
         {post.body.paragraphs.map((paragraph, index) => (
@@ -256,7 +316,7 @@ const BlogPostPage: React.FC = () => {
               ))}
 
             <Typography component="p" sx={paragraphSx}>
-              {paragraph}
+              {renderRichText(paragraph)}
             </Typography>
 
             {post.body.lists
@@ -269,7 +329,7 @@ const BlogPostPage: React.FC = () => {
                 >
                   {list.items.map((item) => (
                     <Box component="li" key={item}>
-                      {item}
+                      {renderRichText(item)}
                     </Box>
                   ))}
                 </Box>
@@ -313,7 +373,7 @@ const BlogPostPage: React.FC = () => {
           <Box component="ul" sx={listSx}>
             {post.body.bullets.map((item) => (
               <Box component="li" key={item}>
-                {item}
+                {renderRichText(item)}
               </Box>
             ))}
           </Box>

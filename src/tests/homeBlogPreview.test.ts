@@ -9,12 +9,12 @@ import {
 
 describe("getRecentHomeBlogPosts", () => {
   it("returns at most one post per category, newest first within each", () => {
-    const posts = getRecentHomeBlogPosts(14, new Date(2026, 6, 31));
+    const posts = getRecentHomeBlogPosts(14, new Date(2026, 7, 4));
     expect(posts).toHaveLength(2);
     expect(posts[0].category).toBe("runelogs");
-    expect(posts[0].title).toBe("Health Bars, Hitsplats, and Phase Markers");
+    expect(posts[0].title).toBe("Gear Setups");
     expect(posts[1].category).toBe("combat-logger");
-    expect(posts[1].title).toBe("1.7.0 Release");
+    expect(posts[1].title).toBe("1.7.1 Release");
   });
 
   it("excludes posts older than the max age", () => {
@@ -23,12 +23,8 @@ describe("getRecentHomeBlogPosts", () => {
   });
 
   it("includes posts published exactly on the cutoff day", () => {
-    const posts = getRecentHomeBlogPosts(14, new Date(2026, 7, 14));
-    expect(
-      posts.some(
-        (post) => post.title === "Health Bars, Hitsplats, and Phase Markers",
-      ),
-    ).toBe(true);
+    const posts = getRecentHomeBlogPosts(14, new Date(2026, 7, 18));
+    expect(posts.some((post) => post.title === "Gear Setups")).toBe(true);
   });
 
   it("returns only categories with a recent post", () => {

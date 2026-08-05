@@ -18,7 +18,7 @@ const BlogExpandableImage: React.FC<BlogExpandableImageProps> = ({
   caption,
 }) => {
   return (
-    <Box component="figure" sx={{ m: 0, mt: 2 }}>
+    <Box component="figure" sx={{ m: 0, mt: 2, mb: 2 }}>
       <Box
         component="a"
         href={src}

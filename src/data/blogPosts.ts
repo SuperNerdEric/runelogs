@@ -92,6 +92,47 @@ export function getBlogPostSummary(post: BlogPost): string {
 const BLOG_POSTS_RAW: BlogPostInput[] = [
   // Runelogs
   {
+    date: "2026-08-04",
+    title: "Gear Setups",
+    category: "runelogs",
+    body: {
+      summary:
+        "Runelogs now builds gear setups from your logs, shows them on every fight, exports to Bank Tags and Inventory Setups, and adds a browsable, rateable Gear Setups page.",
+      paragraphs: [
+        "Runelogs now turns your logs into gear setups. A gear setup lays out the equipment, inventory, rune pouch, and spellbook a player brought into the fight, drawn on the same interface panels you see in game. We build one for every player we have full data for, so a whole team's kits can show up side by side, not just your own.",
+        "You'll find a Gear Setup section on the Summary tab of every run and encounter. For a run it uses the loadout at the start of the first fight; for a standalone encounter it uses that fight's opening tick.",
+        "There's also a new [Gear Setups page](/gear-setups) in the nav menu. It collects setups that Runelogs generates automatically from ranked runs on eligible leaderboards, so you can browse real loadouts that people used to set fast times. Filter by content and team size, sort by fastest time or rating, and page through the results. Each setup shows its live leaderboard rank and kill time, links back to the run or encounter it came from, and has its own shareable page. Sign in and you can rate any setup from half a star to five stars.",
+        "Every setup exports straight into RuneLite. Hit Export and you'll get two formats: a [Bank Tag Layout](https://github.com/runelite/runelite/wiki/Bank-Tags) that recreates the loadout as a tag tab, and an import string for the [Inventory Setups plugin](https://runelite.net/plugin-hub/show/inventory-setups) that also carries the rune pouch and spellbook. Copy either one from the export window and follow its instructions to import the setup into the matching plugin.",
+      ],
+      headings: [
+        { text: "Where You'll Find Them", beforeParagraph: 1 },
+        { text: "Export Straight to RuneLite", beforeParagraph: 3 },
+        { text: "Other Changes", beforeParagraph: 4 },
+      ],
+      images: [
+        {
+          src: "/blog/gear-setup.png",
+          alt: "Gear setup for a Yama solo kill with a star rating, an Export button, and equipment, inventory, rune pouch, and Arceuus spellbook panels",
+          caption:
+            "A generated gear setup, laying out equipment, inventory, the rune pouch, and the active spellbook on the same panels you see in game.",
+          afterParagraph: 0,
+        },
+        {
+          src: "/blog/gear-setup-export.png",
+          alt: "Export gear setup window open on the Inventory Setups tab, showing an import string and a Copy button",
+          caption:
+            "The export window: copy a Bank Tag Layout or an Inventory Setups import string straight into RuneLite.",
+          afterParagraph: 3,
+        },
+      ],
+      bullets: [
+        "Special attack energy and your active spellbook now show in the Events tab, alongside the inventory, rune pouch, and equipment snapshots.",
+        "That special attack and spellbook detail sets up upcoming replay tick chart features, like watching spec energy drain and refill and marking spellbook swaps.",
+        "Tombs of Amascut Expert mode is now identified by its raid level instead of the path rooms taken.",
+      ],
+    },
+  },
+  {
     date: "2026-07-31",
     title: "Health Bars, Hitsplats, and Phase Markers",
     category: "runelogs",
@@ -521,6 +562,26 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
 
   // Combat Logger
+  {
+    date: "2026-08-02",
+    title: "1.7.1 Release",
+    category: "combat-logger",
+    body: {
+      summary:
+        "Combat Logger 1.7.1 starts live logging automatically in leaderboard content, tracks every player in the instance, and logs your inventory, rune pouch, spellbook, and special attack energy.",
+      paragraphs: [
+        "Combat Logger 1.7.1 can start live logging on its own. With the new automatic live logging option, on by default, the plugin opens a Runelogs live session the moment you step into leaderboard content like raids, the Inferno, Fight Caves, the Colosseum, and Maggot King, then stops once you have been away for about ten minutes. A session you started yourself is never interrupted. The plugin also tracks every player in the instance now, so party members show up in your logs, and it writes logs on a separate thread to keep the client smooth.",
+        "1.7.1 records more about players every tick too. On top of the equipment it already tracked, the plugin now logs inventory, rune pouch, current spellbook, and special attack energy, and it shares that data with the rest of your party over the plugin's party messages, so anyone running Combat Logger picks up everyone's details, not just their own. On Runelogs this is what powers the new gear setups on your runs and encounters, and it feeds the special attack energy and spellbook detail you'll see arriving in replay. Update to 1.7.1 to capture these signals; older versions won't include them in your logs.",
+      ],
+      bullets: [
+        "Automatic live logging, on by default, starts a live session in leaderboard content and stops after you leave",
+        "Tracks every player in the instance, so party members appear in your logs",
+        "Writes logs on a separate thread to keep the client smooth",
+        "Inventory, rune pouch, spellbook, and special attack energy logged each tick",
+        "Powers Runelogs gear setups and upcoming special attack and spellbook detail in replay",
+      ],
+    },
+  },
   {
     date: "2026-07-31",
     title: "1.7.0 Release",
