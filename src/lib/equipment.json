@@ -19401,7 +19401,7 @@
     "slot": "weapon",
     "category": "Staff",
     "isTwoHanded": false,
-    "speed": 5
+    "speed": 4
   },
   {
     "name": "Dragon javelin",
