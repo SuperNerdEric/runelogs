@@ -153,7 +153,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age amulet",
+    "name": "3rd Age amulet",
     "id": 10344,
     "version": "",
     "slot": "neck",
@@ -162,7 +162,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age axe",
+    "name": "3rd Age axe",
     "id": 20011,
     "version": "",
     "slot": "weapon",
@@ -171,7 +171,7 @@
     "speed": 5
   },
   {
-    "name": "3rd age bow",
+    "name": "3rd Age bow",
     "id": 12424,
     "version": "",
     "slot": "weapon",
@@ -180,7 +180,7 @@
     "speed": 3
   },
   {
-    "name": "3rd age cloak",
+    "name": "3rd Age cloak",
     "id": 12437,
     "version": "",
     "slot": "cape",
@@ -189,7 +189,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age druidic cloak",
+    "name": "3rd Age druidic cloak",
     "id": 23345,
     "version": "",
     "slot": "cape",
@@ -198,7 +198,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age druidic robe bottoms",
+    "name": "3rd Age druidic robe bottoms",
     "id": 23339,
     "version": "",
     "slot": "legs",
@@ -207,7 +207,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age druidic robe top",
+    "name": "3rd Age druidic robe top",
     "id": 23336,
     "version": "",
     "slot": "body",
@@ -216,7 +216,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age druidic staff",
+    "name": "3rd Age druidic staff",
     "id": 23342,
     "version": "",
     "slot": "weapon",
@@ -225,7 +225,7 @@
     "speed": 5
   },
   {
-    "name": "3rd age felling axe",
+    "name": "3rd Age felling axe",
     "id": 28226,
     "version": "",
     "slot": "weapon",
@@ -234,7 +234,7 @@
     "speed": 7
   },
   {
-    "name": "3rd age full helmet",
+    "name": "3rd Age full helmet",
     "id": 10350,
     "version": "",
     "slot": "head",
@@ -243,7 +243,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age kiteshield",
+    "name": "3rd Age kiteshield",
     "id": 10352,
     "version": "",
     "slot": "shield",
@@ -252,7 +252,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age longsword",
+    "name": "3rd Age longsword",
     "id": 12426,
     "version": "",
     "slot": "weapon",
@@ -261,7 +261,7 @@
     "speed": 5
   },
   {
-    "name": "3rd age mage hat",
+    "name": "3rd Age mage hat",
     "id": 10342,
     "version": "",
     "slot": "head",
@@ -270,7 +270,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age mage hat (Last Man Standing)",
+    "name": "3rd Age mage hat (Last Man Standing)",
     "id": 27183,
     "version": "",
     "slot": "head",
@@ -279,7 +279,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age pickaxe",
+    "name": "3rd Age pickaxe",
     "id": 20014,
     "version": "",
     "slot": "weapon",
@@ -288,7 +288,7 @@
     "speed": 5
   },
   {
-    "name": "3rd age platebody",
+    "name": "3rd Age platebody",
     "id": 10348,
     "version": "",
     "slot": "body",
@@ -297,7 +297,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age platelegs",
+    "name": "3rd Age platelegs",
     "id": 10346,
     "version": "",
     "slot": "legs",
@@ -306,7 +306,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age plateskirt",
+    "name": "3rd Age plateskirt",
     "id": 23242,
     "version": "",
     "slot": "legs",
@@ -315,7 +315,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age range coif",
+    "name": "3rd Age range coif",
     "id": 10334,
     "version": "",
     "slot": "head",
@@ -324,7 +324,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age range coif (Last Man Standing)",
+    "name": "3rd Age range coif (Last Man Standing)",
     "id": 27201,
     "version": "",
     "slot": "head",
@@ -333,7 +333,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age range legs",
+    "name": "3rd Age range legs",
     "id": 10332,
     "version": "",
     "slot": "legs",
@@ -342,7 +342,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age range legs (Last Man Standing)",
+    "name": "3rd Age range legs (Last Man Standing)",
     "id": 27200,
     "version": "",
     "slot": "legs",
@@ -351,7 +351,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age range top",
+    "name": "3rd Age range top",
     "id": 10330,
     "version": "",
     "slot": "body",
@@ -360,7 +360,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age range top (Last Man Standing)",
+    "name": "3rd Age range top (Last Man Standing)",
     "id": 27199,
     "version": "",
     "slot": "body",
@@ -369,7 +369,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age robe",
+    "name": "3rd Age robe",
     "id": 10340,
     "version": "",
     "slot": "legs",
@@ -378,7 +378,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age robe (Last Man Standing)",
+    "name": "3rd Age robe (Last Man Standing)",
     "id": 20577,
     "version": "",
     "slot": "legs",
@@ -387,7 +387,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age robe top",
+    "name": "3rd Age robe top",
     "id": 10338,
     "version": "",
     "slot": "body",
@@ -396,7 +396,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age robe top (Last Man Standing)",
+    "name": "3rd Age robe top (Last Man Standing)",
     "id": 20576,
     "version": "",
     "slot": "body",
@@ -405,7 +405,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age vambraces",
+    "name": "3rd Age vambraces",
     "id": 10336,
     "version": "",
     "slot": "hands",
@@ -414,7 +414,7 @@
     "speed": 0
   },
   {
-    "name": "3rd age wand",
+    "name": "3rd Age wand",
     "id": 12422,
     "version": "",
     "slot": "weapon",
@@ -2574,11 +2574,29 @@
     "speed": 0
   },
   {
+    "name": "Amulet of Nature",
+    "id": 6040,
+    "version": "",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Amulet of accuracy",
     "id": 1478,
     "version": "",
     "slot": "neck",
     "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Amulet of air",
+    "id": 34407,
+    "version": "",
+    "slot": "neck",
+    "category": "Unarmed",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -2637,8 +2655,26 @@
     "speed": 0
   },
   {
+    "name": "Amulet of earth",
+    "id": 34419,
+    "version": "",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Amulet of eternal glory",
     "id": 19707,
+    "version": "",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Amulet of fire",
+    "id": 34425,
     "version": "",
     "slot": "neck",
     "category": "",
@@ -2826,15 +2862,6 @@
     "speed": 0
   },
   {
-    "name": "Amulet of nature",
-    "id": 6040,
-    "version": "",
-    "slot": "neck",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
     "name": "Amulet of power",
     "id": 1731,
     "version": "",
@@ -2889,7 +2916,7 @@
     "speed": 0
   },
   {
-    "name": "Amulet of the damned",
+    "name": "Amulet of the Damned",
     "id": 12851,
     "version": "Full",
     "slot": "neck",
@@ -2898,7 +2925,7 @@
     "speed": 0
   },
   {
-    "name": "Amulet of the damned",
+    "name": "Amulet of the Damned",
     "id": 12853,
     "version": "Used",
     "slot": "neck",
@@ -2907,7 +2934,7 @@
     "speed": 0
   },
   {
-    "name": "Amulet of the eye",
+    "name": "Amulet of the Eye",
     "id": 26994,
     "version": "Blue",
     "slot": "neck",
@@ -2916,7 +2943,7 @@
     "speed": 0
   },
   {
-    "name": "Amulet of the eye",
+    "name": "Amulet of the Eye",
     "id": 26992,
     "version": "Green",
     "slot": "neck",
@@ -2925,7 +2952,7 @@
     "speed": 0
   },
   {
-    "name": "Amulet of the eye",
+    "name": "Amulet of the Eye",
     "id": 26990,
     "version": "Red",
     "slot": "neck",
@@ -2934,7 +2961,7 @@
     "speed": 0
   },
   {
-    "name": "Amulet of the eye",
+    "name": "Amulet of the Eye",
     "id": 26914,
     "version": "Regular",
     "slot": "neck",
@@ -2972,6 +2999,15 @@
   {
     "name": "Amulet of torture (or)",
     "id": 20366,
+    "version": "",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Amulet of water",
+    "id": 34413,
     "version": "",
     "slot": "neck",
     "category": "",
@@ -4041,8 +4077,8 @@
     "speed": 6
   },
   {
-    "name": "Armadyl godsword (Last Man Standing)",
-    "id": 20593,
+    "name": "Armadyl godsword (Deadman)",
+    "id": 29605,
     "version": "",
     "slot": "weapon",
     "category": "2h Sword",
@@ -4050,8 +4086,8 @@
     "speed": 6
   },
   {
-    "name": "Armadyl godsword (deadman)",
-    "id": 29605,
+    "name": "Armadyl godsword (Last Man Standing)",
+    "id": 20593,
     "version": "",
     "slot": "weapon",
     "category": "2h Sword",
@@ -5067,7 +5103,7 @@
     "speed": 0
   },
   {
-    "name": "Beads of the dead",
+    "name": "Beads of the Dead",
     "id": 616,
     "version": "",
     "slot": "neck",
@@ -6723,7 +6759,7 @@
     "speed": 0
   },
   {
-    "name": "Blade of saeldor",
+    "name": "Blade of Saeldor",
     "id": 23995,
     "version": "Charged",
     "slot": "weapon",
@@ -6732,7 +6768,7 @@
     "speed": 4
   },
   {
-    "name": "Blade of saeldor",
+    "name": "Blade of Saeldor",
     "id": 23997,
     "version": "Inactive",
     "slot": "weapon",
@@ -6741,7 +6777,7 @@
     "speed": 4
   },
   {
-    "name": "Blade of saeldor (c)",
+    "name": "Blade of Saeldor (c)",
     "id": 24551,
     "version": "",
     "slot": "weapon",
@@ -6750,7 +6786,7 @@
     "speed": 4
   },
   {
-    "name": "Blade of saeldor (c) (Amlodd)",
+    "name": "Blade of Saeldor (c) (Amlodd)",
     "id": 25882,
     "version": "",
     "slot": "weapon",
@@ -6759,7 +6795,7 @@
     "speed": 4
   },
   {
-    "name": "Blade of saeldor (c) (Cadarn)",
+    "name": "Blade of Saeldor (c) (Cadarn)",
     "id": 25876,
     "version": "",
     "slot": "weapon",
@@ -6768,7 +6804,7 @@
     "speed": 4
   },
   {
-    "name": "Blade of saeldor (c) (Crwys)",
+    "name": "Blade of Saeldor (c) (Crwys)",
     "id": 25878,
     "version": "",
     "slot": "weapon",
@@ -6777,7 +6813,7 @@
     "speed": 4
   },
   {
-    "name": "Blade of saeldor (c) (Iorwerth)",
+    "name": "Blade of Saeldor (c) (Iorwerth)",
     "id": 25872,
     "version": "",
     "slot": "weapon",
@@ -6786,7 +6822,7 @@
     "speed": 4
   },
   {
-    "name": "Blade of saeldor (c) (Ithell)",
+    "name": "Blade of Saeldor (c) (Ithell)",
     "id": 25870,
     "version": "",
     "slot": "weapon",
@@ -6795,7 +6831,7 @@
     "speed": 4
   },
   {
-    "name": "Blade of saeldor (c) (Meilyr)",
+    "name": "Blade of Saeldor (c) (Meilyr)",
     "id": 25880,
     "version": "",
     "slot": "weapon",
@@ -6804,7 +6840,7 @@
     "speed": 4
   },
   {
-    "name": "Blade of saeldor (c) (Trahaearn)",
+    "name": "Blade of Saeldor (c) (Trahaearn)",
     "id": 25874,
     "version": "",
     "slot": "weapon",
@@ -6831,16 +6867,7 @@
     "speed": 2
   },
   {
-    "name": "Blessed axe",
-    "id": 10491,
-    "version": "",
-    "slot": "weapon",
-    "category": "Axe",
-    "isTwoHanded": false,
-    "speed": 5
-  },
-  {
-    "name": "Blessed dizana's quiver",
+    "name": "Blessed Dizana's quiver",
     "id": 28828,
     "version": "Broken",
     "slot": "cape",
@@ -6849,7 +6876,7 @@
     "speed": 0
   },
   {
-    "name": "Blessed dizana's quiver",
+    "name": "Blessed Dizana's quiver",
     "id": 28957,
     "version": "Locked",
     "slot": "cape",
@@ -6858,13 +6885,22 @@
     "speed": 0
   },
   {
-    "name": "Blessed dizana's quiver",
+    "name": "Blessed Dizana's quiver",
     "id": 28955,
     "version": "Normal",
     "slot": "cape",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Blessed axe",
+    "id": 10491,
+    "version": "",
+    "slot": "weapon",
+    "category": "Axe",
+    "isTwoHanded": false,
+    "speed": 5
   },
   {
     "name": "Blessed spirit shield",
@@ -7328,6 +7364,15 @@
   {
     "name": "Blue hat",
     "id": 660,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Blue hat (Legends' Quest)",
+    "id": 740,
     "version": "",
     "slot": "head",
     "category": "",
@@ -7893,7 +7938,7 @@
     "speed": 0
   },
   {
-    "name": "Book of balance",
+    "name": "Book of Balance",
     "id": 3844,
     "version": "",
     "slot": "shield",
@@ -7902,7 +7947,7 @@
     "speed": 0
   },
   {
-    "name": "Book of balance (or)",
+    "name": "Book of Balance (or)",
     "id": 26488,
     "version": "",
     "slot": "shield",
@@ -7911,7 +7956,7 @@
     "speed": 0
   },
   {
-    "name": "Book of darkness",
+    "name": "Book of Darkness",
     "id": 12612,
     "version": "",
     "slot": "shield",
@@ -7920,7 +7965,7 @@
     "speed": 0
   },
   {
-    "name": "Book of darkness (or)",
+    "name": "Book of Darkness (or)",
     "id": 26490,
     "version": "",
     "slot": "shield",
@@ -7929,7 +7974,7 @@
     "speed": 0
   },
   {
-    "name": "Book of egg",
+    "name": "Book of Egg",
     "id": 29433,
     "version": "",
     "slot": "shield",
@@ -7938,7 +7983,7 @@
     "speed": 0
   },
   {
-    "name": "Book of law",
+    "name": "Book of Law",
     "id": 12610,
     "version": "",
     "slot": "shield",
@@ -7947,7 +7992,7 @@
     "speed": 0
   },
   {
-    "name": "Book of law (or)",
+    "name": "Book of Law (or)",
     "id": 26492,
     "version": "",
     "slot": "shield",
@@ -7956,16 +8001,7 @@
     "speed": 0
   },
   {
-    "name": "Book of the dead",
-    "id": 25818,
-    "version": "",
-    "slot": "shield",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Book of war",
+    "name": "Book of War",
     "id": 12608,
     "version": "",
     "slot": "shield",
@@ -7974,7 +8010,7 @@
     "speed": 0
   },
   {
-    "name": "Book of war (or)",
+    "name": "Book of War (or)",
     "id": 26494,
     "version": "",
     "slot": "shield",
@@ -7983,7 +8019,16 @@
     "speed": 0
   },
   {
-    "name": "Boots of brimstone",
+    "name": "Book of the Dead",
+    "id": 25818,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Boots of Brimstone",
     "id": 22951,
     "version": "",
     "slot": "feet",
@@ -8019,7 +8064,7 @@
     "speed": 0
   },
   {
-    "name": "Boots of the eye",
+    "name": "Boots of the Eye",
     "id": 26856,
     "version": "",
     "slot": "feet",
@@ -8082,7 +8127,7 @@
     "speed": 0
   },
   {
-    "name": "Bow of faerdhinen",
+    "name": "Bow of Faerdhinen",
     "id": 25865,
     "version": "Charged",
     "slot": "weapon",
@@ -8091,7 +8136,7 @@
     "speed": 4
   },
   {
-    "name": "Bow of faerdhinen",
+    "name": "Bow of Faerdhinen",
     "id": 25862,
     "version": "Inactive",
     "slot": "weapon",
@@ -8100,7 +8145,7 @@
     "speed": 4
   },
   {
-    "name": "Bow of faerdhinen (c)",
+    "name": "Bow of Faerdhinen (c)",
     "id": 25867,
     "version": "",
     "slot": "weapon",
@@ -8109,7 +8154,7 @@
     "speed": 4
   },
   {
-    "name": "Bow of faerdhinen (c) (Amlodd)",
+    "name": "Bow of Faerdhinen (c) (Amlodd)",
     "id": 25896,
     "version": "",
     "slot": "weapon",
@@ -8118,7 +8163,7 @@
     "speed": 4
   },
   {
-    "name": "Bow of faerdhinen (c) (Cadarn)",
+    "name": "Bow of Faerdhinen (c) (Cadarn)",
     "id": 25890,
     "version": "",
     "slot": "weapon",
@@ -8127,7 +8172,7 @@
     "speed": 4
   },
   {
-    "name": "Bow of faerdhinen (c) (Crwys)",
+    "name": "Bow of Faerdhinen (c) (Crwys)",
     "id": 25892,
     "version": "",
     "slot": "weapon",
@@ -8136,7 +8181,7 @@
     "speed": 4
   },
   {
-    "name": "Bow of faerdhinen (c) (Iorwerth)",
+    "name": "Bow of Faerdhinen (c) (Iorwerth)",
     "id": 25886,
     "version": "",
     "slot": "weapon",
@@ -8145,7 +8190,7 @@
     "speed": 4
   },
   {
-    "name": "Bow of faerdhinen (c) (Ithell)",
+    "name": "Bow of Faerdhinen (c) (Ithell)",
     "id": 25884,
     "version": "",
     "slot": "weapon",
@@ -8154,7 +8199,7 @@
     "speed": 4
   },
   {
-    "name": "Bow of faerdhinen (c) (Last Man Standing)",
+    "name": "Bow of Faerdhinen (c) (Last Man Standing)",
     "id": 27187,
     "version": "",
     "slot": "weapon",
@@ -8163,7 +8208,7 @@
     "speed": 5
   },
   {
-    "name": "Bow of faerdhinen (c) (Meilyr)",
+    "name": "Bow of Faerdhinen (c) (Meilyr)",
     "id": 25894,
     "version": "",
     "slot": "weapon",
@@ -8172,7 +8217,7 @@
     "speed": 4
   },
   {
-    "name": "Bow of faerdhinen (c) (Trahaearn)",
+    "name": "Bow of Faerdhinen (c) (Trahaearn)",
     "id": 25888,
     "version": "",
     "slot": "weapon",
@@ -8181,7 +8226,7 @@
     "speed": 4
   },
   {
-    "name": "Bow of faerdhinen (c) (deadman)",
+    "name": "Bow of Faerdhinen (c) (deadman)",
     "id": 33021,
     "version": "",
     "slot": "weapon",
@@ -11250,6 +11295,15 @@
     "speed": 4
   },
   {
+    "name": "Corrupted Volatile Nightmare staff",
+    "id": 29602,
+    "version": "",
+    "slot": "weapon",
+    "category": "Staff",
+    "isTwoHanded": false,
+    "speed": 5
+  },
+  {
     "name": "Corrupted armadyl godsword",
     "id": 28537,
     "version": "",
@@ -11644,15 +11698,6 @@
     "category": "Slash Sword",
     "isTwoHanded": false,
     "speed": 4
-  },
-  {
-    "name": "Corrupted volatile nightmare staff",
-    "id": 29602,
-    "version": "",
-    "slot": "weapon",
-    "category": "Staff",
-    "isTwoHanded": false,
-    "speed": 5
   },
   {
     "name": "Corrupted zuriel's hood (bh)",
@@ -16974,6 +17019,15 @@
     "speed": 8
   },
   {
+    "name": "Dark bow (Deadman)",
+    "id": 29611,
+    "version": "",
+    "slot": "weapon",
+    "category": "Bow",
+    "isTwoHanded": true,
+    "speed": 8
+  },
+  {
     "name": "Dark bow (Last Man Standing)",
     "id": 20408,
     "version": "",
@@ -16985,15 +17039,6 @@
   {
     "name": "Dark bow (bh)",
     "id": 27853,
-    "version": "",
-    "slot": "weapon",
-    "category": "Bow",
-    "isTwoHanded": true,
-    "speed": 8
-  },
-  {
-    "name": "Dark bow (deadman)",
-    "id": 29611,
     "version": "",
     "slot": "weapon",
     "category": "Bow",
@@ -19401,7 +19446,7 @@
     "slot": "weapon",
     "category": "Staff",
     "isTwoHanded": false,
-    "speed": 5
+    "speed": 4
   },
   {
     "name": "Dragon javelin",
@@ -20898,13 +20943,22 @@
     "speed": 6
   },
   {
-    "name": "Eldritch nightmare staff",
+    "name": "Eldritch Nightmare staff",
     "id": 24425,
     "version": "",
     "slot": "weapon",
     "category": "Staff",
     "isTwoHanded": false,
     "speed": 5
+  },
+  {
+    "name": "Elemental amulet",
+    "id": 34428,
+    "version": "",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
   },
   {
     "name": "Elemental helmet",
@@ -21645,7 +21699,7 @@
     "speed": 0
   },
   {
-    "name": "Eye of ayak",
+    "name": "Eye of Ayak",
     "id": 31113,
     "version": "Charged",
     "slot": "weapon",
@@ -21654,7 +21708,7 @@
     "speed": 3
   },
   {
-    "name": "Eye of ayak",
+    "name": "Eye of Ayak",
     "id": 31115,
     "version": "Uncharged",
     "slot": "weapon",
@@ -23013,15 +23067,6 @@
     "speed": 0
   },
   {
-    "name": "Ghommal's lucky penny",
-    "id": 27544,
-    "version": "",
-    "slot": "ammo",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
     "name": "Ghost buster 500",
     "id": 9911,
     "version": "Black",
@@ -23535,7 +23580,7 @@
     "speed": 0
   },
   {
-    "name": "Gloves of the damned",
+    "name": "Gloves of the Damned",
     "id": 30380,
     "version": "",
     "slot": "hands",
@@ -25058,7 +25103,7 @@
   {
     "name": "Greenman mask",
     "id": 31034,
-    "version": "Default",
+    "version": "Base",
     "slot": "head",
     "category": "",
     "isTwoHanded": false,
@@ -26253,7 +26298,7 @@
     "speed": 0
   },
   {
-    "name": "Harmonised nightmare staff",
+    "name": "Harmonised Nightmare staff",
     "id": 24423,
     "version": "",
     "slot": "weapon",
@@ -26289,7 +26334,7 @@
     "speed": 0
   },
   {
-    "name": "Hat of the eye",
+    "name": "Hat of the Eye",
     "id": 26870,
     "version": "Blue",
     "slot": "head",
@@ -26298,7 +26343,7 @@
     "speed": 0
   },
   {
-    "name": "Hat of the eye",
+    "name": "Hat of the Eye",
     "id": 26864,
     "version": "Green",
     "slot": "head",
@@ -26307,7 +26352,7 @@
     "speed": 0
   },
   {
-    "name": "Hat of the eye",
+    "name": "Hat of the Eye",
     "id": 26858,
     "version": "Red",
     "slot": "head",
@@ -26316,7 +26361,7 @@
     "speed": 0
   },
   {
-    "name": "Hat of the eye",
+    "name": "Hat of the Eye",
     "id": 26850,
     "version": "Regular",
     "slot": "head",
@@ -26433,7 +26478,7 @@
     "speed": 0
   },
   {
-    "name": "Helm of neitiznot",
+    "name": "Helm of Neitiznot",
     "id": 10828,
     "version": "",
     "slot": "head",
@@ -26442,7 +26487,7 @@
     "speed": 0
   },
   {
-    "name": "Helm of neitiznot (Last Man Standing)",
+    "name": "Helm of Neitiznot (Last Man Standing)",
     "id": 23591,
     "version": "",
     "slot": "head",
@@ -26451,7 +26496,7 @@
     "speed": 0
   },
   {
-    "name": "Helm of neitiznot (or)",
+    "name": "Helm of Neitiznot (or)",
     "id": 28070,
     "version": "",
     "slot": "head",
@@ -26460,7 +26505,7 @@
     "speed": 0
   },
   {
-    "name": "Helm of raedwald",
+    "name": "Helm of Raedwald",
     "id": 19687,
     "version": "",
     "slot": "head",
@@ -26739,7 +26784,7 @@
     "speed": 0
   },
   {
-    "name": "Horn of plenty",
+    "name": "Horn of Plenty",
     "id": 31241,
     "version": "Charged",
     "slot": "shield",
@@ -26748,7 +26793,7 @@
     "speed": 0
   },
   {
-    "name": "Horn of plenty",
+    "name": "Horn of Plenty",
     "id": 31243,
     "version": "Empty",
     "slot": "shield",
@@ -27135,7 +27180,7 @@
     "speed": 0
   },
   {
-    "name": "Imbued guthix cape",
+    "name": "Imbued Guthix cape",
     "id": 24240,
     "version": "Broken",
     "slot": "cape",
@@ -27144,7 +27189,7 @@
     "speed": 0
   },
   {
-    "name": "Imbued guthix cape",
+    "name": "Imbued Guthix cape",
     "id": 24249,
     "version": "Locked",
     "slot": "cape",
@@ -27153,7 +27198,7 @@
     "speed": 0
   },
   {
-    "name": "Imbued guthix cape",
+    "name": "Imbued Guthix cape",
     "id": 21793,
     "version": "Normal",
     "slot": "cape",
@@ -27162,16 +27207,7 @@
     "speed": 0
   },
   {
-    "name": "Imbued guthix cape (Last Man Standing)",
-    "id": 23603,
-    "version": "",
-    "slot": "cape",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Imbued guthix cape (deadman)",
+    "name": "Imbued Guthix cape (Deadman)",
     "id": 29615,
     "version": "",
     "slot": "cape",
@@ -27180,7 +27216,16 @@
     "speed": 0
   },
   {
-    "name": "Imbued guthix max cape",
+    "name": "Imbued Guthix cape (Last Man Standing)",
+    "id": 23603,
+    "version": "",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Imbued Guthix max cape",
     "id": 24242,
     "version": "Broken",
     "slot": "cape",
@@ -27189,7 +27234,7 @@
     "speed": 0
   },
   {
-    "name": "Imbued guthix max cape",
+    "name": "Imbued Guthix max cape",
     "id": 24234,
     "version": "Locked",
     "slot": "cape",
@@ -27198,7 +27243,7 @@
     "speed": 0
   },
   {
-    "name": "Imbued guthix max cape",
+    "name": "Imbued Guthix max cape",
     "id": 21784,
     "version": "Normal",
     "slot": "cape",
@@ -27207,7 +27252,7 @@
     "speed": 0
   },
   {
-    "name": "Imbued guthix max hood",
+    "name": "Imbued Guthix max hood",
     "id": 21786,
     "version": "",
     "slot": "head",
@@ -27216,7 +27261,7 @@
     "speed": 0
   },
   {
-    "name": "Imbued saradomin cape",
+    "name": "Imbued Saradomin cape",
     "id": 24236,
     "version": "Broken",
     "slot": "cape",
@@ -27225,7 +27270,7 @@
     "speed": 0
   },
   {
-    "name": "Imbued saradomin cape",
+    "name": "Imbued Saradomin cape",
     "id": 24248,
     "version": "Locked",
     "slot": "cape",
@@ -27234,7 +27279,7 @@
     "speed": 0
   },
   {
-    "name": "Imbued saradomin cape",
+    "name": "Imbued Saradomin cape",
     "id": 21791,
     "version": "Normal",
     "slot": "cape",
@@ -27243,16 +27288,7 @@
     "speed": 0
   },
   {
-    "name": "Imbued saradomin cape (Last Man Standing)",
-    "id": 23607,
-    "version": "",
-    "slot": "cape",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Imbued saradomin cape (deadman)",
+    "name": "Imbued Saradomin cape (Deadman)",
     "id": 29617,
     "version": "",
     "slot": "cape",
@@ -27261,7 +27297,16 @@
     "speed": 0
   },
   {
-    "name": "Imbued saradomin max cape",
+    "name": "Imbued Saradomin cape (Last Man Standing)",
+    "id": 23607,
+    "version": "",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Imbued Saradomin max cape",
     "id": 24238,
     "version": "Broken",
     "slot": "cape",
@@ -27270,7 +27315,7 @@
     "speed": 0
   },
   {
-    "name": "Imbued saradomin max cape",
+    "name": "Imbued Saradomin max cape",
     "id": 24232,
     "version": "Locked",
     "slot": "cape",
@@ -27279,7 +27324,7 @@
     "speed": 0
   },
   {
-    "name": "Imbued saradomin max cape",
+    "name": "Imbued Saradomin max cape",
     "id": 21776,
     "version": "Normal",
     "slot": "cape",
@@ -27288,8 +27333,89 @@
     "speed": 0
   },
   {
-    "name": "Imbued saradomin max hood",
+    "name": "Imbued Saradomin max hood",
     "id": 21778,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Imbued Zamorak cape",
+    "id": 24244,
+    "version": "Broken",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Imbued Zamorak cape",
+    "id": 24250,
+    "version": "Locked",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Imbued Zamorak cape",
+    "id": 21795,
+    "version": "Normal",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Imbued Zamorak cape (Deadman)",
+    "id": 29613,
+    "version": "",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Imbued Zamorak cape (Last Man Standing)",
+    "id": 23605,
+    "version": "",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Imbued Zamorak max cape",
+    "id": 24246,
+    "version": "Broken",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Imbued Zamorak max cape",
+    "id": 24233,
+    "version": "Locked",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Imbued Zamorak max cape",
+    "id": 21780,
+    "version": "Normal",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Imbued Zamorak max hood",
+    "id": 21782,
     "version": "",
     "slot": "head",
     "category": "",
@@ -27304,87 +27430,6 @@
     "category": "Unarmed",
     "isTwoHanded": false,
     "speed": 3
-  },
-  {
-    "name": "Imbued zamorak cape",
-    "id": 24244,
-    "version": "Broken",
-    "slot": "cape",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Imbued zamorak cape",
-    "id": 24250,
-    "version": "Locked",
-    "slot": "cape",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Imbued zamorak cape",
-    "id": 21795,
-    "version": "Normal",
-    "slot": "cape",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Imbued zamorak cape (Last Man Standing)",
-    "id": 23605,
-    "version": "",
-    "slot": "cape",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Imbued zamorak cape (deadman)",
-    "id": 29613,
-    "version": "",
-    "slot": "cape",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Imbued zamorak max cape",
-    "id": 24246,
-    "version": "Broken",
-    "slot": "cape",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Imbued zamorak max cape",
-    "id": 24233,
-    "version": "Locked",
-    "slot": "cape",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Imbued zamorak max cape",
-    "id": 21780,
-    "version": "Normal",
-    "slot": "cape",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
-  },
-  {
-    "name": "Imbued zamorak max hood",
-    "id": 21782,
-    "version": "",
-    "slot": "head",
-    "category": "",
-    "isTwoHanded": false,
-    "speed": 0
   },
   {
     "name": "Imcando hammer",
@@ -30456,7 +30501,7 @@
     "speed": 0
   },
   {
-    "name": "Mask of balance",
+    "name": "Mask of Balance",
     "id": 13203,
     "version": "",
     "slot": "head",
@@ -30465,7 +30510,7 @@
     "speed": 0
   },
   {
-    "name": "Mask of ranul",
+    "name": "Mask of Ranul",
     "id": 23522,
     "version": "",
     "slot": "head",
@@ -30474,7 +30519,7 @@
     "speed": 0
   },
   {
-    "name": "Mask of rebirth",
+    "name": "Mask of Rebirth",
     "id": 27370,
     "version": "",
     "slot": "head",
@@ -30654,7 +30699,7 @@
     "speed": 6
   },
   {
-    "name": "Medallion of the deep",
+    "name": "Medallion of the Deep",
     "id": 32386,
     "version": "",
     "slot": "neck",
@@ -32661,6 +32706,15 @@
     "speed": 0
   },
   {
+    "name": "Necklace of fangs",
+    "id": 34401,
+    "version": "",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Necklace of passage",
     "id": 21155,
     "version": "(1)",
@@ -33804,7 +33858,7 @@
     "speed": 0
   },
   {
-    "name": "Pendant of ates",
+    "name": "Pendant of Ates",
     "id": 29893,
     "version": "Charged",
     "slot": "neck",
@@ -33813,7 +33867,7 @@
     "speed": 0
   },
   {
-    "name": "Pendant of ates",
+    "name": "Pendant of Ates",
     "id": 29892,
     "version": "Inert",
     "slot": "neck",
@@ -33822,7 +33876,7 @@
     "speed": 0
   },
   {
-    "name": "Pendant of lucien",
+    "name": "Pendant of Lucien",
     "id": 86,
     "version": "",
     "slot": "neck",
@@ -36306,7 +36360,7 @@
     "speed": 0
   },
   {
-    "name": "Ring of 3rd age",
+    "name": "Ring of 3rd Age",
     "id": 23185,
     "version": "",
     "slot": "ring",
@@ -36315,7 +36369,7 @@
     "speed": 0
   },
   {
-    "name": "Ring of charos",
+    "name": "Ring of Charos",
     "id": 6465,
     "version": "Activated",
     "slot": "ring",
@@ -36324,7 +36378,7 @@
     "speed": 0
   },
   {
-    "name": "Ring of charos",
+    "name": "Ring of Charos",
     "id": 4202,
     "version": "Normal",
     "slot": "ring",
@@ -36774,7 +36828,7 @@
     "speed": 0
   },
   {
-    "name": "Robe bottoms of the eye",
+    "name": "Robe bottoms of the Eye",
     "id": 26874,
     "version": "Blue",
     "slot": "legs",
@@ -36783,7 +36837,7 @@
     "speed": 0
   },
   {
-    "name": "Robe bottoms of the eye",
+    "name": "Robe bottoms of the Eye",
     "id": 26868,
     "version": "Green",
     "slot": "legs",
@@ -36792,7 +36846,7 @@
     "speed": 0
   },
   {
-    "name": "Robe bottoms of the eye",
+    "name": "Robe bottoms of the Eye",
     "id": 26862,
     "version": "Red",
     "slot": "legs",
@@ -36801,7 +36855,7 @@
     "speed": 0
   },
   {
-    "name": "Robe bottoms of the eye",
+    "name": "Robe bottoms of the Eye",
     "id": 26854,
     "version": "Regular",
     "slot": "legs",
@@ -36810,7 +36864,7 @@
     "speed": 0
   },
   {
-    "name": "Robe of elidinis (bottom)",
+    "name": "Robe of Elidinis (bottom)",
     "id": 6787,
     "version": "",
     "slot": "legs",
@@ -36819,7 +36873,7 @@
     "speed": 0
   },
   {
-    "name": "Robe of elidinis (top)",
+    "name": "Robe of Elidinis (top)",
     "id": 6786,
     "version": "",
     "slot": "body",
@@ -36846,7 +36900,7 @@
     "speed": 0
   },
   {
-    "name": "Robe top of the eye",
+    "name": "Robe top of the Eye",
     "id": 26872,
     "version": "Blue",
     "slot": "body",
@@ -36855,7 +36909,7 @@
     "speed": 0
   },
   {
-    "name": "Robe top of the eye",
+    "name": "Robe top of the Eye",
     "id": 26866,
     "version": "Green",
     "slot": "body",
@@ -36864,7 +36918,7 @@
     "speed": 0
   },
   {
-    "name": "Robe top of the eye",
+    "name": "Robe top of the Eye",
     "id": 26860,
     "version": "Red",
     "slot": "body",
@@ -36873,7 +36927,7 @@
     "speed": 0
   },
   {
-    "name": "Robe top of the eye",
+    "name": "Robe top of the Eye",
     "id": 26852,
     "version": "Regular",
     "slot": "body",
@@ -36936,7 +36990,7 @@
     "speed": 0
   },
   {
-    "name": "Rod of ivandis",
+    "name": "Rod of Ivandis",
     "id": 7648,
     "version": "(1)",
     "slot": "weapon",
@@ -36945,7 +36999,7 @@
     "speed": 5
   },
   {
-    "name": "Rod of ivandis",
+    "name": "Rod of Ivandis",
     "id": 7639,
     "version": "(10)",
     "slot": "weapon",
@@ -36954,7 +37008,7 @@
     "speed": 5
   },
   {
-    "name": "Rod of ivandis",
+    "name": "Rod of Ivandis",
     "id": 7647,
     "version": "(2)",
     "slot": "weapon",
@@ -36963,7 +37017,7 @@
     "speed": 5
   },
   {
-    "name": "Rod of ivandis",
+    "name": "Rod of Ivandis",
     "id": 7646,
     "version": "(3)",
     "slot": "weapon",
@@ -36972,7 +37026,7 @@
     "speed": 5
   },
   {
-    "name": "Rod of ivandis",
+    "name": "Rod of Ivandis",
     "id": 7645,
     "version": "(4)",
     "slot": "weapon",
@@ -36981,7 +37035,7 @@
     "speed": 5
   },
   {
-    "name": "Rod of ivandis",
+    "name": "Rod of Ivandis",
     "id": 7644,
     "version": "(5)",
     "slot": "weapon",
@@ -36990,7 +37044,7 @@
     "speed": 5
   },
   {
-    "name": "Rod of ivandis",
+    "name": "Rod of Ivandis",
     "id": 7643,
     "version": "(6)",
     "slot": "weapon",
@@ -36999,7 +37053,7 @@
     "speed": 5
   },
   {
-    "name": "Rod of ivandis",
+    "name": "Rod of Ivandis",
     "id": 7642,
     "version": "(7)",
     "slot": "weapon",
@@ -37008,7 +37062,7 @@
     "speed": 5
   },
   {
-    "name": "Rod of ivandis",
+    "name": "Rod of Ivandis",
     "id": 7641,
     "version": "(8)",
     "slot": "weapon",
@@ -37017,7 +37071,7 @@
     "speed": 5
   },
   {
-    "name": "Rod of ivandis",
+    "name": "Rod of Ivandis",
     "id": 7640,
     "version": "(9)",
     "slot": "weapon",
@@ -39447,7 +39501,7 @@
     "speed": 7
   },
   {
-    "name": "Scythe of vitur",
+    "name": "Scythe of Vitur",
     "id": 22325,
     "version": "Charged",
     "slot": "weapon",
@@ -39456,7 +39510,7 @@
     "speed": 5
   },
   {
-    "name": "Scythe of vitur",
+    "name": "Scythe of Vitur",
     "id": 22486,
     "version": "Uncharged",
     "slot": "weapon",
@@ -41778,16 +41832,7 @@
     "speed": 5
   },
   {
-    "name": "Staff of air",
-    "id": 1381,
-    "version": "",
-    "slot": "weapon",
-    "category": "Staff",
-    "isTwoHanded": false,
-    "speed": 5
-  },
-  {
-    "name": "Staff of balance",
+    "name": "Staff of Balance",
     "id": 24144,
     "version": "",
     "slot": "weapon",
@@ -41796,8 +41841,26 @@
     "speed": 4
   },
   {
-    "name": "Staff of bob the cat",
+    "name": "Staff of Bob the Cat",
     "id": 23363,
+    "version": "",
+    "slot": "weapon",
+    "category": "Staff",
+    "isTwoHanded": false,
+    "speed": 5
+  },
+  {
+    "name": "Staff of Light",
+    "id": 22296,
+    "version": "",
+    "slot": "weapon",
+    "category": "Bladed Staff",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
+    "name": "Staff of air",
+    "id": 1381,
     "version": "",
     "slot": "weapon",
     "category": "Staff",
@@ -41823,16 +41886,7 @@
     "speed": 5
   },
   {
-    "name": "Staff of light",
-    "id": 22296,
-    "version": "",
-    "slot": "weapon",
-    "category": "Bladed Staff",
-    "isTwoHanded": false,
-    "speed": 4
-  },
-  {
-    "name": "Staff of the dead",
+    "name": "Staff of the Dead",
     "id": 11791,
     "version": "",
     "slot": "weapon",
@@ -41841,7 +41895,7 @@
     "speed": 4
   },
   {
-    "name": "Staff of the dead (Last Man Standing)",
+    "name": "Staff of the Dead (Last Man Standing)",
     "id": 23613,
     "version": "",
     "slot": "weapon",
@@ -44244,7 +44298,7 @@
     "speed": 3
   },
   {
-    "name": "Tome of earth",
+    "name": "Tome of Earth",
     "id": 30064,
     "version": "Charged",
     "slot": "shield",
@@ -44253,7 +44307,7 @@
     "speed": 0
   },
   {
-    "name": "Tome of earth",
+    "name": "Tome of Earth",
     "id": 30066,
     "version": "Empty",
     "slot": "shield",
@@ -44262,7 +44316,7 @@
     "speed": 0
   },
   {
-    "name": "Tome of fire",
+    "name": "Tome of Fire",
     "id": 20714,
     "version": "Charged",
     "slot": "shield",
@@ -44271,7 +44325,7 @@
     "speed": 0
   },
   {
-    "name": "Tome of fire",
+    "name": "Tome of Fire",
     "id": 20716,
     "version": "Empty",
     "slot": "shield",
@@ -44280,7 +44334,7 @@
     "speed": 0
   },
   {
-    "name": "Tome of fire (Last Man Standing)",
+    "name": "Tome of Fire (Last Man Standing)",
     "id": 27358,
     "version": "",
     "slot": "shield",
@@ -44289,7 +44343,7 @@
     "speed": 0
   },
   {
-    "name": "Tome of water",
+    "name": "Tome of Water",
     "id": 25574,
     "version": "Charged",
     "slot": "shield",
@@ -44298,7 +44352,7 @@
     "speed": 0
   },
   {
-    "name": "Tome of water",
+    "name": "Tome of Water",
     "id": 25576,
     "version": "Empty",
     "slot": "shield",
@@ -44307,7 +44361,7 @@
     "speed": 0
   },
   {
-    "name": "Tonalztics of ralos",
+    "name": "Tonalztics of Ralos",
     "id": 28922,
     "version": "Charged",
     "slot": "weapon",
@@ -44316,7 +44370,7 @@
     "speed": 6
   },
   {
-    "name": "Tonalztics of ralos",
+    "name": "Tonalztics of Ralos",
     "id": 28919,
     "version": "Uncharged",
     "slot": "weapon",
@@ -44766,7 +44820,7 @@
     "speed": 2
   },
   {
-    "name": "Toxic staff (deadman)",
+    "name": "Toxic staff (Deadman)",
     "id": 33036,
     "version": "Charged",
     "slot": "weapon",
@@ -44775,7 +44829,7 @@
     "speed": 4
   },
   {
-    "name": "Toxic staff (deadman)",
+    "name": "Toxic staff (Deadman)",
     "id": 33035,
     "version": "Uncharged",
     "slot": "weapon",
@@ -45414,7 +45468,7 @@
     "speed": 0
   },
   {
-    "name": "Trident of the seas",
+    "name": "Trident of the Seas",
     "id": 11905,
     "version": "Charged",
     "slot": "weapon",
@@ -45423,7 +45477,7 @@
     "speed": 4
   },
   {
-    "name": "Trident of the seas",
+    "name": "Trident of the Seas",
     "id": 11907,
     "version": "Partially charged",
     "slot": "weapon",
@@ -45432,7 +45486,7 @@
     "speed": 4
   },
   {
-    "name": "Trident of the seas",
+    "name": "Trident of the Seas",
     "id": 11908,
     "version": "Uncharged",
     "slot": "weapon",
@@ -45441,7 +45495,7 @@
     "speed": 4
   },
   {
-    "name": "Trident of the seas (e)",
+    "name": "Trident of the Seas (e)",
     "id": 22288,
     "version": "Charged",
     "slot": "weapon",
@@ -45450,7 +45504,7 @@
     "speed": 4
   },
   {
-    "name": "Trident of the seas (e)",
+    "name": "Trident of the Seas (e)",
     "id": 22290,
     "version": "Uncharged",
     "slot": "weapon",
@@ -45459,7 +45513,7 @@
     "speed": 4
   },
   {
-    "name": "Trident of the seas (e) (o)",
+    "name": "Trident of the Seas (e) (o)",
     "id": 33326,
     "version": "Charged",
     "slot": "weapon",
@@ -45468,7 +45522,7 @@
     "speed": 4
   },
   {
-    "name": "Trident of the seas (e) (o)",
+    "name": "Trident of the Seas (e) (o)",
     "id": 33328,
     "version": "Uncharged",
     "slot": "weapon",
@@ -45477,7 +45531,7 @@
     "speed": 4
   },
   {
-    "name": "Trident of the seas (o)",
+    "name": "Trident of the Seas (o)",
     "id": 33323,
     "version": "Fully charged",
     "slot": "weapon",
@@ -45486,7 +45540,7 @@
     "speed": 4
   },
   {
-    "name": "Trident of the seas (o)",
+    "name": "Trident of the Seas (o)",
     "id": 33322,
     "version": "Partially charged",
     "slot": "weapon",
@@ -45495,7 +45549,7 @@
     "speed": 4
   },
   {
-    "name": "Trident of the swamp",
+    "name": "Trident of the Swamp",
     "id": 12899,
     "version": "Charged",
     "slot": "weapon",
@@ -45504,7 +45558,7 @@
     "speed": 4
   },
   {
-    "name": "Trident of the swamp",
+    "name": "Trident of the Swamp",
     "id": 12900,
     "version": "Uncharged",
     "slot": "weapon",
@@ -45513,7 +45567,7 @@
     "speed": 4
   },
   {
-    "name": "Trident of the swamp (e)",
+    "name": "Trident of the Swamp (e)",
     "id": 22292,
     "version": "Charged",
     "slot": "weapon",
@@ -45522,7 +45576,7 @@
     "speed": 4
   },
   {
-    "name": "Trident of the swamp (e)",
+    "name": "Trident of the Swamp (e)",
     "id": 22294,
     "version": "Uncharged",
     "slot": "weapon",
@@ -45531,7 +45585,7 @@
     "speed": 4
   },
   {
-    "name": "Trident of the swamp (e) (o)",
+    "name": "Trident of the Swamp (e) (o)",
     "id": 33318,
     "version": "Charged",
     "slot": "weapon",
@@ -45540,7 +45594,7 @@
     "speed": 4
   },
   {
-    "name": "Trident of the swamp (e) (o)",
+    "name": "Trident of the Swamp (e) (o)",
     "id": 33320,
     "version": "Uncharged",
     "slot": "weapon",
@@ -45549,7 +45603,7 @@
     "speed": 4
   },
   {
-    "name": "Trident of the swamp (o)",
+    "name": "Trident of the Swamp (o)",
     "id": 33314,
     "version": "Charged",
     "slot": "weapon",
@@ -45558,7 +45612,7 @@
     "speed": 4
   },
   {
-    "name": "Trident of the swamp (o)",
+    "name": "Trident of the Swamp (o)",
     "id": 33316,
     "version": "Uncharged",
     "slot": "weapon",
@@ -46332,6 +46386,15 @@
     "speed": 0
   },
   {
+    "name": "Vampyre snelm",
+    "id": 34063,
+    "version": "",
+    "slot": "head",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Vampyric slayer helmet",
     "id": 25904,
     "version": "",
@@ -46479,6 +46542,15 @@
     "name": "Verac's brassard",
     "id": 4757,
     "version": "Undamaged",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Verac's brassard (Last Man Standing)",
+    "id": 27190,
+    "version": "",
     "slot": "body",
     "category": "",
     "isTwoHanded": false,
@@ -47412,6 +47484,15 @@
     "speed": 4
   },
   {
+    "name": "Voidwaker (Deadman)",
+    "id": 29607,
+    "version": "",
+    "slot": "weapon",
+    "category": "Slash Sword",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Voidwaker (Last Man Standing)",
     "id": 27869,
     "version": "",
@@ -47421,16 +47502,7 @@
     "speed": 4
   },
   {
-    "name": "Voidwaker (deadman)",
-    "id": 29607,
-    "version": "",
-    "slot": "weapon",
-    "category": "Slash Sword",
-    "isTwoHanded": false,
-    "speed": 4
-  },
-  {
-    "name": "Volatile nightmare staff",
+    "name": "Volatile Nightmare staff",
     "id": 24424,
     "version": "",
     "slot": "weapon",
@@ -47439,8 +47511,8 @@
     "speed": 5
   },
   {
-    "name": "Volatile nightmare staff (Last Man Standing)",
-    "id": 25517,
+    "name": "Volatile Nightmare staff (Deadman)",
+    "id": 29609,
     "version": "",
     "slot": "weapon",
     "category": "Staff",
@@ -47448,8 +47520,8 @@
     "speed": 5
   },
   {
-    "name": "Volatile nightmare staff (deadman)",
-    "id": 29609,
+    "name": "Volatile Nightmare staff (Last Man Standing)",
+    "id": 25517,
     "version": "",
     "slot": "weapon",
     "category": "Staff",
@@ -48744,7 +48816,7 @@
     "speed": 0
   },
   {
-    "name": "Wristbands of the arena",
+    "name": "Wristbands of the Arena",
     "id": 26696,
     "version": "Broken",
     "slot": "hands",
@@ -48753,7 +48825,7 @@
     "speed": 0
   },
   {
-    "name": "Wristbands of the arena",
+    "name": "Wristbands of the Arena",
     "id": 26725,
     "version": "Charged",
     "slot": "hands",
@@ -48762,7 +48834,7 @@
     "speed": 0
   },
   {
-    "name": "Wristbands of the arena",
+    "name": "Wristbands of the Arena",
     "id": 26726,
     "version": "Charged and Locked",
     "slot": "hands",
@@ -48771,7 +48843,7 @@
     "speed": 0
   },
   {
-    "name": "Wristbands of the arena",
+    "name": "Wristbands of the Arena",
     "id": 26724,
     "version": "Locked",
     "slot": "hands",
@@ -48780,7 +48852,7 @@
     "speed": 0
   },
   {
-    "name": "Wristbands of the arena",
+    "name": "Wristbands of the Arena",
     "id": 26723,
     "version": "Normal",
     "slot": "hands",
@@ -48789,7 +48861,7 @@
     "speed": 0
   },
   {
-    "name": "Wristbands of the arena (i)",
+    "name": "Wristbands of the Arena (i)",
     "id": 26697,
     "version": "Broken",
     "slot": "hands",
@@ -48798,7 +48870,7 @@
     "speed": 0
   },
   {
-    "name": "Wristbands of the arena (i)",
+    "name": "Wristbands of the Arena (i)",
     "id": 26729,
     "version": "Charged",
     "slot": "hands",
@@ -48807,7 +48879,7 @@
     "speed": 0
   },
   {
-    "name": "Wristbands of the arena (i)",
+    "name": "Wristbands of the Arena (i)",
     "id": 26730,
     "version": "Charged and Locked",
     "slot": "hands",
@@ -48816,7 +48888,7 @@
     "speed": 0
   },
   {
-    "name": "Wristbands of the arena (i)",
+    "name": "Wristbands of the Arena (i)",
     "id": 26728,
     "version": "Locked",
     "slot": "hands",
@@ -48825,7 +48897,7 @@
     "speed": 0
   },
   {
-    "name": "Wristbands of the arena (i)",
+    "name": "Wristbands of the Arena (i)",
     "id": 26727,
     "version": "Normal",
     "slot": "hands",
@@ -48918,7 +48990,7 @@
     "name": "Wyrmscraig villager robe bottom (A)",
     "id": 33923,
     "version": "Black",
-    "slot": "body",
+    "slot": "legs",
     "category": "Unarmed",
     "isTwoHanded": false,
     "speed": 0
@@ -48927,7 +48999,7 @@
     "name": "Wyrmscraig villager robe bottom (A)",
     "id": 33911,
     "version": "Blue",
-    "slot": "body",
+    "slot": "legs",
     "category": "Unarmed",
     "isTwoHanded": false,
     "speed": 0
@@ -48936,7 +49008,7 @@
     "name": "Wyrmscraig villager robe bottom (A)",
     "id": 33908,
     "version": "Green",
-    "slot": "body",
+    "slot": "legs",
     "category": "Unarmed",
     "isTwoHanded": false,
     "speed": 0
@@ -48945,7 +49017,7 @@
     "name": "Wyrmscraig villager robe bottom (A)",
     "id": 33926,
     "version": "Pink",
-    "slot": "body",
+    "slot": "legs",
     "category": "Unarmed",
     "isTwoHanded": false,
     "speed": 0
@@ -48954,7 +49026,7 @@
     "name": "Wyrmscraig villager robe bottom (A)",
     "id": 33914,
     "version": "Red",
-    "slot": "body",
+    "slot": "legs",
     "category": "Unarmed",
     "isTwoHanded": false,
     "speed": 0
@@ -48963,7 +49035,7 @@
     "name": "Wyrmscraig villager robe bottom (A)",
     "id": 33920,
     "version": "White",
-    "slot": "body",
+    "slot": "legs",
     "category": "Unarmed",
     "isTwoHanded": false,
     "speed": 0
@@ -48972,7 +49044,7 @@
     "name": "Wyrmscraig villager robe bottom (A)",
     "id": 33917,
     "version": "Yellow",
-    "slot": "body",
+    "slot": "legs",
     "category": "Unarmed",
     "isTwoHanded": false,
     "speed": 0
@@ -48981,7 +49053,7 @@
     "name": "Wyrmscraig villager robe bottom (B)",
     "id": 33944,
     "version": "Black",
-    "slot": "body",
+    "slot": "legs",
     "category": "Unarmed",
     "isTwoHanded": false,
     "speed": 0
@@ -48990,7 +49062,7 @@
     "name": "Wyrmscraig villager robe bottom (B)",
     "id": 33932,
     "version": "Blue",
-    "slot": "body",
+    "slot": "legs",
     "category": "Unarmed",
     "isTwoHanded": false,
     "speed": 0
@@ -48999,7 +49071,7 @@
     "name": "Wyrmscraig villager robe bottom (B)",
     "id": 33929,
     "version": "Green",
-    "slot": "body",
+    "slot": "legs",
     "category": "Unarmed",
     "isTwoHanded": false,
     "speed": 0
@@ -49008,7 +49080,7 @@
     "name": "Wyrmscraig villager robe bottom (B)",
     "id": 33947,
     "version": "Pink",
-    "slot": "body",
+    "slot": "legs",
     "category": "Unarmed",
     "isTwoHanded": false,
     "speed": 0
@@ -49017,7 +49089,7 @@
     "name": "Wyrmscraig villager robe bottom (B)",
     "id": 33935,
     "version": "Red",
-    "slot": "body",
+    "slot": "legs",
     "category": "Unarmed",
     "isTwoHanded": false,
     "speed": 0
@@ -49026,7 +49098,7 @@
     "name": "Wyrmscraig villager robe bottom (B)",
     "id": 33941,
     "version": "White",
-    "slot": "body",
+    "slot": "legs",
     "category": "Unarmed",
     "isTwoHanded": false,
     "speed": 0
@@ -49035,7 +49107,7 @@
     "name": "Wyrmscraig villager robe bottom (B)",
     "id": 33938,
     "version": "Yellow",
-    "slot": "body",
+    "slot": "legs",
     "category": "Unarmed",
     "isTwoHanded": false,
     "speed": 0
