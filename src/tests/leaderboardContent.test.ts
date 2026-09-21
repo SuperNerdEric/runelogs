@@ -69,6 +69,33 @@ describe("Yama leaderboard content", () => {
   });
 });
 
+describe("Chambers of Xeric leaderboard content", () => {
+  it("includes normal and challenge mode with standard player counts", () => {
+    expect(
+      LEADERBOARD_CONTENT_OPTIONS.find(
+        (option) => option.value === "Chambers of Xeric",
+      ),
+    ).toEqual({
+      label: "Chambers of Xeric",
+      value: "Chambers of Xeric",
+      spriteKey: "chambers_of_xeric",
+      playerCounts: [1, 2, 3, 4, 5, 6, 7, 8],
+      defaultPlayerCount: 3,
+    });
+    expect(
+      LEADERBOARD_CONTENT_OPTIONS.find(
+        (option) => option.value === "Chambers of Xeric: Challenge Mode",
+      ),
+    ).toEqual({
+      label: "Chambers of Xeric: Challenge Mode",
+      value: "Chambers of Xeric: Challenge Mode",
+      spriteKey: "chambers_of_xeric_challenge_mode",
+      playerCounts: [1, 2, 3, 4, 5],
+      defaultPlayerCount: 3,
+    });
+  });
+});
+
 describe("Maggot King leaderboard content", () => {
   it("is solo-only", () => {
     const maggotKing = LEADERBOARD_CONTENT_OPTIONS.find(

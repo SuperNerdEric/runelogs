@@ -1276,6 +1276,36 @@ a.encounter-title-bar.encounter-title-bar--clickable:hover {
   text-transform: uppercase;
 }
 
+.cox-raid-info {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px 28px;
+  margin: 16px auto 0;
+  max-width: 520px;
+}
+
+.cox-raid-info__stat {
+  min-width: 96px;
+  text-align: center;
+}
+
+.cox-raid-info__label {
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+}
+
+.cox-raid-info__value {
+  color: var(--color-text-primary);
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+}
+
 .colosseum-modifiers-section__body {
   padding: 16px 0 0;
   text-align: left;

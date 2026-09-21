@@ -27,6 +27,16 @@ export const DISCOVER_CONTENT_SEO_SNIPPETS: Record<
     description:
       "Tombs of Amascut Expert Mode leaderboard for OSRS. Track TOA EM run times and Wardens DPS on Runelogs.",
   },
+  "Chambers of Xeric": {
+    titleSuffix: "Chambers of Xeric (CoX)",
+    description:
+      "Chambers of Xeric leaderboard for Old School RuneScape. Compare CoX raid times and Great Olm DPS from Combat Logger uploads on Runelogs.",
+  },
+  "Chambers of Xeric: Challenge Mode": {
+    titleSuffix: "Chambers of Xeric Challenge Mode (CM)",
+    description:
+      "Chambers of Xeric Challenge Mode leaderboard for OSRS. Track CoX CM raid times and Great Olm DPS on Runelogs.",
+  },
   "Fight Caves": {
     titleSuffix: "Fight Caves",
     description:

@@ -23,6 +23,7 @@ import RunSummaryRankBadges from "./badges/RunSummaryRankBadges";
 import { resolvePlayerRankPercentile } from "./badges/playerRankPercentile";
 import ColosseumModifiers from "./ColosseumModifiers";
 import ToaRaidLevel from "./ToaRaidLevel";
+import CoxRaidInfo from "./CoxRaidInfo";
 import { hasColosseumModifierData } from "../utils/colosseumModifiers";
 import {
   MOKHAIOTL_HIGH_SCORE_MODE_LABEL,
@@ -381,6 +382,7 @@ const FightGroupSummary: React.FC = () => {
           </Box>
         )}
         <ToaRaidLevel toa={data.extraInfo?.toa} />
+        <CoxRaidInfo cox={data.extraInfo?.cox} />
       </Box>
 
       <RunSummaryRankBadges

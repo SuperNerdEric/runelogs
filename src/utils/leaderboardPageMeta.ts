@@ -14,7 +14,7 @@ import { formatPageTitle } from "./pageMetaFormatting";
 const DEFAULT_LEADERBOARD_META = {
   title: "OSRS Leaderboards - TOB, TOA, Inferno & More | Runelogs",
   description:
-    "OSRS combat log leaderboards on Runelogs. Compare run times and boss DPS for Theatre of Blood, Tombs of Amascut, Inferno, Colosseum, Gauntlet, Mokhaiotl, Yama, and Maggot King.",
+    "OSRS combat log leaderboards on Runelogs. Compare run times and boss DPS for Theatre of Blood, Tombs of Amascut, Chambers of Xeric, Inferno, Colosseum, Gauntlet, Mokhaiotl, Yama, and Maggot King.",
   canonicalPath: "/leaderboards",
 };
 

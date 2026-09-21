@@ -5,9 +5,18 @@ export interface ToaExtraInfo {
   raidLevel: number;
 }
 
+export interface CoxExtraInfo {
+  partySize: number;
+  teamPoints: number;
+  playerPoints: number;
+  playerName?: string;
+  challengeMode?: boolean;
+}
+
 export interface FightGroupExtraInfo {
   colosseum?: ColosseumModifierData;
   toa?: ToaExtraInfo;
+  cox?: CoxExtraInfo;
   mokhaiotl?: {
     delve1to8DurationTicks?: number;
     deepDelve?: {

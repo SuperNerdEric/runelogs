@@ -43,6 +43,8 @@ export enum LogTypes {
   FIGHT_START = "Fight Start",
   TOB_SCALE = "ToB Scale",
   TOB_BOSS_HP = "ToB Boss HP",
+  COX_RAID_COMPLETE = "CoX Raid Complete",
+  COX_RAID_MODE = "CoX Raid Mode",
 }
 
 export interface BaseLog {
@@ -319,6 +321,18 @@ export interface RaidCompleteLog extends BaseLog {
   duration: string;
 }
 
+export interface CoxRaidCompleteLog extends BaseLog {
+  type: LogTypes.COX_RAID_COMPLETE;
+  partySize: number;
+  teamPoints: number;
+  playerPoints: number;
+}
+
+export interface CoxRaidModeLog extends BaseLog {
+  type: LogTypes.COX_RAID_MODE;
+  challengeMode: boolean;
+}
+
 export interface DurationLog extends BaseLog {
   type: LogTypes.DURATION;
   duration: string;
@@ -383,7 +397,9 @@ export type LogLine =
   | DurationLog
   | FightStartLog
   | TobScaleLog
-  | TobBossHpLog;
+  | TobBossHpLog
+  | CoxRaidCompleteLog
+  | CoxRaidModeLog;
 
 export function filterByType<T extends LogLine["type"]>(
   logs: LogLine[],

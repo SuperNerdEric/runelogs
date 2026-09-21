@@ -1262,6 +1262,14 @@ const EventsTable: React.FC<EventsTableProps> = ({
                             {log.type === LogTypes.TOB_SCALE
                               ? `Scale: ${log.scale}`
                               : ""}
+                            {log.type === LogTypes.COX_RAID_COMPLETE
+                              ? `Scale: ${log.partySize}  Party: ${log.teamPoints.toLocaleString()}  Player: ${log.playerPoints.toLocaleString()}`
+                              : ""}
+                            {log.type === LogTypes.COX_RAID_MODE
+                              ? log.challengeMode
+                                ? "Challenge Mode"
+                                : "Normal"
+                              : ""}
                             {log.type === LogTypes.TOB_BOSS_HP
                               ? (() => {
                                   const hp = tobBossHpByLog.get(log);

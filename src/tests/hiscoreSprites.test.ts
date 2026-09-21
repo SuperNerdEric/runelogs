@@ -16,6 +16,12 @@ describe("hiscoreSprites", () => {
     expect(resolveContentSpriteKey("Tombs of Amascut: Expert Mode")).toBe(
       "tombs_of_amascut_expert",
     );
+    expect(resolveContentSpriteKey("Chambers of Xeric")).toBe(
+      "chambers_of_xeric",
+    );
+    expect(resolveContentSpriteKey("Chambers of Xeric: Challenge Mode")).toBe(
+      "chambers_of_xeric_challenge_mode",
+    );
     expect(resolveContentSpriteKey("Fight Caves")).toBe("tztok_jad");
     expect(resolveContentSpriteKey("The Inferno")).toBe("tzkal_zuk");
     expect(resolveContentSpriteKey(RECENT_ENCOUNTERS_ALL_CONTENT)).toBe(

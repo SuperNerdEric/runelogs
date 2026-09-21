@@ -264,7 +264,8 @@ const About: React.FC = () => {
           Raids and other multi-fight content get a summary page listing every
           fight in order, with total duration, overall DPS, and rank badges
           where applicable. Extra info shows up when the log has it, such as ToA
-          raid level, Colosseum modifiers, or Mokhaiotl delve stats.
+          raid level, CoX points and raid scale, Colosseum modifiers, or
+          Mokhaiotl delve stats.
         </Typography>
 
         <Typography variant="h6" component="h2" sx={sectionTitleSx}>
@@ -277,8 +278,6 @@ const About: React.FC = () => {
           track run times and DPS from your logs, staying up to date as new runs
           are logged. Only the content below has leaderboards. Everything else
           Combat Logger records still gets full fight pages, just without ranks.
-          Chambers of Xeric (CoX) is a common example: logs parse normally, but
-          CoX is not on the leaderboard list yet.
         </Typography>
         <Box component="ul" sx={listSx}>
           {LEADERBOARD_CONTENT_OPTIONS.map((option) => {
@@ -310,8 +309,8 @@ const About: React.FC = () => {
         <Typography variant="body1" sx={bodyTextSx}>
           Anything Combat Logger records can be sent to Runelogs and browsed,
           whether or not it appears on a leaderboard. Slayer bosses, GWD, Nex,
-          Barrows, Chambers of Xeric, and other activities all get fight pages
-          with the same tabs and tools.
+          Barrows, and other activities all get fight pages with the same tabs
+          and tools.
         </Typography>
 
         <Typography variant="h6" component="h2" sx={sectionTitleSx}>
