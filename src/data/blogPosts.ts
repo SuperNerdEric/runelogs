@@ -92,6 +92,56 @@ export function getBlogPostSummary(post: BlogPost): string {
 const BLOG_POSTS_RAW: BlogPostInput[] = [
   // Runelogs
   {
+    date: "2026-09-22",
+    title: "Chambers of Xeric Leaderboards",
+    category: "runelogs",
+    body: {
+      summary:
+        "Official time and DPS leaderboards are live for Chambers of Xeric and Challenge Mode, with cleaner room fights, Great Olm as one encounter, and raid points on your runs.",
+      paragraphs: [
+        "Combat Logger has already been writing Chambers of Xeric raid information into your logs. What is new is official leaderboards for Chambers of Xeric and Chambers of Xeric: Challenge Mode. Time boards rank completed raids by the official duration reported by the game, and DPS boards cover each official room plus an overall score, using the same party-size filters you already know from Theatre of Blood.",
+        "You'll find both modes first in every content menu: homepage leaderboards, the drawer, My Logs, and Recent Encounters. Challenge Mode is its own board, labeled from the completion count chat when that line is in the log. Raids you already uploaded are on the boards now, and new uploads and live raids go on immediately.",
+        "Raid rooms now group as official fights. A player death does not end the room: you respawn and the fight continues until the boss dies or the raid moves on. Great Olm's hands and head are one fight named Great Olm, and the number of hand phases depends on raid scale.",
+        "On a completed run you'll see raid scale, party points, and the logged-in player's points by name. Replay and encounter pages use the official room names, so a Vanguards kill stays a Vanguards fight instead of leaking into the next room.",
+      ],
+      headings: [
+        { text: "Official Leaderboards", beforeParagraph: 0 },
+        { text: "Official Raid Rooms", beforeParagraph: 2 },
+      ],
+      lists: [
+        {
+          items: [
+            "Ice Demon",
+            "Lizardman Shamans",
+            "Muttadiles",
+            "Skeletal Mystics",
+            "Tekton",
+            "Vanguards",
+            "Vasa Nistirio",
+            "Vespula",
+            "Great Olm",
+          ],
+          afterParagraph: 2,
+        },
+      ],
+      images: [
+        {
+          src: "/blog/cox-leaderboards.png",
+          alt: "Chambers of Xeric time leaderboard showing ranked 3-player raid completions",
+          caption: "Chambers of Xeric time leaderboard for 3-player raids.",
+          afterParagraph: 0,
+        },
+        {
+          src: "/blog/vanguards.png",
+          alt: "Replay map of the Vanguards room with health bars on each Vanguard",
+          caption:
+            "The Vanguards on the replay map, now grouped as an official Chambers of Xeric fight.",
+          afterParagraph: 3,
+        },
+      ],
+    },
+  },
+  {
     date: "2026-08-04",
     title: "Gear Setups",
     category: "runelogs",
@@ -562,6 +612,19 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
 
   // Combat Logger
+  {
+    date: "2026-08-11",
+    title: "1.7.2 Release",
+    category: "combat-logger",
+    body: {
+      summary:
+        "Combat Logger 1.7.2 fixes a live logging crash on plugin startup and reports in chat when automatic live logging turns itself off.",
+      paragraphs: [
+        "Combat Logger 1.7.2 fixes a crash that could stop live logging as soon as the plugin loaded. The live session now starts cleanly when the plugin does, so a restart no longer drops an in-progress stream.",
+        "When automatic live logging turns itself off, you now get a chat message instead of a dialog box. Update to 1.7.2 if you live-stream raids and want those sessions to stay attached after a client or plugin restart.",
+      ],
+    },
+  },
   {
     date: "2026-08-02",
     title: "1.7.1 Release",
