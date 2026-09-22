@@ -283,6 +283,12 @@
         <loc>https://www.runelogs.com/leaderboards</loc>
     </url>
     <url>
+        <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Chambers+of+Xeric&amp;playerCount=3</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Chambers+of+Xeric%3A+Challenge+Mode&amp;playerCount=3</loc>
+    </url>
+    <url>
         <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Theatre+of+Blood&amp;playerCount=4</loc>
     </url>
     <url>
@@ -293,12 +299,6 @@
     </url>
     <url>
         <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Tombs+of+Amascut%3A+Expert+Mode&amp;playerCount=1</loc>
-    </url>
-    <url>
-        <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Chambers+of+Xeric&amp;playerCount=3</loc>
-    </url>
-    <url>
-        <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Chambers+of+Xeric%3A+Challenge+Mode&amp;playerCount=3</loc>
     </url>
     <url>
         <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Fight+Caves&amp;playerCount=1</loc>
@@ -328,6 +328,12 @@
         <loc>https://www.runelogs.com/recent-encounters</loc>
     </url>
     <url>
+        <loc>https://www.runelogs.com/recent-encounters?content=Chambers+of+Xeric&amp;playerCount=3</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/recent-encounters?content=Chambers+of+Xeric%3A+Challenge+Mode&amp;playerCount=3</loc>
+    </url>
+    <url>
         <loc>https://www.runelogs.com/recent-encounters?content=Theatre+of+Blood&amp;playerCount=4</loc>
     </url>
     <url>
@@ -338,12 +344,6 @@
     </url>
     <url>
         <loc>https://www.runelogs.com/recent-encounters?content=Tombs+of+Amascut%3A+Expert+Mode&amp;playerCount=1</loc>
-    </url>
-    <url>
-        <loc>https://www.runelogs.com/recent-encounters?content=Chambers+of+Xeric&amp;playerCount=3</loc>
-    </url>
-    <url>
-        <loc>https://www.runelogs.com/recent-encounters?content=Chambers+of+Xeric%3A+Challenge+Mode&amp;playerCount=3</loc>
     </url>
     <url>
         <loc>https://www.runelogs.com/recent-encounters?content=Fight+Caves&amp;playerCount=1</loc>

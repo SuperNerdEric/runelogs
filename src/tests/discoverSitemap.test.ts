@@ -17,7 +17,7 @@ describe("discover sitemap URLs", () => {
 
     expect(urls).toHaveLength(LEADERBOARD_CONTENT_OPTIONS.length);
     expect(urls[0]).toBe(
-      `${SITE_URL}/leaderboards?mode=time&leaderboard=Theatre+of+Blood&playerCount=4`,
+      `${SITE_URL}/leaderboards?mode=time&leaderboard=Chambers+of+Xeric&playerCount=3`,
     );
     expect(urls.some((url) => url.includes("Maggot+King"))).toBe(true);
   });
@@ -27,7 +27,7 @@ describe("discover sitemap URLs", () => {
 
     expect(urls).toHaveLength(LEADERBOARD_CONTENT_OPTIONS.length);
     expect(urls[0]).toBe(
-      `${SITE_URL}/recent-encounters?content=Theatre+of+Blood&playerCount=4`,
+      `${SITE_URL}/recent-encounters?content=Chambers+of+Xeric&playerCount=3`,
     );
     expect(urls.some((url) => url.includes("Maggot+King"))).toBe(true);
     expect(urls.some((url) => url.includes("content=all"))).toBe(false);

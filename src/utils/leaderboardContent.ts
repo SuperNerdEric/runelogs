@@ -2,12 +2,12 @@
 import { usernameToPathSegment } from "./utils";
 
 export const LEADERBOARD_FIGHT_GROUP_NAMES = [
+  "Chambers of Xeric",
+  "Chambers of Xeric: Challenge Mode",
   "Theatre of Blood",
   "Theatre of Blood: Hard Mode",
   "Tombs of Amascut",
   "Tombs of Amascut: Expert Mode",
-  "Chambers of Xeric",
-  "Chambers of Xeric: Challenge Mode",
   "Fight Caves",
   "The Inferno",
   "Fortis Colosseum",
@@ -22,12 +22,12 @@ export const MAGGOT_KING_CONTENT_NAME = "Maggot King";
 
 /** Content whose encounters are referred to as "raids". */
 export const RAID_CONTENT_NAMES = [
+  "Chambers of Xeric",
+  "Chambers of Xeric: Challenge Mode",
   "Theatre of Blood",
   "Theatre of Blood: Hard Mode",
   "Tombs of Amascut",
   "Tombs of Amascut: Expert Mode",
-  "Chambers of Xeric",
-  "Chambers of Xeric: Challenge Mode",
 ] as const;
 
 /** Content whose encounters are referred to as "runs". */
@@ -98,6 +98,28 @@ export type LeaderboardContentOption = {
 export const LEADERBOARD_DPS_BOSS_NAMES: Partial<
   Record<string, readonly string[]>
 > = {
+  "Chambers of Xeric": [
+    "Ice Demon",
+    "Lizardman Shamans",
+    "Muttadiles",
+    "Skeletal Mystics",
+    "Tekton",
+    "Vanguards",
+    "Vasa Nistirio",
+    "Vespula",
+    "Great Olm",
+  ],
+  "Chambers of Xeric: Challenge Mode": [
+    "Ice Demon",
+    "Lizardman Shamans",
+    "Muttadiles",
+    "Skeletal Mystics",
+    "Tekton",
+    "Vanguards",
+    "Vasa Nistirio",
+    "Vespula",
+    "Great Olm",
+  ],
   "Theatre of Blood": [
     "The Maiden of Sugadinti",
     "Pestilent Bloat",
@@ -136,28 +158,6 @@ export const LEADERBOARD_DPS_BOSS_NAMES: Partial<
     "Wardens P2",
     "Wardens P3",
   ],
-  "Chambers of Xeric": [
-    "Ice Demon",
-    "Lizardman Shamans",
-    "Muttadiles",
-    "Skeletal Mystics",
-    "Tekton",
-    "Vanguards",
-    "Vasa Nistirio",
-    "Vespula",
-    "Great Olm",
-  ],
-  "Chambers of Xeric: Challenge Mode": [
-    "Ice Demon",
-    "Lizardman Shamans",
-    "Muttadiles",
-    "Skeletal Mystics",
-    "Tekton",
-    "Vanguards",
-    "Vasa Nistirio",
-    "Vespula",
-    "Great Olm",
-  ],
   "Fight Caves": ["TzTok-Jad"],
   "The Inferno": ["TzKal-Zuk"],
   "Fortis Colosseum": ["Sol Heredit"],
@@ -176,6 +176,20 @@ export const LEADERBOARD_DPS_BOSS_NAMES: Partial<
 };
 
 export const LEADERBOARD_CONTENT_OPTIONS: LeaderboardContentOption[] = [
+  {
+    label: "Chambers of Xeric",
+    value: "Chambers of Xeric",
+    spriteKey: "chambers_of_xeric",
+    playerCounts: [1, 2, 3, 4, 5, 6, 7, 8],
+    defaultPlayerCount: 3,
+  },
+  {
+    label: "Chambers of Xeric: Challenge Mode",
+    value: "Chambers of Xeric: Challenge Mode",
+    spriteKey: "chambers_of_xeric_challenge_mode",
+    playerCounts: [1, 2, 3, 4, 5],
+    defaultPlayerCount: 3,
+  },
   {
     label: "Theatre of Blood",
     value: "Theatre of Blood",
@@ -203,20 +217,6 @@ export const LEADERBOARD_CONTENT_OPTIONS: LeaderboardContentOption[] = [
     spriteKey: "tombs_of_amascut_expert",
     playerCounts: [1, 2, 3, 4, 5, 6, 7, 8],
     defaultPlayerCount: 1,
-  },
-  {
-    label: "Chambers of Xeric",
-    value: "Chambers of Xeric",
-    spriteKey: "chambers_of_xeric",
-    playerCounts: [1, 2, 3, 4, 5, 6, 7, 8],
-    defaultPlayerCount: 3,
-  },
-  {
-    label: "Chambers of Xeric: Challenge Mode",
-    value: "Chambers of Xeric: Challenge Mode",
-    spriteKey: "chambers_of_xeric_challenge_mode",
-    playerCounts: [1, 2, 3, 4, 5],
-    defaultPlayerCount: 3,
   },
   {
     label: "Fight Caves",

@@ -26,7 +26,9 @@ describe("browse player count filters", () => {
       1, 2, 3, 4, 5,
     ]);
 
-    const tob = LEADERBOARD_CONTENT_OPTIONS[0];
+    const tob = LEADERBOARD_CONTENT_OPTIONS.find(
+      (option) => option.value === "Theatre of Blood",
+    )!;
     expect(resolveBrowsePlayerCount(tob, null)).toBe(BROWSE_ANY_PLAYER_COUNT);
     expect(
       browsePlayerCountToApiParam(BROWSE_ANY_PLAYER_COUNT),
@@ -34,7 +36,9 @@ describe("browse player count filters", () => {
   });
 
   it("preserve a specific player count from the URL when valid", () => {
-    const tob = LEADERBOARD_CONTENT_OPTIONS[0];
+    const tob = LEADERBOARD_CONTENT_OPTIONS.find(
+      (option) => option.value === "Theatre of Blood",
+    )!;
     expect(resolveBrowsePlayerCount(tob, "3")).toBe(3);
     expect(browsePlayerCountToApiParam(3)).toBe(3);
   });
@@ -70,6 +74,17 @@ describe("Yama leaderboard content", () => {
 });
 
 describe("Chambers of Xeric leaderboard content", () => {
+  it("lists both CoX modes first, before Theatre of Blood", () => {
+    expect(
+      LEADERBOARD_CONTENT_OPTIONS.slice(0, 4).map((option) => option.value),
+    ).toEqual([
+      "Chambers of Xeric",
+      "Chambers of Xeric: Challenge Mode",
+      "Theatre of Blood",
+      "Theatre of Blood: Hard Mode",
+    ]);
+  });
+
   it("includes normal and challenge mode with standard player counts", () => {
     expect(
       LEADERBOARD_CONTENT_OPTIONS.find(
