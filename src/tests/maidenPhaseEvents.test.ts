@@ -196,6 +196,24 @@ describe("getMaidenPhaseMarkers", () => {
     expect(getMaidenPhaseMarkers(fight).map((m) => m.tick)).toEqual([70, 120]);
   });
 
+  it("ignores Verzik's phase 2 Matomenos", () => {
+    const verzikIds = [8385, 10845, 10862];
+    for (const id of verzikIds) {
+      const fight = makeFight(
+        [
+          ...spawnWave(1, 40, 4),
+          ...spawnWave(10, 80, 4),
+          ...spawnWave(20, 120, 4),
+        ].map((log) => ({
+          ...log,
+          source: { ...log.source!, id },
+        })),
+        { name: "Verzik Vitur", mainEnemyName: "Verzik Vitur" },
+      );
+      expect(getMaidenPhaseMarkers(fight)).toEqual([]);
+    }
+  });
+
   it("returns no markers when there are no Matomenos", () => {
     const fight = makeFight([
       {

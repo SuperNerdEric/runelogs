@@ -4,19 +4,19 @@ import { LogLine } from "../models/LogLine";
 import { TICK_DURATION_SECONDS } from "../lib/replayTiming";
 
 /**
- * All Nylocas Matomenos NPC ids across ToB modes (regular / entry / hard).
- * These "crabs" only spawn during The Maiden of Sugadinti fight, in a burst at
- * each HP threshold, so their appearance is a reliable phase signal even for
- * old logs recorded before boss-HP tracking existed.
+ * Maiden's Nylocas Matomenos ("crab") NPC ids. Each HP threshold spawns a
+ * burst of these, so their appearance is a reliable phase signal even for old
+ * logs recorded before boss-HP tracking existed.
+ *
+ * Verzik Vitur spawns a different Matomenos during phase 2 (8385 regular,
+ * 10845 entry, 10862 hard). Those ids sit next to her Athanatos and must not
+ * be included, or her damage chart draws Maiden's 70/50/30% lines.
  */
 export const NYLOCAS_MATOMENOS_IDS: ReadonlySet<number> = new Set([
-  8366,
-  8385, // regular
-  10820,
-  10828, // entry mode
-  10845,
-  10862, // hard mode
-  15993,
+  8366, // regular
+  10820, // entry
+  10828, // hard
+  15993, // A Night at the Theatre
 ]);
 
 /**
