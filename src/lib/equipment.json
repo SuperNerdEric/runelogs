@@ -4230,6 +4230,15 @@
     "speed": 0
   },
   {
+    "name": "Ascension crossbows",
+    "id": 34681,
+    "version": "",
+    "slot": "weapon",
+    "category": "Crossbow",
+    "isTwoHanded": true,
+    "speed": 2
+  },
+  {
     "name": "Assembler max cape",
     "id": 21916,
     "version": "Broken",
@@ -33246,6 +33255,24 @@
     "speed": 0
   },
   {
+    "name": "Obligator",
+    "id": 34715,
+    "version": "1",
+    "slot": "weapon",
+    "category": "Unarmed",
+    "isTwoHanded": true,
+    "speed": 5
+  },
+  {
+    "name": "Obligator",
+    "id": 34717,
+    "version": "2",
+    "slot": "weapon",
+    "category": "Unarmed",
+    "isTwoHanded": true,
+    "speed": 5
+  },
+  {
     "name": "Obsidian cape",
     "id": 6568,
     "version": "",
@@ -37222,6 +37249,15 @@
     "category": "Blunt",
     "isTwoHanded": false,
     "speed": 5
+  },
+  {
+    "name": "Rondache",
+    "id": 34719,
+    "version": "",
+    "slot": "shield",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
   },
   {
     "name": "Rosewood blowpipe",
@@ -50317,6 +50353,24 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Zorya's tome",
+    "id": 34725,
+    "version": "1",
+    "slot": "weapon",
+    "category": "Unarmed",
+    "isTwoHanded": true,
+    "speed": 3
+  },
+  {
+    "name": "Zorya's tome",
+    "id": 34727,
+    "version": "2",
+    "slot": "weapon",
+    "category": "Unarmed",
+    "isTwoHanded": true,
+    "speed": 3
   },
   {
     "name": "Zuriel's hood (Deadman Mode)",
