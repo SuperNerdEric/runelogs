@@ -4230,6 +4230,15 @@
     "speed": 0
   },
   {
+    "name": "Ascension bolts",
+    "id": 34684,
+    "version": "",
+    "slot": "ammo",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Ascension crossbows",
     "id": 34681,
     "version": "",
@@ -18531,6 +18540,24 @@
     "speed": 0
   },
   {
+    "name": "Diamond ascension bolts",
+    "id": 34690,
+    "version": "",
+    "slot": "ammo",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Diamond ascension bolts (e)",
+    "id": 34696,
+    "version": "",
+    "slot": "ammo",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Diamond bolts",
     "id": 9340,
     "version": "",
@@ -29943,6 +29970,51 @@
     "speed": 4
   },
   {
+    "name": "Living record (tier 1)",
+    "id": 34659,
+    "version": "",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Living record (tier 2)",
+    "id": 34661,
+    "version": "",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Living record (tier 3)",
+    "id": 34663,
+    "version": "",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Living record (tier 4)",
+    "id": 34665,
+    "version": "",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Living record (tier 5)",
+    "id": 34667,
+    "version": "",
+    "slot": "cape",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Log basket",
     "id": 28140,
     "version": "Closed",
@@ -33257,7 +33329,7 @@
   {
     "name": "Obligator",
     "id": 34715,
-    "version": "1",
+    "version": "Charged",
     "slot": "weapon",
     "category": "Unarmed",
     "isTwoHanded": true,
@@ -33266,7 +33338,7 @@
   {
     "name": "Obligator",
     "id": 34717,
-    "version": "2",
+    "version": "Uncharged",
     "slot": "weapon",
     "category": "Unarmed",
     "isTwoHanded": true,
@@ -33448,6 +33520,24 @@
     "id": 6581,
     "version": "",
     "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Onyx ascension bolts",
+    "id": 34702,
+    "version": "",
+    "slot": "ammo",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Onyx ascension bolts (e)",
+    "id": 34708,
+    "version": "",
+    "slot": "ammo",
     "category": "",
     "isTwoHanded": false,
     "speed": 0
@@ -50357,7 +50447,7 @@
   {
     "name": "Zorya's tome",
     "id": 34725,
-    "version": "1",
+    "version": "Charged",
     "slot": "weapon",
     "category": "Unarmed",
     "isTwoHanded": true,
@@ -50366,7 +50456,7 @@
   {
     "name": "Zorya's tome",
     "id": 34727,
-    "version": "2",
+    "version": "Uncharged",
     "slot": "weapon",
     "category": "Unarmed",
     "isTwoHanded": true,
