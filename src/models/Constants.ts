@@ -148,6 +148,17 @@ export const MELEE_ANIMATIONS = [
   10079, // Felling axe
   6147, // Ancient mace spec
   10989, // Dual macuahuitl
+  14467, // Hallowfell chop
+  14470, // Hallowfell slash
+  14469, // Hallowfell smash
+  14471, // Hallowfell block
+  15122, // Obligator smash
+  15130, // Obligator smash
+  15123, // Obligator thrust
+  15131, // Obligator thrust
+  15133, // Obligator block
+  15134, // Obligator block
+  15108, // Rondache shield bash
 ];
 
 export const RANGED_ANIMATIONS = [
@@ -179,6 +190,10 @@ export const RANGED_ANIMATIONS = [
   10922, // Tonalztics of ralos
   10923, // Tonalztics of ralos
   10914, // Tonalztics of ralos spec
+  15113, // Ascension crossbows
+  15114, // Ascension crossbows
+  15115, // Ascension crossbows
+  15116, // Ascension crossbows
 ];
 
 export const MAGE_ANIMATION = [
@@ -205,4 +220,8 @@ export const MAGE_ANIMATION = [
   9961, // Accursed sceptre spec
   12397, // Eye of Ayak auto
   12394, // Eye of Ayak spec
+  15139, // Zorya's tome auto
+  15146, // Zorya's tome auto
+  15140, // Zorya's tome spec
+  15147, // Zorya's tome spec
 ];
