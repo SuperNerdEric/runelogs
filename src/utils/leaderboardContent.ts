@@ -1,6 +1,8 @@
 /** Fight group names that appear on duration and/or DPS leaderboards. */
 import { usernameToPathSegment } from "./utils";
 
+export const TFA_CONTENT_NAME = "The Fractured Archive";
+
 export const LEADERBOARD_FIGHT_GROUP_NAMES = [
   "Chambers of Xeric",
   "Chambers of Xeric: Challenge Mode",
@@ -14,6 +16,7 @@ export const LEADERBOARD_FIGHT_GROUP_NAMES = [
   "The Gauntlet",
   "Corrupted Gauntlet",
   "Doom of Mokhaiotl",
+  TFA_CONTENT_NAME,
 ] as const;
 
 export const MOKHAIOTL_CONTENT_NAME = "Doom of Mokhaiotl";
@@ -28,6 +31,7 @@ export const RAID_CONTENT_NAMES = [
   "Theatre of Blood: Hard Mode",
   "Tombs of Amascut",
   "Tombs of Amascut: Expert Mode",
+  "The Fractured Archive",
 ] as const;
 
 /** Content whose encounters are referred to as "runs". */
@@ -173,6 +177,16 @@ export const LEADERBOARD_DPS_BOSS_NAMES: Partial<
     "Delve 7",
     "Delve 8",
   ],
+  [TFA_CONTENT_NAME]: [
+    "Archive Guardian",
+    "Ezekiel",
+    "Bork",
+    "Moia",
+    "Dreadnoth the Jellied",
+    "Xarth",
+    "Dagon'hai Trio",
+    "Ocellus",
+  ],
 };
 
 export const LEADERBOARD_CONTENT_OPTIONS: LeaderboardContentOption[] = [
@@ -217,6 +231,13 @@ export const LEADERBOARD_CONTENT_OPTIONS: LeaderboardContentOption[] = [
     spriteKey: "tombs_of_amascut_expert",
     playerCounts: [1, 2, 3, 4, 5, 6, 7, 8],
     defaultPlayerCount: 1,
+  },
+  {
+    label: "The Fractured Archive",
+    value: TFA_CONTENT_NAME,
+    spriteKey: "the_fractured_archive",
+    playerCounts: [1, 2, 3, 4, 5, 6, 7, 8],
+    defaultPlayerCount: 3,
   },
   {
     label: "Fight Caves",

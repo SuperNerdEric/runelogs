@@ -264,6 +264,24 @@ export const BOSS_IDS: number[] = [
   494, // SLAYER_KRAKEN_BOSS
   496, // SLAYER_KRAKEN_BOSS_WHIRLPOOL
   14176, // YAMA
+  // The Fractured Archive
+  16640, // Bork
+  16641, // The Smorks
+  16643, // Dagon'hai Elder
+  16644, // Dagon'hai Elder unshielded
+  16652, // Ezekiel
+  16657, // Archive Guardian start
+  16658, // Archive Guardian dead
+  16659, // Archive Guardian
+  16660, // Archive Guardian unshielded
+  16665, // Dreadnoth the Jellied
+  16667, // Moia
+  16673, // Ocellus intro
+  16674, // Ocellus P1
+  16675, // Ocellus P2
+  16677, // Ocellus P3
+  16682, // Ocellus P3 anim
+  16684, // Xarth
 ];
 
 export const BOSS_TO_MINIONS = {
@@ -304,6 +322,14 @@ TOB_REGIONS.forEach(
 );
 TOA_REGIONS.forEach(
   (region) => (RAID_NAME_REGION_MAPPING[region] = "Tombs of Amascut"),
+);
+// The Fractured Archive instance. 16471 is Archive Guardian. Neighbors are
+// the choice rooms and the path north. 16470 is the bank outside the raid.
+[
+  16214, 16215, 16216, 16217, 16218, 16471, 16472, 16473, 16474, 16726, 16727,
+  16728, 16729, 16730,
+].forEach(
+  (region) => (RAID_NAME_REGION_MAPPING[region] = "The Fractured Archive"),
 );
 
 export const WAVE_BASED_REGION_MAPPING: { [region: string]: string } = {

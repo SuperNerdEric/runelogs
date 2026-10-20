@@ -77,4 +77,9 @@ export const DISCOVER_CONTENT_SEO_SNIPPETS: Record<
     description:
       "Maggot King leaderboard for Old School RuneScape. Compare solo Maggot King kill times and DPS from Combat Logger logs on Runelogs.",
   },
+  "The Fractured Archive": {
+    titleSuffix: "The Fractured Archive (TFA)",
+    description:
+      "The Fractured Archive leaderboard for Old School RuneScape. Compare TFA raid times and boss DPS from Combat Logger logs on Runelogs.",
+  },
 };

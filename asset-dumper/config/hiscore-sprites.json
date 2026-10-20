@@ -529,6 +529,11 @@
       "archiveId": 4279,
       "name": "zulrah",
       "comment": "IconBoss25x25.ZULRAH"
+    },
+    {
+      "archiveId": 8360,
+      "name": "the_fractured_archive",
+      "comment": "IconBoss25x25.THE_FRACTURED_ARCHIVE"
     }
   ]
 }

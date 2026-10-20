@@ -309,6 +309,9 @@
         <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Tombs+of+Amascut%3A+Expert+Mode&amp;playerCount=1</loc>
     </url>
     <url>
+        <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=The+Fractured+Archive&amp;playerCount=3</loc>
+    </url>
+    <url>
         <loc>https://www.runelogs.com/leaderboards?mode=time&amp;leaderboard=Fight+Caves&amp;playerCount=1</loc>
     </url>
     <url>
@@ -352,6 +355,9 @@
     </url>
     <url>
         <loc>https://www.runelogs.com/recent-encounters?content=Tombs+of+Amascut%3A+Expert+Mode&amp;playerCount=1</loc>
+    </url>
+    <url>
+        <loc>https://www.runelogs.com/recent-encounters?content=The+Fractured+Archive&amp;playerCount=3</loc>
     </url>
     <url>
         <loc>https://www.runelogs.com/recent-encounters?content=Fight+Caves&amp;playerCount=1</loc>
