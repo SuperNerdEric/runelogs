@@ -92,6 +92,50 @@ export function getBlogPostSummary(post: BlogPost): string {
 const BLOG_POSTS_RAW: BlogPostInput[] = [
   // Runelogs
   {
+    date: "2026-10-21",
+    title: "The Fractured Archive",
+    category: "runelogs",
+    body: {
+      summary:
+        "The Fractured Archive is on Runelogs, with official raid times, DPS leaderboards, an updated replay map, and attack tracking for the new weapons. More raid updates are planned.",
+      paragraphs: [
+        "The Fractured Archive is on Runelogs. Time leaderboards rank completed raids by the official completion time, and DPS leaderboards cover every room plus an overall score. Filter by team size from 1 to 8, with 3 selected by default. You'll find the raid alongside the other raids, with its hiscore icon. Uploaded logs and live raids both land on the boards. The raid time is the Total from the Ocellus challenge complete message, which matches the total completion time the game announces when the raid ends.",
+        "You fight Archive Guardian, then one boss from each pair, then Ocellus. Challenge complete messages split the rooms, and Duration is that room's time. A personal best note on the same line does not change the time. Precise timing, including hundredths of a second, is kept as printed. These are the fights on the DPS boards:",
+        "The replay map has been updated for the raid. Stepping through a run now shows the new rooms.",
+        "Attacks with the Obligator, the Ascension crossbows, and Zorya's tome now count toward your attack uptime, including missed ticks on the replay tick chart. A Rondache bash is recognized as a melee attack.",
+        "This is the start. More Fractured Archive updates are planned, and we'll write them up here as they ship.",
+      ],
+      headings: [
+        { text: "Official Leaderboards", beforeParagraph: 0 },
+        { text: "Raid Rooms", beforeParagraph: 1 },
+        { text: "Replay Map", beforeParagraph: 2 },
+        { text: "Raid Weapons", beforeParagraph: 3 },
+        { text: "Still to Come", beforeParagraph: 4 },
+        { text: "Other Changes", beforeParagraph: 5 },
+      ],
+      lists: [
+        {
+          items: [
+            "Archive Guardian",
+            "Ezekiel",
+            "Bork",
+            "Moia",
+            "Dreadnoth the Jellied",
+            "Xarth",
+            "Dagon'hai Trio",
+            "Ocellus",
+          ],
+          afterParagraph: 1,
+        },
+      ],
+      bullets: [
+        "Hallowfell attacks now count toward missed ticks on the replay tick chart as well.",
+        "A party member whose name has not synced yet no longer shows up on the run as <unknown>.",
+        "Stepping out to the bank no longer adds the people standing there to your party, so they no longer count on the leaderboards. That was happening when they damaged themselves with a divine potion on the same tick you left.",
+      ],
+    },
+  },
+  {
     date: "2026-09-22",
     title: "Chambers of Xeric Leaderboards",
     category: "runelogs",

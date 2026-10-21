@@ -12,21 +12,21 @@ describe("getRecentHomeBlogPosts", () => {
     const posts = getRecentHomeBlogPosts(50, new Date(2026, 8, 22));
     expect(posts).toHaveLength(2);
     expect(posts[0].category).toBe("runelogs");
-    expect(posts[0].title).toBe("Chambers of Xeric Leaderboards");
+    expect(posts[0].title).toBe("The Fractured Archive");
     expect(posts[1].category).toBe("combat-logger");
     expect(posts[1].title).toBe("1.7.2 Release");
   });
 
   it("excludes posts older than the max age", () => {
-    const posts = getRecentHomeBlogPosts(14, new Date(2026, 9, 20));
+    const posts = getRecentHomeBlogPosts(14, new Date(2026, 10, 5));
     expect(posts).toHaveLength(0);
   });
 
   it("includes posts published exactly on the cutoff day", () => {
-    const posts = getRecentHomeBlogPosts(14, new Date(2026, 9, 6));
-    expect(
-      posts.some((post) => post.title === "Chambers of Xeric Leaderboards"),
-    ).toBe(true);
+    const posts = getRecentHomeBlogPosts(14, new Date(2026, 10, 4));
+    expect(posts.some((post) => post.title === "The Fractured Archive")).toBe(
+      true,
+    );
   });
 
   it("returns only categories with a recent post", () => {
