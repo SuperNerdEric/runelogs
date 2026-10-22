@@ -237,7 +237,7 @@ export const LEADERBOARD_CONTENT_OPTIONS: LeaderboardContentOption[] = [
     value: TFA_CONTENT_NAME,
     spriteKey: "the_fractured_archive",
     playerCounts: [1, 2, 3, 4, 5, 6, 7, 8],
-    defaultPlayerCount: 3,
+    defaultPlayerCount: 4,
   },
   {
     label: "Fight Caves",
@@ -478,7 +478,11 @@ export function resolveLeaderboardContent(
   return (
     LEADERBOARD_CONTENT_OPTIONS.find(
       (option) => option.value === contentParam,
-    ) ?? LEADERBOARD_CONTENT_OPTIONS[0]
+    ) ??
+    LEADERBOARD_CONTENT_OPTIONS.find(
+      (option) => option.value === TFA_CONTENT_NAME,
+    ) ??
+    LEADERBOARD_CONTENT_OPTIONS[0]
   );
 }
 

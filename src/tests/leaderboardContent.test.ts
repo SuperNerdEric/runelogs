@@ -168,6 +168,19 @@ describe("buildPlayerRankLeaderboardHref", () => {
   });
 });
 
+describe("default leaderboard", () => {
+  it("opens The Fractured Archive at 4 players", () => {
+    const resolved = resolveLeaderboardStateFromSearchParams(
+      new URLSearchParams(),
+      [],
+    );
+
+    expect(resolved.content.value).toBe("The Fractured Archive");
+    expect(resolved.playerCount).toBe(4);
+    expect(resolved.mode).toBe("time");
+  });
+});
+
 describe("resolveLeaderboardStateFromSearchParams", () => {
   it("uses the URL fight before DPS config loads so badge links do not request Overall", () => {
     const searchParams = new URLSearchParams(
