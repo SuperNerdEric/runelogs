@@ -33331,7 +33331,7 @@
     "id": 34715,
     "version": "Charged",
     "slot": "weapon",
-    "category": "Unarmed",
+    "category": "Extending Chain Mace",
     "isTwoHanded": true,
     "speed": 5
   },
@@ -33340,7 +33340,7 @@
     "id": 34717,
     "version": "Uncharged",
     "slot": "weapon",
-    "category": "Unarmed",
+    "category": "Extending Chain Mace",
     "isTwoHanded": true,
     "speed": 5
   },
@@ -50449,7 +50449,7 @@
     "id": 34725,
     "version": "Charged",
     "slot": "weapon",
-    "category": "Unarmed",
+    "category": "Powered Staff",
     "isTwoHanded": true,
     "speed": 3
   },
@@ -50458,7 +50458,7 @@
     "id": 34727,
     "version": "Uncharged",
     "slot": "weapon",
-    "category": "Unarmed",
+    "category": "Powered Staff",
     "isTwoHanded": true,
     "speed": 3
   },
