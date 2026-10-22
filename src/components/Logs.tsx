@@ -11,6 +11,7 @@ import {
   CircularProgress,
   IconButton,
   Link,
+  Pagination,
   Paper,
   Table,
   TableBody,
@@ -67,6 +68,13 @@ import {
   resolveBrowsePlayerCount,
   resolveRecentEncountersContent,
 } from "../utils/leaderboardContent";
+import {
+  buildUploaderLogsQuery,
+  UPLOADER_LOGS_PAGE_SIZE,
+  uploaderLogsPageCount,
+  type UploaderLogsSortKey,
+  type UploaderLogsSortOrder,
+} from "../utils/uploaderLogsPage";
 
 interface LogItem {
   id: string;
@@ -103,6 +111,9 @@ interface LogStatusResponse {
 
 interface LogsResponse {
   logs: LogItem[];
+  total?: number;
+  page?: number;
+  pageSize?: number;
   uploaderId?: string;
 }
 
@@ -121,11 +132,8 @@ async function fetchLogStatus(
   return resp.json() as Promise<LogStatusResponse>;
 }
 
-// Define the possible columns to sort by
-type SortKey = "name" | "uploadedAt" | "fights" | "fightGroups";
-
-// Direction type
-type Order = "asc" | "desc";
+type SortKey = UploaderLogsSortKey;
+type Order = UploaderLogsSortOrder;
 
 const nameColumnSx = {
   color: "white",
@@ -148,6 +156,15 @@ const tableStatusCellSx = {
   py: 4,
   color: "white",
   borderBottom: "none",
+} as const;
+
+const paginationSx = {
+  "& .MuiPaginationItem-root": { color: "white" },
+  "& .MuiPaginationItem-root.Mui-selected": {
+    backgroundColor: "white",
+    color: "black",
+    borderRadius: "4px",
+  },
 } as const;
 
 const logsTableColumnCount = (canEdit: boolean) => (canEdit ? 5 : 4);
@@ -176,40 +193,6 @@ function toSearchParams(
     ),
   );
 }
-
-const getComparator = (order: Order, orderBy: SortKey) => {
-  return (a: LogItem, b: LogItem) => {
-    let valA: number | string = "";
-    let valB: number | string = "";
-
-    switch (orderBy) {
-      case "name":
-        valA = a.name ?? "";
-        valB = b.name ?? "";
-        break;
-      case "uploadedAt":
-        valA = new Date(a.uploadedAt).getTime();
-        valB = new Date(b.uploadedAt).getTime();
-        break;
-      case "fights":
-        valA = a._count.fights;
-        valB = b._count.fights;
-        break;
-      case "fightGroups":
-        valA = a._count.fightGroups;
-        valB = b._count.fightGroups;
-        break;
-    }
-
-    if (valA < valB) {
-      return order === "asc" ? -1 : 1;
-    }
-    if (valA > valB) {
-      return order === "asc" ? 1 : -1;
-    }
-    return 0;
-  };
-};
 
 interface LogNameCellProps {
   log: LogItem;
@@ -413,11 +396,12 @@ const Logs: React.FC = () => {
   const [content, setContent] = useState(initialContent);
   const [playerCount, setPlayerCount] = useState(initialPlayerCount);
   const [logs, setLogs] = useState<LogItem[] | null>(null);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [apiUploaderId, setApiUploaderId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Sorting state
   const [orderBy, setOrderBy] = useState<SortKey>("uploadedAt");
   const [order, setOrder] = useState<Order>("desc");
   const canEditLogs = usernamesEqual(user?.username, uploaderId);
@@ -434,6 +418,7 @@ const Logs: React.FC = () => {
 
     setContent(newContent);
     setPlayerCount(newPlayerCount);
+    setPage(1);
   }, [searchParams]);
 
   const updateSearchParams = (updates: {
@@ -446,6 +431,7 @@ const Logs: React.FC = () => {
 
     const nextContent = updates.content ?? content;
     const nextPlayerCount = updates.playerCount ?? playerCount;
+    setPage(1);
     setSearchParams(toSearchParams(uploaderId, nextContent, nextPlayerCount));
   };
 
@@ -460,44 +446,59 @@ const Logs: React.FC = () => {
     </IconButton>
   );
 
-  const fetchLogs = useCallback(async () => {
-    if (!uploaderId) {
-      setError("No uploader ID provided in URL.");
-      setLoading(false);
-      return;
-    }
+  const fetchLogs = useCallback(
+    async (options?: { silent?: boolean }) => {
+      if (!uploaderId) {
+        setError("No uploader ID provided in URL.");
+        setLoading(false);
+        return;
+      }
 
-    setLoading(true);
-    setError(null);
+      if (!options?.silent) {
+        setLoading(true);
+      }
+      setError(null);
 
-    try {
-      const params = new URLSearchParams();
-      if (!isRecentEncountersAllContent(content.value)) {
-        params.set("content", content.value);
-        const apiPlayerCount = browsePlayerCountToApiParam(playerCount);
-        if (apiPlayerCount != null) {
-          params.set("playerCount", String(apiPlayerCount));
+      try {
+        const query = buildUploaderLogsQuery({
+          page,
+          content: isRecentEncountersAllContent(content.value)
+            ? undefined
+            : content.value,
+          playerCount: isRecentEncountersAllContent(content.value)
+            ? undefined
+            : (browsePlayerCountToApiParam(playerCount) ?? undefined),
+          sort: orderBy,
+          order,
+        });
+        const url = `${import.meta.env.VITE_API_URL}/logs/${uploaderId}?${query}`;
+        const resp = await fetch(url);
+        if (!resp.ok) {
+          throw new Error(`Server returned ${resp.status}`);
+        }
+        const data: LogsResponse = await resp.json();
+        const nextTotal =
+          typeof data.total === "number" ? data.total : data.logs.length;
+        if (data.logs.length === 0 && page > 1 && nextTotal > 0) {
+          setPage(uploaderLogsPageCount(nextTotal));
+          return;
+        }
+        setLogs(data.logs);
+        setTotal(nextTotal);
+        if (data.uploaderId) {
+          setApiUploaderId(data.uploaderId);
+        }
+      } catch (err: any) {
+        console.error("Failed to fetch logs:", err);
+        setError(err.message || "Unknown error");
+      } finally {
+        if (!options?.silent) {
+          setLoading(false);
         }
       }
-
-      const query = params.toString();
-      const url = `${import.meta.env.VITE_API_URL}/logs/${uploaderId}${query ? `?${query}` : ""}`;
-      const resp = await fetch(url);
-      if (!resp.ok) {
-        throw new Error(`Server returned ${resp.status}`);
-      }
-      const data: LogsResponse = await resp.json();
-      setLogs(data.logs);
-      if (data.uploaderId) {
-        setApiUploaderId(data.uploaderId);
-      }
-    } catch (err: any) {
-      console.error("Failed to fetch logs:", err);
-      setError(err.message || "Unknown error");
-    } finally {
-      setLoading(false);
-    }
-  }, [content.value, playerCount, uploaderId]);
+    },
+    [content.value, order, orderBy, page, playerCount, uploaderId],
+  );
 
   const parsingLogIds = useMemo(
     () => logs?.filter(isParsingLog).map((log) => log.id) ?? [],
@@ -645,7 +646,7 @@ const Logs: React.FC = () => {
         autoHideDuration: 1000,
         action,
       });
-      setLogs((prev) => prev?.filter((log) => log.id !== logId) ?? null);
+      await fetchLogs({ silent: true });
     } catch (err: any) {
       console.error("Failed to delete log:", err);
       alert(err.message || "Failed to delete");
@@ -670,6 +671,7 @@ const Logs: React.FC = () => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
+    setPage(1);
   };
 
   const renderFilters = () => (
@@ -714,7 +716,8 @@ const Logs: React.FC = () => {
     ? "No logs found matching this filter."
     : "No logs found for this uploader.";
 
-  const sortedLogs = logs?.slice().sort(getComparator(order, orderBy)) ?? [];
+  const visibleLogs = logs ?? [];
+  const pageCount = uploaderLogsPageCount(total, UPLOADER_LOGS_PAGE_SIZE);
   const tableColumnCount = logsTableColumnCount(canEditLogs);
 
   const renderTableStatusRow = (content: React.ReactNode) => (
@@ -844,13 +847,13 @@ const Logs: React.FC = () => {
               )}
             {!loading &&
               !error &&
-              sortedLogs.length === 0 &&
+              visibleLogs.length === 0 &&
               renderTableStatusRow(
                 <Typography color="white">{emptyMessage}</Typography>,
               )}
             {!loading &&
               !error &&
-              sortedLogs.map((log) => {
+              visibleLogs.map((log) => {
                 const parsing = isParsingLog(log);
 
                 return (
@@ -980,6 +983,16 @@ const Logs: React.FC = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      {!loading && total > 0 && (
+        <Box display="flex" justifyContent="center" pt={0} pb={1}>
+          <Pagination
+            count={pageCount}
+            page={Math.min(page, pageCount)}
+            onChange={(_, value) => setPage(value)}
+            sx={paginationSx}
+          />
+        </Box>
+      )}
     </Box>
   );
 };
