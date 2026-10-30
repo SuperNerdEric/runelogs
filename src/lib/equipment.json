@@ -702,6 +702,15 @@
     "speed": 4
   },
   {
+    "name": "Abyssal tentacle (Pete Kayer's Challenges)",
+    "id": 34619,
+    "version": "",
+    "slot": "weapon",
+    "category": "Whip",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Abyssal tentacle (or)",
     "id": 26484,
     "version": "",
@@ -4590,6 +4599,15 @@
     "speed": 0
   },
   {
+    "name": "Bandos chestplate (Pete Kayer's Challenges)",
+    "id": 34611,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Bandos cloak",
     "id": 12273,
     "version": "",
@@ -5699,6 +5717,15 @@
   {
     "name": "Black d'hide shield",
     "id": 22284,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Black d'hide shield (Pete Kayer's Challenges)",
+    "id": 34615,
     "version": "",
     "slot": "shield",
     "category": "",
@@ -15633,6 +15660,15 @@
     "speed": 0
   },
   {
+    "name": "Dragon boots (Pete Kayer's Challenges)",
+    "id": 34621,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Dragon boots (cr)",
     "id": 28055,
     "version": "",
@@ -18732,6 +18768,15 @@
     "name": "Fighter torso",
     "id": 10551,
     "version": "Normal",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Fighter torso (Pete Kayer's Challenges)",
+    "id": 34613,
+    "version": "",
     "slot": "body",
     "category": "",
     "isTwoHanded": false,
@@ -25842,6 +25887,15 @@
     "name": "Karil's leatherskirt",
     "id": 4738,
     "version": "Undamaged",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Karil's leatherskirt (Pete Kayer's Challenges)",
+    "id": 34609,
+    "version": "",
     "slot": "legs",
     "category": "",
     "isTwoHanded": false,
@@ -41571,6 +41625,15 @@
     "speed": 0
   },
   {
+    "name": "Torva full helm (Pete Kayer's Challenges)",
+    "id": 34617,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Torva full helm (unobtainable item)",
     "id": 30302,
     "version": "",
@@ -43213,7 +43276,7 @@
     "id": 34744,
     "version": "",
     "slot": "legs",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -43222,7 +43285,7 @@
     "id": 34746,
     "version": "",
     "slot": "cape",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -43231,7 +43294,7 @@
     "id": 34742,
     "version": "",
     "slot": "body",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -43240,7 +43303,7 @@
     "id": 34740,
     "version": "",
     "slot": "head",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -47101,7 +47164,7 @@
     "id": 34725,
     "version": "Charged",
     "slot": "weapon",
-    "category": "Powered Staff",
+    "category": "Powered Book",
     "isTwoHanded": true,
     "speed": 3
   },
@@ -47110,7 +47173,7 @@
     "id": 34727,
     "version": "Uncharged",
     "slot": "weapon",
-    "category": "Powered Staff",
+    "category": "Powered Book",
     "isTwoHanded": true,
     "speed": 3
   },
