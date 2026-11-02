@@ -17,6 +17,7 @@ export enum WeaponCategory {
   Chinchompas = "Chinchompas",
   Claws = "Claw",
   Crossbow = "Crossbow",
+  ExtendingChainMace = "Extending Chain Mace",
   Gun = "Gun",
   Partisan = "Partisan",
   Pickaxe = "Pickaxe",
@@ -69,6 +70,7 @@ export enum CombatStyle {
   Spike = "Spike",
   Stab = "Stab",
   Swipe = "Swipe",
+  Thrust = "Thrust",
 }
 
 export enum StyleType {
@@ -285,6 +287,23 @@ export const WeaponCategoryOptions: {
       combatStyle: CombatStyle.Longrange,
       styleType: StyleType.Ranged,
       weaponStyle: WeaponStyle.Longrange,
+    },
+  ],
+  [WeaponCategory.ExtendingChainMace]: [
+    {
+      combatStyle: CombatStyle.Thrust,
+      styleType: StyleType.Crush,
+      weaponStyle: WeaponStyle.Accurate,
+    },
+    {
+      combatStyle: CombatStyle.Thrust,
+      styleType: StyleType.Crush,
+      weaponStyle: WeaponStyle.Aggressive,
+    },
+    {
+      combatStyle: CombatStyle.Smash,
+      styleType: StyleType.Crush,
+      weaponStyle: WeaponStyle.Aggressive,
     },
   ],
   [WeaponCategory.Gun]: [
