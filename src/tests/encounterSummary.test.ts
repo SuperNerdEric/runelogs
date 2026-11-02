@@ -235,6 +235,47 @@ describe("getAttackAnimationBreakdown", () => {
     ]);
     expect(breakdown[0].events[0].animationId).toBe(390);
   });
+
+  it("credits Rondache bashes to the Rondache instead of the held weapon", () => {
+    const fight = makeFight({
+      data: [
+        {
+          type: LogTypes.PLAYER_EQUIPMENT,
+          fightTimeMs: 0,
+          source: { name: "Player", index: 1 },
+          playerEquipment: ["-1", "-1", "-1", "24417", "-1", "34719"],
+        },
+        {
+          type: LogTypes.PLAYER_ATTACK_ANIMATION,
+          fightTimeMs: 600,
+          source: { name: "Player", index: 1 },
+          target: { name: "Bork", id: 16640, index: 1 },
+          animationId: 4503,
+        },
+        {
+          type: LogTypes.PLAYER_ATTACK_ANIMATION,
+          fightTimeMs: 1200,
+          source: { name: "Player", index: 1 },
+          target: { name: "Bork", id: 16640, index: 1 },
+          animationId: 15108,
+        },
+      ] as Fight["data"],
+    });
+
+    const [player] = getAttackAnimationBreakdown(fight);
+    expect(player.totalAttacks).toBe(2);
+    expect(
+      player.weapons.map((weapon) => [
+        weapon.itemId,
+        weapon.name,
+        weapon.count,
+      ]),
+    ).toEqual([
+      [24417, "Inquisitor's mace", 1],
+      [34719, "Rondache", 1],
+    ]);
+    expect(player.events[1].weaponItemId).toBe(34719);
+  });
 });
 
 describe("matchesAnimationIdFilter", () => {

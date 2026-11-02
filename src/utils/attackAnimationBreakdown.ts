@@ -10,6 +10,10 @@ import { weaponMap } from "../models/WeaponMap";
 import { itemIdMap } from "../lib/itemIdMap";
 import { isSpecialAttack } from "./specialAttackAnimations";
 
+const SHIELD_SLOT = 5;
+const RONDACHE_ITEM_ID = 34719;
+const RONDACHE_BASH_ANIMATION_ID = 15108;
+
 export interface AttackAnimationEvent {
   source: Actor;
   playerName: string;
@@ -87,6 +91,7 @@ export function getAttackAnimationBreakdown(
   fight: Fight,
 ): PlayerAttackBreakdown[] {
   const weaponByPlayer = new Map<string, { itemId: number; name: string }>();
+  const shieldByPlayer = new Map<string, number>();
   const countsByPlayer = new Map<string, Map<number, WeaponAttackCount>>();
   const eventsByPlayer = new Map<string, AttackAnimationEvent[]>();
   const lastKnownBoostedLevels: Record<string, Levels | undefined> = {};
@@ -112,6 +117,10 @@ export function getAttackAnimationBreakdown(
       if (weapon) {
         weaponByPlayer.set(playerName, weapon);
       }
+      shieldByPlayer.set(
+        playerName,
+        parseInt(log.playerEquipment[SHIELD_SLOT] ?? "", 10),
+      );
       continue;
     }
 
@@ -132,7 +141,12 @@ export function getAttackAnimationBreakdown(
     }
 
     const attackLog = log as AttackAnimationLog;
-    const weapon = weaponByPlayer.get(playerName);
+    // The Rondache bash comes from the shield slot, so credit it to the Rondache rather than the held weapon.
+    const weapon =
+      attackLog.animationId === RONDACHE_BASH_ANIMATION_ID &&
+      shieldByPlayer.get(playerName) === RONDACHE_ITEM_ID
+        ? { itemId: RONDACHE_ITEM_ID, name: itemIdMap[RONDACHE_ITEM_ID] }
+        : weaponByPlayer.get(playerName);
     if (!weapon || log.fightTimeMs == null) {
       continue;
     }
