@@ -75,6 +75,13 @@ import {
 } from "../utils/encounterPageMeta";
 import { deserializeEventTimeFilter } from "../utils/eventTimeFilter";
 import { deserializeAnimationIdFilter } from "../utils/animationIdFilter";
+import {
+  countMechanicDamage,
+  MECHANIC_HITSPLATS_PARAM,
+  showsMechanicHitsplats,
+  withoutMechanicDamage,
+} from "../utils/mechanicDamageFilter";
+import MechanicHitsplatsChip from "./MechanicHitsplatsChip";
 
 type EncounterApiFG = {
   type: "fightGroup";
@@ -186,6 +193,9 @@ const Encounter: React.FC = () => {
   const animationIdFilter = useMemo(
     () => deserializeAnimationIdFilter(searchParams.get("animationId")),
     [searchParams],
+  );
+  const showMechanicHitsplats = showsMechanicHitsplats(
+    searchParams.get(MECHANIC_HITSPLATS_PARAM),
   );
 
   const deferredSourceFilter = useDeferredValue(sourceFilter);
@@ -590,6 +600,26 @@ const Encounter: React.FC = () => {
     );
   }, [fight]);
 
+  const mechanicHitsplatCount = useMemo(
+    () => (fight ? countMechanicDamage(fight) : 0),
+    [fight],
+  );
+  const displayedFight = useMemo(
+    () =>
+      fight && !showMechanicHitsplats ? withoutMechanicDamage(fight) : fight,
+    [fight, showMechanicHitsplats],
+  );
+
+  const toggleMechanicHitsplats = useCallback(() => {
+    const newParams = new URLSearchParams(searchParams);
+    if (showMechanicHitsplats) {
+      newParams.delete(MECHANIC_HITSPLATS_PARAM);
+    } else {
+      newParams.set(MECHANIC_HITSPLATS_PARAM, "show");
+    }
+    navigate(`${window.location.pathname}?${newParams.toString()}`);
+  }, [navigate, searchParams, showMechanicHitsplats]);
+
   const buildTabUrl = useCallback(
     (tab: TabsEnum) => {
       const newParams = new URLSearchParams(searchParams);
@@ -757,6 +787,14 @@ const Encounter: React.FC = () => {
           ))}
         </Tabs>
 
+        {mechanicHitsplatCount > 0 && (
+          <MechanicHitsplatsChip
+            count={mechanicHitsplatCount}
+            shown={showMechanicHitsplats}
+            onToggle={toggleMechanicHitsplats}
+          />
+        )}
+
         <Box sx={{ minHeight: "40vh", position: "relative" }}>
           {showParentSpinner && (
             <Box
@@ -792,7 +830,7 @@ const Encounter: React.FC = () => {
           {showTabShell && (
             <EncounterTabContent
               renderedTab={displayTab}
-              fight={fight}
+              fight={displayedFight ?? fight}
               receivingData={receivingData}
               dpsPercentiles={dpsPercentiles}
               dpsRanks={dpsRanks}

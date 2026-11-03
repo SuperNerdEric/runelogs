@@ -23,9 +23,10 @@ export function getFightDurationSeconds(fight: Fight): number {
   );
 }
 
-/** Damage to NPC targets that count toward DPS leaderboards (excludes players and sailing player boats). */
+/** Damage to NPC targets that count toward DPS leaderboards (excludes players, sailing player boats and boss mechanic hitsplats). */
 export function isLeaderboardEligibleDamage(damageLog: DamageLog): boolean {
   return (
+    !damageLog.isMechanicDamage &&
     Boolean(damageLog.target?.index) &&
     (damageLog.target?.id === undefined ||
       !BOAT_IDS.includes(damageLog.target.id))

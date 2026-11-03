@@ -156,6 +156,12 @@ export interface DamageLog extends BaseLog {
   targetHealthRatio?: number;
   /** Target's health bar scale as RuneLite exposes it (log version >= 1.7.0). */
   targetHealthScale?: number;
+  /**
+   * A hitsplat the game draws for a boss mechanic, not damage a player dealt
+   * (e.g. the Ocellus P2 phase transition). Hidden by default; never counts
+   * toward leaderboard DPS.
+   */
+  isMechanicDamage?: true;
 }
 
 export interface HealLog extends BaseLog {
