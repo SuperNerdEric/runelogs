@@ -53,10 +53,10 @@ describe("mechanicDamageFilter", () => {
 
   it("labels the chip for each state", () => {
     expect(formatMechanicHitsplatsLabel(1, false)).toBe(
-      "Hiding 1 boss mechanic hitsplat",
+      "Hiding 1 invalid hitsplat",
     );
     expect(formatMechanicHitsplatsLabel(3, true)).toBe(
-      "Hide 3 boss mechanic hitsplats",
+      "Hide 3 invalid hitsplats",
     );
   });
 

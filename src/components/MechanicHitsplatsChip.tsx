@@ -11,9 +11,8 @@ interface MechanicHitsplatsChipProps {
 }
 
 const TOOLTIP =
-  "Hitsplats the game draws on a boss for a mechanic, such as the Ocellus " +
-  "phase 2 transition. They are not damage a player dealt and never count " +
-  "toward DPS leaderboards.";
+  "Hitsplats that are not real damage dealt by a player. They are hidden " +
+  "by default and never count toward DPS.";
 
 /** Default-on filter that hides boss mechanic hitsplats from every tab. */
 const MechanicHitsplatsChip: React.FC<MechanicHitsplatsChipProps> = ({

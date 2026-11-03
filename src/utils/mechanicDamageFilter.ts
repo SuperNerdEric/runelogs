@@ -32,7 +32,6 @@ export const formatMechanicHitsplatsLabel = (
   count: number,
   shown: boolean,
 ): string => {
-  const noun =
-    count === 1 ? "boss mechanic hitsplat" : "boss mechanic hitsplats";
+  const noun = count === 1 ? "invalid hitsplat" : "invalid hitsplats";
   return shown ? `Hide ${count} ${noun}` : `Hiding ${count} ${noun}`;
 };
