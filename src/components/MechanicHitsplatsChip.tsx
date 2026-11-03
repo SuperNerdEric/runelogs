@@ -2,17 +2,16 @@ import React from "react";
 import { Box, Chip } from "@mui/material";
 import { colors, layout } from "../theme";
 import AppTooltip from "./AppTooltip";
-import { formatMechanicHitsplatsLabel } from "../utils/mechanicDamageFilter";
+import {
+  formatMechanicHitsplatsLabel,
+  formatMechanicHitsplatsTooltip,
+} from "../utils/mechanicDamageFilter";
 
 interface MechanicHitsplatsChipProps {
   count: number;
   shown: boolean;
   onToggle: () => void;
 }
-
-const TOOLTIP =
-  "Hitsplats that are not real damage dealt by a player. They are hidden " +
-  "by default and never count toward DPS.";
 
 /** Default-on filter that hides boss mechanic hitsplats from every tab. */
 const MechanicHitsplatsChip: React.FC<MechanicHitsplatsChipProps> = ({
@@ -28,9 +27,9 @@ const MechanicHitsplatsChip: React.FC<MechanicHitsplatsChipProps> = ({
       display: "flex",
     }}
   >
-    <AppTooltip title={TOOLTIP}>
+    <AppTooltip title={formatMechanicHitsplatsTooltip(count)}>
       <Chip
-        label={formatMechanicHitsplatsLabel(count, shown)}
+        label={formatMechanicHitsplatsLabel(shown)}
         onClick={onToggle}
         onDelete={shown ? undefined : onToggle}
         variant={shown ? "outlined" : "filled"}

@@ -28,10 +28,10 @@ export const withoutMechanicDamage = (fight: Fight): Fight => {
   return { ...fight, data: fight.data.filter((log) => !isMechanicDamage(log)) };
 };
 
-export const formatMechanicHitsplatsLabel = (
-  count: number,
-  shown: boolean,
-): string => {
-  const noun = count === 1 ? "invalid hitsplat" : "invalid hitsplats";
-  return shown ? `Hide ${count} ${noun}` : `Hiding ${count} ${noun}`;
-};
+export const formatMechanicHitsplatsLabel = (shown: boolean): string =>
+  shown ? "Hide invalid hitsplats" : "Hiding invalid hitsplats";
+
+export const formatMechanicHitsplatsTooltip = (count: number): string =>
+  "Hitsplats that are not real damage dealt by a player. They are hidden " +
+  "by default and never count toward DPS. " +
+  `This fight has ${count} invalid ${count === 1 ? "hitsplat" : "hitsplats"}.`;
