@@ -43,6 +43,14 @@ import {
   XarpusPhase2PhaseMarker,
 } from "../../utils/xarpusPhase2Events";
 import {
+  ARCHIVE_GUARDIAN_FLYING_ICON_URL,
+  ARCHIVE_GUARDIAN_GROUNDED_ICON_URL,
+  ArchiveGuardianGroundedWindow,
+  FracturedArchivePhaseMarker,
+  getArchiveGuardianGroundedWindows,
+  getFracturedArchivePhaseMarkers,
+} from "../../utils/fracturedArchivePhaseEvents";
+import {
   BLOAT_STOMP_IMAGE_URL,
   NYLOCAS_MATOMENOS_IMAGE_URL,
   NYLOCAS_PRINKIPAS_IMAGE_URL,
@@ -432,6 +440,8 @@ function attachMarkerLabels(
   mazeWindows: SotetsegMazeWindow[],
   xarpusScreechMarkers: XarpusScreechPhaseMarker[],
   xarpusPhase2Markers: XarpusPhase2PhaseMarker[],
+  archiveMarkers: FracturedArchivePhaseMarker[],
+  guardianWindows: ArchiveGuardianGroundedWindow[],
   startTime: number,
   endTime: number,
   tickMs: number,
@@ -443,7 +453,9 @@ function attachMarkerLabels(
     nyloPrinkipasMarkers.length === 0 &&
     mazeWindows.length === 0 &&
     xarpusScreechMarkers.length === 0 &&
-    xarpusPhase2Markers.length === 0
+    xarpusPhase2Markers.length === 0 &&
+    archiveMarkers.length === 0 &&
+    guardianWindows.length === 0
   ) {
     return points;
   }
@@ -547,6 +559,40 @@ function attachMarkerLabels(
     labelsByTimestamp.set(markerTs, marker.label);
   }
 
+  for (const window of guardianWindows) {
+    const startTs = snapFightTimeToTick(
+      window.startFightTimeMs,
+      startTime,
+      endTime,
+      tickMs,
+    );
+    labelsByTimestamp.set(startTs, `Grounded ${window.groundedNumber} Start`);
+
+    if (!window.endsWithLevitation) {
+      continue;
+    }
+    const endTs = snapFightTimeToTick(
+      window.endFightTimeMs,
+      startTime,
+      endTime,
+      tickMs,
+    );
+    if (endTs !== startTs) {
+      labelsByTimestamp.set(endTs, `Grounded ${window.groundedNumber} End`);
+    }
+  }
+
+  // After the Guardian windows so a phase title wins on a shared tick.
+  for (const marker of archiveMarkers) {
+    const markerTs = snapFightTimeToTick(
+      marker.fightTimeMs,
+      startTime,
+      endTime,
+      tickMs,
+    );
+    labelsByTimestamp.set(markerTs, marker.title);
+  }
+
   return points.map((point) => {
     // Exact start/end (or point-marker) labels take precedence at their tick.
     const exact = labelsByTimestamp.get(point.timestamp);
@@ -568,7 +614,18 @@ function attachMarkerLabels(
         point.timestamp >= w.startFightTimeMs &&
         point.timestamp <= w.endFightTimeMs,
     );
-    return maze ? { ...point, markerLabel: `Maze ${maze.mazeNumber}` } : point;
+    if (maze) {
+      return { ...point, markerLabel: `Maze ${maze.mazeNumber}` };
+    }
+    // Anywhere inside a grounded window, report which one it is.
+    const grounded = guardianWindows.find(
+      (w) =>
+        point.timestamp >= w.startFightTimeMs &&
+        point.timestamp <= w.endFightTimeMs,
+    );
+    return grounded
+      ? { ...point, markerLabel: `Grounded ${grounded.groundedNumber}` }
+      : point;
   });
 }
 
@@ -620,6 +677,14 @@ const DPSChart: React.FC<DPSChartProps> = ({
     () => getXarpusPhase2Markers(markerSource),
     [markerSource],
   );
+  const archivePhaseMarkers = useMemo(
+    () => getFracturedArchivePhaseMarkers(markerSource),
+    [markerSource],
+  );
+  const guardianGroundedWindows = useMemo(
+    () => getArchiveGuardianGroundedWindows(markerSource),
+    [markerSource],
+  );
 
   const topMarkerMargin =
     maidenPhaseMarkers.length > 0 ||
@@ -627,9 +692,10 @@ const DPSChart: React.FC<DPSChartProps> = ({
     nyloPrinkipasPhaseMarkers.length > 0 ||
     sotetsegMazeWindows.length > 0 ||
     xarpusScreechMarkers.length > 0 ||
-    xarpusPhase2Markers.length > 0
+    xarpusPhase2Markers.length > 0 ||
+    archivePhaseMarkers.length > 0
       ? 54
-      : bloatDownWindows.length > 0
+      : bloatDownWindows.length > 0 || guardianGroundedWindows.length > 0
         ? 44
         : 16;
 
@@ -655,6 +721,8 @@ const DPSChart: React.FC<DPSChartProps> = ({
       sotetsegMazeWindows,
       xarpusScreechMarkers,
       xarpusPhase2Markers,
+      archivePhaseMarkers,
+      guardianGroundedWindows,
       startTime,
       endTime,
       TICK_DURATION_MS,
@@ -671,6 +739,8 @@ const DPSChart: React.FC<DPSChartProps> = ({
     sotetsegMazeWindows,
     xarpusScreechMarkers,
     xarpusPhase2Markers,
+    archivePhaseMarkers,
+    guardianGroundedWindows,
   ]);
 
   const dpsByTimestamp = useMemo(() => {
@@ -775,6 +845,75 @@ const DPSChart: React.FC<DPSChartProps> = ({
             fill={MAZE_PHASE_COLOR}
             fillOpacity={0.22}
             ifOverflow="visible"
+          />
+        ))}
+
+        {guardianGroundedWindows.map((window) => (
+          <ReferenceArea
+            key={`guardian-grounded-area-${window.groundedNumber}`}
+            x1={window.startFightTimeMs}
+            x2={window.endFightTimeMs}
+            stroke="none"
+            fill={PHASE_DIVIDER_LINE_COLOR}
+            fillOpacity={0.18}
+            ifOverflow="visible"
+          />
+        ))}
+
+        {guardianGroundedWindows.map((window) => (
+          <React.Fragment key={`guardian-grounded-${window.groundedNumber}`}>
+            <ReferenceLine
+              x={window.startFightTimeMs}
+              stroke={PHASE_DIVIDER_LINE_COLOR}
+              strokeWidth={2}
+              strokeDasharray="6 3"
+              ifOverflow="visible"
+              label={
+                <PhaseMarkerLabel
+                  iconUrl={ARCHIVE_GUARDIAN_GROUNDED_ICON_URL}
+                  title={`Grounded ${window.groundedNumber} Start`}
+                  fightTimeMs={window.startFightTimeMs}
+                  dps={dpsAtFightTime(window.startFightTimeMs)}
+                />
+              }
+            />
+            {window.endsWithLevitation && (
+              <ReferenceLine
+                x={window.endFightTimeMs}
+                stroke={PHASE_DIVIDER_LINE_COLOR}
+                strokeWidth={2}
+                strokeDasharray="6 3"
+                ifOverflow="visible"
+                label={
+                  <PhaseMarkerLabel
+                    iconUrl={ARCHIVE_GUARDIAN_FLYING_ICON_URL}
+                    title={`Grounded ${window.groundedNumber} End`}
+                    fightTimeMs={window.endFightTimeMs}
+                    dps={dpsAtFightTime(window.endFightTimeMs)}
+                  />
+                }
+              />
+            )}
+          </React.Fragment>
+        ))}
+
+        {archivePhaseMarkers.map((marker) => (
+          <ReferenceLine
+            key={`archive-phase-${marker.title}`}
+            x={marker.fightTimeMs}
+            stroke={PHASE_DIVIDER_LINE_COLOR}
+            strokeWidth={2}
+            strokeDasharray="6 3"
+            ifOverflow="visible"
+            label={
+              <PhaseMarkerLabel
+                iconUrl={marker.iconUrl}
+                title={marker.title}
+                fightTimeMs={marker.fightTimeMs}
+                dps={dpsAtFightTime(marker.fightTimeMs)}
+                subLabel={marker.label}
+              />
+            }
           />
         ))}
 
