@@ -912,12 +912,17 @@ const DPSChart: React.FC<DPSChartProps> = ({
                 strokeDasharray="6 3"
                 ifOverflow={markerLineOverflow}
                 label={
-                  <PhaseMarkerLabel
-                    iconUrl={ARCHIVE_GUARDIAN_FLYING_ICON_URL}
-                    title={`Grounded ${window.groundedNumber} End`}
-                    fightTimeMs={window.endFightTimeMs}
-                    dps={dpsAtFightTime(window.endFightTimeMs)}
-                  />
+                  // Phase 2 starts on a levitation; its marker covers this one.
+                  archivePhaseMarkers.some(
+                    (marker) => marker.fightTimeMs === window.endFightTimeMs,
+                  ) ? undefined : (
+                    <PhaseMarkerLabel
+                      iconUrl={ARCHIVE_GUARDIAN_FLYING_ICON_URL}
+                      title={`Grounded ${window.groundedNumber} End`}
+                      fightTimeMs={window.endFightTimeMs}
+                      dps={dpsAtFightTime(window.endFightTimeMs)}
+                    />
+                  )
                 }
               />
             )}
