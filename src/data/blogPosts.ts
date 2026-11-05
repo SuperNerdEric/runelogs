@@ -92,6 +92,76 @@ export function getBlogPostSummary(post: BlogPost): string {
 const BLOG_POSTS_RAW: BlogPostInput[] = [
   // Runelogs
   {
+    date: "2026-11-05",
+    title: "Time Range Filter and Fractured Archive Phase Markers",
+    category: "runelogs",
+    body: {
+      summary:
+        "Runelogs introduces a time range filter: drag across the DPS chart to narrow an encounter to any part of the fight. The Fractured Archive also gets phase markers.",
+      paragraphs: [
+        "You can now narrow an encounter to any part of the fight. Click and drag across the DPS chart on the Summary, Damage Done, or Damage Taken tab, let go, and the chart zooms in on your selection. Drag again to narrow it further. The range shows up as a chip next to your other filters, and clearing the chip brings the whole fight back.",
+        "Everything on those tabs and the Events tab follows the range: duration, damage, DPS, accuracy, attacks, activity, stat boosts, the combat stats and hitpoints and prayer charts, and every event. Gear setups show what each player had on when the range starts, so you can check a single phase without losing that context. The DPS percentile column is hidden while a range is active, because percentiles rank the whole fight. If you know the exact times, choose Time range in the filter box, or click the chip, and type them in. The range is part of the page link, so you can share exactly what you are looking at.",
+        "The filter box and chips have moved to the top of the Damage Done and Damage Taken tabs, right above the chart, so they are always in reach. The Summary tab now has a filter box of its own for the time range. Filters also apply much faster, and the chip and a progress bar appear as soon as you pick one, even on long fights. The Events tables are a big part of that: they now load only the rows near where you have scrolled, and the header stays in view as you go. Your browser's find only searches the loaded rows, so use the filter box to search a whole fight.",
+        "Some hitsplats are not real damage dealt by a player, such as the huge splat when Ocellus changes phase and the damage Ocellus takes as a share of the hits on The Blade. These invalid hitsplats are now hidden by default on every tab and never count toward DPS or the leaderboards. To see them, set Show invalid hitsplats to Yes beside your filters. The selector only appears on fights that have some.",
+        "The DPS chart phase markers now cover The Fractured Archive. Ocellus shows Phases 1 to 4, Dreadnoth the Jellied shows the 85%, 65%, and 45% slams plus Enrage, and Xarth shows Phase 2. Archive Guardian shades each window where it is grounded and marks Phase 2. Ezekiel, Bork, and Moia mark Enrage, and the Dagon'hai Trio marks each shield break and the end of the ritual. Hover an icon to see the time and DPS at that moment.",
+      ],
+      headings: [
+        { text: "Time Range Filter", beforeParagraph: 0 },
+        { text: "Filters at the Top, and Faster", beforeParagraph: 2 },
+        { text: "Invalid Hitsplats", beforeParagraph: 3 },
+        { text: "Fractured Archive Phase Markers", beforeParagraph: 4 },
+        { text: "Other Changes", beforeParagraph: 5 },
+      ],
+      images: [
+        {
+          src: "/blog/time-range-drag.png",
+          alt: "Selecting part of an Ocellus fight by dragging across the DPS chart, with the selected times shown on the highlight",
+          caption: "Drag across the DPS chart to select part of the fight.",
+          afterParagraph: 0,
+        },
+        {
+          src: "/blog/time-range-filtered.png",
+          alt: "Damage Done tab zoomed to the selected range, with a time range chip beside the filters and duration, damage, and DPS for that range",
+          caption: "The chart and stats narrowed to the selected range.",
+          afterParagraph: 1,
+        },
+        {
+          src: "/blog/time-range-manual.png",
+          alt: "Time range popover with Start and End fields under the filter box",
+          caption: "You can also type the times in.",
+          afterParagraph: 1,
+        },
+        {
+          src: "/blog/invalid-hitsplats-selector.png",
+          alt: "Events tab with Show invalid hitsplats set to Yes, listing a 9820 hitsplat on Ocellus",
+          caption:
+            "With the selector on Yes, the 9820 Ocellus phase splat is back in the list.",
+          afterParagraph: 3,
+        },
+        {
+          src: "/blog/phase-markers-dreadnoth.png",
+          alt: "Dreadnoth the Jellied DPS chart with markers at 85%, 65%, 45%, and Enrage",
+          caption: "Dreadnoth the Jellied slams and Enrage.",
+          afterParagraph: 4,
+        },
+        {
+          src: "/blog/phase-markers-archive-guardian.png",
+          alt: "Archive Guardian DPS chart with shaded grounded windows and a Phase 2 marker",
+          caption: "Archive Guardian grounded windows and Phase 2.",
+          afterParagraph: 4,
+        },
+      ],
+      bullets: [
+        "Obligator attacks are credited to the Obligator again in the attack breakdown, instead of the weapon held before it.",
+        "A Rondache bash now counts under the Rondache in the attack breakdown, rather than under the weapon in your hand.",
+        "The Fractured Archive leaderboards now open on 4 players.",
+        "Newly parsed logs split the Dagon'hai room out from Ocellus instead of merging the two.",
+        "Uploader log pages now load 50 logs at a time, so players with a lot of logs get a quicker page.",
+        "Very large logs are much less likely to fail while parsing.",
+      ],
+    },
+  },
+  {
     date: "2026-10-21",
     title: "The Fractured Archive",
     category: "runelogs",
@@ -656,6 +726,41 @@ const BLOG_POSTS_RAW: BlogPostInput[] = [
   },
 
   // Combat Logger
+  {
+    date: "2026-10-27",
+    title: "1.7.4 Release",
+    category: "combat-logger",
+    body: {
+      summary:
+        "Combat Logger 1.7.4 stops party members from being logged as <unknown> before their name has synced, and keeps the plugin compatible with the latest RuneLite.",
+      paragraphs: [
+        "Combat Logger 1.7.4 fixes a party logging problem. A party member's display name can read <unknown> for a moment until it syncs, and anything logged during that moment invented a player who was not in your raid. The plugin now waits until the name has synced before logging that member, so those phantom players stay out of your logs.",
+        "This release also keeps the plugin compatible with the latest RuneLite update. Update to 1.7.4 if you raid in a party.",
+      ],
+    },
+  },
+  {
+    date: "2026-10-22",
+    title: "1.7.3 Release",
+    category: "combat-logger",
+    body: {
+      summary:
+        "Combat Logger 1.7.3 adds The Fractured Archive, tracking its bosses, rooms, and raid weapon attacks, and logs Hallowfell attacks too.",
+      paragraphs: [
+        "Combat Logger 1.7.3 adds The Fractured Archive. The plugin now tracks the raid's bosses and rooms, along with the NPCs and objects inside them, and automatic live logging starts when you enter the raid, just like other leaderboard content. Install 1.7.3 before logging the raid, because older plugin versions will miss the new NPCs and attacks.",
+        "Attacks with the raid's new weapons are logged too: the Obligator, the Ascension crossbows, and Zorya's tome. Those feed the attack breakdown and attack uptime on Runelogs. Hallowfell attacks are now logged as well.",
+        "One change to the side panel: the folder button now copies the log folder's path instead of opening a file manager, so paste it into your file explorer to get there.",
+      ],
+      images: [
+        {
+          src: "/blog/fractured-archive-weapons.png",
+          alt: "Runelogs attack breakdown for a player on a Fractured Archive fight, listing Twisted bow, Obligator, Echo venator bow, and Elder maul",
+          caption: "Obligator attacks in the Runelogs attack breakdown.",
+          afterParagraph: 1,
+        },
+      ],
+    },
+  },
   {
     date: "2026-08-11",
     title: "1.7.2 Release",
