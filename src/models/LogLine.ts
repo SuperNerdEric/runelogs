@@ -53,6 +53,8 @@ export interface BaseLog {
   timezone: string;
   tick?: number;
   fightTimeMs?: number;
+  /** State carried to the start of a time range filter; not a real event. */
+  isTimeRangeSeed?: boolean;
 }
 
 export interface LogVersionLog extends BaseLog {

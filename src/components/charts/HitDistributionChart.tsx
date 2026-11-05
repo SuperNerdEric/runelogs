@@ -2,7 +2,6 @@ import React, { useMemo, useState } from "react";
 import {
   Bar,
   BarChart,
-  Cell,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -61,21 +60,16 @@ const HitDistributionChart: React.FC<HitDistributionChartProps> = ({
 }) => {
   const [tooltipSuppressed, setTooltipSuppressed] = useState(false);
 
-  const filteredLogs = filterByType(fight.data, LogTypes.DAMAGE);
-  const hitsplatAmounts = filteredLogs.map((log) => log.damageAmount);
-
-  const data = hitsplatAmounts.reduce(
-    (acc, amount) => {
-      acc[amount] = (acc[amount] || 0) + 1;
-      return acc;
-    },
-    {} as Record<number, number>,
-  );
-
-  const chartData = Object.keys(data).map((key) => ({
-    hitsplatAmount: parseInt(key, 10),
-    frequency: data[parseInt(key, 10)],
-  }));
+  const chartData = useMemo(() => {
+    const counts: Record<number, number> = {};
+    for (const log of filterByType(fight.data, LogTypes.DAMAGE)) {
+      counts[log.damageAmount] = (counts[log.damageAmount] || 0) + 1;
+    }
+    return Object.keys(counts).map((key) => ({
+      hitsplatAmount: parseInt(key, 10),
+      frequency: counts[parseInt(key, 10)],
+    }));
+  }, [fight.data]);
 
   const chartKey = useMemo(
     () =>
@@ -132,15 +126,11 @@ const HitDistributionChart: React.FC<HitDistributionChartProps> = ({
               setTooltipSuppressed(true);
               onSelectHitsplatFilter({ amount: barData.hitsplatAmount });
             }}
-          >
-            {chartData.map((entry) => (
-              <Cell key={entry.hitsplatAmount} fill={HITSPLAT_BAR_COLOR} />
-            ))}
-          </Bar>
+          />
         </BarChart>
       </ResponsiveContainer>
     </div>
   );
 };
 
-export default HitDistributionChart;
+export default React.memo(HitDistributionChart);

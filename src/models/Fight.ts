@@ -27,6 +27,9 @@ export interface Fight {
    * deriving them from {@link data}.
    */
   gearSetups?: GearSetup[];
+
+  /** Set when this fight has been narrowed by a time range filter. */
+  appliedTimeRange?: { startMs: number; endMs: number };
 }
 
 export interface FightMetaData {

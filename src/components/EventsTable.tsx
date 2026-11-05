@@ -1,10 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
-  Chip,
   CircularProgress,
-  Menu,
-  MenuItem,
   Table,
   TableBody,
   TableCell,
@@ -12,8 +9,7 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import AppTooltip from "./AppTooltip";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import { TableComponents, TableVirtuoso } from "react-virtuoso";
 import { Fight } from "../models/Fight";
 import { DamageLog, LogLine, LogTypes } from "../models/LogLine";
 import { Levels } from "../models/Levels";
@@ -42,33 +38,21 @@ import {
 import {
   getActorFromLog,
   getActorName,
-  getActorSpecificIds,
   getPlayerNameTextClass,
-  isUnknownPlayer,
 } from "../utils/actorUtils";
 import { itemIdMap } from "../lib/itemIdMap";
 import { prayerIdMap } from "../lib/prayerIdMap";
 import { prayerImages } from "../lib/prayerImages";
-import FilterSearchBar from "./FilterSearchBar";
+import { HitsplatFilter, matchesHitsplatFilter } from "../utils/hitsplatFilter";
 import {
-  formatTargetFilterLabel,
-  getDistinctTargetIndexes,
-  getDistinctTargetNpcIds,
-} from "../utils/targetDrillDown";
-import {
-  formatHitsplatFilterLabel,
-  HitsplatFilter,
-  matchesHitsplatFilter,
-} from "../utils/hitsplatFilter";
-import {
-  formatHitsplatTypeFilterLabel,
   HitsplatTypeFilter,
   matchesHitsplatTypeFilter,
 } from "../utils/hitsplatTypeFilter";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { matchesEventTimeFilter } from "../utils/eventTimeFilter";
 import { matchesAnimationIdFilter } from "../utils/animationIdFilter";
 import { buildTobBossHpByLog } from "../utils/tobBossHealth";
+import { isTimeRangeSeed } from "../utils/timeRangeFilter";
+import EncounterFilterBar from "./filters/EncounterFilterBar";
 
 interface EventsTableProps {
   fight: Fight;
@@ -214,30 +198,6 @@ const formatTargetHealth = (log: {
   return `${log.targetHealthRatio}/${log.targetHealthScale}`;
 };
 
-const getFilterTextColor = (
-  filter: ActorFilter,
-  loggedInPlayer: string,
-): string => {
-  if (filter.name === loggedInPlayer) {
-    return colors.text.player;
-  }
-  if (isUnknownPlayer(filter.name)) {
-    return colors.text.unknown;
-  }
-  return colors.text.other;
-};
-
-const getFilterMenuPaperProps = (anchorEl: HTMLElement | null) => ({
-  sx: {
-    maxHeight: "200px",
-    minWidth: Math.max(anchorEl?.offsetWidth ?? 0, 160),
-    bgcolor: colors.background.surface,
-    "& .MuiMenuItem-root": {
-      whiteSpace: "nowrap",
-    },
-  },
-});
-
 const getSourceTextClass = getPlayerNameTextClass;
 
 export const renderStatImages = (levels: Levels) => {
@@ -262,6 +222,56 @@ export const renderStatImages = (levels: Levels) => {
       ))}
     </div>
   );
+};
+
+/** Rows are virtualized: a fight can have thousands, and each is costly to render. */
+/** The top and bottom border of the container. */
+const EVENTS_TABLE_BORDER_HEIGHT = 2;
+
+const EVENTS_TABLE_COMPONENTS: TableComponents<LogLine> = {
+  // A TableContainer so the list keeps the theme's border, corners and shadow.
+  Scroller: React.forwardRef<HTMLDivElement>(
+    function EventsTableScroller(props, ref) {
+      return (
+        <TableContainer
+          {...props}
+          ref={ref}
+          sx={{ margin: 0, overflowX: "auto" }}
+        />
+      );
+    },
+  ),
+  Table: (props) => (
+    <Table
+      {...props}
+      style={{ ...props.style, tableLayout: "fixed", minWidth: 640 }}
+    />
+  ),
+  TableHead: React.forwardRef<HTMLTableSectionElement>(
+    function EventsTableHead(props, ref) {
+      return (
+        <TableHead
+          {...props}
+          ref={ref}
+          sx={{ bgcolor: colors.background.surface }}
+        />
+      );
+    },
+  ),
+  TableBody: React.forwardRef<HTMLTableSectionElement>(
+    function EventsTableBody(props, ref) {
+      return <TableBody {...props} ref={ref} />;
+    },
+  ),
+  TableRow: ({ item: _item, ...props }) => (
+    <TableRow
+      {...props}
+      className={props["data-index"] % 2 === 0 ? "even-row" : "odd-row"}
+      style={{ ...props.style, cursor: "default" }}
+      onMouseEnter={(e) => e.currentTarget.classList.add("highlighted-row")}
+      onMouseLeave={(e) => e.currentTarget.classList.remove("highlighted-row")}
+    />
+  ),
 };
 
 const EventsTable: React.FC<EventsTableProps> = ({
@@ -307,14 +317,9 @@ const EventsTable: React.FC<EventsTableProps> = ({
 }) => {
   const loggedInPlayer = fight.loggedInPlayer;
   const isDamageVariant = variant === "damage";
-  const [sourceMenuAnchor, setSourceMenuAnchor] = useState<null | HTMLElement>(
-    null,
-  );
-  const [targetMenuAnchor, setTargetMenuAnchor] = useState<null | HTMLElement>(
-    null,
-  );
-
   const dataSource = allLogs ?? fight.data;
+  // Starts unbounded so the list has room to measure itself; the CSS caps it.
+  const [listHeight, setListHeight] = useState(100000);
 
   const equipmentTimelines = useMemo(
     () => buildEquipmentTimelines(dataSource),
@@ -344,6 +349,9 @@ const EventsTable: React.FC<EventsTableProps> = ({
 
     const timeoutId = window.setTimeout(() => {
       const filteredLogs = fight.data.filter((log) => {
+        if (isTimeRangeSeed(log)) {
+          return false;
+        }
         if (!matchesLogActorFilters(log, dataSourceFilter, dataTargetFilter)) {
           return false;
         }
@@ -420,36 +428,6 @@ const EventsTable: React.FC<EventsTableProps> = ({
     dataAnimationIdFilter !== animationIdFilter;
   const isLoading = !isDamageVariant && (asyncLogs === null || filtersPending);
 
-  const sourceSpecificIds = useMemo(
-    () =>
-      sourceFilter
-        ? getActorSpecificIds(dataSource, "source", sourceFilter.name)
-        : [],
-    [dataSource, sourceFilter],
-  );
-
-  const targetMenuNpcIds = useMemo(() => {
-    if (!targetFilter) {
-      return [];
-    }
-
-    const damageLogs = dataSource.filter(
-      (log) => log.type === LogTypes.DAMAGE,
-    ) as DamageLog[];
-    return getDistinctTargetNpcIds(damageLogs, targetFilter);
-  }, [dataSource, targetFilter]);
-
-  const targetMenuIndexes = useMemo(() => {
-    if (!targetFilter || targetFilter.id === undefined) {
-      return [];
-    }
-
-    const damageLogs = dataSource.filter(
-      (log) => log.type === LogTypes.DAMAGE,
-    ) as DamageLog[];
-    return getDistinctTargetIndexes(damageLogs, targetFilter);
-  }, [dataSource, targetFilter]);
-
   const renderPrayerImages = (prayers: string[]) => {
     return (
       <div style={{ display: "flex", alignItems: "center" }}>
@@ -496,494 +474,360 @@ const EventsTable: React.FC<EventsTableProps> = ({
     );
   };
 
-  const hasFilterControls =
-    onSelectEventTypeFilter ||
-    onSelectSourceFilter ||
-    onSelectTargetFilter ||
-    onSelectEquipmentFilter ||
-    onSelectPrayerFilter ||
-    onSelectHitsplatTypeFilter ||
-    onSelectHitsplatFilter;
+  const renderEventRow = (_index: number, log: LogLine) => {
+    const source = getActorName(log, "source");
+    const target = getActorName(log, "target");
+    return (
+      <>
+        <TableCell>{formatHHmmss(log.fightTimeMs!, true)}</TableCell>
+        {isDamageVariant ? (
+          <>
+            <TableCell style={{ textAlign: "right" }}>
+              {onSelectHitsplatTypeFilter ? (
+                <span
+                  className="link hitsplat-name"
+                  onClick={() =>
+                    onSelectHitsplatTypeFilter({
+                      type: (log as DamageLog).hitsplatName,
+                    })
+                  }
+                >
+                  {(log as DamageLog).hitsplatName}
+                </span>
+              ) : (
+                <span className="hitsplat-name">
+                  {(log as DamageLog).hitsplatName}
+                </span>
+              )}
+            </TableCell>
+            <TableCell style={{ textAlign: "left" }}>
+              {onSelectHitsplatFilter ? (
+                <span
+                  className="link damage-amount"
+                  onClick={() =>
+                    onSelectHitsplatFilter({
+                      amount: (log as DamageLog).damageAmount,
+                    })
+                  }
+                >
+                  {(log as DamageLog).damageAmount}
+                </span>
+              ) : (
+                <span className="damage-amount">
+                  {(log as DamageLog).damageAmount}
+                </span>
+              )}
+              {formatTargetHealth(log as DamageLog) != null && (
+                <span className="target-health">
+                  {" "}
+                  ({formatTargetHealth(log as DamageLog)})
+                </span>
+              )}
+            </TableCell>
+          </>
+        ) : (
+          <>
+            <TableCell style={{ width: "120px", textAlign: "right" }}>
+              {onSelectEventTypeFilter ? (
+                <span
+                  className="link"
+                  onClick={() => onSelectEventTypeFilter(log.type)}
+                >
+                  {log.type}
+                </span>
+              ) : (
+                log.type
+              )}
+            </TableCell>
+            <TableCell>
+              {log.type === LogTypes.LOG_VERSION
+                ? `Log version ${log.logVersion}`
+                : ""}
+              {log.type === LogTypes.LOGGED_IN_PLAYER
+                ? `Logged in player ${log.loggedInPlayer}`
+                : ""}
+              {log.type === LogTypes.PLAYER_REGION ? `${log.playerRegion}` : ""}
+              {log.type === LogTypes.BASE_LEVELS
+                ? renderStatImages(log.baseLevels)
+                : ""}
+              {log.type === LogTypes.BOOSTED_LEVELS
+                ? renderStatImages(log.boostedLevels)
+                : ""}
+              {log.type === LogTypes.PRAYER
+                ? renderPrayerImages(log.prayers)
+                : ""}
+              {log.type === LogTypes.OVERHEAD
+                ? renderPrayerImages([log.overhead])
+                : ""}
+              {log.type === LogTypes.PLAYER_EQUIPMENT &&
+              Array.isArray(log.playerEquipment) ? (
+                <div style={{ display: "flex" }}>
+                  {log.playerEquipment.map((itemId: string, i: number) => {
+                    const id = parseInt(itemId);
+                    return id > 0 ? (
+                      <div
+                        key={i}
+                        className={onSelectEquipmentFilter ? "link" : undefined}
+                        style={{
+                          width: "22px",
+                          overflow: "hidden",
+                          marginRight: "5px",
+                          backgroundColor: "#494945",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          cursor: onSelectEquipmentFilter
+                            ? "pointer"
+                            : "default",
+                        }}
+                        onClick={() => {
+                          if (onSelectEquipmentFilter) {
+                            onSelectEquipmentFilter({
+                              id,
+                              name: itemIdMap[id] || `Item ${id}`,
+                            });
+                          }
+                        }}
+                      >
+                        <img
+                          src={getItemImageUrl(id)}
+                          alt={`Item ${itemId}`}
+                          style={{ height: "22px" }}
+                        />
+                      </div>
+                    ) : null;
+                  })}
+                </div>
+              ) : (
+                ""
+              )}
+              {log.type === LogTypes.PLAYER_INVENTORY &&
+              Array.isArray(log.inventory)
+                ? renderItemList(log.inventory)
+                : ""}
+              {log.type === LogTypes.RUNE_POUCH && Array.isArray(log.runePouch)
+                ? renderItemList(log.runePouch)
+                : ""}
+              {log.type === LogTypes.SPELLBOOK
+                ? (spellbookNames[log.spellbook] ??
+                  `Spellbook ${log.spellbook}`)
+                : ""}
+              {log.type === LogTypes.SPECIAL_ATTACK
+                ? `${log.specialAttack}%`
+                : ""}
+              {log.type === LogTypes.DAMAGE ? (
+                <>
+                  <span className="hitsplat-name">{log.hitsplatName} </span>
+                  <span className="damage-amount">{log.damageAmount}</span>
+                  {formatTargetHealth(log) != null && (
+                    <span className="target-health">
+                      {" "}
+                      ({formatTargetHealth(log)})
+                    </span>
+                  )}
+                </>
+              ) : (
+                ""
+              )}
+              {log.type === LogTypes.HEAL ? (
+                <>
+                  <span className="hitsplat-name">{log.hitsplatName} </span>
+                  <span className="heal-amount">{log.healAmount}</span>
+                  {formatTargetHealth(log) != null && (
+                    <span className="target-health">
+                      {" "}
+                      ({formatTargetHealth(log)})
+                    </span>
+                  )}
+                </>
+              ) : (
+                ""
+              )}
+              {log.type === LogTypes.PLAYER_ATTACK_ANIMATION ? (
+                <>
+                  <span className="attack-animation-text">
+                    {formatAttackAnimationEventDetail(log)}{" "}
+                  </span>
+                </>
+              ) : (
+                ""
+              )}
+              {log.type === LogTypes.POSITION
+                ? `(${log.position.x}, ${log.position.y}, ${log.position.plane})`
+                : ""}
+              {log.type === LogTypes.GRAPHICS_OBJECT_SPAWNED
+                ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
+                : ""}
+              {log.type === LogTypes.GRAPHICS_OBJECT_DESPAWNED
+                ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
+                : ""}
+              {log.type === LogTypes.GAME_OBJECT_SPAWNED
+                ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
+                : ""}
+              {log.type === LogTypes.GAME_OBJECT_DESPAWNED
+                ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
+                : ""}
+              {log.type === LogTypes.GROUND_OBJECT_SPAWNED
+                ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
+                : ""}
+              {log.type === LogTypes.GROUND_OBJECT_DESPAWNED
+                ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
+                : ""}
+              {log.type === LogTypes.NPC_CHANGED
+                ? `Changed ID: ${log.oldNpc.id} -> ${log.newNpc.id}`
+                : ""}
+              {log.type === LogTypes.WAVE_START}
+              {log.type === LogTypes.WAVE_END}
+              {log.type === LogTypes.PATH_START ? `${log.pathName}` : ""}
+              {log.type === LogTypes.PATH_COMPLETE ? `${log.pathName}` : ""}
+              {log.type === LogTypes.DURATION ? `${log.duration}` : ""}
+              {log.type === LogTypes.TOB_SCALE ? `Scale: ${log.scale}` : ""}
+              {log.type === LogTypes.COX_RAID_COMPLETE
+                ? `Scale: ${log.partySize}  Party: ${log.teamPoints.toLocaleString()}  Player: ${log.playerPoints.toLocaleString()}`
+                : ""}
+              {log.type === LogTypes.COX_RAID_MODE
+                ? log.challengeMode
+                  ? "Challenge Mode"
+                  : "Normal"
+                : ""}
+              {log.type === LogTypes.TOB_BOSS_HP
+                ? (() => {
+                    const hp = tobBossHpByLog.get(log);
+                    const percent = (log.value / 10).toFixed(1);
+                    return hp
+                      ? `${hp.current} / ${hp.max} (${percent}%)`
+                      : `${percent}%`;
+                  })()
+                : ""}
+            </TableCell>
+          </>
+        )}
+        <TableCell className={getSourceTextClass(source, loggedInPlayer)}>
+          {(() => {
+            const sourceActor = getActorFromLog(log, "source");
+            return sourceActor && onSelectSourceFilter ? (
+              <span
+                className="link"
+                onClick={() =>
+                  onSelectSourceFilter({
+                    name: sourceActor.name,
+                  })
+                }
+              >
+                {source}
+              </span>
+            ) : (
+              source
+            );
+          })()}
+        </TableCell>
+        <TableCell
+          className={
+            target === loggedInPlayer ? "logged-in-player-text" : "other-text"
+          }
+        >
+          {(() => {
+            const targetActor = getActorFromLog(log, "target");
+            return targetActor && onSelectTargetFilter ? (
+              <span
+                className="link"
+                onClick={() =>
+                  onSelectTargetFilter({
+                    name: targetActor.name,
+                  })
+                }
+              >
+                {target}
+              </span>
+            ) : (
+              target
+            );
+          })()}
+        </TableCell>
+      </>
+    );
+  };
 
   return (
     <>
-      {hasFilterControls && (
-        <FilterSearchBar
-          fight={{ ...fight, data: allLogs ?? fight.data }}
-          variant={variant}
-          onSelectEventTypeFilter={onSelectEventTypeFilter}
+      {!isDamageVariant && (
+        <EncounterFilterBar
+          fight={fight}
+          sourceFilter={sourceFilter}
+          targetFilter={targetFilter}
           onSelectSourceFilter={onSelectSourceFilter}
           onSelectTargetFilter={onSelectTargetFilter}
+          onClearSourceFilter={onClearSourceFilter}
+          onClearTargetFilter={onClearTargetFilter}
+          equipmentFilter={equipmentFilter}
           onSelectEquipmentFilter={onSelectEquipmentFilter}
+          onClearEquipmentFilter={onClearEquipmentFilter}
+          prayerFilter={prayerFilter}
           onSelectPrayerFilter={onSelectPrayerFilter}
-          onSelectHitsplatTypeFilter={onSelectHitsplatTypeFilter}
+          onClearPrayerFilter={onClearPrayerFilter}
+          hitsplatFilter={hitsplatFilter}
           onSelectHitsplatFilter={onSelectHitsplatFilter}
+          onClearHitsplatFilter={onClearHitsplatFilter}
+          hitsplatTypeFilter={hitsplatTypeFilter}
+          onSelectHitsplatTypeFilter={onSelectHitsplatTypeFilter}
+          onClearHitsplatTypeFilter={onClearHitsplatTypeFilter}
+          eventTypeFilter={eventTypeFilter}
+          onSelectEventTypeFilter={onSelectEventTypeFilter}
+          onClearEventTypeFilter={onClearEventTypeFilter}
+          eventTimeFilter={eventTimeFilter}
+          onClearEventTimeFilter={onClearEventTimeFilter}
+          animationIdFilter={animationIdFilter}
+          onClearAnimationIdFilter={onClearAnimationIdFilter}
         />
       )}
-      {(sourceFilter ||
-        targetFilter ||
-        equipmentFilter ||
-        prayerFilter ||
-        hitsplatTypeFilter ||
-        hitsplatFilter ||
-        eventTypeFilter ||
-        eventTimeFilter != null ||
-        animationIdFilter != null) && (
-        <Box
-          sx={{
-            width: "100%",
-            maxWidth: `${layout.contentMaxWidth}px`,
-            mb: 1,
-            display: "flex",
-            gap: 1,
-            flexWrap: "wrap",
-          }}
-        >
-          {sourceFilter && (
-            <>
-              <Chip
-                label={`Source: ${sourceFilter.name}${sourceFilter.index !== undefined ? ` - ${sourceFilter.index}` : ""}`}
-                onDelete={onClearSourceFilter}
-                onClick={(e) => setSourceMenuAnchor(e.currentTarget)}
-                icon={
-                  <ArrowDropDownIcon
-                    sx={{
-                      color: getFilterTextColor(sourceFilter, loggedInPlayer),
-                    }}
-                  />
-                }
-                size="small"
-                sx={{
-                  bgcolor: colors.background.surface,
-                  color: getFilterTextColor(sourceFilter, loggedInPlayer),
-                  border: "1px solid grey",
-                  borderRadius: "5px",
-                  "& .MuiChip-label": {
-                    fontSize: "0.9rem",
-                    paddingLeft: "10px",
-                    paddingRight: "10px",
-                  },
-                  "& .MuiChip-deleteIcon": {
-                    color: getFilterTextColor(sourceFilter, loggedInPlayer),
-                    fontSize: "1.05rem",
-                    marginRight: "6px",
-                  },
-                  "& .MuiChip-deleteIcon:hover": {
-                    color: getFilterTextColor(sourceFilter, loggedInPlayer),
-                  },
-                }}
-              />
-              <Menu
-                anchorEl={sourceMenuAnchor}
-                open={Boolean(sourceMenuAnchor)}
-                onClose={() => setSourceMenuAnchor(null)}
-                PaperProps={getFilterMenuPaperProps(sourceMenuAnchor)}
-              >
-                <MenuItem
-                  onClick={() => {
-                    if (onSelectSourceFilter) {
-                      onSelectSourceFilter({ name: sourceFilter.name });
-                    }
-                    setSourceMenuAnchor(null);
-                  }}
-                >
-                  All IDs
-                </MenuItem>
-                {sourceSpecificIds.map((specificId) => (
-                  <MenuItem
-                    key={`source-id-${specificId}`}
-                    onClick={() => {
-                      if (onSelectSourceFilter) {
-                        onSelectSourceFilter({
-                          name: sourceFilter.name,
-                          index: specificId,
-                        });
-                      }
-                      setSourceMenuAnchor(null);
-                    }}
-                  >
-                    {specificId}
-                  </MenuItem>
-                ))}
-              </Menu>
-            </>
-          )}
-          {targetFilter && (
-            <>
-              <Chip
-                label={formatTargetFilterLabel(targetFilter)}
-                onDelete={onClearTargetFilter}
-                onClick={(e) => setTargetMenuAnchor(e.currentTarget)}
-                icon={
-                  <ArrowDropDownIcon
-                    sx={{
-                      color: getFilterTextColor(targetFilter, loggedInPlayer),
-                    }}
-                  />
-                }
-                size="small"
-                sx={{
-                  bgcolor: colors.background.surface,
-                  color: getFilterTextColor(targetFilter, loggedInPlayer),
-                  border: "1px solid grey",
-                  borderRadius: "5px",
-                  "& .MuiChip-label": {
-                    fontSize: "0.9rem",
-                    paddingLeft: "10px",
-                    paddingRight: "10px",
-                  },
-                  "& .MuiChip-deleteIcon": {
-                    color: getFilterTextColor(targetFilter, loggedInPlayer),
-                    fontSize: "1.05rem",
-                    marginRight: "6px",
-                  },
-                  "& .MuiChip-deleteIcon:hover": {
-                    color: getFilterTextColor(targetFilter, loggedInPlayer),
-                  },
-                }}
-              />
-              <Menu
-                anchorEl={targetMenuAnchor}
-                open={Boolean(targetMenuAnchor)}
-                onClose={() => setTargetMenuAnchor(null)}
-                PaperProps={getFilterMenuPaperProps(targetMenuAnchor)}
-              >
-                <MenuItem
-                  onClick={() => {
-                    if (onSelectTargetFilter) {
-                      if (targetFilter.index !== undefined) {
-                        onSelectTargetFilter({
-                          name: targetFilter.name,
-                          ...(targetFilter.id !== undefined
-                            ? { id: targetFilter.id }
-                            : {}),
-                        });
-                      } else if (targetFilter.id !== undefined) {
-                        onSelectTargetFilter({ name: targetFilter.name });
-                      }
-                    }
-                    setTargetMenuAnchor(null);
-                  }}
-                  disabled={
-                    targetFilter.id === undefined &&
-                    targetFilter.index === undefined
-                  }
-                >
-                  {targetFilter.index !== undefined ? "All indexes" : "All IDs"}
-                </MenuItem>
-                {targetFilter.id === undefined &&
-                  targetFilter.index === undefined &&
-                  targetMenuNpcIds.map((npcId) => (
-                    <MenuItem
-                      key={`target-npc-id-${npcId}`}
-                      onClick={() => {
-                        if (onSelectTargetFilter) {
-                          onSelectTargetFilter({
-                            name: targetFilter.name,
-                            id: npcId,
-                          });
-                        }
-                        setTargetMenuAnchor(null);
-                      }}
-                    >
-                      ID {npcId}
-                    </MenuItem>
-                  ))}
-                {targetFilter.id !== undefined &&
-                  targetFilter.index === undefined &&
-                  targetMenuIndexes.map((index) => (
-                    <MenuItem
-                      key={`target-index-${index}`}
-                      onClick={() => {
-                        if (onSelectTargetFilter) {
-                          onSelectTargetFilter({
-                            name: targetFilter.name,
-                            id: targetFilter.id,
-                            index,
-                          });
-                        }
-                        setTargetMenuAnchor(null);
-                      }}
-                    >
-                      Index {index}
-                    </MenuItem>
-                  ))}
-                {targetFilter.index !== undefined &&
-                  targetMenuIndexes
-                    .filter((index) => index !== targetFilter.index)
-                    .map((index) => (
-                      <MenuItem
-                        key={`target-index-${index}`}
-                        onClick={() => {
-                          if (onSelectTargetFilter) {
-                            onSelectTargetFilter({
-                              name: targetFilter.name,
-                              ...(targetFilter.id !== undefined
-                                ? { id: targetFilter.id }
-                                : {}),
-                              index,
-                            });
-                          }
-                          setTargetMenuAnchor(null);
-                        }}
-                      >
-                        Index {index}
-                      </MenuItem>
-                    ))}
-              </Menu>
-            </>
-          )}
-          {equipmentFilter && (
-            <Chip
-              label={`Equipment: ${equipmentFilter.name || itemIdMap[equipmentFilter.id] || equipmentFilter.id}`}
-              onDelete={onClearEquipmentFilter}
-              icon={
-                <AppTooltip
-                  title="Equipment filter is based on when an event was recorded. However, some actions, such as projectile damage, may have been initiated while different equipment was equipped."
-                  arrow
-                >
-                  <ErrorOutlineIcon
-                    sx={{
-                      color: "#f44336 !important",
-                      fontSize: "1.05rem",
-                    }}
-                  />
-                </AppTooltip>
-              }
-              size="small"
-              sx={{
-                bgcolor: colors.background.surface,
-                color: "white",
-                border: "1px solid grey",
-                borderRadius: "5px",
-                "& .MuiChip-label": {
-                  fontSize: "0.9rem",
-                  paddingLeft: "10px",
-                  paddingRight: "10px",
-                },
-                "& .MuiChip-icon": {
-                  marginLeft: "8px",
-                },
-                "& .MuiChip-deleteIcon": {
-                  color: "white",
-                  fontSize: "1.05rem",
-                  marginRight: "6px",
-                },
-                "& .MuiChip-deleteIcon:hover": {
-                  color: "white",
-                },
-              }}
-            />
-          )}
-          {prayerFilter && (
-            <Chip
-              label={`Prayer: ${prayerFilter.name || prayerIdMap[prayerFilter.id] || prayerFilter.id}`}
-              onDelete={onClearPrayerFilter}
-              icon={
-                <AppTooltip
-                  title="Prayer filter is based on when an event was recorded. Active prayers and overhead prayers are tracked separately in the log."
-                  arrow
-                >
-                  <ErrorOutlineIcon
-                    sx={{
-                      color: "#f44336 !important",
-                      fontSize: "1.05rem",
-                    }}
-                  />
-                </AppTooltip>
-              }
-              size="small"
-              sx={{
-                bgcolor: colors.background.surface,
-                color: "white",
-                border: "1px solid grey",
-                borderRadius: "5px",
-                "& .MuiChip-label": {
-                  fontSize: "0.9rem",
-                  paddingLeft: "10px",
-                  paddingRight: "10px",
-                },
-                "& .MuiChip-icon": {
-                  marginLeft: "8px",
-                },
-                "& .MuiChip-deleteIcon": {
-                  color: "white",
-                  fontSize: "1.05rem",
-                  marginRight: "6px",
-                },
-                "& .MuiChip-deleteIcon:hover": {
-                  color: "white",
-                },
-              }}
-            />
-          )}
-          {hitsplatTypeFilter && (
-            <Chip
-              label={formatHitsplatTypeFilterLabel(hitsplatTypeFilter)}
-              onDelete={onClearHitsplatTypeFilter}
-              size="small"
-              sx={{
-                bgcolor: colors.background.surface,
-                color: "white",
-                border: "1px solid grey",
-                borderRadius: "5px",
-                "& .MuiChip-label": {
-                  fontSize: "0.9rem",
-                  paddingLeft: "10px",
-                  paddingRight: "10px",
-                },
-                "& .MuiChip-deleteIcon": {
-                  color: "white",
-                  fontSize: "1.05rem",
-                  marginRight: "6px",
-                },
-                "& .MuiChip-deleteIcon:hover": {
-                  color: "white",
-                },
-              }}
-            />
-          )}
-          {hitsplatFilter && (
-            <Chip
-              label={formatHitsplatFilterLabel(hitsplatFilter)}
-              onDelete={onClearHitsplatFilter}
-              size="small"
-              sx={{
-                bgcolor: colors.background.surface,
-                color: "white",
-                border: "1px solid grey",
-                borderRadius: "5px",
-                "& .MuiChip-label": {
-                  fontSize: "0.9rem",
-                  paddingLeft: "10px",
-                  paddingRight: "10px",
-                },
-                "& .MuiChip-deleteIcon": {
-                  color: "white",
-                  fontSize: "1.05rem",
-                  marginRight: "6px",
-                },
-                "& .MuiChip-deleteIcon:hover": {
-                  color: "white",
-                },
-              }}
-            />
-          )}
-          {eventTypeFilter && (
-            <Chip
-              label={`Type: ${eventTypeFilter}`}
-              onDelete={onClearEventTypeFilter}
-              size="small"
-              sx={{
-                bgcolor: colors.background.surface,
-                color: "white",
-                border: "1px solid grey",
-                borderRadius: "5px",
-                "& .MuiChip-label": {
-                  fontSize: "0.9rem",
-                  paddingLeft: "10px",
-                  paddingRight: "10px",
-                },
-                "& .MuiChip-deleteIcon": {
-                  color: "white",
-                  fontSize: "1.05rem",
-                  marginRight: "6px",
-                },
-                "& .MuiChip-deleteIcon:hover": {
-                  color: "white",
-                },
-              }}
-            />
-          )}
-          {eventTimeFilter != null && (
-            <Chip
-              label={`Time: ${formatHHmmss(eventTimeFilter, true)}`}
-              onDelete={onClearEventTimeFilter}
-              size="small"
-              sx={{
-                bgcolor: colors.background.surface,
-                color: "white",
-                border: "1px solid grey",
-                borderRadius: "5px",
-                "& .MuiChip-label": {
-                  fontSize: "0.9rem",
-                  paddingLeft: "10px",
-                  paddingRight: "10px",
-                },
-                "& .MuiChip-deleteIcon": {
-                  color: "white",
-                  fontSize: "1.05rem",
-                  marginRight: "6px",
-                },
-                "& .MuiChip-deleteIcon:hover": {
-                  color: "white",
-                },
-              }}
-            />
-          )}
-          {animationIdFilter != null && (
-            <Chip
-              label={`Animation: ${animationIdFilter}`}
-              onDelete={onClearAnimationIdFilter}
-              size="small"
-              sx={{
-                bgcolor: colors.background.surface,
-                color: "white",
-                border: "1px solid grey",
-                borderRadius: "5px",
-                "& .MuiChip-label": {
-                  fontSize: "0.9rem",
-                  paddingLeft: "10px",
-                  paddingRight: "10px",
-                },
-                "& .MuiChip-deleteIcon": {
-                  color: "white",
-                  fontSize: "1.05rem",
-                  marginRight: "6px",
-                },
-                "& .MuiChip-deleteIcon:hover": {
-                  color: "white",
-                },
-              }}
-            />
-          )}
-        </Box>
-      )}
       <Box
+        style={
+          { "--events-list-height": `${listHeight}px` } as React.CSSProperties
+        }
         sx={{
           width: "100%",
           maxWidth: `${layout.contentMaxWidth}px`,
-          maxHeight: {
-            xs: "70vh",
-            sm: "70vh",
-            md: maxHeight,
+          mb: "15px",
+          height: {
+            xs: "min(var(--events-list-height), 70vh)",
+            md: `min(var(--events-list-height), ${maxHeight})`,
           },
-          overflowY: "auto",
+          "& .MuiTableCell-root": {
+            fontSize: "13px",
+            overflowWrap: "anywhere",
+            "@media (max-width: 768px)": {
+              fontSize: "12px",
+              padding: "2px 3px",
+            },
+          },
         }}
       >
-        <TableContainer
-          sx={{
-            "& .MuiTableCell-root": {
-              fontSize: "13px",
-              "@media (max-width: 768px)": {
-                fontSize: "12px",
-                padding: "2px 3px",
-              },
-            },
-          }}
-        >
-          <Table style={{ tableLayout: "auto" }}>
-            <TableHead>
+        {isLoading ? (
+          <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
+            <CircularProgress color="inherit" />
+          </Box>
+        ) : (
+          <TableVirtuoso
+            data={logs}
+            style={{ height: "100%" }}
+            components={EVENTS_TABLE_COMPONENTS}
+            increaseViewportBy={400}
+            totalListHeightChanged={(height) =>
+              setListHeight(height + EVENTS_TABLE_BORDER_HEIGHT)
+            }
+            fixedHeaderContent={() => (
               <TableRow>
-                <TableCell style={{ width: "100px", textAlign: "center" }}>
+                <TableCell
+                  sx={{ width: { xs: 80, md: 100 } }}
+                  style={{ textAlign: "center" }}
+                >
                   Time
                 </TableCell>
                 <TableCell
-                  style={{
-                    width: isDamageVariant ? "200px" : "120px",
-                    textAlign: "right",
-                    paddingBottom: "2px",
+                  sx={{
+                    width: { xs: 110, md: isDamageVariant ? 200 : 120 },
                   }}
+                  style={{ textAlign: "right", paddingBottom: "2px" }}
                 >
                   Type
                 </TableCell>
@@ -992,352 +836,20 @@ const EventsTable: React.FC<EventsTableProps> = ({
                 ) : (
                   <TableCell style={{ textAlign: "center" }}>Event</TableCell>
                 )}
-                <TableCell align="left" style={{ width: "200px" }}>
+                <TableCell align="left" sx={{ width: { xs: 110, md: 200 } }}>
                   Source
                 </TableCell>
-                <TableCell align="left" style={{ width: "200px" }}>
+                <TableCell align="left" sx={{ width: { xs: 110, md: 200 } }}>
                   Target
                 </TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    align="center"
-                    sx={{ py: 8, borderBottom: "none" }}
-                  >
-                    <CircularProgress color="inherit" />
-                  </TableCell>
-                </TableRow>
-              ) : (
-                logs.map((log, index) => {
-                  const source = getActorName(log, "source");
-                  const target = getActorName(log, "target");
-                  return (
-                    <TableRow
-                      key={index}
-                      className={index % 2 === 0 ? "even-row" : "odd-row"}
-                      style={{ cursor: "default" }}
-                      onMouseEnter={(e) =>
-                        e.currentTarget.classList.add("highlighted-row")
-                      }
-                      onMouseLeave={(e) =>
-                        e.currentTarget.classList.remove("highlighted-row")
-                      }
-                    >
-                      <TableCell>
-                        {formatHHmmss(log.fightTimeMs!, true)}
-                      </TableCell>
-                      {isDamageVariant ? (
-                        <>
-                          <TableCell style={{ textAlign: "right" }}>
-                            {onSelectHitsplatTypeFilter ? (
-                              <span
-                                className="link hitsplat-name"
-                                onClick={() =>
-                                  onSelectHitsplatTypeFilter({
-                                    type: (log as DamageLog).hitsplatName,
-                                  })
-                                }
-                              >
-                                {(log as DamageLog).hitsplatName}
-                              </span>
-                            ) : (
-                              <span className="hitsplat-name">
-                                {(log as DamageLog).hitsplatName}
-                              </span>
-                            )}
-                          </TableCell>
-                          <TableCell style={{ textAlign: "left" }}>
-                            {onSelectHitsplatFilter ? (
-                              <span
-                                className="link damage-amount"
-                                onClick={() =>
-                                  onSelectHitsplatFilter({
-                                    amount: (log as DamageLog).damageAmount,
-                                  })
-                                }
-                              >
-                                {(log as DamageLog).damageAmount}
-                              </span>
-                            ) : (
-                              <span className="damage-amount">
-                                {(log as DamageLog).damageAmount}
-                              </span>
-                            )}
-                            {formatTargetHealth(log as DamageLog) != null && (
-                              <span className="target-health">
-                                {" "}
-                                ({formatTargetHealth(log as DamageLog)})
-                              </span>
-                            )}
-                          </TableCell>
-                        </>
-                      ) : (
-                        <>
-                          <TableCell
-                            style={{ width: "120px", textAlign: "right" }}
-                          >
-                            {onSelectEventTypeFilter ? (
-                              <span
-                                className="link"
-                                onClick={() =>
-                                  onSelectEventTypeFilter(log.type)
-                                }
-                              >
-                                {log.type}
-                              </span>
-                            ) : (
-                              log.type
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {log.type === LogTypes.LOG_VERSION
-                              ? `Log version ${log.logVersion}`
-                              : ""}
-                            {log.type === LogTypes.LOGGED_IN_PLAYER
-                              ? `Logged in player ${log.loggedInPlayer}`
-                              : ""}
-                            {log.type === LogTypes.PLAYER_REGION
-                              ? `${log.playerRegion}`
-                              : ""}
-                            {log.type === LogTypes.BASE_LEVELS
-                              ? renderStatImages(log.baseLevels)
-                              : ""}
-                            {log.type === LogTypes.BOOSTED_LEVELS
-                              ? renderStatImages(log.boostedLevels)
-                              : ""}
-                            {log.type === LogTypes.PRAYER
-                              ? renderPrayerImages(log.prayers)
-                              : ""}
-                            {log.type === LogTypes.OVERHEAD
-                              ? renderPrayerImages([log.overhead])
-                              : ""}
-                            {log.type === LogTypes.PLAYER_EQUIPMENT &&
-                            Array.isArray(log.playerEquipment) ? (
-                              <div style={{ display: "flex" }}>
-                                {log.playerEquipment.map(
-                                  (itemId: string, i: number) => {
-                                    const id = parseInt(itemId);
-                                    return id > 0 ? (
-                                      <div
-                                        key={i}
-                                        className={
-                                          onSelectEquipmentFilter
-                                            ? "link"
-                                            : undefined
-                                        }
-                                        style={{
-                                          width: "22px",
-                                          overflow: "hidden",
-                                          marginRight: "5px",
-                                          backgroundColor: "#494945",
-                                          display: "flex",
-                                          justifyContent: "center",
-                                          alignItems: "center",
-                                          cursor: onSelectEquipmentFilter
-                                            ? "pointer"
-                                            : "default",
-                                        }}
-                                        onClick={() => {
-                                          if (onSelectEquipmentFilter) {
-                                            onSelectEquipmentFilter({
-                                              id,
-                                              name:
-                                                itemIdMap[id] || `Item ${id}`,
-                                            });
-                                          }
-                                        }}
-                                      >
-                                        <img
-                                          src={getItemImageUrl(id)}
-                                          alt={`Item ${itemId}`}
-                                          style={{ height: "22px" }}
-                                        />
-                                      </div>
-                                    ) : null;
-                                  },
-                                )}
-                              </div>
-                            ) : (
-                              ""
-                            )}
-                            {log.type === LogTypes.PLAYER_INVENTORY &&
-                            Array.isArray(log.inventory)
-                              ? renderItemList(log.inventory)
-                              : ""}
-                            {log.type === LogTypes.RUNE_POUCH &&
-                            Array.isArray(log.runePouch)
-                              ? renderItemList(log.runePouch)
-                              : ""}
-                            {log.type === LogTypes.SPELLBOOK
-                              ? (spellbookNames[log.spellbook] ??
-                                `Spellbook ${log.spellbook}`)
-                              : ""}
-                            {log.type === LogTypes.SPECIAL_ATTACK
-                              ? `${log.specialAttack}%`
-                              : ""}
-                            {log.type === LogTypes.DAMAGE ? (
-                              <>
-                                <span className="hitsplat-name">
-                                  {log.hitsplatName}{" "}
-                                </span>
-                                <span className="damage-amount">
-                                  {log.damageAmount}
-                                </span>
-                                {formatTargetHealth(log) != null && (
-                                  <span className="target-health">
-                                    {" "}
-                                    ({formatTargetHealth(log)})
-                                  </span>
-                                )}
-                              </>
-                            ) : (
-                              ""
-                            )}
-                            {log.type === LogTypes.HEAL ? (
-                              <>
-                                <span className="hitsplat-name">
-                                  {log.hitsplatName}{" "}
-                                </span>
-                                <span className="heal-amount">
-                                  {log.healAmount}
-                                </span>
-                                {formatTargetHealth(log) != null && (
-                                  <span className="target-health">
-                                    {" "}
-                                    ({formatTargetHealth(log)})
-                                  </span>
-                                )}
-                              </>
-                            ) : (
-                              ""
-                            )}
-                            {log.type === LogTypes.PLAYER_ATTACK_ANIMATION ? (
-                              <>
-                                <span className="attack-animation-text">
-                                  {formatAttackAnimationEventDetail(log)}{" "}
-                                </span>
-                              </>
-                            ) : (
-                              ""
-                            )}
-                            {log.type === LogTypes.POSITION
-                              ? `(${log.position.x}, ${log.position.y}, ${log.position.plane})`
-                              : ""}
-                            {log.type === LogTypes.GRAPHICS_OBJECT_SPAWNED
-                              ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
-                              : ""}
-                            {log.type === LogTypes.GRAPHICS_OBJECT_DESPAWNED
-                              ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
-                              : ""}
-                            {log.type === LogTypes.GAME_OBJECT_SPAWNED
-                              ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
-                              : ""}
-                            {log.type === LogTypes.GAME_OBJECT_DESPAWNED
-                              ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
-                              : ""}
-                            {log.type === LogTypes.GROUND_OBJECT_SPAWNED
-                              ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
-                              : ""}
-                            {log.type === LogTypes.GROUND_OBJECT_DESPAWNED
-                              ? `${log.id}  (${log.position.x}, ${log.position.y}, ${log.position.plane})`
-                              : ""}
-                            {log.type === LogTypes.NPC_CHANGED
-                              ? `Changed ID: ${log.oldNpc.id} -> ${log.newNpc.id}`
-                              : ""}
-                            {log.type === LogTypes.WAVE_START}
-                            {log.type === LogTypes.WAVE_END}
-                            {log.type === LogTypes.PATH_START
-                              ? `${log.pathName}`
-                              : ""}
-                            {log.type === LogTypes.PATH_COMPLETE
-                              ? `${log.pathName}`
-                              : ""}
-                            {log.type === LogTypes.DURATION
-                              ? `${log.duration}`
-                              : ""}
-                            {log.type === LogTypes.TOB_SCALE
-                              ? `Scale: ${log.scale}`
-                              : ""}
-                            {log.type === LogTypes.COX_RAID_COMPLETE
-                              ? `Scale: ${log.partySize}  Party: ${log.teamPoints.toLocaleString()}  Player: ${log.playerPoints.toLocaleString()}`
-                              : ""}
-                            {log.type === LogTypes.COX_RAID_MODE
-                              ? log.challengeMode
-                                ? "Challenge Mode"
-                                : "Normal"
-                              : ""}
-                            {log.type === LogTypes.TOB_BOSS_HP
-                              ? (() => {
-                                  const hp = tobBossHpByLog.get(log);
-                                  const percent = (log.value / 10).toFixed(1);
-                                  return hp
-                                    ? `${hp.current} / ${hp.max} (${percent}%)`
-                                    : `${percent}%`;
-                                })()
-                              : ""}
-                          </TableCell>
-                        </>
-                      )}
-                      <TableCell
-                        className={getSourceTextClass(source, loggedInPlayer)}
-                      >
-                        {(() => {
-                          const sourceActor = getActorFromLog(log, "source");
-                          return sourceActor && onSelectSourceFilter ? (
-                            <span
-                              className="link"
-                              onClick={() =>
-                                onSelectSourceFilter({
-                                  name: sourceActor.name,
-                                })
-                              }
-                            >
-                              {source}
-                            </span>
-                          ) : (
-                            source
-                          );
-                        })()}
-                      </TableCell>
-                      <TableCell
-                        className={
-                          target === loggedInPlayer
-                            ? "logged-in-player-text"
-                            : "other-text"
-                        }
-                      >
-                        {(() => {
-                          const targetActor = getActorFromLog(log, "target");
-                          return targetActor && onSelectTargetFilter ? (
-                            <span
-                              className="link"
-                              onClick={() =>
-                                onSelectTargetFilter({
-                                  name: targetActor.name,
-                                })
-                              }
-                            >
-                              {target}
-                            </span>
-                          ) : (
-                            target
-                          );
-                        })()}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+            )}
+            itemContent={renderEventRow}
+          />
+        )}
       </Box>
     </>
   );
 };
 
-export default EventsTable;
+export default React.memo(EventsTable);

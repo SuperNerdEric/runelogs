@@ -14,7 +14,14 @@ import {
   useSearchParams,
   useLocation,
 } from "react-router-dom";
-import { Alert, Box, CircularProgress, Tab, Tabs } from "@mui/material";
+import {
+  Alert,
+  Box,
+  CircularProgress,
+  LinearProgress,
+  Tab,
+  Tabs,
+} from "@mui/material";
 import { centeredPageStateSx } from "../theme";
 import { TabsEnum } from "./Tabs";
 import EncounterTabContent from "./EncounterTabContent";
@@ -81,7 +88,22 @@ import {
   showsMechanicHitsplats,
   withoutMechanicDamage,
 } from "../utils/mechanicDamageFilter";
-import MechanicHitsplatsChip from "./MechanicHitsplatsChip";
+import {
+  deserializeTimeRange,
+  getFightTimeBounds,
+  isWholeFight,
+  resolveTimeRange,
+  serializeTimeRange,
+  sliceFightToTimeRange,
+  TIME_RANGE_PARAM,
+  TimeRange,
+} from "../utils/timeRangeFilter";
+import {
+  EncounterChartContext,
+  EncounterChartContextValue,
+  EncounterFilterContext,
+  EncounterFilterContextValue,
+} from "./filters/EncounterFilterContext";
 
 type EncounterApiFG = {
   type: "fightGroup";
@@ -152,6 +174,10 @@ const Encounter: React.FC = () => {
   const [leaderboardName, setLeaderboardName] = useState<string | null>(null);
 
   const [searchParams] = useSearchParams();
+  // Lets handlers use the latest params without changing identity on every URL
+  // change, which would re-render the tab content before its new data is ready.
+  const searchParamsRef = useRef(searchParams);
+  searchParamsRef.current = searchParams;
   const navigate = useNavigate();
   const location = useLocation();
   const canonicalPath = `${location.pathname}${location.search}`;
@@ -163,36 +189,36 @@ const Encounter: React.FC = () => {
   const tabParam = searchParams.get("tab") as TabsEnum | null;
   const sourceFilter = useMemo(
     () => deserializeActorFilter(searchParams.get("source")),
-    [searchParams],
+    [searchParams.get("source")],
   );
   const targetFilter = useMemo(
     () => deserializeActorFilter(searchParams.get("target")),
-    [searchParams],
+    [searchParams.get("target")],
   );
   const equipmentFilter = useMemo(
     () => deserializeEquipmentFilter(searchParams.get("equipment")),
-    [searchParams],
+    [searchParams.get("equipment")],
   );
   const prayerFilter = useMemo(
     () => deserializePrayerFilter(searchParams.get("prayer")),
-    [searchParams],
+    [searchParams.get("prayer")],
   );
   const hitsplatFilter = useMemo(
     () => deserializeHitsplatFilter(searchParams.get("hitsplat")),
-    [searchParams],
+    [searchParams.get("hitsplat")],
   );
   const hitsplatTypeFilter = useMemo(
     () => deserializeHitsplatTypeFilter(searchParams.get("hitsplatType")),
-    [searchParams],
+    [searchParams.get("hitsplatType")],
   );
   const eventTypeFilter = searchParams.get("eventType");
   const eventTimeFilter = useMemo(
     () => deserializeEventTimeFilter(searchParams.get("eventTime")),
-    [searchParams],
+    [searchParams.get("eventTime")],
   );
   const animationIdFilter = useMemo(
     () => deserializeAnimationIdFilter(searchParams.get("animationId")),
-    [searchParams],
+    [searchParams.get("animationId")],
   );
   const showMechanicHitsplats = showsMechanicHitsplats(
     searchParams.get(MECHANIC_HITSPLATS_PARAM),
@@ -434,69 +460,86 @@ const Encounter: React.FC = () => {
     [group, navigate, searchParams, isAggregate],
   );
 
+  // The router applies URL changes in a transition, so nothing would change on
+  // screen until the new data has rendered. Commit the pending state first so the
+  // chips and progress bar respond the moment a filter is picked.
+  const [pendingSearch, setPendingSearch] = useState<string | null>(null);
+  useEffect(() => setPendingSearch(null), [location.search]);
+  const applyFilterParams = useCallback(
+    (newParams: URLSearchParams) => {
+      const search = newParams.toString();
+      if (search === searchParamsRef.current.toString()) {
+        return;
+      }
+      flushSync(() => setPendingSearch(search));
+      navigate(`${window.location.pathname}?${search}`);
+    },
+    [navigate],
+  );
+
   const updateActorFilter = useCallback(
     (key: "source" | "target", filter: ActorFilter | null) => {
-      const newParams = new URLSearchParams(searchParams);
+      const newParams = new URLSearchParams(searchParamsRef.current);
       if (filter) {
         newParams.set(key, serializeActorFilter(filter));
       } else {
         newParams.delete(key);
       }
-      navigate(`${window.location.pathname}?${newParams.toString()}`);
+      applyFilterParams(newParams);
     },
-    [navigate, searchParams],
+    [applyFilterParams],
   );
 
   const updateEquipmentFilter = useCallback(
     (filter: EquipmentFilter | null) => {
-      const newParams = new URLSearchParams(searchParams);
+      const newParams = new URLSearchParams(searchParamsRef.current);
       if (filter) {
         newParams.set("equipment", serializeEquipmentFilter(filter));
       } else {
         newParams.delete("equipment");
       }
-      navigate(`${window.location.pathname}?${newParams.toString()}`);
+      applyFilterParams(newParams);
     },
-    [navigate, searchParams],
+    [applyFilterParams],
   );
 
   const updatePrayerFilter = useCallback(
     (filter: PrayerFilter | null) => {
-      const newParams = new URLSearchParams(searchParams);
+      const newParams = new URLSearchParams(searchParamsRef.current);
       if (filter) {
         newParams.set("prayer", serializePrayerFilter(filter));
       } else {
         newParams.delete("prayer");
       }
-      navigate(`${window.location.pathname}?${newParams.toString()}`);
+      applyFilterParams(newParams);
     },
-    [navigate, searchParams],
+    [applyFilterParams],
   );
 
   const updateHitsplatFilter = useCallback(
     (filter: HitsplatFilter | null) => {
-      const newParams = new URLSearchParams(searchParams);
+      const newParams = new URLSearchParams(searchParamsRef.current);
       if (filter) {
         newParams.set("hitsplat", serializeHitsplatFilter(filter));
       } else {
         newParams.delete("hitsplat");
       }
-      navigate(`${window.location.pathname}?${newParams.toString()}`);
+      applyFilterParams(newParams);
     },
-    [navigate, searchParams],
+    [applyFilterParams],
   );
 
   const updateHitsplatTypeFilter = useCallback(
     (filter: HitsplatTypeFilter | null) => {
-      const newParams = new URLSearchParams(searchParams);
+      const newParams = new URLSearchParams(searchParamsRef.current);
       if (filter) {
         newParams.set("hitsplatType", serializeHitsplatTypeFilter(filter));
       } else {
         newParams.delete("hitsplatType");
       }
-      navigate(`${window.location.pathname}?${newParams.toString()}`);
+      applyFilterParams(newParams);
     },
-    [navigate, searchParams],
+    [applyFilterParams],
   );
 
   const onSelectSourceFilter = useCallback(
@@ -517,27 +560,27 @@ const Encounter: React.FC = () => {
   );
   const onSelectEventTypeFilter = useCallback(
     (eventType: string) => {
-      const newParams = new URLSearchParams(searchParams);
+      const newParams = new URLSearchParams(searchParamsRef.current);
       newParams.set("eventType", eventType);
-      navigate(`${window.location.pathname}?${newParams.toString()}`);
+      applyFilterParams(newParams);
     },
-    [navigate, searchParams],
+    [applyFilterParams],
   );
   const onClearEventTypeFilter = useCallback(() => {
-    const newParams = new URLSearchParams(searchParams);
+    const newParams = new URLSearchParams(searchParamsRef.current);
     newParams.delete("eventType");
-    navigate(`${window.location.pathname}?${newParams.toString()}`);
-  }, [navigate, searchParams]);
+    applyFilterParams(newParams);
+  }, [applyFilterParams]);
   const onClearEventTimeFilter = useCallback(() => {
-    const newParams = new URLSearchParams(searchParams);
+    const newParams = new URLSearchParams(searchParamsRef.current);
     newParams.delete("eventTime");
-    navigate(`${window.location.pathname}?${newParams.toString()}`);
-  }, [navigate, searchParams]);
+    applyFilterParams(newParams);
+  }, [applyFilterParams]);
   const onClearAnimationIdFilter = useCallback(() => {
-    const newParams = new URLSearchParams(searchParams);
+    const newParams = new URLSearchParams(searchParamsRef.current);
     newParams.delete("animationId");
-    navigate(`${window.location.pathname}?${newParams.toString()}`);
-  }, [navigate, searchParams]);
+    applyFilterParams(newParams);
+  }, [applyFilterParams]);
   const onClearEquipmentFilter = useCallback(
     () => updateEquipmentFilter(null),
     [updateEquipmentFilter],
@@ -604,21 +647,61 @@ const Encounter: React.FC = () => {
     () => (fight ? countMechanicDamage(fight) : 0),
     [fight],
   );
+  const deferredShowMechanicHitsplats = useDeferredValue(showMechanicHitsplats);
   const displayedFight = useMemo(
     () =>
-      fight && !showMechanicHitsplats ? withoutMechanicDamage(fight) : fight,
-    [fight, showMechanicHitsplats],
+      fight && !deferredShowMechanicHitsplats
+        ? withoutMechanicDamage(fight)
+        : fight,
+    [fight, deferredShowMechanicHitsplats],
+  );
+
+  const fullBounds = useMemo(
+    () => getFightTimeBounds(displayedFight ?? ({} as Fight)),
+    [displayedFight],
+  );
+  const timeRangeParam = searchParams.get(TIME_RANGE_PARAM);
+  const timeRange = useMemo(
+    () => resolveTimeRange(deserializeTimeRange(timeRangeParam), fullBounds),
+    // A live refresh makes new bounds objects; only their values matter here.
+    [timeRangeParam, fullBounds.startMs, fullBounds.endMs],
+  );
+  const deferredTimeRange = useDeferredValue(timeRange);
+  const rangedFight = useMemo(
+    () =>
+      displayedFight &&
+      sliceFightToTimeRange(displayedFight, deferredTimeRange),
+    [displayedFight, deferredTimeRange],
+  );
+
+  const fullBoundsRef = useRef(fullBounds);
+  fullBoundsRef.current = fullBounds;
+  const updateTimeRange = useCallback(
+    (range: TimeRange | null) => {
+      const newParams = new URLSearchParams(searchParamsRef.current);
+      if (range && !isWholeFight(range, fullBoundsRef.current)) {
+        newParams.set(TIME_RANGE_PARAM, serializeTimeRange(range));
+      } else {
+        newParams.delete(TIME_RANGE_PARAM);
+      }
+      applyFilterParams(newParams);
+    },
+    [applyFilterParams],
+  );
+  const onClearTimeRange = useCallback(
+    () => updateTimeRange(null),
+    [updateTimeRange],
   );
 
   const toggleMechanicHitsplats = useCallback(() => {
-    const newParams = new URLSearchParams(searchParams);
-    if (showMechanicHitsplats) {
+    const newParams = new URLSearchParams(searchParamsRef.current);
+    if (newParams.get(MECHANIC_HITSPLATS_PARAM) === "show") {
       newParams.delete(MECHANIC_HITSPLATS_PARAM);
     } else {
       newParams.set(MECHANIC_HITSPLATS_PARAM, "show");
     }
-    navigate(`${window.location.pathname}?${newParams.toString()}`);
-  }, [navigate, searchParams, showMechanicHitsplats]);
+    applyFilterParams(newParams);
+  }, [applyFilterParams]);
 
   const buildTabUrl = useCallback(
     (tab: TabsEnum) => {
@@ -627,6 +710,60 @@ const Encounter: React.FC = () => {
       return `${location.pathname}?${newParams.toString()}`;
     },
     [location.pathname, searchParams],
+  );
+
+  const encounterChart = useMemo<EncounterChartContextValue | null>(
+    () =>
+      displayedFight && {
+        fullFight: displayedFight,
+        onSelectTimeRange: updateTimeRange,
+      },
+    [displayedFight, updateTimeRange],
+  );
+
+  // What the chips show: the filter just picked, ahead of the data catching up.
+  const chipParams = useMemo(
+    () => (pendingSearch === null ? null : new URLSearchParams(pendingSearch)),
+    [pendingSearch],
+  );
+  const pendingTimeRangeParam = chipParams
+    ? chipParams.get(TIME_RANGE_PARAM)
+    : timeRangeParam;
+  const fullStartMs = fullBounds.startMs;
+  const fullEndMs = fullBounds.endMs;
+  const pendingTimeRange = useMemo(
+    () =>
+      resolveTimeRange(deserializeTimeRange(pendingTimeRangeParam), {
+        startMs: fullStartMs,
+        endMs: fullEndMs,
+      }),
+    [pendingTimeRangeParam, fullStartMs, fullEndMs],
+  );
+  const pendingShowMechanicHitsplats = chipParams
+    ? showsMechanicHitsplats(chipParams.get(MECHANIC_HITSPLATS_PARAM))
+    : showMechanicHitsplats;
+  const encounterFilters = useMemo<EncounterFilterContextValue | null>(
+    () =>
+      displayedFight && {
+        fullBounds: { startMs: fullStartMs, endMs: fullEndMs },
+        timeRange: pendingTimeRange,
+        onSelectTimeRange: updateTimeRange,
+        onClearTimeRange,
+        mechanicHitsplatCount,
+        showMechanicHitsplats: pendingShowMechanicHitsplats,
+        onToggleMechanicHitsplats: toggleMechanicHitsplats,
+      },
+    [
+      Boolean(displayedFight),
+      fullStartMs,
+      fullEndMs,
+      pendingTimeRange,
+      updateTimeRange,
+      onClearTimeRange,
+      mechanicHitsplatCount,
+      pendingShowMechanicHitsplats,
+      toggleMechanicHitsplats,
+    ],
   );
 
   const runMeta = group ?? fightGroupMeta;
@@ -641,8 +778,11 @@ const Encounter: React.FC = () => {
     displayTab === TabsEnum.EVENTS ||
     (showTabContent && displayTab === renderedTab);
   const showParentSpinner = isTabLoading && displayTab !== TabsEnum.EVENTS;
-  const showFilterOverlaySpinner =
-    filtersPending && displayTab !== TabsEnum.EVENTS;
+  const isApplyingFilters =
+    pendingSearch !== null ||
+    filtersPending ||
+    deferredTimeRange !== timeRange ||
+    deferredShowMechanicHitsplats !== showMechanicHitsplats;
 
   const pageMeta = useMemo(() => {
     if (!fight) {
@@ -787,15 +927,24 @@ const Encounter: React.FC = () => {
           ))}
         </Tabs>
 
-        {mechanicHitsplatCount > 0 && (
-          <MechanicHitsplatsChip
-            count={mechanicHitsplatCount}
-            shown={showMechanicHitsplats}
-            onToggle={toggleMechanicHitsplats}
-          />
-        )}
-
-        <Box sx={{ minHeight: "40vh", position: "relative" }}>
+        {/* Sticky so it stays in view however far down the page the filter was set. */}
+        <Box sx={{ position: "sticky", top: 0, height: 0, zIndex: 2 }}>
+          {isApplyingFilters && (
+            <LinearProgress
+              aria-label="Applying filters"
+              sx={{ height: 3, bgcolor: "transparent" }}
+              color="inherit"
+            />
+          )}
+        </Box>
+        <Box
+          sx={{
+            minHeight: "40vh",
+            position: "relative",
+            opacity: isApplyingFilters ? 0.5 : 1,
+            transition: "opacity 120ms",
+          }}
+        >
           {showParentSpinner && (
             <Box
               display="flex"
@@ -811,68 +960,60 @@ const Encounter: React.FC = () => {
               <CircularProgress color="inherit" />
             </Box>
           )}
-          {showFilterOverlaySpinner && (
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              py={8}
-              sx={{
-                position: "absolute",
-                inset: 0,
-                zIndex: 1,
-                pointerEvents: "none",
-              }}
-            >
-              <CircularProgress color="inherit" />
-            </Box>
-          )}
           {showTabShell && (
-            <EncounterTabContent
-              renderedTab={displayTab}
-              fight={displayedFight ?? fight}
-              receivingData={receivingData}
-              dpsPercentiles={dpsPercentiles}
-              dpsRanks={dpsRanks}
-              leaderboardName={leaderboardName}
-              playerCount={playerCount}
-              dpsLeaderboardKey={dpsLeaderboardKey}
-              runName={runMeta?.name ?? null}
-              sourceFilter={sourceFilter}
-              targetFilter={targetFilter}
-              equipmentFilter={equipmentFilter}
-              prayerFilter={prayerFilter}
-              hitsplatFilter={hitsplatFilter}
-              hitsplatTypeFilter={hitsplatTypeFilter}
-              eventTypeFilter={eventTypeFilter}
-              eventTimeFilter={eventTimeFilter}
-              animationIdFilter={animationIdFilter}
-              dataSourceFilter={deferredSourceFilter}
-              dataTargetFilter={deferredTargetFilter}
-              dataEquipmentFilter={deferredEquipmentFilter}
-              dataPrayerFilter={deferredPrayerFilter}
-              dataHitsplatFilter={deferredHitsplatFilter}
-              dataHitsplatTypeFilter={deferredHitsplatTypeFilter}
-              dataEventTypeFilter={deferredEventTypeFilter}
-              dataEventTimeFilter={deferredEventTimeFilter}
-              dataAnimationIdFilter={deferredAnimationIdFilter}
-              onSelectSourceFilter={onSelectSourceFilter}
-              onSelectTargetFilter={onSelectTargetFilter}
-              onSelectEquipmentFilter={updateEquipmentFilter}
-              onSelectPrayerFilter={updatePrayerFilter}
-              onSelectHitsplatFilter={updateHitsplatFilter}
-              onSelectHitsplatTypeFilter={updateHitsplatTypeFilter}
-              onClearSourceFilter={onClearSourceFilter}
-              onClearTargetFilter={onClearTargetFilter}
-              onClearEquipmentFilter={onClearEquipmentFilter}
-              onClearPrayerFilter={onClearPrayerFilter}
-              onClearHitsplatFilter={onClearHitsplatFilter}
-              onClearHitsplatTypeFilter={onClearHitsplatTypeFilter}
-              onSelectEventTypeFilter={onSelectEventTypeFilter}
-              onClearEventTypeFilter={onClearEventTypeFilter}
-              onClearEventTimeFilter={onClearEventTimeFilter}
-              onClearAnimationIdFilter={onClearAnimationIdFilter}
-            />
+            <EncounterChartContext.Provider value={encounterChart}>
+              <EncounterFilterContext.Provider value={encounterFilters}>
+                <EncounterTabContent
+                  renderedTab={displayTab}
+                  fight={
+                    displayTab === TabsEnum.REPLAY
+                      ? (displayedFight ?? fight)
+                      : (rangedFight ?? fight)
+                  }
+                  receivingData={receivingData}
+                  dpsPercentiles={dpsPercentiles}
+                  dpsRanks={dpsRanks}
+                  leaderboardName={leaderboardName}
+                  playerCount={playerCount}
+                  dpsLeaderboardKey={dpsLeaderboardKey}
+                  runName={runMeta?.name ?? null}
+                  sourceFilter={sourceFilter}
+                  targetFilter={targetFilter}
+                  equipmentFilter={equipmentFilter}
+                  prayerFilter={prayerFilter}
+                  hitsplatFilter={hitsplatFilter}
+                  hitsplatTypeFilter={hitsplatTypeFilter}
+                  eventTypeFilter={eventTypeFilter}
+                  eventTimeFilter={eventTimeFilter}
+                  animationIdFilter={animationIdFilter}
+                  dataSourceFilter={deferredSourceFilter}
+                  dataTargetFilter={deferredTargetFilter}
+                  dataEquipmentFilter={deferredEquipmentFilter}
+                  dataPrayerFilter={deferredPrayerFilter}
+                  dataHitsplatFilter={deferredHitsplatFilter}
+                  dataHitsplatTypeFilter={deferredHitsplatTypeFilter}
+                  dataEventTypeFilter={deferredEventTypeFilter}
+                  dataEventTimeFilter={deferredEventTimeFilter}
+                  dataAnimationIdFilter={deferredAnimationIdFilter}
+                  onSelectSourceFilter={onSelectSourceFilter}
+                  onSelectTargetFilter={onSelectTargetFilter}
+                  onSelectEquipmentFilter={updateEquipmentFilter}
+                  onSelectPrayerFilter={updatePrayerFilter}
+                  onSelectHitsplatFilter={updateHitsplatFilter}
+                  onSelectHitsplatTypeFilter={updateHitsplatTypeFilter}
+                  onClearSourceFilter={onClearSourceFilter}
+                  onClearTargetFilter={onClearTargetFilter}
+                  onClearEquipmentFilter={onClearEquipmentFilter}
+                  onClearPrayerFilter={onClearPrayerFilter}
+                  onClearHitsplatFilter={onClearHitsplatFilter}
+                  onClearHitsplatTypeFilter={onClearHitsplatTypeFilter}
+                  onSelectEventTypeFilter={onSelectEventTypeFilter}
+                  onClearEventTypeFilter={onClearEventTypeFilter}
+                  onClearEventTimeFilter={onClearEventTimeFilter}
+                  onClearAnimationIdFilter={onClearAnimationIdFilter}
+                />
+              </EncounterFilterContext.Provider>
+            </EncounterChartContext.Provider>
           )}
         </Box>
       </div>

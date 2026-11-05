@@ -31,6 +31,9 @@ import { itemIdMap } from "../lib/itemIdMap";
 import { prayerIdMap } from "../lib/prayerIdMap";
 import { getPrayerImageUrl } from "../lib/prayerImages";
 import { getItemImageUrl } from "./replay/PlayerEquipment";
+import { isTimeRangeSeed } from "../utils/timeRangeFilter";
+import { useEncounterFilters } from "./filters/EncounterFilterContext";
+import TimeRangeEditor from "./filters/TimeRangeEditor";
 
 export type FilterOption =
   | { kind: "eventType"; label: string; filter: string }
@@ -39,9 +42,11 @@ export type FilterOption =
   | { kind: "equipment"; label: string; filter: EquipmentFilter }
   | { kind: "prayer"; label: string; filter: PrayerFilter }
   | { kind: "hitsplatType"; label: string; filter: HitsplatTypeFilter }
-  | { kind: "hitsplat"; label: string; filter: HitsplatFilter };
+  | { kind: "hitsplat"; label: string; filter: HitsplatFilter }
+  | { kind: "timeRange"; label: string };
 
-export type FilterSearchBarVariant = "default" | "damage";
+/** "summary" offers only the filters that apply to the Summary tab. */
+export type FilterSearchBarVariant = "default" | "damage" | "summary";
 
 type FilterCategory = FilterOption["kind"];
 
@@ -70,7 +75,32 @@ const CATEGORY_LABELS: Record<FilterCategory, string> = {
   prayer: "Prayers",
   hitsplatType: "Hitsplat type",
   hitsplat: "Hitsplat amount",
+  timeRange: "Time range",
 };
+
+const CATEGORIES_BY_VARIANT: Record<FilterSearchBarVariant, FilterCategory[]> =
+  {
+    default: [
+      "eventType",
+      "source",
+      "target",
+      "equipment",
+      "prayer",
+      "hitsplatType",
+      "hitsplat",
+      "timeRange",
+    ],
+    damage: [
+      "source",
+      "target",
+      "equipment",
+      "prayer",
+      "hitsplatType",
+      "hitsplat",
+      "timeRange",
+    ],
+    summary: ["timeRange"],
+  };
 
 const FILTER_ICON_COLUMN_WIDTH = 28;
 const FILTER_ICON_MAX_SIZE = 22;
@@ -95,6 +125,11 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
     null,
   );
   const keepOpenRef = useRef(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [timeRangeAnchor, setTimeRangeAnchor] = useState<HTMLElement | null>(
+    null,
+  );
+  const canFilterByTimeRange = useEncounterFilters() !== null;
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -106,18 +141,20 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
     const prayerItems = new Map<number, string>();
 
     for (const log of fight.data) {
-      if (log.type) {
-        eventTypes.add(log.type);
-      }
+      if (!isTimeRangeSeed(log)) {
+        if (log.type) {
+          eventTypes.add(log.type);
+        }
 
-      const source = getActorFromLog(log, "source");
-      const target = getActorFromLog(log, "target");
+        const source = getActorFromLog(log, "source");
+        const target = getActorFromLog(log, "target");
 
-      if (source?.name) {
-        sourceNames.add(source.name);
-      }
-      if (target?.name) {
-        targetNames.add(target.name);
+        if (source?.name) {
+          sourceNames.add(source.name);
+        }
+        if (target?.name) {
+          targetNames.add(target.name);
+        }
       }
 
       if (
@@ -225,12 +262,18 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
       });
     });
 
-    return filterOptions;
+    if (canFilterByTimeRange) {
+      filterOptions.push({ kind: "timeRange", label: "Set time range..." });
+    }
+
+    const categories = CATEGORIES_BY_VARIANT[variant];
+    return filterOptions.filter((option) => categories.includes(option.kind));
   }, [
     fight.data,
     onSelectEventTypeFilter,
     onSelectHitsplatTypeFilter,
     variant,
+    canFilterByTimeRange,
   ]);
 
   const goBackToCategories = () => {
@@ -265,26 +308,7 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
       return [{ type: "back" as const, label: "Back" }, ...items];
     }
 
-    const categories: FilterCategory[] =
-      variant === "damage"
-        ? [
-            "source",
-            "target",
-            "equipment",
-            "prayer",
-            "hitsplatType",
-            "hitsplat",
-          ]
-        : [
-            "eventType",
-            "source",
-            "target",
-            "equipment",
-            "prayer",
-            "hitsplatType",
-            "hitsplat",
-          ];
-    return categories
+    return CATEGORIES_BY_VARIANT[variant]
       .filter((category) =>
         itemOptions.some((option) => option.kind === category),
       )
@@ -296,7 +320,9 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
   }, [activeCategory, inputValue, itemOptions, variant]);
 
   const applyFilter = (option: FilterOption) => {
-    if (option.kind === "eventType") {
+    if (option.kind === "timeRange") {
+      setTimeRangeAnchor(rootRef.current);
+    } else if (option.kind === "eventType") {
       onSelectEventTypeFilter?.(option.filter);
     } else if (option.kind === "source") {
       onSelectSourceFilter?.(option.filter);
@@ -318,7 +344,14 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
     setInputValue("");
   };
 
+  const openTimeRangeEditor = () => {
+    resetNavigation();
+    setOpen(false);
+    setTimeRangeAnchor(rootRef.current);
+  };
+
   if (
+    !canFilterByTimeRange &&
     !onSelectEventTypeFilter &&
     !onSelectSourceFilter &&
     !onSelectTargetFilter &&
@@ -331,7 +364,14 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
   }
 
   return (
-    <Box sx={{ width: "100%", maxWidth: layout.contentMaxWidth, mb: 1 }}>
+    <Box
+      ref={rootRef}
+      sx={{ width: "100%", maxWidth: layout.contentMaxWidth, mb: 1 }}
+    >
+      <TimeRangeEditor
+        anchorEl={timeRangeAnchor}
+        onClose={() => setTimeRangeAnchor(null)}
+      />
       <Autocomplete
         open={open}
         onOpen={() => setOpen(true)}
@@ -372,6 +412,10 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
           }
 
           if (option.type === "category") {
+            if (option.category === "timeRange") {
+              openTimeRangeEditor();
+              return;
+            }
             keepOpenRef.current = true;
             setActiveCategory(option.category);
             setInputValue("");
@@ -422,6 +466,10 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
                 onClick={(event) => {
                   event.preventDefault();
                   event.stopPropagation();
+                  if (option.category === "timeRange") {
+                    openTimeRangeEditor();
+                    return;
+                  }
                   keepOpenRef.current = true;
                   setActiveCategory(option.category);
                   setInputValue("");
@@ -525,7 +573,9 @@ const FilterSearchBar: React.FC<FilterSearchBarProps> = ({
                 ? `Search ${CATEGORY_LABELS[activeCategory].toLowerCase()}...`
                 : isMobile
                   ? "Filter"
-                  : "Filter by source, targets, equipment, and more..."
+                  : variant === "summary"
+                    ? "Filter by time range..."
+                    : "Filter by source, targets, equipment, and more..."
             }
             size="small"
             onKeyDown={(event) => {

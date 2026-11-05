@@ -533,4 +533,4 @@ const DPSMeterTable: React.FC<DPSMeterBarChartProps> = ({
   );
 };
 
-export default DPSMeterTable;
+export default React.memo(DPSMeterTable);

@@ -251,4 +251,4 @@ const AttackAnimationBreakdown: React.FC<AttackAnimationBreakdownProps> = ({
   );
 };
 
-export default AttackAnimationBreakdown;
+export default React.memo(AttackAnimationBreakdown);

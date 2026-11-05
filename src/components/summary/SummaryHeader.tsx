@@ -123,4 +123,4 @@ const SummaryHeader: React.FC<SummaryHeaderProps> = ({
   );
 };
 
-export default SummaryHeader;
+export default React.memo(SummaryHeader);

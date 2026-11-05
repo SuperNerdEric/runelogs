@@ -3,8 +3,8 @@ import { Fight } from "../models/Fight";
 import { LogTypes } from "../models/LogLine";
 import {
   countMechanicDamage,
-  formatMechanicHitsplatsLabel,
   formatMechanicHitsplatsTooltip,
+  MECHANIC_HITSPLATS_LABEL,
   showsMechanicHitsplats,
   withoutMechanicDamage,
 } from "../utils/mechanicDamageFilter";
@@ -52,11 +52,8 @@ describe("mechanicDamageFilter", () => {
     expect(withoutMechanicDamage(fight)).toBe(fight);
   });
 
-  it("labels the chip for each state", () => {
-    expect(formatMechanicHitsplatsLabel(false)).toBe(
-      "Hiding invalid hitsplats",
-    );
-    expect(formatMechanicHitsplatsLabel(true)).toBe("Hide invalid hitsplats");
+  it("labels the toggle for showing invalid hitsplats", () => {
+    expect(MECHANIC_HITSPLATS_LABEL).toBe("Show invalid hitsplats");
   });
 
   it("puts the count at the end of the tooltip", () => {

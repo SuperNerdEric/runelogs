@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import { Fight } from "../models/Fight";
 import { calculateDPS } from "../CalculateDPS";
 import {
@@ -18,26 +18,20 @@ interface ResultsProps {
 }
 
 const Results: React.FC<ResultsProps> = ({ fight }) => {
-  const [fightDuration, setFightDuration] = useState<string>("");
-  const [damage, setDamage] = useState<number>(0);
-  const [dps, setDPS] = useState<number>(0);
-  const [accuracy, setAccuracy] = useState<number>(0);
-
-  useEffect(() => {
+  const { fightDuration, damage, dps, accuracy } = useMemo(() => {
     const fightLengthMs = (fight.metaData.fightDurationTicks ?? 0) * 600;
-    setFightDuration(formatHHmmss(fightLengthMs, true));
-
-    const totalDamage = fight.data
-      .filter((log) => log.type === LogTypes.DAMAGE)
-      .reduce(
-        (acc, log) =>
-          acc + (log as LogLine & { type: LogTypes.DAMAGE }).damageAmount,
-        0,
-      );
-    setDamage(totalDamage);
-
-    setDPS(calculateDPS(fight));
-    setAccuracy(calculateAccuracy(fight));
+    return {
+      fightDuration: formatHHmmss(fightLengthMs, true),
+      damage: fight.data
+        .filter((log) => log.type === LogTypes.DAMAGE)
+        .reduce(
+          (acc, log) =>
+            acc + (log as LogLine & { type: LogTypes.DAMAGE }).damageAmount,
+          0,
+        ),
+      dps: calculateDPS(fight),
+      accuracy: calculateAccuracy(fight),
+    };
   }, [fight]);
 
   return (
@@ -82,4 +76,4 @@ const Results: React.FC<ResultsProps> = ({ fight }) => {
   );
 };
 
-export default Results;
+export default React.memo(Results);

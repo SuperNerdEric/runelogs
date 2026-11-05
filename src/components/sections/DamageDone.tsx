@@ -30,6 +30,7 @@ import {
   matchesHitsplatTypeFilter,
 } from "../../utils/hitsplatTypeFilter";
 import { isDamageDoneDrilledIn } from "../../utils/damageDoneDrillDown";
+import EncounterFilterBar from "../filters/EncounterFilterBar";
 
 interface LogsSelectionProps {
   fight: Fight;
@@ -80,6 +81,9 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
   dpsPercentiles,
   showPercentile = false,
 }) => {
+  // Percentiles rank whole-fight DPS, so they say nothing about a time range.
+  const percentileApplies = showPercentile && !fight.appliedTimeRange;
+
   const filteredLogs = useMemo(
     () => filterByType(fight.data, LogTypes.DAMAGE),
     [fight.data],
@@ -199,6 +203,28 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
     <div>
       {fight && (
         <div>
+          <EncounterFilterBar
+            fight={fight}
+            variant="damage"
+            sourceFilter={sourceFilter}
+            targetFilter={targetFilter}
+            equipmentFilter={equipmentFilter}
+            prayerFilter={prayerFilter}
+            hitsplatFilter={hitsplatFilter}
+            hitsplatTypeFilter={hitsplatTypeFilter}
+            onSelectSourceFilter={onSelectSourceFilter}
+            onSelectTargetFilter={onSelectTargetFilter}
+            onSelectEquipmentFilter={onSelectEquipmentFilter}
+            onSelectPrayerFilter={onSelectPrayerFilter}
+            onSelectHitsplatFilter={onSelectHitsplatFilter}
+            onSelectHitsplatTypeFilter={onSelectHitsplatTypeFilter}
+            onClearSourceFilter={onClearSourceFilter}
+            onClearTargetFilter={onClearTargetFilter}
+            onClearEquipmentFilter={onClearEquipmentFilter}
+            onClearPrayerFilter={onClearPrayerFilter}
+            onClearHitsplatFilter={onClearHitsplatFilter}
+            onClearHitsplatTypeFilter={onClearHitsplatTypeFilter}
+          />
           <SectionBox>
             <div
               style={{
@@ -251,7 +277,7 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
                 sourceFilter={sourceFilter}
                 targetFilter={targetFilter}
                 dpsPercentiles={dpsPercentiles}
-                showPercentile={showPercentile}
+                showPercentile={percentileApplies}
                 onSelectSourceFilter={onSelectSourceFilter}
                 onSelectTargetFilter={onSelectTargetFilter}
               />
@@ -265,7 +291,7 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
               sourceFilter={sourceFilter}
               targetFilter={targetFilter}
               dpsPercentiles={dpsPercentiles}
-              showPercentile={showPercentile}
+              showPercentile={percentileApplies}
               onSelectSourceFilter={onSelectSourceFilter}
               onSelectTargetFilter={onSelectTargetFilter}
             />
@@ -287,12 +313,6 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
             onSelectPrayerFilter={onSelectPrayerFilter}
             onSelectHitsplatFilter={onSelectHitsplatFilter}
             onSelectHitsplatTypeFilter={onSelectHitsplatTypeFilter}
-            onClearSourceFilter={onClearSourceFilter}
-            onClearTargetFilter={onClearTargetFilter}
-            onClearEquipmentFilter={onClearEquipmentFilter}
-            onClearPrayerFilter={onClearPrayerFilter}
-            onClearHitsplatFilter={onClearHitsplatFilter}
-            onClearHitsplatTypeFilter={onClearHitsplatTypeFilter}
           />
         </div>
       )}
@@ -300,4 +320,4 @@ const DamageDone: React.FC<LogsSelectionProps> = ({
   );
 };
 
-export default DamageDone;
+export default React.memo(DamageDone);

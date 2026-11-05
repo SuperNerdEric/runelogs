@@ -1,9 +1,9 @@
 import React from "react";
-import { Box, Chip } from "@mui/material";
-import { colors, layout } from "../theme";
+import { Box } from "@mui/material";
+import { colors } from "../theme";
 import AppTooltip from "./AppTooltip";
 import {
-  formatMechanicHitsplatsLabel,
+  MECHANIC_HITSPLATS_LABEL,
   formatMechanicHitsplatsTooltip,
 } from "../utils/mechanicDamageFilter";
 
@@ -13,49 +13,68 @@ interface MechanicHitsplatsChipProps {
   onToggle: () => void;
 }
 
-/** Default-on filter that hides boss mechanic hitsplats from every tab. */
+const SELECTED_COLOR = colors.switch.tanHex;
+
+/** Filter-chip-sized Yes/No selector for showing boss mechanic hitsplats. */
 const MechanicHitsplatsChip: React.FC<MechanicHitsplatsChipProps> = ({
   count,
   shown,
   onToggle,
-}) => (
-  <Box
-    sx={{
-      width: "100%",
-      maxWidth: `${layout.contentMaxWidth}px`,
-      mb: 1,
-      display: "flex",
-    }}
-  >
-    <AppTooltip title={formatMechanicHitsplatsTooltip(count)}>
-      <Chip
-        label={formatMechanicHitsplatsLabel(shown)}
-        onClick={onToggle}
-        onDelete={shown ? undefined : onToggle}
-        variant={shown ? "outlined" : "filled"}
-        size="small"
+}) => {
+  const renderOption = (label: string, value: boolean) => {
+    const selected = shown === value;
+    return (
+      <Box
+        component="button"
+        type="button"
+        aria-pressed={selected}
+        onClick={selected ? undefined : onToggle}
         sx={{
-          bgcolor: shown ? "transparent" : colors.background.surface,
-          color: "white",
-          border: shown ? "1px dashed grey" : "1px solid grey",
-          borderRadius: "5px",
-          "& .MuiChip-label": {
-            fontSize: "0.9rem",
-            paddingLeft: "10px",
-            paddingRight: "10px",
-          },
-          "& .MuiChip-deleteIcon": {
-            color: "white",
-            fontSize: "1.05rem",
-            marginRight: "6px",
-          },
-          "& .MuiChip-deleteIcon:hover": {
-            color: "white",
-          },
+          px: "9px",
+          border: 0,
+          cursor: selected ? "default" : "pointer",
+          font: "inherit",
+          fontWeight: selected ? 700 : 400,
+          bgcolor: selected ? SELECTED_COLOR : "transparent",
+          color: selected ? "#000" : "lightgrey",
+          "&:hover": selected ? undefined : { color: "white" },
         }}
-      />
+      >
+        {label}
+      </Box>
+    );
+  };
+
+  return (
+    <AppTooltip title={formatMechanicHitsplatsTooltip(count)}>
+      <Box
+        role="group"
+        aria-label={MECHANIC_HITSPLATS_LABEL}
+        sx={{
+          display: "inline-flex",
+          alignItems: "stretch",
+          height: 24,
+          boxSizing: "border-box",
+          overflow: "hidden",
+          bgcolor: colors.background.surface,
+          color: "white",
+          border: "1px solid grey",
+          borderRadius: "5px",
+          fontSize: "0.9rem",
+          lineHeight: "22px",
+          whiteSpace: "nowrap",
+        }}
+      >
+        <Box component="span" sx={{ px: "10px" }}>
+          {MECHANIC_HITSPLATS_LABEL}
+        </Box>
+        <Box sx={{ display: "flex", borderLeft: "1px solid grey" }}>
+          {renderOption("No", false)}
+          {renderOption("Yes", true)}
+        </Box>
+      </Box>
     </AppTooltip>
-  </Box>
-);
+  );
+};
 
 export default MechanicHitsplatsChip;

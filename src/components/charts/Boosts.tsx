@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Line,
   LineChart,
@@ -47,6 +47,7 @@ import { getItemImageUrl } from "../replay/PlayerEquipment";
 import { getWeaponFromEquipment } from "../../utils/attackAnimationBreakdown";
 import { colors } from "../../theme";
 import ScrollableBoostCharts from "./ScrollableBoostCharts";
+import LazyMount from "./LazyMount";
 import {
   BOOST_ATTACK_ICON_SIZE,
   getBoostChartScrollWidth,
@@ -89,6 +90,8 @@ interface BoostChartPoint {
   weaponName?: string;
 }
 
+const BOOST_CHART_HEIGHT = 350;
+
 interface AttackReferenceLabelProps {
   viewBox?: { x: number; y: number; height: number };
   attack: AttackAnimationMarker;
@@ -100,6 +103,9 @@ const AttackReferenceLabel: React.FC<AttackReferenceLabelProps> = ({
   viewBox,
   attack,
 }) => {
+  // A fight has hundreds of these, so each tooltip only exists while hovered.
+  const [hovered, setHovered] = useState(false);
+
   if (!viewBox || viewBox.x == null) {
     return null;
   }
@@ -144,15 +150,22 @@ const AttackReferenceLabel: React.FC<AttackReferenceLabelProps> = ({
         {...({
           xmlns: "http://www.w3.org/1999/xhtml",
         } as React.HTMLAttributes<HTMLDivElement>)}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
       >
-        <AppTooltip
-          title={tooltipContent}
-          placement="top"
-          arrow
-          slotProps={{ popper: { sx: { zIndex: 1500 } } }}
-        >
+        {hovered ? (
+          <AppTooltip
+            open
+            title={tooltipContent}
+            placement="top"
+            arrow
+            slotProps={{ popper: { sx: { zIndex: 1500 } } }}
+          >
+            <span className="boosts-chart-attack-icon-wrap">{icon}</span>
+          </AppTooltip>
+        ) : (
           <span className="boosts-chart-attack-icon-wrap">{icon}</span>
-        </AppTooltip>
+        )}
       </div>
     </foreignObject>
   );
@@ -347,56 +360,23 @@ const Boosts: React.FC<DPSChartProps> = ({ fight }) => {
   const [selectedPlayer, setSelectedPlayer] = useState<string>(
     fight.loggedInPlayer,
   );
-  const [boostedLevelsData, setBoostedLevelsData] = useState<
-    BoostChartPoint[] | undefined
-  >();
-  const [attackAnimationData, setAttackAnimationData] = useState<
-    AttackAnimationMarker[] | undefined
-  >();
   const [showAttackAnimations, setShowAttackAnimations] =
     useState<boolean>(true); // State variable to control visibility
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const fightDurationMs = useMemo(() => {
-    if (!boostedLevelsData?.length) {
-      return 0;
-    }
-
-    return (
-      boostedLevelsData[boostedLevelsData.length - 1]?.timestamp ??
-      fight.lastLine?.fightTimeMs ??
-      0
-    );
-  }, [boostedLevelsData, fight.lastLine?.fightTimeMs]);
-
-  const chartScrollWidth = useMemo(
-    () =>
-      getBoostChartScrollWidth({
-        fightDurationMs,
-        attackTimestamps:
-          attackAnimationData?.map((attack) => attack.timestamp) ?? [],
-        showAttackAnimations,
-        isMobile,
-      }),
-    [fightDurationMs, attackAnimationData, showAttackAnimations, isMobile],
-  );
-
-  useEffect(() => {
-    if (!selectedPlayer) return;
-
+  const { boostedLevelsData, attackAnimationData } = useMemo(() => {
     let currentBoost: Levels | undefined;
     let currentWeapon: { itemId: number; name: string } | null = null;
     const tempBoost: BoostChartPoint[] = [];
+    const boostByTimestamp = new Map<number, BoostChartPoint>();
     const tempAttack: AttackAnimationMarker[] = [];
 
     const upsertBoostPoint = (
       timestamp: number,
       patch: Partial<BoostChartPoint>,
     ): BoostChartPoint => {
-      const existingPoint = tempBoost.find(
-        (data) => data.timestamp === timestamp,
-      );
+      const existingPoint = boostByTimestamp.get(timestamp);
       if (existingPoint) {
         Object.assign(existingPoint, patch);
         return existingPoint;
@@ -415,6 +395,7 @@ const Boosts: React.FC<DPSChartProps> = ({ fight }) => {
         ...patch,
       };
       tempBoost.push(point);
+      boostByTimestamp.set(timestamp, point);
       return point;
     };
 
@@ -489,13 +470,33 @@ const Boosts: React.FC<DPSChartProps> = ({ fight }) => {
       }
     });
 
-    setBoostedLevelsData(tempBoost);
-    setAttackAnimationData(tempAttack);
+    return { boostedLevelsData: tempBoost, attackAnimationData: tempAttack };
   }, [fight, selectedPlayer]);
 
-  if (!boostedLevelsData || !attackAnimationData) {
-    return <div>Loading...</div>;
-  }
+  const chartStartMs = fight.firstLine?.fightTimeMs ?? 0;
+
+  const fightDurationMs = useMemo(() => {
+    if (!boostedLevelsData.length) {
+      return 0;
+    }
+
+    return (
+      (boostedLevelsData[boostedLevelsData.length - 1]?.timestamp ??
+        fight.lastLine?.fightTimeMs ??
+        0) - chartStartMs
+    );
+  }, [boostedLevelsData, fight.lastLine?.fightTimeMs, chartStartMs]);
+
+  const chartScrollWidth = useMemo(
+    () =>
+      getBoostChartScrollWidth({
+        fightDurationMs,
+        attackTimestamps: attackAnimationData.map((attack) => attack.timestamp),
+        showAttackAnimations,
+        isMobile,
+      }),
+    [fightDurationMs, attackAnimationData, showAttackAnimations, isMobile],
+  );
 
   return (
     <SummarySection
@@ -531,8 +532,10 @@ const Boosts: React.FC<DPSChartProps> = ({ fight }) => {
                 )}
               >
                 {[
-                  ...new Set(
-                    fight.data
+                  ...new Set([
+                    // A time range can exclude every attack by the selected player.
+                    selectedPlayer,
+                    ...fight.data
                       .filter(
                         (log): log is LogLine & { source: { name: string } } =>
                           log.type === LogTypes.PLAYER_ATTACK_ANIMATION &&
@@ -540,7 +543,7 @@ const Boosts: React.FC<DPSChartProps> = ({ fight }) => {
                           Boolean(log.source?.name),
                       )
                       .map((log) => log.source.name),
-                  ),
+                  ]),
                 ].map((name) => (
                   <MenuItem
                     key={name}
@@ -578,101 +581,105 @@ const Boosts: React.FC<DPSChartProps> = ({ fight }) => {
                 label="Attacks"
               />
             </Box>
-            <ScrollableBoostCharts scrollWidth={chartScrollWidth}>
-              <ResponsiveContainer width="100%" height={350}>
-                <LineChart
-                  data={boostedLevelsData}
-                  margin={{
-                    top: 28,
-                    left: 60,
-                    bottom: chartScrollWidth ? 34 : 50,
-                  }}
-                >
-                  <XAxis
-                    dataKey="timestamp"
-                    type="number"
-                    tickFormatter={(timestamp) => formatHHmmss(timestamp, true)}
-                    domain={[
-                      0,
-                      boostedLevelsData[boostedLevelsData.length - 1]
-                        ?.timestamp ?? 0,
-                    ]}
-                  />
-                  <YAxis
-                    dataKey="attack"
-                    label={{
-                      value: "Level",
-                      position: "insideLeft",
-                      angle: -90,
-                      offset: -50,
-                      style: { textAnchor: "middle" },
+            <LazyMount minHeight={BOOST_CHART_HEIGHT}>
+              <ScrollableBoostCharts scrollWidth={chartScrollWidth}>
+                <ResponsiveContainer width="100%" height={BOOST_CHART_HEIGHT}>
+                  <LineChart
+                    data={boostedLevelsData}
+                    margin={{
+                      top: 28,
+                      left: 60,
+                      bottom: chartScrollWidth ? 34 : 50,
                     }}
-                    width={1}
-                    tickFormatter={(tick) => (tick !== 0 ? tick : "")}
-                    domain={[0, 125]}
-                  />
-                  {attackAnimationData.map(
-                    (attack, index) =>
-                      showAttackAnimations && (
-                        <ReferenceLine
-                          key={index}
-                          x={attack.timestamp}
-                          stroke={attack.color}
-                          strokeDasharray="10 2"
-                          ifOverflow="extendDomain"
-                          label={<AttackReferenceLabel attack={attack} />}
-                        />
-                      ),
-                  )}
-                  <Line
-                    type="stepAfter"
-                    dataKey="attack"
-                    stroke={colors.chart.attack}
-                    dot={false}
-                    animationDuration={0}
-                  />
-                  <Line
-                    type="stepAfter"
-                    dataKey="strength"
-                    stroke={colors.chart.strength}
-                    dot={false}
-                    animationDuration={0}
-                  />
-                  <Line
-                    type="stepAfter"
-                    dataKey="defence"
-                    stroke={colors.chart.defence}
-                    dot={false}
-                    animationDuration={0}
-                  />
-                  <Line
-                    type="stepAfter"
-                    dataKey="ranged"
-                    stroke={colors.chart.ranged}
-                    dot={false}
-                    animationDuration={0}
-                  />
-                  <Line
-                    type="stepAfter"
-                    dataKey="magic"
-                    stroke={colors.chart.magic}
-                    dot={false}
-                    animationDuration={0}
-                  />
-                  <Tooltip
-                    content={(props) => (
-                      <CustomTooltip
-                        {...(props as React.ComponentProps<
-                          typeof CustomTooltip
-                        >)}
-                        attackAnimations={attackAnimationData}
-                      />
+                  >
+                    <XAxis
+                      dataKey="timestamp"
+                      type="number"
+                      tickFormatter={(timestamp) =>
+                        formatHHmmss(timestamp, true)
+                      }
+                      domain={[
+                        chartStartMs,
+                        boostedLevelsData[boostedLevelsData.length - 1]
+                          ?.timestamp ?? 0,
+                      ]}
+                    />
+                    <YAxis
+                      dataKey="attack"
+                      label={{
+                        value: "Level",
+                        position: "insideLeft",
+                        angle: -90,
+                        offset: -50,
+                        style: { textAnchor: "middle" },
+                      }}
+                      width={1}
+                      tickFormatter={(tick) => (tick !== 0 ? tick : "")}
+                      domain={[0, 125]}
+                    />
+                    {attackAnimationData.map(
+                      (attack, index) =>
+                        showAttackAnimations && (
+                          <ReferenceLine
+                            key={index}
+                            x={attack.timestamp}
+                            stroke={attack.color}
+                            strokeDasharray="10 2"
+                            ifOverflow="extendDomain"
+                            label={<AttackReferenceLabel attack={attack} />}
+                          />
+                        ),
                     )}
-                    cursor={{ fill: colors.chart.cursor }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </ScrollableBoostCharts>
+                    <Line
+                      type="stepAfter"
+                      dataKey="attack"
+                      stroke={colors.chart.attack}
+                      dot={false}
+                      isAnimationActive={false}
+                    />
+                    <Line
+                      type="stepAfter"
+                      dataKey="strength"
+                      stroke={colors.chart.strength}
+                      dot={false}
+                      isAnimationActive={false}
+                    />
+                    <Line
+                      type="stepAfter"
+                      dataKey="defence"
+                      stroke={colors.chart.defence}
+                      dot={false}
+                      isAnimationActive={false}
+                    />
+                    <Line
+                      type="stepAfter"
+                      dataKey="ranged"
+                      stroke={colors.chart.ranged}
+                      dot={false}
+                      isAnimationActive={false}
+                    />
+                    <Line
+                      type="stepAfter"
+                      dataKey="magic"
+                      stroke={colors.chart.magic}
+                      dot={false}
+                      isAnimationActive={false}
+                    />
+                    <Tooltip
+                      content={(props) => (
+                        <CustomTooltip
+                          {...(props as React.ComponentProps<
+                            typeof CustomTooltip
+                          >)}
+                          attackAnimations={attackAnimationData}
+                        />
+                      )}
+                      cursor={{ fill: colors.chart.cursor }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ScrollableBoostCharts>
+            </LazyMount>
           </Box>
 
           <Box className="stat-boosts-charts__chart-section">
@@ -684,62 +691,66 @@ const Boosts: React.FC<DPSChartProps> = ({ fight }) => {
                 Hitpoints & Prayer
               </Typography>
             </Box>
-            <ScrollableBoostCharts scrollWidth={null}>
-              <ResponsiveContainer width="100%" height={350}>
-                <LineChart
-                  data={boostedLevelsData}
-                  margin={{ top: 11, left: 60, bottom: 10 }}
-                >
-                  <XAxis
-                    dataKey="timestamp"
-                    type="number"
-                    tickFormatter={(timestamp) => formatHHmmss(timestamp, true)}
-                    domain={[
-                      0,
-                      boostedLevelsData[boostedLevelsData.length - 1]
-                        ?.timestamp ?? 0,
-                    ]}
-                  />
-                  <YAxis
-                    dataKey="attack"
-                    label={{
-                      value: "Level",
-                      position: "insideLeft",
-                      angle: -90,
-                      offset: -50,
-                      style: { textAnchor: "middle" },
-                    }}
-                    width={1}
-                    tickFormatter={(tick) => (tick !== 0 ? tick : "")}
-                    domain={[0, 125]}
-                  />
-                  <Line
-                    type="stepAfter"
-                    dataKey="hitpoints"
-                    stroke={colors.chart.hitpoints}
-                    dot={false}
-                    animationDuration={0}
-                  />
-                  <Line
-                    type="stepAfter"
-                    dataKey="prayer"
-                    stroke={colors.chart.prayer}
-                    dot={false}
-                    animationDuration={0}
-                  />
-                  <Tooltip
-                    content={(props) => (
-                      <CustomTooltip
-                        {...(props as React.ComponentProps<
-                          typeof CustomTooltip
-                        >)}
-                      />
-                    )}
-                    cursor={{ fill: colors.chart.cursor }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </ScrollableBoostCharts>
+            <LazyMount minHeight={BOOST_CHART_HEIGHT}>
+              <ScrollableBoostCharts scrollWidth={null}>
+                <ResponsiveContainer width="100%" height={BOOST_CHART_HEIGHT}>
+                  <LineChart
+                    data={boostedLevelsData}
+                    margin={{ top: 11, left: 60, bottom: 10 }}
+                  >
+                    <XAxis
+                      dataKey="timestamp"
+                      type="number"
+                      tickFormatter={(timestamp) =>
+                        formatHHmmss(timestamp, true)
+                      }
+                      domain={[
+                        chartStartMs,
+                        boostedLevelsData[boostedLevelsData.length - 1]
+                          ?.timestamp ?? 0,
+                      ]}
+                    />
+                    <YAxis
+                      dataKey="attack"
+                      label={{
+                        value: "Level",
+                        position: "insideLeft",
+                        angle: -90,
+                        offset: -50,
+                        style: { textAnchor: "middle" },
+                      }}
+                      width={1}
+                      tickFormatter={(tick) => (tick !== 0 ? tick : "")}
+                      domain={[0, 125]}
+                    />
+                    <Line
+                      type="stepAfter"
+                      dataKey="hitpoints"
+                      stroke={colors.chart.hitpoints}
+                      dot={false}
+                      isAnimationActive={false}
+                    />
+                    <Line
+                      type="stepAfter"
+                      dataKey="prayer"
+                      stroke={colors.chart.prayer}
+                      dot={false}
+                      isAnimationActive={false}
+                    />
+                    <Tooltip
+                      content={(props) => (
+                        <CustomTooltip
+                          {...(props as React.ComponentProps<
+                            typeof CustomTooltip
+                          >)}
+                        />
+                      )}
+                      cursor={{ fill: colors.chart.cursor }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ScrollableBoostCharts>
+            </LazyMount>
           </Box>
         </Box>
       </Box>
@@ -747,7 +758,7 @@ const Boosts: React.FC<DPSChartProps> = ({ fight }) => {
   );
 };
 
-export default Boosts;
+export default React.memo(Boosts);
 
 const TanToggle = styled(Switch)(({ theme }) => ({
   "& .MuiSwitch-switchBase.Mui-checked": {

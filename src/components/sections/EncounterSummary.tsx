@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useDeferredValue, useMemo } from "react";
 
 import { Box } from "@mui/material";
 
@@ -35,6 +35,7 @@ import { DeathEvent } from "../../utils/deathEvents";
 import { resolveGearSetups } from "../../utils/gearSetup/deriveGearSetup";
 import { layout } from "../../theme";
 import { stripFightGroupNumber } from "../../utils/leaderboardContent";
+import EncounterFilterBar from "../filters/EncounterFilterBar";
 
 interface EncounterSummaryProps {
   fight: Fight;
@@ -58,7 +59,8 @@ const EncounterSummary: React.FC<EncounterSummaryProps> = ({
   dpsLeaderboardKey = null,
   runName = null,
 }) => {
-  const [searchParams] = useSearchParams();
+  // Deferred with the fight so the links only re-render along with their data.
+  const searchParams = useDeferredValue(useSearchParams()[0]);
 
   const deaths = useMemo(() => getDeathEvents(fight), [fight]);
   const bloatDowns = useMemo(() => getBloatDownEvents(fight), [fight]);
@@ -101,6 +103,7 @@ const EncounterSummary: React.FC<EncounterSummaryProps> = ({
 
   return (
     <Box sx={{ maxWidth: layout.contentMaxWidth, width: "100%" }}>
+      <EncounterFilterBar fight={fight} variant="summary" />
       <SummaryHeader
         fight={fight}
         receivingData={receivingData}
@@ -125,7 +128,7 @@ const EncounterSummary: React.FC<EncounterSummaryProps> = ({
 
         dpsPercentiles={dpsPercentiles}
 
-        showPercentile={dpsLeaderboardKey != null}
+        showPercentile={dpsLeaderboardKey != null && !fight.appliedTimeRange}
 
         getSourceFilterLinkSearch={getDamageDoneSourceLinkSearch}
       />
@@ -141,4 +144,4 @@ const EncounterSummary: React.FC<EncounterSummaryProps> = ({
   );
 };
 
-export default EncounterSummary;
+export default React.memo(EncounterSummary);

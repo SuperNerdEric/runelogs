@@ -87,4 +87,4 @@ const SummaryDamageDoneSection: React.FC<SummaryDamageDoneSectionProps> = ({
   );
 };
 
-export default SummaryDamageDoneSection;
+export default React.memo(SummaryDamageDoneSection);

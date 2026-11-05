@@ -186,4 +186,4 @@ const ActivityTable: React.FC<ActivityTableProps> = ({ fight }) => {
   );
 };
 
-export default ActivityTable;
+export default React.memo(ActivityTable);

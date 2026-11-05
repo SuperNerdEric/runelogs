@@ -68,6 +68,8 @@ import {
   ChartTooltipTime,
   resolveChartTooltipStatColor,
 } from "./ChartTooltip";
+import { useEncounterChart } from "../filters/EncounterFilterContext";
+import DpsChartRangeSelector from "./DpsChartRangeSelector";
 
 interface DPSChartProps {
   fight: Fight;
@@ -461,6 +463,9 @@ function attachMarkerLabels(
   }
 
   const labelsByTimestamp = new Map<number, string>();
+  const inChart = (fightTimeMs: number) =>
+    fightTimeMs >= startTime && fightTimeMs <= endTime;
+
   for (const window of windows) {
     const startTs = snapFightTimeToTick(
       window.startFightTimeMs,
@@ -468,10 +473,12 @@ function attachMarkerLabels(
       endTime,
       tickMs,
     );
-    labelsByTimestamp.set(startTs, `Down ${window.downNumber} Start`);
+    if (inChart(window.startFightTimeMs)) {
+      labelsByTimestamp.set(startTs, `Down ${window.downNumber} Start`);
+    }
 
     // Only label End when the full Down cycle completed.
-    if (!window.endsWithStomp) {
+    if (!window.endsWithStomp || !inChart(window.endFightTimeMs)) {
       continue;
     }
 
@@ -523,9 +530,11 @@ function attachMarkerLabels(
       endTime,
       tickMs,
     );
-    labelsByTimestamp.set(startTs, `Maze ${maze.mazeNumber} Start`);
+    if (inChart(maze.startFightTimeMs)) {
+      labelsByTimestamp.set(startTs, `Maze ${maze.mazeNumber} Start`);
+    }
 
-    if (!maze.endsWithCombat) {
+    if (!maze.endsWithCombat || !inChart(maze.endFightTimeMs)) {
       continue;
     }
     const endTs = snapFightTimeToTick(
@@ -566,9 +575,11 @@ function attachMarkerLabels(
       endTime,
       tickMs,
     );
-    labelsByTimestamp.set(startTs, `Grounded ${window.groundedNumber} Start`);
+    if (inChart(window.startFightTimeMs)) {
+      labelsByTimestamp.set(startTs, `Grounded ${window.groundedNumber} Start`);
+    }
 
-    if (!window.endsWithLevitation) {
+    if (!window.endsWithLevitation || !inChart(window.endFightTimeMs)) {
       continue;
     }
     const endTs = snapFightTimeToTick(
@@ -640,7 +651,10 @@ const DPSChart: React.FC<DPSChartProps> = ({
   eventFight,
   height = 200,
 }) => {
-  const filteredLogs = filterByType(fight.data, LogTypes.DAMAGE);
+  const filteredLogs = useMemo(
+    () => filterByType(fight.data, LogTypes.DAMAGE),
+    [fight.data],
+  );
 
   const fightLengthMs = (fight.metaData.fightDurationTicks ?? 0) * 600;
   const interval = Math.min(Math.max(fightLengthMs / 4, 600), 6000);
@@ -648,7 +662,13 @@ const DPSChart: React.FC<DPSChartProps> = ({
   const startTime = fight.firstLine.fightTimeMs ?? 0;
   const endTime = fight.lastLine.fightTimeMs ?? startTime;
 
-  const markerSource = eventFight ?? fight;
+  const encounterChart = useEncounterChart();
+  const isZoomed = Boolean(fight.appliedTimeRange);
+  // Whole-fight source so a window cut by the time range keeps its real numbering.
+  const markerSource = encounterChart?.fullFight ?? eventFight ?? fight;
+  // Zoomed in, drop lines past the edges and clip shaded windows to the plot.
+  const markerLineOverflow = isZoomed ? "discard" : "visible";
+  const markerAreaOverflow = isZoomed ? "hidden" : "visible";
   const bloatDownWindows = useMemo(
     () => getBloatDownWindows(markerSource),
     [markerSource],
@@ -699,6 +719,11 @@ const DPSChart: React.FC<DPSChartProps> = ({
         ? 44
         : 16;
 
+  const domain = useMemo(
+    () => ({ startMs: startTime, endMs: endTime }),
+    [startTime, endTime],
+  );
+
   const dpsData = useMemo(() => {
     const coarse = calculateDPSByInterval(
       filteredLogs,
@@ -712,16 +737,18 @@ const DPSChart: React.FC<DPSChartProps> = ({
       endTime,
       TICK_DURATION_MS,
     );
+    const inDomain = (marker: { fightTimeMs: number }) =>
+      marker.fightTimeMs >= startTime && marker.fightTimeMs <= endTime;
     return attachMarkerLabels(
       densified,
       bloatDownWindows,
-      maidenPhaseMarkers,
-      nyloBossPhaseMarkers,
-      nyloPrinkipasPhaseMarkers,
+      maidenPhaseMarkers.filter(inDomain),
+      nyloBossPhaseMarkers.filter(inDomain),
+      nyloPrinkipasPhaseMarkers.filter(inDomain),
       sotetsegMazeWindows,
-      xarpusScreechMarkers,
-      xarpusPhase2Markers,
-      archivePhaseMarkers,
+      xarpusScreechMarkers.filter(inDomain),
+      xarpusPhase2Markers.filter(inDomain),
+      archivePhaseMarkers.filter(inDomain),
       guardianGroundedWindows,
       startTime,
       endTime,
@@ -764,7 +791,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
 
   const axisLabelEvery = Math.max(1, Math.ceil(dpsData.length / 5));
 
-  return (
+  const chart = (
     <ResponsiveContainer width="100%" height={height}>
       <AreaChart
         data={dpsData}
@@ -832,7 +859,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
             stroke="none"
             fill={PHASE_DIVIDER_LINE_COLOR}
             fillOpacity={0.18}
-            ifOverflow="visible"
+            ifOverflow={markerAreaOverflow}
           />
         ))}
 
@@ -844,7 +871,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
             stroke="none"
             fill={MAZE_PHASE_COLOR}
             fillOpacity={0.22}
-            ifOverflow="visible"
+            ifOverflow={markerAreaOverflow}
           />
         ))}
 
@@ -856,7 +883,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
             stroke="none"
             fill={PHASE_DIVIDER_LINE_COLOR}
             fillOpacity={0.18}
-            ifOverflow="visible"
+            ifOverflow={markerAreaOverflow}
           />
         ))}
 
@@ -867,7 +894,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
               stroke={PHASE_DIVIDER_LINE_COLOR}
               strokeWidth={2}
               strokeDasharray="6 3"
-              ifOverflow="visible"
+              ifOverflow={markerLineOverflow}
               label={
                 <PhaseMarkerLabel
                   iconUrl={ARCHIVE_GUARDIAN_GROUNDED_ICON_URL}
@@ -883,7 +910,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
                 stroke={PHASE_DIVIDER_LINE_COLOR}
                 strokeWidth={2}
                 strokeDasharray="6 3"
-                ifOverflow="visible"
+                ifOverflow={markerLineOverflow}
                 label={
                   <PhaseMarkerLabel
                     iconUrl={ARCHIVE_GUARDIAN_FLYING_ICON_URL}
@@ -904,7 +931,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
             stroke={PHASE_DIVIDER_LINE_COLOR}
             strokeWidth={2}
             strokeDasharray="6 3"
-            ifOverflow="visible"
+            ifOverflow={markerLineOverflow}
             label={
               <PhaseMarkerLabel
                 iconUrl={marker.iconUrl}
@@ -924,7 +951,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
               stroke={PHASE_DIVIDER_LINE_COLOR}
               strokeWidth={2}
               strokeDasharray="6 3"
-              ifOverflow="visible"
+              ifOverflow={markerLineOverflow}
               label={
                 <PhaseMarkerLabel
                   iconUrl={BLOAT_DOWN_ICON_URL}
@@ -940,7 +967,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
                 stroke={PHASE_DIVIDER_LINE_COLOR}
                 strokeWidth={2}
                 strokeDasharray="6 3"
-                ifOverflow="visible"
+                ifOverflow={markerLineOverflow}
                 label={
                   <PhaseMarkerLabel
                     iconUrl={BLOAT_STOMP_IMAGE_URL}
@@ -961,7 +988,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
             stroke={PHASE_DIVIDER_LINE_COLOR}
             strokeWidth={2}
             strokeDasharray="6 3"
-            ifOverflow="visible"
+            ifOverflow={markerLineOverflow}
             label={
               <PhaseMarkerLabel
                 iconUrl={NYLOCAS_MATOMENOS_IMAGE_URL}
@@ -981,7 +1008,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
             stroke={PHASE_DIVIDER_LINE_COLOR}
             strokeWidth={2}
             strokeDasharray="6 3"
-            ifOverflow="visible"
+            ifOverflow={markerLineOverflow}
             label={
               <PhaseMarkerLabel
                 iconUrl={NYLOCAS_VASILIAS_IMAGE_URL}
@@ -1001,7 +1028,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
             stroke={PHASE_DIVIDER_LINE_COLOR}
             strokeWidth={2}
             strokeDasharray="6 3"
-            ifOverflow="visible"
+            ifOverflow={markerLineOverflow}
             label={
               <PhaseMarkerLabel
                 iconUrl={NYLOCAS_PRINKIPAS_IMAGE_URL}
@@ -1021,7 +1048,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
               stroke={MAZE_PHASE_COLOR}
               strokeWidth={2}
               strokeDasharray="6 3"
-              ifOverflow="visible"
+              ifOverflow={markerLineOverflow}
               label={
                 <PhaseMarkerLabel
                   iconUrl={SOTETSEG_IMAGE_URL}
@@ -1038,7 +1065,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
                 stroke={MAZE_PHASE_COLOR}
                 strokeWidth={2}
                 strokeDasharray="6 3"
-                ifOverflow="visible"
+                ifOverflow={markerLineOverflow}
               />
             )}
           </React.Fragment>
@@ -1051,7 +1078,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
             stroke={PHASE_DIVIDER_LINE_COLOR}
             strokeWidth={2}
             strokeDasharray="6 3"
-            ifOverflow="visible"
+            ifOverflow={markerLineOverflow}
             label={
               <PhaseMarkerLabel
                 iconUrl={XARPUS_IMAGE_URL}
@@ -1071,7 +1098,7 @@ const DPSChart: React.FC<DPSChartProps> = ({
             stroke={PHASE_DIVIDER_LINE_COLOR}
             strokeWidth={2}
             strokeDasharray="6 3"
-            ifOverflow="visible"
+            ifOverflow={markerLineOverflow}
             label={
               <PhaseMarkerLabel
                 iconUrl={XARPUS_IMAGE_URL}
@@ -1086,6 +1113,17 @@ const DPSChart: React.FC<DPSChartProps> = ({
       </AreaChart>
     </ResponsiveContainer>
   );
+
+  return encounterChart && endTime > startTime ? (
+    <DpsChartRangeSelector
+      domain={domain}
+      onSelect={encounterChart.onSelectTimeRange}
+    >
+      {chart}
+    </DpsChartRangeSelector>
+  ) : (
+    chart
+  );
 };
 
-export default DPSChart;
+export default React.memo(DPSChart);
