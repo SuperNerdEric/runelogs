@@ -28,6 +28,7 @@ import { formatHHmmss } from "../../utils/utils";
 import AppTooltip from "../AppTooltip";
 import FilterSearchBar, { FilterSearchBarVariant } from "../FilterSearchBar";
 import EncounterFilterChips from "./EncounterFilterChips";
+import { filterChipDeleteIconHitArea } from "./filterStyles";
 import {
   hasEncounterFilterChips,
   useEncounterFilters,
@@ -218,7 +219,7 @@ const EncounterFilterBar: React.FC<EncounterFilterBarProps> = ({
                   "& .MuiChip-deleteIcon": {
                     color: getFilterTextColor(sourceFilter, loggedInPlayer),
                     fontSize: "1.05rem",
-                    marginRight: "6px",
+                    ...filterChipDeleteIconHitArea,
                   },
                   "& .MuiChip-deleteIcon:hover": {
                     color: getFilterTextColor(sourceFilter, loggedInPlayer),
@@ -287,7 +288,7 @@ const EncounterFilterBar: React.FC<EncounterFilterBarProps> = ({
                   "& .MuiChip-deleteIcon": {
                     color: getFilterTextColor(targetFilter, loggedInPlayer),
                     fontSize: "1.05rem",
-                    marginRight: "6px",
+                    ...filterChipDeleteIconHitArea,
                   },
                   "& .MuiChip-deleteIcon:hover": {
                     color: getFilterTextColor(targetFilter, loggedInPlayer),
@@ -419,7 +420,7 @@ const EncounterFilterBar: React.FC<EncounterFilterBarProps> = ({
                 "& .MuiChip-deleteIcon": {
                   color: "white",
                   fontSize: "1.05rem",
-                  marginRight: "6px",
+                  ...filterChipDeleteIconHitArea,
                 },
                 "& .MuiChip-deleteIcon:hover": {
                   color: "white",
@@ -461,7 +462,7 @@ const EncounterFilterBar: React.FC<EncounterFilterBarProps> = ({
                 "& .MuiChip-deleteIcon": {
                   color: "white",
                   fontSize: "1.05rem",
-                  marginRight: "6px",
+                  ...filterChipDeleteIconHitArea,
                 },
                 "& .MuiChip-deleteIcon:hover": {
                   color: "white",
@@ -487,7 +488,7 @@ const EncounterFilterBar: React.FC<EncounterFilterBarProps> = ({
                 "& .MuiChip-deleteIcon": {
                   color: "white",
                   fontSize: "1.05rem",
-                  marginRight: "6px",
+                  ...filterChipDeleteIconHitArea,
                 },
                 "& .MuiChip-deleteIcon:hover": {
                   color: "white",
@@ -513,7 +514,7 @@ const EncounterFilterBar: React.FC<EncounterFilterBarProps> = ({
                 "& .MuiChip-deleteIcon": {
                   color: "white",
                   fontSize: "1.05rem",
-                  marginRight: "6px",
+                  ...filterChipDeleteIconHitArea,
                 },
                 "& .MuiChip-deleteIcon:hover": {
                   color: "white",
@@ -539,7 +540,7 @@ const EncounterFilterBar: React.FC<EncounterFilterBarProps> = ({
                 "& .MuiChip-deleteIcon": {
                   color: "white",
                   fontSize: "1.05rem",
-                  marginRight: "6px",
+                  ...filterChipDeleteIconHitArea,
                 },
                 "& .MuiChip-deleteIcon:hover": {
                   color: "white",
@@ -565,7 +566,7 @@ const EncounterFilterBar: React.FC<EncounterFilterBarProps> = ({
                 "& .MuiChip-deleteIcon": {
                   color: "white",
                   fontSize: "1.05rem",
-                  marginRight: "6px",
+                  ...filterChipDeleteIconHitArea,
                 },
                 "& .MuiChip-deleteIcon:hover": {
                   color: "white",
@@ -591,7 +592,7 @@ const EncounterFilterBar: React.FC<EncounterFilterBarProps> = ({
                 "& .MuiChip-deleteIcon": {
                   color: "white",
                   fontSize: "1.05rem",
-                  marginRight: "6px",
+                  ...filterChipDeleteIconHitArea,
                 },
                 "& .MuiChip-deleteIcon:hover": {
                   color: "white",

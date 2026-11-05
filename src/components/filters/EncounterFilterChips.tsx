@@ -5,6 +5,7 @@ import { colors } from "../../theme";
 import { formatTimeRangeFilterLabel } from "../../utils/timeRangeFilter";
 import MechanicHitsplatsChip from "../MechanicHitsplatsChip";
 import { useEncounterFilters } from "./EncounterFilterContext";
+import { filterChipDeleteIconHitArea } from "./filterStyles";
 import TimeRangeEditor from "./TimeRangeEditor";
 
 /** The filter chips that apply on every tab; rendered inside a chip row. */
@@ -45,7 +46,7 @@ const EncounterFilterChips: React.FC = () => {
             "& .MuiChip-deleteIcon": {
               color: "white",
               fontSize: "1.05rem",
-              marginRight: "6px",
+              ...filterChipDeleteIconHitArea,
             },
             "& .MuiChip-deleteIcon:hover": {
               color: "white",

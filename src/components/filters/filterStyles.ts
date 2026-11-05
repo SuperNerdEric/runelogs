@@ -2,6 +2,18 @@ import { SxProps, Theme } from "@mui/material";
 import { SystemStyleObject } from "@mui/system";
 import { colors } from "../../theme";
 
+/**
+ * Makes a chip's X easy to hit without moving it: padding grows the click area
+ * and negative margins of the same size keep the layout. It reaches 7px left and
+ * right, which is the chip's edge on the right, and the chip's edges above and
+ * below, where there is less room than that.
+ */
+export const filterChipDeleteIconHitArea = {
+  boxSizing: "content-box",
+  padding: "calc((24px - 1.05rem) / 2) 7px",
+  margin: "calc((1.05rem - 24px) / 2) -1px calc((1.05rem - 24px) / 2) -11px",
+} as const;
+
 // ── Size tokens ──────────────────────────────────────────────────────────────
 
 export const FILTER_CONTROL_HEIGHT = 50;
