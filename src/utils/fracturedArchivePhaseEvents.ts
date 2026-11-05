@@ -8,9 +8,6 @@ import { LogLine, LogTypes, NpcChangedLog } from "../models/LogLine";
  * detection keys off ids and never needs the fight name. Every Archive log
  * records health ratios (the raid released after log version 1.7.0), so unlike
  * older raids the HP thresholds below can be read directly from hit lines.
- *
- * The Dagon'hai Trio has no markers: no logs of that fight were available to
- * verify a signal against.
  */
 
 const ARCHIVE_GUARDIAN_FLYING_ID = 16659;
@@ -25,6 +22,27 @@ const XARTH_PILLAR_ID = 16686;
 const OCELLUS_PHASE_1_ID = 16674;
 const OCELLUS_PHASE_2_ID = 16675;
 const OCELLUS_PHASE_3_ID = 16677;
+const DAGONHAI_ELDER_ID = 16643;
+const DAGONHAI_ELDER_RITUAL_END_ID = 16644;
+/** Elder and both monks before the ritual ends; they share one health bar. */
+const DAGONHAI_SHIELDED_IDS: ReadonlySet<number> = new Set([
+  DAGONHAI_ELDER_ID,
+  16645,
+  16647,
+]);
+
+/**
+ * A depleted Dagon'hai shield refills in one step, so it reads as a hit near
+ * empty followed by a hit near full. Depleted hits read at most 16% across 24
+ * logged fights, and refilled hits at least 92%.
+ */
+export const DAGONHAI_SHIELD_DEPLETED_MAX_HP = 20;
+export const DAGONHAI_SHIELD_REFILLED_MIN_HP = 80;
+/**
+ * Hits queued before a refill can still read near empty just after it. Real
+ * breaks were at least 35 ticks apart, so anything this close is the same one.
+ */
+export const DAGONHAI_MIN_TICKS_BETWEEN_BREAKS = 20;
 
 /**
  * The Guardian enters Phase 2 at 33%, but the last grounded hit can read a few
@@ -368,6 +386,57 @@ function getXarthMarkers(logs: TimedLog[]): FracturedArchivePhaseMarker[] {
     : [];
 }
 
+/**
+ * Each shield break refills the shared health bar. The ritual then ends when
+ * all three NPCs change id on about the same tick: on kills that follows four
+ * breaks, when the cauldron explodes, but a wipe can reach it with fewer.
+ */
+function getDagonhaiMarkers(logs: TimedLog[]): FracturedArchivePhaseMarker[] {
+  const markers: FracturedArchivePhaseMarker[] = [];
+  const shieldedIcon = getNpcImageUrl(DAGONHAI_ELDER_ID);
+  const ritualEnd = npcChanges(logs).find(
+    ({ log }) => log.newNpc?.id === DAGONHAI_ELDER_RITUAL_END_ID,
+  );
+  // The monks can change id a tick after the Elder, so their hits are cut off
+  // here rather than by id alone.
+  const hits = healthHits(logs, DAGONHAI_SHIELDED_IDS).filter(
+    (hit) => !ritualEnd || hit.tick < ritualEnd.tick,
+  );
+  let breaks = 0;
+  let lastBreakTick: number | null = null;
+  hits.forEach((hit, index) => {
+    const previous = hits[index - 1];
+    if (
+      previous &&
+      previous.healthPercent <= DAGONHAI_SHIELD_DEPLETED_MAX_HP &&
+      hit.healthPercent >= DAGONHAI_SHIELD_REFILLED_MIN_HP &&
+      (lastBreakTick === null ||
+        hit.tick - lastBreakTick >= DAGONHAI_MIN_TICKS_BETWEEN_BREAKS)
+    ) {
+      breaks += 1;
+      lastBreakTick = hit.tick;
+      markers.push({
+        label: `Shield ${breaks}`,
+        title: `Shield ${breaks} Break`,
+        fightTimeMs: hit.fightTimeMs,
+        tick: hit.tick,
+        iconUrl: shieldedIcon,
+      });
+    }
+  });
+
+  if (ritualEnd) {
+    markers.push({
+      label: "Ritual End",
+      title: "Ritual End",
+      fightTimeMs: ritualEnd.fightTimeMs,
+      tick: ritualEnd.tick,
+      iconUrl: getNpcImageUrl(DAGONHAI_ELDER_RITUAL_END_ID),
+    });
+  }
+  return markers;
+}
+
 function getOcellusMarkers(logs: TimedLog[]): FracturedArchivePhaseMarker[] {
   const phases: { phase: number; start?: TimedLog; npcId: number }[] = [
     {
@@ -420,6 +489,7 @@ export function getFracturedArchivePhaseMarkers(
     ...getMoiaMarkers(logs),
     ...getDreadnothMarkers(logs),
     ...getXarthMarkers(logs),
+    ...getDagonhaiMarkers(logs),
     ...getOcellusMarkers(logs),
   ];
 }

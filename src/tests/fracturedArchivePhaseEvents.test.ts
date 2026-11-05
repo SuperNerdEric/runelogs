@@ -350,13 +350,105 @@ describe("Xarth", () => {
   });
 });
 
-describe("other fights", () => {
-  it("returns nothing for the Dagon'hai Trio and unrelated NPCs", () => {
-    const fight = makeFight([
-      changed(10, 16643, 16644),
-      hit(20, 16644, 10),
-      hit(30, 8339, 10),
+describe("Dagon'hai Trio", () => {
+  it("marks each shield break and the ritual end on a kill", () => {
+    const markers = getFracturedArchivePhaseMarkers(
+      makeFight([
+        hit(10, 16643, 40, 50),
+        hit(46, 16647, 3, 50),
+        hit(47, 16645, 50, 50),
+        hit(100, 16643, 1, 50),
+        hit(104, 16647, 50, 50),
+        hit(166, 16645, 1, 50),
+        hit(167, 16643, 48, 50),
+        hit(219, 16643, 5, 50),
+        hit(220, 16643, 50, 50),
+        changed(259, 16647, 16648),
+        changed(259, 16643, 16644),
+        changed(260, 16645, 16646),
+        hit(261, 16644, 5, 50),
+        hit(263, 16644, 50, 50),
+      ]),
+    );
+
+    expect(markers.map((m) => [m.label, m.title, m.tick])).toEqual([
+      ["Shield 1", "Shield 1 Break", 47],
+      ["Shield 2", "Shield 2 Break", 104],
+      ["Shield 3", "Shield 3 Break", 167],
+      ["Shield 4", "Shield 4 Break", 220],
+      ["Ritual End", "Ritual End", 259],
     ]);
+  });
+
+  it("marks only what a wipe reached", () => {
+    expect(
+      summary(
+        makeFight([
+          hit(63, 16643, 2, 50),
+          hit(65, 16645, 50, 50),
+          hit(114, 16643, 35, 50),
+        ]),
+      ),
+    ).toEqual([["Shield 1 Break", 65]]);
+  });
+
+  it("counts a stale low reading after a refill as the same break", () => {
+    expect(
+      summary(
+        makeFight([
+          hit(55, 16643, 2, 50),
+          hit(56, 16645, 50, 50),
+          hit(60, 16647, 2, 50),
+          hit(61, 16643, 50, 50),
+          hit(100, 16643, 1, 50),
+          hit(105, 16643, 50, 50),
+        ]),
+      ),
+    ).toEqual([
+      ["Shield 1 Break", 56],
+      ["Shield 2 Break", 105],
+    ]);
+  });
+
+  it("ignores a monk's refill right after the ritual ends", () => {
+    expect(
+      summary(
+        makeFight([
+          hit(196, 16643, 1, 50),
+          hit(197, 16643, 50, 50),
+          changed(236, 16643, 16644),
+          hit(236, 16645, 2, 50),
+          hit(237, 16645, 50, 50),
+          changed(237, 16645, 16646),
+        ]),
+      ),
+    ).toEqual([
+      ["Shield 1 Break", 197],
+      ["Ritual End", 236],
+    ]);
+  });
+
+  it("does not count ordinary health changes as a break", () => {
+    expect(
+      summary(
+        makeFight([
+          hit(10, 16643, 30, 50),
+          hit(20, 16645, 45, 50),
+          hit(30, 16643, 9, 50),
+          hit(40, 16647, 30, 50),
+        ]),
+      ),
+    ).toEqual([]);
+  });
+
+  it("does not mark breaks without health data", () => {
+    expect(summary(makeFight([hit(10, 16643), hit(20, 16643)]))).toEqual([]);
+  });
+});
+
+describe("other fights", () => {
+  it("returns nothing for unrelated NPCs", () => {
+    const fight = makeFight([hit(20, 8339, 10), hit(30, 8339, 90)]);
     expect(getFracturedArchivePhaseMarkers(fight)).toEqual([]);
     expect(getArchiveGuardianGroundedWindows(fight)).toEqual([]);
   });
