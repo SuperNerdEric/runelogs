@@ -15,8 +15,9 @@ test.describe("Client routing", () => {
     await expect(
       page.getByRole("heading", { name: /^support$/i }),
     ).toBeVisible();
-    await expect(page.getByRole("link", { name: /discord/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /github/i })).toBeVisible();
+    const main = page.getByRole("main");
+    await expect(main.getByRole("link", { name: /discord/i })).toBeVisible();
+    await expect(main.getByRole("link", { name: /github/i })).toBeVisible();
   });
 
   test("home page shell renders with mocked leaderboard APIs", async ({
@@ -25,9 +26,11 @@ test.describe("Client routing", () => {
     await mockHomepageApis(page);
     await page.goto("/");
 
-    await expect(page.getByRole("link", { name: /runelogs/i })).toBeVisible();
     await expect(
-      page.getByRole("link", { name: "Combat Logger" }),
+      page.getByRole("banner").getByRole("link", { name: /runelogs/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("main").getByRole("link", { name: "Combat Logger" }),
     ).toBeVisible();
   });
 
@@ -35,9 +38,9 @@ test.describe("Client routing", () => {
     await page.goto("/this-page-does-not-exist");
 
     await expect(page.getByTestId("not-found-page")).toBeVisible();
-    await expect(
-      page.getByRole("heading", { name: /wandered off the map/i }),
-    ).toBeVisible();
+    await expect(page.getByText("404", { exact: true })).toBeVisible();
+    // The heading is a randomly picked NPC quote, so only check that one shows.
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
       "content",
       "noindex",
@@ -50,11 +53,14 @@ test.describe("Client routing", () => {
   test("top bar home link returns to the homepage", async ({ page }) => {
     await mockHomepageApis(page);
     await page.goto("/help");
-    await page.getByRole("link", { name: /runelogs/i }).click();
+    await page
+      .getByRole("banner")
+      .getByRole("link", { name: /runelogs/i })
+      .click();
 
     await expect(page).toHaveURL("/");
     await expect(
-      page.getByRole("link", { name: "Combat Logger" }),
+      page.getByRole("main").getByRole("link", { name: "Combat Logger" }),
     ).toBeVisible();
   });
 });

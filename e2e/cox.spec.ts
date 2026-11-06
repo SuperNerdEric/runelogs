@@ -53,11 +53,14 @@ test.describe("Chambers of Xeric leaderboards and run summary", () => {
     await expect(
       page.getByRole("heading", { name: /leaderboards/i }),
     ).toBeVisible();
+    // Each raid's list item also contains its nested list of rooms.
     await expect(
-      page.getByText("Chambers of Xeric", { exact: true }),
+      page.getByRole("listitem").filter({ hasText: /^Chambers of Xeric(?!:)/ }),
     ).toBeVisible();
     await expect(
-      page.getByText("Chambers of Xeric: Challenge Mode", { exact: true }),
+      page
+        .getByRole("listitem")
+        .filter({ hasText: /^Chambers of Xeric: Challenge Mode/ }),
     ).toBeVisible();
     await expect(
       page.getByText("Great Olm", { exact: true }).first(),
