@@ -31,6 +31,7 @@ interface FightTileProps {
   success: boolean;
   inProgress?: boolean;
   href?: string;
+  linkState?: unknown;
   onClick?: () => void;
   showGoldStar?: boolean;
   rankBadges?: FightTileRankBadge[];
@@ -43,6 +44,7 @@ const FightTile: React.FC<FightTileProps> = ({
   success,
   inProgress = false,
   href,
+  linkState,
   onClick,
   showGoldStar = false,
   rankBadges = [],
@@ -81,7 +83,7 @@ const FightTile: React.FC<FightTileProps> = ({
 
   if (href) {
     return (
-      <RouterLink to={href} className={className}>
+      <RouterLink to={href} state={linkState} className={className}>
         {content}
       </RouterLink>
     );
@@ -102,6 +104,7 @@ export interface FightTileGridItem {
   success: boolean;
   inProgress?: boolean;
   href?: string;
+  linkState?: unknown;
   onClick?: () => void;
   showGoldStar?: boolean;
   rankBadges?: FightTileRankBadge[];
@@ -157,6 +160,7 @@ export const FightTileGrid: React.FC<FightTileGridProps> = ({
               success={tile.success}
               inProgress={tile.inProgress}
               href={tile.href}
+              linkState={tile.linkState}
               onClick={tile.onClick}
               showGoldStar={tile.showGoldStar}
               rankBadges={tile.rankBadges}
@@ -173,6 +177,7 @@ export interface FightGroupFightRow {
   index: number;
   fightGroupIndex: number;
   href?: string;
+  linkState?: unknown;
   rankBadges?: FightTileRankBadge[];
 }
 
@@ -197,6 +202,7 @@ export const FightGroupFightRows: React.FC<FightGroupFightRowsProps> = ({
       success: row.fight.success,
       inProgress: row.fight.inProgress,
       href: row.href,
+      linkState: row.linkState,
       onClick: row.href
         ? undefined
         : () => onSelectFight?.(row.index, row.fightGroupIndex),

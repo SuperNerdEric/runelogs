@@ -14,7 +14,7 @@ import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import { format } from "date-fns";
 
-import { colors, contentColumnSx, media } from "../theme";
+import { colors, contentColumnSx } from "../theme";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { GearSetupListItem } from "../models/GearSetup";
 import { getLeaderboardContentSpriteKey } from "../utils/leaderboardContent";
@@ -139,10 +139,8 @@ const GearSetupPage: React.FC = () => {
     <Box
       sx={{
         ...contentColumnSx,
-        mt: 2,
         px: 2,
         pb: 4,
-        [media.mobileDown]: { px: 1 },
       }}
     >
       <PageBreadcrumbs

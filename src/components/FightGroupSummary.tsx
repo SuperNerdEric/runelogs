@@ -11,6 +11,12 @@ import { FightGroupFightRows } from "./sections/LogFightList";
 import RunInfoBox from "./RunInfoBox";
 import PageBreadcrumbs from "./PageBreadcrumbs";
 import {
+  createEncounterBreadcrumbLinkState,
+  getRunBreadcrumbSegments,
+  readRunBreadcrumbInfo,
+} from "./breadcrumbLinkState";
+import { inferLeaderboardFightGroupName } from "../utils/leaderboardContent";
+import {
   centeredPageStateSx,
   contentColumnSx,
   pageHeroTitleSx,
@@ -29,7 +35,6 @@ import {
   MOKHAIOTL_HIGH_SCORE_MODE_LABEL,
   stripFightGroupNumber,
 } from "../utils/leaderboardContent";
-import { resolveFightGroupSpriteKey } from "../lib/hiscoreSprites";
 import { FightGroupExtraInfo } from "../utils/fightGroupExtraInfo";
 import GearSetupDisplay from "./gear/GearSetupDisplay";
 import {
@@ -37,7 +42,6 @@ import {
   resolveLiveFightTileState,
 } from "../utils/fightDisplayStatus";
 import LiveLogProgressAlert from "./LiveLogProgressAlert";
-import LogNameDisplay from "./LogNameDisplay";
 import { LIVE_PAGE_RETRY_INTERVAL_MS } from "../utils/livePageFetchRetry";
 import {
   isLiveLogPending,
@@ -256,9 +260,29 @@ const FightGroupSummary: React.FC = () => {
   usePageMeta(pageMeta);
 
   if (loading) {
-    return (
+    const spinner = (
       <Box sx={centeredPageStateSx}>
         <CircularProgress />
+      </Box>
+    );
+    // Arriving from a page that already knows the breadcrumbs: keep them in
+    // place while the rest of the page loads.
+    const breadcrumbInfo = readRunBreadcrumbInfo(location.state);
+    if (!breadcrumbInfo) {
+      return spinner;
+    }
+    return (
+      <Box
+        px={2}
+        sx={{
+          ...contentColumnSx,
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <PageBreadcrumbs segments={getRunBreadcrumbSegments(breadcrumbInfo)} />
+        {spinner}
       </Box>
     );
   }
@@ -291,32 +315,20 @@ const FightGroupSummary: React.FC = () => {
   };
 
   return (
-    <Box p={2} sx={contentColumnSx} className="fight-group-summary">
+    <Box px={2} pb={2} sx={contentColumnSx} className="fight-group-summary">
+      <PageBreadcrumbs
+        segments={getRunBreadcrumbSegments({
+          logId: data.log.id,
+          logName: data.log.name ?? null,
+          isLive: isLiveLogSessionOpen(liveLogState),
+          runName: data.name,
+          leaderboardName: data.leaderboardName ?? null,
+        })}
+      />
+
       {(data.receivingData || isLiveLogPending(liveLogState)) && (
         <LiveLogProgressAlert refreshing={refreshing} sx={{ mb: 2 }} />
       )}
-
-      <PageBreadcrumbs
-        segments={[
-          {
-            label: (
-              <LogNameDisplay
-                name={data.log.name}
-                isLive={isLiveLogSessionOpen(liveLogState)}
-              />
-            ),
-            title: data.log.name ?? "Unnamed",
-            href: `/log/${data.log.id}`,
-          },
-          {
-            label: data.name,
-            spriteKey: resolveFightGroupSpriteKey(
-              data.name,
-              data.leaderboardName,
-            ),
-          },
-        ]}
-      />
 
       <Box className="run-summary-hero" sx={{ textAlign: "center", mb: 2 }}>
         <Typography
@@ -495,6 +507,23 @@ const FightGroupSummary: React.FC = () => {
               index: 0,
               fightGroupIndex,
               href: getEncounterHref(fight.id),
+              linkState: createEncounterBreadcrumbLinkState({
+                logId: data.log.id,
+                logName: data.log.name,
+                isLive: isLiveLogSessionOpen(liveLogState),
+                run: {
+                  id: data.id,
+                  name: data.name,
+                  leaderboardName:
+                    data.leaderboardName ??
+                    inferLeaderboardFightGroupName(data.name),
+                },
+                fightId: fight.id,
+                fightName: fight.name,
+                fights: [...data.fights]
+                  .sort((a, b) => a.order - b.order)
+                  .map(({ id, name }) => ({ id, name })),
+              }),
               rankBadges,
             };
           })}

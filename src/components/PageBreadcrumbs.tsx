@@ -14,6 +14,8 @@ export type BreadcrumbSegment = {
   label: React.ReactNode;
   title?: string;
   href?: string;
+  /** Router state sent along when `href` is followed. */
+  linkState?: unknown;
   spriteKey?: string | null;
   select?: {
     options: BreadcrumbSelectOption[];
@@ -160,7 +162,9 @@ const PageBreadcrumbs: React.FC<PageBreadcrumbsProps> = ({ segments, sx }) => {
     ancestors.length > 0 ? ancestors[ancestors.length - 1] : undefined;
 
   return (
-    <Box sx={{ width: "100%", ...sx }}>
+    // Owns the gap below the site header so every page places breadcrumbs the
+    // same way; pages using this should add no top spacing of their own.
+    <Box sx={{ width: "100%", mt: 1.5, ...sx }}>
       <Breadcrumbs
         aria-label="breadcrumb"
         separator={chevronRightIcon}
@@ -211,6 +215,7 @@ const PageBreadcrumbs: React.FC<PageBreadcrumbsProps> = ({ segments, sx }) => {
               key={key}
               component={RouterLink}
               to={segment.href}
+              state={segment.linkState}
               underline="hover"
               color="primary"
               sx={{
@@ -244,6 +249,7 @@ const PageBreadcrumbs: React.FC<PageBreadcrumbsProps> = ({ segments, sx }) => {
             <Link
               component={RouterLink}
               to={parent.href}
+              state={parent.linkState}
               underline="hover"
               color="primary"
               title={segmentTitle(parent)}

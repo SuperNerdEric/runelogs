@@ -29,13 +29,15 @@ import { Fight, FightMetaData, isFight } from "../models/Fight";
 import * as semver from "semver";
 import "../App.css";
 import EncounterFightTitle from "./EncounterFightTitle";
-import PageBreadcrumbs, { BreadcrumbSegment } from "./PageBreadcrumbs";
+import PageBreadcrumbs from "./PageBreadcrumbs";
+import {
+  getEncounterBreadcrumbSegments,
+  readEncounterBreadcrumbInfo,
+} from "./breadcrumbLinkState";
 import {
   inferLeaderboardFightGroupName,
   inferStandaloneLeaderboardContent,
 } from "../utils/leaderboardContent";
-import { resolveLeaderboardSpriteKey } from "../lib/hiscoreSprites";
-import { getRunSummaryHref } from "../utils/encounterTableRow";
 import {
   ActorFilter,
   deserializeActorFilter,
@@ -62,7 +64,6 @@ import {
   serializeHitsplatTypeFilter,
 } from "../utils/hitsplatTypeFilter";
 import LiveLogProgressAlert from "./LiveLogProgressAlert";
-import LogNameDisplay from "./LogNameDisplay";
 import {
   LIVE_PAGE_RETRY_INTERVAL_MS,
   LIVE_PAGE_RETRY_TIMEOUT_MS,
@@ -143,6 +144,14 @@ type EncounterApi = EncounterApiFG | EncounterApiFight;
 interface SelectorItem extends FightMetaData {
   id: string;
 }
+
+// Encounter content runs edge to edge, so inset only the breadcrumbs to line up
+// with the padded column on other pages.
+const encounterBreadcrumbsSx = {
+  alignSelf: "flex-start",
+  px: 2,
+  boxSizing: "border-box",
+} as const;
 
 const Encounter: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -298,9 +307,10 @@ const Encounter: React.FC = () => {
       newParams.set("tab", TabsEnum.SUMMARY);
       navigate(`${window.location.pathname}?${newParams.toString()}`, {
         replace: true,
+        state: location.state,
       });
     }
-  }, [tabParam, navigate, searchParams]);
+  }, [tabParam, navigate, searchParams, location.state]);
 
   const selectorMeta: SelectorItem[] = useMemo(() => {
     if (!group) return [];
@@ -445,19 +455,17 @@ const Encounter: React.FC = () => {
   }, [id, retryingAfter404, fetchEncounter]);
 
   const handleSelectFight = useCallback(
-    (index: number) => {
-      if (!group) return;
-      const f = group.fights[index];
-      if (!f) return;
-
+    (fightId: string, linkState: unknown) => {
       const newParams = new URLSearchParams(searchParams);
       const tabValue = newParams.get("tab") ?? TabsEnum.SUMMARY;
 
       // Push new fight ID and preserve tab query
       const basePath = isAggregate ? "/encounter/aggregate" : "/encounter";
-      navigate(`${basePath}/${f.id}?tab=${encodeURIComponent(tabValue)}`);
+      navigate(`${basePath}/${fightId}?tab=${encodeURIComponent(tabValue)}`, {
+        state: linkState,
+      });
     },
-    [group, navigate, searchParams, isAggregate],
+    [navigate, searchParams, isAggregate],
   );
 
   // The router applies URL changes in a transition, so nothing would change on
@@ -799,12 +807,33 @@ const Encounter: React.FC = () => {
   }, [fight, group, fightGroupMeta, canonicalPath, isAggregate]);
   usePageMeta(pageMeta);
 
-  if (loading)
-    return (
+  if (loading) {
+    const spinner = (
       <Box sx={centeredPageStateSx}>
         <CircularProgress color="inherit" />
       </Box>
     );
+    // Arriving from a page that already knows the breadcrumbs: keep them in
+    // place while the rest of the page loads.
+    const breadcrumbInfo = readEncounterBreadcrumbInfo(location.state, id);
+    if (!breadcrumbInfo) {
+      return spinner;
+    }
+    return (
+      <div className="App">
+        <div className="App-main">
+          <PageBreadcrumbs
+            segments={getEncounterBreadcrumbSegments(
+              breadcrumbInfo,
+              handleSelectFight,
+            )}
+            sx={encounterBreadcrumbsSx}
+          />
+          {spinner}
+        </div>
+      </div>
+    );
+  }
 
   if (error || !fight)
     return (
@@ -813,77 +842,33 @@ const Encounter: React.FC = () => {
       </Box>
     );
 
-  const selectedFightIndex = group
-    ? Math.max(
-        0,
-        selectorMeta.findIndex((m) => m.id === fight.id),
-      )
-    : undefined;
-
-  const breadcrumbSegments: BreadcrumbSegment[] = [
+  const breadcrumbSegments = getEncounterBreadcrumbSegments(
     {
-      label: (
-        <LogNameDisplay
-          name={logName}
-          isLive={isLiveLogSessionOpen(liveLogState)}
-        />
-      ),
-      title: logName ?? "Unnamed",
-      href: `/log/${logId}`,
+      logId,
+      logName,
+      isLive: isLiveLogSessionOpen(liveLogState),
+      run: runMeta
+        ? { id: runMeta.id, name: runMeta.name, leaderboardName }
+        : null,
+      fightId: fight.id,
+      fightName: fight.name,
+      fights: group ? selectorMeta.map(({ id, name }) => ({ id, name })) : [],
     },
-  ];
-
-  if (runMeta) {
-    breadcrumbSegments.push({
-      label: runMeta.name,
-      href: getRunSummaryHref(runMeta.id),
-      spriteKey: resolveLeaderboardSpriteKey(leaderboardName),
-    });
-
-    if (group && selectorMeta.length > 1) {
-      breadcrumbSegments.push({
-        label: fight.name,
-        select: {
-          options: selectorMeta.map((entry, index) => ({
-            value: index,
-            label: entry.name,
-          })),
-          value: selectedFightIndex ?? 0,
-          onChange: handleSelectFight,
-        },
-      });
-    } else {
-      breadcrumbSegments.push({ label: fight.name });
-    }
-  } else {
-    breadcrumbSegments.push({ label: fight.name });
-  }
+    handleSelectFight,
+  );
 
   return (
     <div className="App">
       <div className="App-main">
-        {breadcrumbSegments.length > 0 && (
-          <PageBreadcrumbs
-            segments={breadcrumbSegments}
-            sx={{ alignSelf: "flex-start" }}
-          />
-        )}
+        <PageBreadcrumbs
+          segments={breadcrumbSegments}
+          sx={encounterBreadcrumbsSx}
+        />
         <EncounterFightTitle
           fightName={fight.name}
           isNpc={fight.isNpc}
           mainEnemyName={fight.mainEnemyName}
-          fightSelect={
-            group && selectorMeta.length > 1
-              ? {
-                  options: selectorMeta.map((entry, index) => ({
-                    value: index,
-                    label: entry.name,
-                  })),
-                  value: selectedFightIndex ?? 0,
-                  onChange: handleSelectFight,
-                }
-              : undefined
-          }
+          fightSelect={breadcrumbSegments[breadcrumbSegments.length - 1].select}
         />
         {receivingData && (
           <LiveLogProgressAlert

@@ -19,7 +19,6 @@
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  margin-top: 6px;
   font-size: var(--font-size-responsive-main);
   color: var(--color-text-primary);
   width: 100%;

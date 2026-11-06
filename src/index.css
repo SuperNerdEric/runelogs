@@ -4,8 +4,17 @@ body {
   color-scheme: dark;
 }
 
+/* Pages keep the same width whether or not they scroll, so moving between short
+   and long pages (or a spinner and its content) doesn't shift the layout. */
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   margin: 0;
+  /* MUI pads the body to make up for the scrollbar it hides while a menu or
+     dialog is open. The gutter already holds that space. */
+  padding-right: 0 !important;
   font-family:
     "Inter",
     -apple-system,
