@@ -89,6 +89,7 @@ import {
   showsMechanicHitsplats,
   withoutMechanicDamage,
 } from "../utils/mechanicDamageFilter";
+import { normalizeAttackAnimationRows } from "../utils/attackAnimationRows";
 import {
   deserializeTimeRange,
   getFightTimeBounds,
@@ -366,8 +367,9 @@ const Encounter: React.FC = () => {
           if (data.type === "fight") {
             if (!isFight(data.fight))
               throw new Error("Malformed fight payload");
-            setFight(data.fight);
-            fightRef.current = data.fight;
+            const normalizedFight = normalizeAttackAnimationRows(data.fight);
+            setFight(normalizedFight);
+            fightRef.current = normalizedFight;
             setLogId(data.meta.log.id);
             setLogName(data.meta.log.name ?? null);
             setFightGroupMeta(data.meta.fightGroup ?? null);

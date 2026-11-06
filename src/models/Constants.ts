@@ -136,7 +136,6 @@ export const MELEE_ANIMATIONS = [
   7516, // Maul
   11124, // Elder maul spec
   1665, // Gadderhammer, Granite maul
-  1666, // Granite maul block
   1667, // Granite maul spec
   6095, // Wolfbane stab
   1060, // Dragon mace spec
@@ -156,8 +155,6 @@ export const MELEE_ANIMATIONS = [
   15130, // Obligator smash
   15123, // Obligator thrust
   15131, // Obligator thrust
-  15133, // Obligator block
-  15134, // Obligator block
   15108, // Rondache shield bash
 ];
 
