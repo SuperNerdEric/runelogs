@@ -42,6 +42,7 @@ export enum LogTypes {
   DURATION = "Duration",
   FIGHT_START = "Fight Start",
   TOB_SCALE = "ToB Scale",
+  RAID_PARTY = "Raid Party",
   TOB_BOSS_HP = "ToB Boss HP",
   COX_RAID_COMPLETE = "CoX Raid Complete",
   COX_RAID_MODE = "CoX Raid Mode",
@@ -352,6 +353,15 @@ export interface FightStartLog extends BaseLog {
   source: Actor;
 }
 
+/** A raid party from its HUD, logged when it changes. spectateMode 2 is outside the party. */
+export interface RaidPartyLog extends BaseLog {
+  type: LogTypes.RAID_PARTY;
+  raid: "TFA" | "TOB";
+  scale: number;
+  spectateMode: number;
+  names: string[];
+}
+
 /** ToB raid scale (party size 1-5), logged once per raid. */
 export interface TobScaleLog extends BaseLog {
   type: LogTypes.TOB_SCALE;
@@ -405,6 +415,7 @@ export type LogLine =
   | DurationLog
   | FightStartLog
   | TobScaleLog
+  | RaidPartyLog
   | TobBossHpLog
   | CoxRaidCompleteLog
   | CoxRaidModeLog;

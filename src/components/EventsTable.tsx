@@ -682,6 +682,9 @@ const EventsTable: React.FC<EventsTableProps> = ({
               {log.type === LogTypes.PATH_COMPLETE ? `${log.pathName}` : ""}
               {log.type === LogTypes.DURATION ? `${log.duration}` : ""}
               {log.type === LogTypes.TOB_SCALE ? `Scale: ${log.scale}` : ""}
+              {log.type === LogTypes.RAID_PARTY
+                ? `Scale: ${log.scale}  Party: ${log.names.join(", ")}${log.spectateMode === 2 ? "  (spectating)" : ""}`
+                : ""}
               {log.type === LogTypes.COX_RAID_COMPLETE
                 ? `Scale: ${log.partySize}  Party: ${log.teamPoints.toLocaleString()}  Player: ${log.playerPoints.toLocaleString()}`
                 : ""}

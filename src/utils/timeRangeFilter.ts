@@ -26,6 +26,7 @@ const STATE_LOG_TYPES = new Set<LogTypes>([
   LogTypes.RUNE_POUCH,
   LogTypes.SPELLBOOK,
   LogTypes.TOB_SCALE,
+  LogTypes.RAID_PARTY,
   LogTypes.COX_RAID_MODE,
 ]);
 
