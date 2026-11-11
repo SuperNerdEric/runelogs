@@ -702,6 +702,15 @@
     "speed": 4
   },
   {
+    "name": "Abyssal tentacle (Pete Kayer's Challenges)",
+    "id": 34619,
+    "version": "",
+    "slot": "weapon",
+    "category": "Whip",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Abyssal tentacle (or)",
     "id": 26484,
     "version": "",
@@ -1854,6 +1863,15 @@
     "speed": 0
   },
   {
+    "name": "Adamant shortsword",
+    "id": 1287,
+    "version": "",
+    "slot": "weapon",
+    "category": "Stab Sword",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Adamant spear",
     "id": 3174,
     "version": "Karambwan poison",
@@ -1913,15 +1931,6 @@
     "version": "",
     "slot": "weapon",
     "category": "Blunt",
-    "isTwoHanded": false,
-    "speed": 4
-  },
-  {
-    "name": "Adamant sword",
-    "id": 1287,
-    "version": "",
-    "slot": "weapon",
-    "category": "Stab Sword",
     "isTwoHanded": false,
     "speed": 4
   },
@@ -2900,6 +2909,15 @@
   {
     "name": "Amulet of rancour (s)",
     "id": 29804,
+    "version": "",
+    "slot": "neck",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Amulet of sight",
+    "id": 34762,
     "version": "",
     "slot": "neck",
     "category": "",
@@ -4590,6 +4608,15 @@
     "speed": 0
   },
   {
+    "name": "Bandos chestplate (Pete Kayer's Challenges)",
+    "id": 34611,
+    "version": "",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Bandos cloak",
     "id": 12273,
     "version": "",
@@ -5184,6 +5211,15 @@
     "speed": 0
   },
   {
+    "name": "Bee hunter's hat",
+    "id": 34777,
+    "version": "",
+    "slot": "head",
+    "category": "Unarmed",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Beekeeper's boots",
     "id": 25137,
     "version": "",
@@ -5699,6 +5735,15 @@
   {
     "name": "Black d'hide shield",
     "id": 22284,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Black d'hide shield (Pete Kayer's Challenges)",
+    "id": 34615,
     "version": "",
     "slot": "shield",
     "category": "",
@@ -6561,6 +6606,15 @@
     "speed": 0
   },
   {
+    "name": "Black shortsword",
+    "id": 1283,
+    "version": "",
+    "slot": "weapon",
+    "category": "Stab Sword",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Black skirt",
     "id": 1015,
     "version": "",
@@ -6692,15 +6746,6 @@
     "version": "",
     "slot": "weapon",
     "category": "Blunt",
-    "isTwoHanded": false,
-    "speed": 4
-  },
-  {
-    "name": "Black sword",
-    "id": 1283,
-    "version": "",
-    "slot": "weapon",
-    "category": "Stab Sword",
     "isTwoHanded": false,
     "speed": 4
   },
@@ -9171,6 +9216,15 @@
     "speed": 4
   },
   {
+    "name": "Bronze shortsword",
+    "id": 1277,
+    "version": "",
+    "slot": "weapon",
+    "category": "Stab Sword",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Bronze spear",
     "id": 3170,
     "version": "Karambwan poison",
@@ -9239,15 +9293,6 @@
     "version": "",
     "slot": "weapon",
     "category": "Blunt",
-    "isTwoHanded": false,
-    "speed": 4
-  },
-  {
-    "name": "Bronze sword",
-    "id": 1277,
-    "version": "",
-    "slot": "weapon",
-    "category": "Stab Sword",
     "isTwoHanded": false,
     "speed": 4
   },
@@ -9880,15 +9925,6 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
-  },
-  {
-    "name": "Butterfly net",
-    "id": 10010,
-    "version": "",
-    "slot": "weapon",
-    "category": "Spear",
-    "isTwoHanded": false,
-    "speed": 4
   },
   {
     "name": "Cabbage cape",
@@ -15633,6 +15669,15 @@
     "speed": 0
   },
   {
+    "name": "Dragon boots (Pete Kayer's Challenges)",
+    "id": 34621,
+    "version": "",
+    "slot": "feet",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Dragon boots (cr)",
     "id": 28055,
     "version": "",
@@ -16461,6 +16506,24 @@
     "speed": 4
   },
   {
+    "name": "Dragon shortsword",
+    "id": 21009,
+    "version": "",
+    "slot": "weapon",
+    "category": "Stab Sword",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
+    "name": "Dragon shortsword (cr)",
+    "id": 28029,
+    "version": "",
+    "slot": "weapon",
+    "category": "Stab Sword",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Dragon spear",
     "id": 3176,
     "version": "Karambwan poison",
@@ -16574,24 +16637,6 @@
     "version": "",
     "slot": "weapon",
     "category": "Blunt",
-    "isTwoHanded": false,
-    "speed": 4
-  },
-  {
-    "name": "Dragon sword",
-    "id": 21009,
-    "version": "",
-    "slot": "weapon",
-    "category": "Stab Sword",
-    "isTwoHanded": false,
-    "speed": 4
-  },
-  {
-    "name": "Dragon sword (cr)",
-    "id": 28029,
-    "version": "",
-    "slot": "weapon",
-    "category": "Stab Sword",
     "isTwoHanded": false,
     "speed": 4
   },
@@ -18732,6 +18777,15 @@
     "name": "Fighter torso",
     "id": 10551,
     "version": "Normal",
+    "slot": "body",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Fighter torso (Pete Kayer's Challenges)",
+    "id": 34613,
+    "version": "",
     "slot": "body",
     "category": "",
     "isTwoHanded": false,
@@ -24606,6 +24660,15 @@
     "speed": 0
   },
   {
+    "name": "Insect net",
+    "id": 10010,
+    "version": "",
+    "slot": "weapon",
+    "category": "Spear",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Insulated boots",
     "id": 7159,
     "version": "",
@@ -25236,6 +25299,15 @@
     "speed": 4
   },
   {
+    "name": "Iron shortsword",
+    "id": 1279,
+    "version": "",
+    "slot": "weapon",
+    "category": "Stab Sword",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Iron sickle",
     "id": 3899,
     "version": "",
@@ -25304,15 +25376,6 @@
     "version": "",
     "slot": "weapon",
     "category": "Blunt",
-    "isTwoHanded": false,
-    "speed": 4
-  },
-  {
-    "name": "Iron sword",
-    "id": 1279,
-    "version": "",
-    "slot": "weapon",
-    "category": "Stab Sword",
     "isTwoHanded": false,
     "speed": 4
   },
@@ -25842,6 +25905,15 @@
     "name": "Karil's leatherskirt",
     "id": 4738,
     "version": "Undamaged",
+    "slot": "legs",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Karil's leatherskirt (Pete Kayer's Challenges)",
+    "id": 34609,
+    "version": "",
     "slot": "legs",
     "category": "",
     "isTwoHanded": false,
@@ -26955,15 +27027,6 @@
     "speed": 0
   },
   {
-    "name": "Magic butterfly net",
-    "id": 11259,
-    "version": "",
-    "slot": "weapon",
-    "category": "Spear",
-    "isTwoHanded": false,
-    "speed": 4
-  },
-  {
     "name": "Magic cape",
     "id": 9763,
     "version": "Trimmed",
@@ -26998,6 +27061,15 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
+  },
+  {
+    "name": "Magic insect net",
+    "id": 11259,
+    "version": "",
+    "slot": "weapon",
+    "category": "Spear",
+    "isTwoHanded": false,
+    "speed": 4
   },
   {
     "name": "Magic lantern",
@@ -28350,6 +28422,15 @@
     "speed": 4
   },
   {
+    "name": "Mithril shortsword",
+    "id": 1285,
+    "version": "",
+    "slot": "weapon",
+    "category": "Stab Sword",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Mithril spear",
     "id": 3173,
     "version": "Karambwan poison",
@@ -28409,15 +28490,6 @@
     "version": "",
     "slot": "weapon",
     "category": "Blunt",
-    "isTwoHanded": false,
-    "speed": 4
-  },
-  {
-    "name": "Mithril sword",
-    "id": 1285,
-    "version": "",
-    "slot": "weapon",
-    "category": "Stab Sword",
     "isTwoHanded": false,
     "speed": 4
   },
@@ -30528,6 +30600,33 @@
     "speed": 5
   },
   {
+    "name": "Painted kiteshield",
+    "id": 34769,
+    "version": "",
+    "slot": "shield",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Painted shortbow",
+    "id": 34772,
+    "version": "",
+    "slot": "weapon",
+    "category": "Bow",
+    "isTwoHanded": true,
+    "speed": 3
+  },
+  {
+    "name": "Painted shortsword",
+    "id": 34766,
+    "version": "",
+    "slot": "weapon",
+    "category": "Stab Sword",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Pantaloons",
     "id": 10396,
     "version": "",
@@ -30929,6 +31028,15 @@
     "version": "",
     "slot": "legs",
     "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
+    "name": "Pink snelm",
+    "id": 34801,
+    "version": "",
+    "slot": "head",
+    "category": "Unarmed",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -35253,6 +35361,15 @@
     "speed": 0
   },
   {
+    "name": "Rune shortsword",
+    "id": 1289,
+    "version": "",
+    "slot": "weapon",
+    "category": "Stab Sword",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Rune spear",
     "id": 3175,
     "version": "Karambwan poison",
@@ -35312,15 +35429,6 @@
     "version": "",
     "slot": "weapon",
     "category": "Blunt",
-    "isTwoHanded": false,
-    "speed": 4
-  },
-  {
-    "name": "Rune sword",
-    "id": 1289,
-    "version": "",
-    "slot": "weapon",
-    "category": "Stab Sword",
     "isTwoHanded": false,
     "speed": 4
   },
@@ -39807,6 +39915,15 @@
     "speed": 4
   },
   {
+    "name": "Steel shortsword",
+    "id": 1281,
+    "version": "",
+    "slot": "weapon",
+    "category": "Stab Sword",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Steel spear",
     "id": 3172,
     "version": "Karambwan poison",
@@ -39866,15 +39983,6 @@
     "version": "",
     "slot": "weapon",
     "category": "Blunt",
-    "isTwoHanded": false,
-    "speed": 4
-  },
-  {
-    "name": "Steel sword",
-    "id": 1281,
-    "version": "",
-    "slot": "weapon",
-    "category": "Stab Sword",
     "isTwoHanded": false,
     "speed": 4
   },
@@ -41571,6 +41679,15 @@
     "speed": 0
   },
   {
+    "name": "Torva full helm (Pete Kayer's Challenges)",
+    "id": 34617,
+    "version": "",
+    "slot": "head",
+    "category": "",
+    "isTwoHanded": false,
+    "speed": 0
+  },
+  {
     "name": "Torva full helm (unobtainable item)",
     "id": 30302,
     "version": "",
@@ -42066,15 +42183,6 @@
     "speed": 0
   },
   {
-    "name": "Training bow",
-    "id": 9705,
-    "version": "",
-    "slot": "weapon",
-    "category": "Bow",
-    "isTwoHanded": true,
-    "speed": 3
-  },
-  {
     "name": "Training shield",
     "id": 9704,
     "version": "",
@@ -42084,7 +42192,16 @@
     "speed": 0
   },
   {
-    "name": "Training sword",
+    "name": "Training shortbow",
+    "id": 9705,
+    "version": "",
+    "slot": "weapon",
+    "category": "Bow",
+    "isTwoHanded": true,
+    "speed": 3
+  },
+  {
+    "name": "Training shortsword",
     "id": 9703,
     "version": "",
     "slot": "weapon",
@@ -43213,7 +43330,7 @@
     "id": 34744,
     "version": "",
     "slot": "legs",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -43222,7 +43339,7 @@
     "id": 34746,
     "version": "",
     "slot": "cape",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -43231,7 +43348,7 @@
     "id": 34742,
     "version": "",
     "slot": "body",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -43240,7 +43357,7 @@
     "id": 34740,
     "version": "",
     "slot": "head",
-    "category": "Unarmed",
+    "category": "",
     "isTwoHanded": false,
     "speed": 0
   },
@@ -45189,6 +45306,15 @@
     "speed": 4
   },
   {
+    "name": "White shortsword",
+    "id": 6605,
+    "version": "",
+    "slot": "weapon",
+    "category": "Stab Sword",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "White sq shield",
     "id": 6631,
     "version": "",
@@ -45196,15 +45322,6 @@
     "category": "",
     "isTwoHanded": false,
     "speed": 0
-  },
-  {
-    "name": "White sword",
-    "id": 6605,
-    "version": "",
-    "slot": "weapon",
-    "category": "Stab Sword",
-    "isTwoHanded": false,
-    "speed": 4
   },
   {
     "name": "White unicorn mask",
@@ -45603,6 +45720,15 @@
     "speed": 0
   },
   {
+    "name": "Wooden shortsword",
+    "id": 7675,
+    "version": "",
+    "slot": "weapon",
+    "category": "Stab Sword",
+    "isTwoHanded": false,
+    "speed": 4
+  },
+  {
     "name": "Wooden spoon",
     "id": 7433,
     "version": "",
@@ -45610,15 +45736,6 @@
     "category": "Slash Sword",
     "isTwoHanded": false,
     "speed": 5
-  },
-  {
-    "name": "Wooden sword",
-    "id": 7675,
-    "version": "",
-    "slot": "weapon",
-    "category": "Stab Sword",
-    "isTwoHanded": false,
-    "speed": 4
   },
   {
     "name": "Woolly hat",
@@ -47101,7 +47218,7 @@
     "id": 34725,
     "version": "Charged",
     "slot": "weapon",
-    "category": "Powered Staff",
+    "category": "Powered Book",
     "isTwoHanded": true,
     "speed": 3
   },
@@ -47110,7 +47227,7 @@
     "id": 34727,
     "version": "Uncharged",
     "slot": "weapon",
-    "category": "Powered Staff",
+    "category": "Powered Book",
     "isTwoHanded": true,
     "speed": 3
   },
